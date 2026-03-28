@@ -205,7 +205,7 @@ const MatchScreen = ({ navigation, route }: any) => {
 };
 
 const styles = StyleSheet.create({
-  matchSubtitle: { color: '#000000', marginBottom: 16, textAlign: 'center' },
+  matchSubtitle: { color: '#000000', marginBottom: sh(16), textAlign: 'center' },
 });
 
 export default MatchScreen;

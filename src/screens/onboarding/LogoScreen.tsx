@@ -4,7 +4,7 @@ import PrimaryButton from '@/components/common/PrimaryButton';
 import Logo from '@/assets/images/logo.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { sf, sr } from '@/utils/responsive';
+import { sf, sr, sw, sh } from '@/utils/responsive';
 
 export default function LogoScreen({ navigation }: any) {
   return (
@@ -31,10 +31,10 @@ export default function LogoScreen({ navigation }: any) {
         <View
           style={{
             flex: 1,
-            gap: 8,
+            gap: sh(8),
             alignItems: 'center',
             justifyContent: 'center',
-            paddingHorizontal: 8,
+            paddingHorizontal: sw(8),
           }}
         >
           {/* App icon */}
@@ -65,7 +65,7 @@ export default function LogoScreen({ navigation }: any) {
               color: '#222222',
               fontWeight: '400',
               textAlign: 'center',
-              paddingTop: 12,
+              paddingTop: sh(12),
             }}
           >
             Discover real connections through shared interests{'\n'}and genuine
@@ -74,7 +74,7 @@ export default function LogoScreen({ navigation }: any) {
         </View>
 
         {/* Bottom Next button */}
-        <View style={{ paddingHorizontal: 16, paddingBottom: 24 }}>
+        <View style={{ paddingHorizontal: sw(16), paddingBottom: sh(24) }}>
           <PrimaryButton
             title="Next"
             onPress={() => navigation.navigate('SignUpScreen')}

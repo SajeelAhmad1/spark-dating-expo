@@ -13,7 +13,7 @@ import { FieldError } from '@/components/common/FieldError';
 import { ChevronLeft, ChevronDown } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/responsive';
 import { useZodForm } from '@/utils/form';
 import { createProfileSetupSchema } from '@/schemas/onboarding';
 
@@ -82,9 +82,9 @@ const ProfileSetupScreen = ({navigation}: any) => {
   const inputStyle = {
     borderWidth: 1,
     borderColor: '#B6B9C9',
-    borderRadius: 15,
-    height: 56,
-    paddingHorizontal: 16,
+    borderRadius: sr(15),
+    height: sh(56),
+    paddingHorizontal: sw(16),
     fontSize: sf(15),
     color: '#000000',
   };
@@ -93,13 +93,13 @@ const ProfileSetupScreen = ({navigation}: any) => {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={{ paddingBottom: 120 }}
+        contentContainerStyle={{ paddingBottom: sh(120) }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         {/* ── Back Button ── */}
         <TouchableOpacity onPress={() => {}}>
-          <ChevronLeft size={24} color="#000000" />
+          <ChevronLeft size={sf(24)} color="#000000" />
         </TouchableOpacity>
 
         {/* ── Header ── */}
@@ -173,8 +173,8 @@ const ProfileSetupScreen = ({navigation}: any) => {
                   onPress={() => setValue('gender', g, { shouldValidate: true })}
                   style={{
                     flex: 1,
-                    height: 56,
-                    borderRadius: 15,
+                    height: sh(56),
+                    borderRadius: sr(15),
                     borderWidth: selected ? 0 : 1,
                     borderColor: '#B6B9C9',
                     backgroundColor: selected ? '#FBB202' : 'transparent',
@@ -211,20 +211,20 @@ const ProfileSetupScreen = ({navigation}: any) => {
                 onPress={() => setOpenDropdown(field)}
                 style={{
                   flex: 1,
-                  height: 56,
-                  borderRadius: 15,
+                  height: sh(56),
+                  borderRadius: sr(15),
                   borderWidth: 1,
                   borderColor: '#B6B9C9',
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  paddingHorizontal: 12,
+                  paddingHorizontal: sw(12),
                 }}
               >
                 <Text style={{ fontSize: sf(15), color: '#000000' }}>
                   {dropdownValues[field]}
                 </Text>
-                <ChevronDown size={16} color="#000000" />
+                <ChevronDown size={sf(16)} color="#000000" />
               </TouchableOpacity>
             ))}
           </View>
@@ -248,10 +248,10 @@ const ProfileSetupScreen = ({navigation}: any) => {
             style={{
               borderWidth: 1,
               borderColor: errors.bio ? '#DC2626' : '#B6B9C9',
-              borderRadius: 15,
-              height: 120,
-              paddingHorizontal: 16,
-              paddingTop: 14,
+              borderRadius: sr(15),
+              height: sh(120),
+              paddingHorizontal: sw(16),
+              paddingTop: sh(14),
               fontSize: sf(15),
               color: '#000000',
             }}
@@ -286,7 +286,7 @@ const ProfileSetupScreen = ({navigation}: any) => {
           activeOpacity={1}
           onPress={() => setOpenDropdown(null)}
         >
-          <View style={[styles.modalSheet, { maxHeight: 320 }]}>
+          <View style={[styles.modalSheet, { maxHeight: sh(320) }]}>
             <View style={styles.modalHandle} />
             <FlatList
               data={openDropdown ? dropdownOptions[openDropdown] : []}
@@ -298,12 +298,12 @@ const ProfileSetupScreen = ({navigation}: any) => {
                   <TouchableOpacity
                     onPress={() => openDropdown && handleSelect(openDropdown, item)}
                     style={{
-                      paddingVertical: 14,
+                      paddingVertical: sh(14),
                       borderBottomWidth: 1,
                       borderBottomColor: '#F0F0F0',
                       backgroundColor: isSelected ? '#FFF8E7' : 'transparent',
-                      paddingHorizontal: 8,
-                      borderRadius: 8,
+                      paddingHorizontal: sw(8),
+                      borderRadius: sr(8),
                     }}
                   >
                     <Text
@@ -329,23 +329,23 @@ const ProfileSetupScreen = ({navigation}: any) => {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  scroll: { flex: 1, paddingHorizontal: 20, paddingTop: 16 },
-  headerBlock: { marginTop: 12, rowGap: 8 },
+  scroll: { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16) },
+  headerBlock: { marginTop: sh(12), rowGap: sh(8) },
   screenTitle: { color: '#000000' },
   screenSubtitle: { color: '#7D858E' },
-  nameRow: { marginTop: 24, flexDirection: 'row', columnGap: 12 },
+  nameRow: { marginTop: sh(24), flexDirection: 'row', columnGap: sw(12) },
   flex1: { flex: 1 },
-  labelSemibold: { color: '#000000', marginBottom: 8 },
-  labelRegular: { color: '#000000', marginBottom: 8 },
-  section: { marginTop: 24 },
-  rowGap: { flexDirection: 'row', columnGap: 12 },
+  labelSemibold: { color: '#000000', marginBottom: sh(8) },
+  labelRegular: { color: '#000000', marginBottom: sh(8) },
+  section: { marginTop: sh(24) },
+  rowGap: { flexDirection: 'row', columnGap: sw(12) },
   footer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    paddingHorizontal: 20,
-    paddingBottom: 32,
+    paddingHorizontal: sw(20),
+    paddingBottom: sh(32),
     backgroundColor: '#FFFFFF',
   },
   modalBackdrop: {
@@ -355,19 +355,19 @@ const styles = StyleSheet.create({
   },
   modalSheet: {
     backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 40,
+    borderTopLeftRadius: sr(24),
+    borderTopRightRadius: sr(24),
+    paddingHorizontal: sw(20),
+    paddingTop: sh(16),
+    paddingBottom: sh(40),
   },
   modalHandle: {
-    width: 40,
-    height: 4,
+    width: sw(40),
+    height: sh(4),
     backgroundColor: '#E8EAED',
     borderRadius: 999,
     alignSelf: 'center',
-    marginBottom: 16,
+    marginBottom: sh(16),
   },
 });
 

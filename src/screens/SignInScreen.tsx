@@ -11,7 +11,7 @@ import RememberMeToggle from '@/components/auth/RememberMeToggle';
 import SignInBottomActions from '@/components/auth/SignInBottomActions';
 import { useZodForm } from '@/utils/form';
 import { createSignInSchema } from '@/schemas/auth';
-import { sf } from '@/utils/responsive';
+import { sf, sw, sh } from '@/utils/responsive';
 
 function SignInFormBody({
   tab,
@@ -46,7 +46,7 @@ function SignInFormBody({
 
   return (
     <>
-      <View style={{ paddingTop: 32 }}>
+      <View style={{ paddingTop: sh(32) }}>
         <PhoneEmailField
           activeTab={tab}
           value={tab === 'phone' ? phoneNumber : email}
@@ -77,7 +77,7 @@ function SignInFormBody({
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginTop: 20,
+          marginTop: sh(20),
         }}
       >
         <RememberMeToggle
@@ -118,16 +118,16 @@ export default function SignInScreen({
       <View
         style={{
           flex: 1,
-          paddingHorizontal: 20,
-          paddingTop: 24,
-          paddingBottom: 16,
+          paddingHorizontal: sw(20),
+          paddingTop: sh(24),
+          paddingBottom: sh(16),
         }}
       >
-        <TouchableOpacity style={{ width: 32, height: 32 }} onPress={() => {}}>
-          <ChevronLeft size={24} color="#000000" />
+        <TouchableOpacity style={{ width: sw(32), height: sw(32) }} onPress={() => {}}>
+          <ChevronLeft size={sf(24)} color="#000000" />
         </TouchableOpacity>
 
-        <View style={{ marginTop: 48, gap: 8 }}>
+        <View style={{ marginTop: sh(48), gap: sh(8) }}>
           <Text
             style={{
               color: '#000000',

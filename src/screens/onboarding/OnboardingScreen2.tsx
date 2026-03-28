@@ -4,7 +4,7 @@ import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import OnboardingCard from './OnboardingCard';
 import CameraIcon from '@/assets/images/cameraIcon.svg';
-import { sf } from '@/utils/responsive';
+import { sf, sw, sh } from '@/utils/responsive';
 
 export default function Onboarding2({ navigation }: any) {
   const { width, height } = useWindowDimensions();
@@ -59,23 +59,23 @@ export default function Onboarding2({ navigation }: any) {
         <View
           style={{
             position: 'absolute',
-            top: illustrationHeight * 0.5 - 20,
-            left: width / 2 - 36,
+            top: illustrationHeight * 0.5 - sh(20),
+            left: width / 2 - sw(36),
             zIndex: 30,
-            width: 72,
-            height: 72,
-            borderRadius: 36,
+            width: sw(72),
+            height: sw(72),
+            borderRadius: sw(36),
             backgroundColor: '#E8F0FF',
             alignItems: 'center',
             justifyContent: 'center',
             shadowColor: '#4A80F0',
             shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.3,
-            shadowRadius: 16,
+            shadowRadius: sf(16),
             elevation: 8,
           }}
         >
-          <CameraIcon width={56} height={56} />
+          <CameraIcon width={sf(56)} height={sf(56)} />
         </View>
 
         {/* 🔥 lower */}

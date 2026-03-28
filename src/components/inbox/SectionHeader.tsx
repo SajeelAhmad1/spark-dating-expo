@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Text } from '@/components/common/Text';
+import { sf, sw, sh } from '@/utils/responsive';
 
 export default function SectionHeader({
   icon,
@@ -16,16 +17,16 @@ export default function SectionHeader({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 6,
-        marginBottom: 12,
-        marginTop: mt ?? 0,
+        gap: sw(6),
+        marginBottom: sh(12),
+        marginTop: mt !== undefined ? sh(mt) : 0,
       }}
     >
       {icon}
       <Text
         style={{
-          fontSize: 16,
-          lineHeight: 16,
+          fontSize: sf(16),
+          lineHeight: sf(16),
           fontWeight: '500',
           color: '#000000',
         }}
@@ -35,4 +36,3 @@ export default function SectionHeader({
     </View>
   );
 }
-

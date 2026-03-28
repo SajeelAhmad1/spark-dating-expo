@@ -2,7 +2,7 @@ import React from 'react';
 import { TextInput, TouchableOpacity, View } from 'react-native';
 import CameraIcon from '@/assets/images/cameraIcon.svg';
 import { FieldError } from '@/components/common/FieldError';
-import { sf } from '@/utils/responsive';
+import { sf, sw, sh } from '@/utils/responsive';
 
 export default function MessageInputBar({
   value,
@@ -24,10 +24,10 @@ export default function MessageInputBar({
         borderWidth: 1,
         borderColor: '#000000',
         borderRadius: 999,
-        paddingHorizontal: 18,
-        paddingVertical: 4,
+        paddingHorizontal: sw(18),
+        paddingVertical: sh(4),
         width: '100%',
-        marginBottom: 20,
+        marginBottom: sh(20),
         backgroundColor: '#000000',
       }}
     >
@@ -41,13 +41,13 @@ export default function MessageInputBar({
           fontFamily: 'Poppins-Regular',
           fontSize: sf(16),
           lineHeight: sf(16),
-          padding: 4,
+          padding: sh(4),
           color: '#FFFFFF',
         }}
       />
 
       <TouchableOpacity onPress={onOpenCamera}>
-        <CameraIcon width={32} height={32} />
+        <CameraIcon width={sw(32)} height={sw(32)} />
       </TouchableOpacity>
     </View>
     <FieldError message={errorMessage} />

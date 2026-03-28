@@ -4,7 +4,7 @@ import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomToggle from '@/components/location/CustomToggle';
 import LocationIcon from '@/components/location/LocationIcon';
-import { sf } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/responsive';
 
 // ── Screen ─────────────────────────────────────────────────
 const EnableLocationScreen = ({ navigation }: any) => {
@@ -89,33 +89,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
     justifyContent: 'space-between',
-    paddingBottom: 32,
+    paddingBottom: sh(32),
   },
   centerBlock: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
-    rowGap: 20,
+    paddingHorizontal: sw(32),
+    rowGap: sh(20),
   },
   heading: {
     color: '#000000',
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: sh(8),
   },
   body: { textAlign: 'center' },
   bottomCard: {
-    marginHorizontal: 24,
+    marginHorizontal: sw(24),
     backgroundColor: '#F9FAFB',
-    borderRadius: 16,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    borderRadius: sr(16),
+    paddingHorizontal: sw(20),
+    paddingVertical: sh(16),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   bottomTextCol: { flex: 1 },
-  bottomSub: { marginTop: 4 },
+  bottomSub: { marginTop: sh(4) },
 });
 
 export default EnableLocationScreen;

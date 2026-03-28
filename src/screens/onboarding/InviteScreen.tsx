@@ -7,7 +7,7 @@ import { Share2, Copy } from 'lucide-react-native';
 import Gift from '@/assets/images/gift.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/responsive';
 
 // ─── Constants ────────────────────────────────────────────
 const REFERRAL_LINK = 'https://spark.app/invite/SPARK-QT53V4';
@@ -35,7 +35,7 @@ const STATS = [
 
 const GiftIcon = () => (
   <View style={styles.giftCircle}>
-    <Gift width={56} height={56} color="#ffffff" />
+    <Gift width={sf(56)} height={sf(56)} color="#ffffff" />
   </View>
 );
 
@@ -47,7 +47,7 @@ const Title = () => (
       fontSize: sf(24), 
       color: '#000000',
       textAlign: 'center',
-      marginBottom: 8,
+      marginBottom: sh(8),
     }}
   >
     Get Premium Free! 🎉
@@ -62,7 +62,7 @@ const Subtitle = () => (
       fontSize: sf(16), 
       color: '#7D858E',
       textAlign: 'center',
-      marginBottom: 8,
+      marginBottom: sh(8),
     }}
   >
     Invite{' '}
@@ -81,7 +81,7 @@ const ReferralLinkBox = ({ onCopy }: { onCopy: () => void }) => (
         fontWeight: '400',
         fontSize: sf(16), 
         color: '#7D858E',
-        marginBottom: 10,
+        marginBottom: sh(10),
       }}
     >
       Your Referral Link
@@ -102,7 +102,7 @@ const ReferralLinkBox = ({ onCopy }: { onCopy: () => void }) => (
       </Text>
 
       <TouchableOpacity onPress={onCopy} style={styles.copyBtn}>
-        <Copy size={16} color="#1E78F5" />
+        <Copy size={sf(16)} color="#1E78F5" />
       </TouchableOpacity>
     </View>
   </View>
@@ -125,7 +125,7 @@ const StatCard = ({
         fontSize: sf(20), 
         color,
         textAlign: 'center',
-        marginBottom: 4,
+        marginBottom: sh(4),
       }}
     >
       {value}
@@ -189,7 +189,7 @@ const InviteScreen = ({ navigation }: any) => {
             onPress={handleShare}
             colors={['#1E78F5', '#DC9B00']}
             variant="gradient"
-            icon={<Share2 size={20} color="#ffffff" />}
+            icon={<Share2 size={sf(20)} color="#ffffff" />}
             iconPosition="middle"
             textStyle={{ fontSize: sf(18), color: '#ffffff' }}
           />
@@ -216,49 +216,55 @@ const InviteScreen = ({ navigation }: any) => {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  page: { flex: 1, paddingHorizontal: 20, paddingVertical: 40 },
+  page: { flex: 1, paddingHorizontal: sw(20), paddingVertical: sh(40) },
   main: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    rowGap: 24,
+    rowGap: sh(24),
   },
   giftCircle: {
-    width: 104,
-    height: 104,
+    width: sw(104),
+    height: sw(104),
     borderRadius: 9999,
     backgroundColor: '#1E78F5',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 32,
+    marginBottom: sh(32),
   },
   linkBoxOuter: {
     width: '100%',
-    borderRadius: 16,
-    height: 110,
+    borderRadius: sr(16),
+    height: sh(110),
     backgroundColor: '#F7F8FA',
-    padding: 16,
+    padding: sw(16),
   },
   linkRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: 44,
+    height: sh(44),
     backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    paddingHorizontal: 8,
+    borderRadius: sr(8),
+    paddingHorizontal: sw(8),
   },
-  copyBtn: { marginLeft: 12, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
-  statsRow: { flexDirection: 'row', width: '100%', columnGap: 12 },
-  statCard: {
-    flex: 1,
-    borderRadius: 16,
+  copyBtn: {
+    marginLeft: sw(12),
+    width: sw(32),
+    height: sw(32),
     alignItems: 'center',
     justifyContent: 'center',
-    height: 72,
+  },
+  statsRow: { flexDirection: 'row', width: '100%', columnGap: sw(12) },
+  statCard: {
+    flex: 1,
+    borderRadius: sr(16),
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: sh(72),
     borderWidth: 0.2,
   },
-  bottomActions: { rowGap: 16 },
+  bottomActions: { rowGap: sh(16) },
 });
 
 export default InviteScreen;

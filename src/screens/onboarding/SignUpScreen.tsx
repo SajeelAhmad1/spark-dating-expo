@@ -30,7 +30,7 @@ export default function SignUpScreen({ navigation }: any) {
             flex: 1,
             justifyContent: 'space-between',
             alignItems: 'center',
-            paddingTop: 80,
+            paddingTop: sh(80),
             paddingHorizontal: sw(20),
           }}
         >
@@ -47,7 +47,7 @@ export default function SignUpScreen({ navigation }: any) {
             Welcome back!
           </Text>
 
-          <View style={{ alignItems: 'center', gap: 8 }}>
+          <View style={{ alignItems: 'center', gap: sh(8) }}>
             <View
               style={{
                 width: sf(72),

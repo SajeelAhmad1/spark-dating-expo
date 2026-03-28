@@ -1,9 +1,16 @@
 import React from 'react';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
+import { sw, sh } from '@/utils/responsive';
 
-export default function LocationIcon() {
+export default function LocationIcon({
+  width = sw(80),
+  height = sh(88),
+}: {
+  width?: number;
+  height?: number;
+}) {
   return (
-    <Svg width={80} height={88} viewBox="0 0 80 88" fill="none">
+    <Svg width={width} height={height} viewBox="0 0 80 88" fill="none">
       <Path
         d="M40 4C25.088 4 13 16.088 13 31C13 50.25 40 76 40 76C40 76 67 50.25 67 31C67 16.088 54.912 4 40 4Z"
         fill="#FBB202"

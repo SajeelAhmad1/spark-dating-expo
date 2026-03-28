@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
+import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
 import { ChevronDown } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CountryPicker } from 'react-native-country-codes-picker';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf } from '@/utils/responsive';
+import { sf, sh, sw, sr, useResponsive } from '@/utils/responsive';
 import { useZodForm } from '@/utils/form';
 import { onboardingPhoneFormSchema } from '@/schemas/onboarding';
 import { showToast } from '@/utils/toast';
@@ -62,7 +56,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
           <TouchableOpacity style={styles.countryBtn} onPress={() => setShow(true)}>
             <Text style={{ fontSize: sf(20) }}>{country.flag}</Text>
             <Text style={[styles.dialCode, { fontSize: sf(16) }]}>{country.dial_code}</Text>
-            <ChevronDown size={16} color="#000000" />
+            <ChevronDown size={sf(16)} color="#000000" />
           </TouchableOpacity>
 
           <View style={styles.divider} />
@@ -115,8 +109,8 @@ const NumberEnterScreen = ({ navigation }: any) => {
       <CountryPicker
         lang="en"
         show={show}
-        enableModalAvoiding
-        androidWindowSoftInputMode="pan"
+        enableModalAvoiding={false}
+        androidWindowSoftInputMode="adjustResize"
         onBackdropPress={() => setShow(false)}
         onRequestClose={() => setShow(false)}
         inputPlaceholder="Search country"
@@ -134,14 +128,14 @@ const NumberEnterScreen = ({ navigation }: any) => {
         style={{
           modal: {
             maxHeight: winH * 0.88,
-            paddingTop: 16,
+            paddingTop: sh(16),
           },
           textInput: {
-            height: 48,
-            borderRadius: 12,
-            paddingHorizontal: 14,
-            paddingVertical: 10,
-            fontSize: 16,
+            height: sh(48),
+            borderRadius: sr(12),
+            paddingHorizontal: sw(14),
+            paddingVertical: sh(10),
+            fontSize: sf(16),
             color: '#111111',
             backgroundColor: '#EEF2F6',
             borderWidth: 1,
@@ -149,7 +143,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
           },
           line: {
             backgroundColor: '#D0D5DD',
-            marginVertical: 12,
+            marginVertical: sh(12),
           },
         }}
       />
@@ -161,38 +155,38 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
   page: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    marginTop: 80,
-    paddingBottom: 24,
+    paddingHorizontal: sw(20),
+    paddingTop: sh(16),
+    marginTop: sh(80),
+    paddingBottom: sh(24),
   },
-  headerBlock: { marginTop: 64, rowGap: 8 },
+  headerBlock: { marginTop: sh(64), rowGap: sh(8) },
   title: { color: '#000000' },
   subtitle: { color: '#7D858E' },
   phoneRow: {
-    marginTop: 32,
+    marginTop: sh(32),
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#E8EAED',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    columnGap: 12,
+    borderRadius: sr(12),
+    paddingHorizontal: sw(16),
+    paddingVertical: sh(12),
+    columnGap: sw(12),
   },
   phoneRowError: { borderColor: '#DC2626' },
-  countryBtn: { flexDirection: 'row', alignItems: 'center', columnGap: 4 },
+  countryBtn: { flexDirection: 'row', alignItems: 'center', columnGap: sw(4) },
   dialCode: { color: '#000000' },
-  divider: { width: 1, height: 20, backgroundColor: '#E8EAED' },
+  divider: { width: 1, height: sh(20), backgroundColor: '#E8EAED' },
   phoneInput: {
     flex: 1,
     color: '#000000',
     fontWeight: '500',
   },
-  helper: { color: '#7D858E', marginTop: 16 },
+  helper: { color: '#7D858E', marginTop: sh(16) },
   helperMuted: { color: '#7D858E' },
-  btnWrap: { marginTop: 24 },
-  footerRow: { marginTop: 16, alignItems: 'center' },
+  btnWrap: { marginTop: sh(24) },
+  footerRow: { marginTop: sh(16), alignItems: 'center' },
   footerText: { color: '#7D858E' },
   loginLink: { color: '#1E78F5', textDecorationLine: 'underline' },
 });

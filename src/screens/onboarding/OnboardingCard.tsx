@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Shadow } from "react-native-shadow-2";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import { Colors } from "@/theme";
-import { sf } from "@/utils/responsive";
+import { sf, sw, sh, sr } from "@/utils/responsive";
 import { Text } from "@/components/common/Text";
 
 interface Props {
@@ -23,7 +23,7 @@ const OnboardingCard: React.FC<Props> = ({
 }) => {
   return (
     <Shadow
-      distance={10}
+      distance={sh(10)}
       offset={[0, 0]}
       endColor="rgba(0,0,0,0)"
       sides={{ top: true, bottom: false, start: false, end: false }}
@@ -33,11 +33,11 @@ const OnboardingCard: React.FC<Props> = ({
         style={{
           width: "100%",
           backgroundColor: "#ffffff",
-          borderTopLeftRadius: 32,
-          borderTopRightRadius: 32,
-          paddingTop: 40,
-          paddingBottom: 32,
-          minHeight: 300,
+          borderTopLeftRadius: sr(32),
+          borderTopRightRadius: sr(32),
+          paddingTop: sh(40),
+          paddingBottom: sh(32),
+          minHeight: sh(300),
         }}
       >
         <View style={{ width: "100%" }}>
@@ -47,8 +47,8 @@ const OnboardingCard: React.FC<Props> = ({
             style={{
               textAlign: "center",
               color: "#000000",
-              paddingHorizontal: 24,
-              marginBottom: 8,
+              paddingHorizontal: sw(24),
+              marginBottom: sh(8),
               fontSize: sf(24),
               lineHeight: sf(32),
               letterSpacing: 0,
@@ -63,7 +63,7 @@ const OnboardingCard: React.FC<Props> = ({
             style={{
               color: "#7D858E",
               textAlign: "center",
-              paddingHorizontal: 40,
+              paddingHorizontal: sw(40),
               fontSize: sf(16),
               lineHeight: sf(20),
               letterSpacing: 0,
@@ -87,17 +87,17 @@ const OnboardingCard: React.FC<Props> = ({
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
-              marginBottom: 20,
-              gap: 6,
+              marginBottom: sh(20),
+              gap: sw(6),
             }}
           >
             {[0, 1, 2].map((i) => (
               <View
                 key={i}
                 style={{
-                  height: 8,
-                  width: i === activeDot ? 24 : 8,
-                  borderRadius: 4,
+                  height: sh(8),
+                  width: i === activeDot ? sw(24) : sw(8),
+                  borderRadius: sr(4),
                   backgroundColor: i === activeDot ? "#1E78F5" : "#B6B9C9",
                 }}
               />
@@ -105,7 +105,7 @@ const OnboardingCard: React.FC<Props> = ({
           </View>
 
           {/* Button */}
-          <View style={{ paddingHorizontal: 20 }}>
+          <View style={{ paddingHorizontal: sw(20) }}>
             <PrimaryButton
               title={buttonLabel}
               onPress={onPress}

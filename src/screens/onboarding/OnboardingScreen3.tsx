@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, useWindowDimensions, Image } from 'react-native';
+import { sf, sw, sh } from '@/utils/responsive';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import OnboardingCard from './OnboardingCard';
 import CameraIcon from '@/assets/images/cameraIcon.svg';
@@ -56,11 +57,11 @@ export default function Onboarding3({ navigation }: any) {
             shadowColor: '#4A80F0',
             shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.3,
-            shadowRadius: 16,
+            shadowRadius: sf(16),
             elevation: 8,
           }}
         >
-          <CameraIcon width={56} height={56} />
+          <CameraIcon width={sf(56)} height={sf(56)} />
         </View>
 
         <View

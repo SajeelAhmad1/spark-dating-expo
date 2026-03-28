@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { Heart, X } from 'lucide-react-native';
-import { sf } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/responsive';
 
 export default function RequestCard({
   name,
@@ -32,7 +32,7 @@ export default function RequestCard({
             fontSize: sf(13),
             lineHeight: sf(13),
             color: '#555555',
-            marginTop: 4,
+            marginTop: sh(4),
           }}
         >
           Wants to connect with you
@@ -43,11 +43,11 @@ export default function RequestCard({
         <TouchableOpacity
           style={[styles.iconBtn, styles.iconBtnNeutral]}
         >
-          <X size={14} color="#4A4A4A" strokeWidth={2.5} />
+          <X size={sf(14)} color="#4A4A4A" strokeWidth={2.5} />
         </TouchableOpacity>
 
         <TouchableOpacity style={[styles.iconBtn, styles.iconBtnLike]}>
-          <Heart size={19} color="#FFFFFF" fill="#FFFFFF" />
+          <Heart size={sf(19)} color="#FFFFFF" fill="#FFFFFF" />
         </TouchableOpacity>
       </View>
     </View>
@@ -59,11 +59,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 12,
-    marginHorizontal: 16,
+    borderRadius: sr(16),
+    paddingHorizontal: sw(16),
+    paddingVertical: sh(12),
+    marginBottom: sh(12),
+    marginHorizontal: sw(16),
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.002,
@@ -71,16 +71,16 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   avatar: {
-    width: 48,
-    height: 48,
+    width: sw(48),
+    height: sw(48),
     borderRadius: 9999,
-    marginRight: 12,
+    marginRight: sw(12),
   },
   body: { flex: 1 },
-  actions: { flexDirection: 'row', alignItems: 'center', columnGap: 8 },
+  actions: { flexDirection: 'row', alignItems: 'center', columnGap: sw(8) },
   iconBtn: {
-    width: 32,
-    height: 32,
+    width: sw(32),
+    height: sw(32),
     borderRadius: 9999,
     alignItems: 'center',
     justifyContent: 'center',

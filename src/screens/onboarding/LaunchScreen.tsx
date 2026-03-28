@@ -5,29 +5,29 @@ import { Zap, Heart, Camera, Flame, MessageCircle } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/responsive';
 
 // ─── Constants ────────────────────────────────────────────
 const FEATURES = [
   {
     id: 'matches',
     label: 'Like Matches',
-    icon: <Heart size={24} color="#E53935" fill="#E53935" />,
+    icon: <Heart size={sf(24)} color="#E53935" fill="#E53935" />,
   },
   {
     id: 'snaps',
     label: 'Send Snaps',
-    icon: <Camera size={24} color="#212121" />,
+    icon: <Camera size={sf(24)} color="#212121" />,
   },
   {
     id: 'streaks',
     label: 'Build Streaks',
-    icon: <Flame size={24} color="#FF6D00" />,
+    icon: <Flame size={sf(24)} color="#FF6D00" />,
   },
   {
     id: 'connect',
     label: 'Stay Connected',
-    icon: <MessageCircle size={24} color="#1E78F5" fill="#1E78F5" />,
+    icon: <MessageCircle size={sf(24)} color="#1E78F5" fill="#1E78F5" />,
   },
 ];
 
@@ -38,7 +38,7 @@ const LaunchScreen = ({ navigation }: any) => {
       <View style={styles.page}>
         <View style={styles.main}>
           <View style={styles.iconCircle}>
-            <Zap width={35} height={56} color="#ffffff" fill="#ffffff" />
+            <Zap width={sf(35)} height={sf(56)} color="#ffffff" fill="#ffffff" />
           </View>
 
           <Text style={[styles.title, { fontSize: sf(24) }]} weight="semibold">
@@ -137,40 +137,40 @@ const LaunchScreen = ({ navigation }: any) => {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
-  page: { flex: 1, paddingHorizontal: 20, paddingVertical: 24 },
+  page: { flex: 1, paddingHorizontal: sw(20), paddingVertical: sh(24) },
   main: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    rowGap: 16,
+    rowGap: sh(16),
   },
   iconCircle: {
-    width: 104,
-    height: 104,
+    width: sw(104),
+    height: sw(104),
     borderRadius: 9999,
     backgroundColor: '#1E78F5',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: sh(16),
   },
   title: { color: '#000000', textAlign: 'center' },
   subtitle: { color: '#7D858E', textAlign: 'center' },
   cardLine: { color: '#000000', textAlign: 'center' },
   cardHighlight: { color: '#1E78F5', textAlign: 'center' },
   cardMuted: { color: '#555555', textAlign: 'center' },
-  featureGrid: { rowGap: 12, marginTop: 4 },
-  featureRow: { flexDirection: 'row', columnGap: 8 },
+  featureGrid: { rowGap: sh(12), marginTop: sh(4) },
+  featureRow: { flexDirection: 'row', columnGap: sw(8) },
   featureTile: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    borderRadius: sr(16),
     alignItems: 'center',
     justifyContent: 'center',
-    rowGap: 12,
-    height: 88,
+    rowGap: sh(12),
+    height: sh(88),
   },
   featureLabel: { color: '#7D858E' },
-  premiumBanner: { alignItems: 'center', marginTop: 12 },
+  premiumBanner: { alignItems: 'center', marginTop: sh(12) },
   premiumText: { color: '#000000', textAlign: 'center' },
 });
 

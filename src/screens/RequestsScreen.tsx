@@ -93,11 +93,11 @@ export default function RequestsScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
   flex1: { flex: 1 },
-  headerRow: { flexDirection: 'row', alignItems: 'center', columnGap: 8 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', columnGap: sw(8) },
   badge: {
     borderRadius: 9999,
-    paddingHorizontal: 8,
-    paddingVertical: 8,
+    paddingHorizontal: sw(8),
+    paddingVertical: sh(8),
     alignItems: 'center',
     justifyContent: 'center',
   },

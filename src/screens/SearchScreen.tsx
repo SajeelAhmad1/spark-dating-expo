@@ -4,7 +4,7 @@ import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import ProfileAvatar from '@/assets/images/profileAvatar.svg';
-import { sf } from '@/utils/responsive';
+import { sf, sh, sr } from '@/utils/responsive';
 
 // ── Orbit Ring ─────────────────────────────────────────────
 const OrbitRing = ({
@@ -198,13 +198,13 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
     overflow: 'hidden',
     backgroundColor: '#F3F4F6',
-    borderWidth: 3,
+    borderWidth: sr(3),
     borderColor: '#ffffff',
   },
   caption: {
     color: '#000000',
     textAlign: 'center',
-    marginTop: 40,
+    marginTop: sh(40),
   },
 });
 

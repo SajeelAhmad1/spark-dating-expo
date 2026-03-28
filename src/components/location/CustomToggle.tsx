@@ -1,10 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Animated, TouchableOpacity, View } from 'react-native';
-
-const TRACK_WIDTH = 46;
-const TRACK_HEIGHT = 26;
-const THUMB_SIZE = 20;
-const THUMB_MARGIN = 3;
+import { sw, sh } from '@/utils/responsive';
 
 export default function CustomToggle({
   value,
@@ -13,16 +9,22 @@ export default function CustomToggle({
   value: boolean;
   onValueChange: (v: boolean) => void;
 }) {
+  const { trackW, trackH, thumb, margin } = useMemo(
+    () => ({
+      trackW: sw(46),
+      trackH: sh(26),
+      thumb: sw(20),
+      margin: sw(3),
+    }),
+    [],
+  );
+
   const translateX = useRef(
-    new Animated.Value(
-      value ? TRACK_WIDTH - THUMB_SIZE - THUMB_MARGIN : THUMB_MARGIN,
-    ),
+    new Animated.Value(value ? trackW - thumb - margin : margin),
   ).current;
 
   const toggle = () => {
-    const toValue = value
-      ? THUMB_MARGIN
-      : TRACK_WIDTH - THUMB_SIZE - THUMB_MARGIN;
+    const toValue = value ? margin : trackW - thumb - margin;
     Animated.spring(translateX, {
       toValue,
       useNativeDriver: true,
@@ -35,18 +37,18 @@ export default function CustomToggle({
     <TouchableOpacity activeOpacity={0.85} onPress={toggle}>
       <View
         style={{
-          width: TRACK_WIDTH,
-          height: TRACK_HEIGHT,
-          borderRadius: TRACK_HEIGHT / 2,
+          width: trackW,
+          height: trackH,
+          borderRadius: trackH / 2,
           backgroundColor: value ? '#1E78F533' : '#E5E5E5',
           justifyContent: 'center',
         }}
       >
         <Animated.View
           style={{
-            width: THUMB_SIZE,
-            height: THUMB_SIZE,
-            borderRadius: THUMB_SIZE / 2,
+            width: thumb,
+            height: thumb,
+            borderRadius: thumb / 2,
             backgroundColor: '#ffffff',
             transform: [{ translateX }],
           }}
@@ -55,4 +57,3 @@ export default function CustomToggle({
     </TouchableOpacity>
   );
 }
-

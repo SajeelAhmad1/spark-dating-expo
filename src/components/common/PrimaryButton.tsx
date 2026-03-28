@@ -1,4 +1,4 @@
-import { sf } from '@/utils/responsive';
+import { sf, sw } from '@/utils/responsive';
 import React from 'react';
 import {
   TouchableOpacity,
@@ -175,14 +175,14 @@ const styles = StyleSheet.create({
   },
   iconAbsoluteStart: {
     position: 'absolute',
-    left: 7,
+    left: sw(7),
   },
   iconAbsoluteEnd: {
     position: 'absolute',
-    right: 16,
+    right: sw(16),
   },
   iconMiddle: {
-    marginRight: 8,
+    marginRight: sw(8),
   },
   disabled: { opacity: 0.5 },
 });

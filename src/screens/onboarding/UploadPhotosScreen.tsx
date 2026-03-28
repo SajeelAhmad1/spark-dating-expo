@@ -1,29 +1,25 @@
-import React, { useState } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  Image,
-  Dimensions,
-  Alert,
-} from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, TouchableOpacity, Image, Alert } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { ChevronLeft, Plus, X } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { FieldError } from '@/components/common/FieldError';
-import { sf } from '@/utils/responsive';
+import { sf, sw, sh, sr, useResponsive } from '@/utils/responsive';
 import { uploadPhotosFilledSchema } from '@/schemas/onboarding';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const H_PADDING = 24;
-const GAP = 12;
-const SLOT_WIDTH = (SCREEN_WIDTH - H_PADDING * 2 - GAP) / 2;
-const SLOT_HEIGHT = SLOT_WIDTH * 1.15;
 
 type PhotoSlot = { uri: string; isLocal: boolean } | null;
 
 const UploadPhotosScreen = ({ navigation }: any) => {
+  const { width } = useResponsive();
+  const { hPad, gap, slotWidth, slotHeight } = useMemo(() => {
+    const hp = sw(24);
+    const g = sw(12);
+    const slotW = (width - hp * 2 - g) / 2;
+    return { hPad: hp, gap: g, slotWidth: slotW, slotHeight: slotW * 1.15 };
+  }, [width]);
+
   const [photos, setPhotos] = useState<PhotoSlot[]>([null, null, null, null]);
   const [photosError, setPhotosError] = useState<string | undefined>();
 
@@ -92,19 +88,19 @@ const UploadPhotosScreen = ({ navigation }: any) => {
       <View
         key={index}
         style={{
-          width: SLOT_WIDTH,
-          height: SLOT_HEIGHT,
-          marginBottom: GAP,
+          width: slotWidth,
+          height: slotHeight,
+          marginBottom: gap,
         }}
       >
         {filled ? (
-          <View style={{ width: SLOT_WIDTH, height: SLOT_HEIGHT }}>
+          <View style={{ width: slotWidth, height: slotHeight }}>
             <Image
               source={{ uri: slot!.uri }}
               style={{
-                width: SLOT_WIDTH,
-                height: SLOT_HEIGHT,
-                borderRadius: 16,
+                width: slotWidth,
+                height: slotHeight,
+                borderRadius: sr(16),
                 borderWidth: 0.4,
                 borderColor: '#A1A1A1',
               }}
@@ -112,15 +108,17 @@ const UploadPhotosScreen = ({ navigation }: any) => {
             />
 
             {isPrimary && (
-              <View style={{
-                position: 'absolute',
-                bottom: 10,
-                left: 10,
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                paddingHorizontal: 10,
-                paddingVertical: 4,
-                borderRadius: 999,
-              }}>
+              <View
+                style={{
+                  position: 'absolute',
+                  bottom: sh(10),
+                  left: sw(10),
+                  backgroundColor: 'rgba(0,0,0,0.5)',
+                  paddingHorizontal: sw(10),
+                  paddingVertical: sh(4),
+                  borderRadius: 999,
+                }}
+              >
                 <Text style={{ color: '#fff', fontSize: sf(12), fontWeight: '500' }}>
                   Primary
                 </Text>
@@ -131,23 +129,23 @@ const UploadPhotosScreen = ({ navigation }: any) => {
               onPress={() => removePhoto(index)}
               style={{
                 position: 'absolute',
-                top: -9,
-                right: -9,
-                width: 24,
-                height: 24,
-                borderRadius: 12,
+                top: sh(-9),
+                right: sw(-9),
+                width: sw(24),
+                height: sw(24),
+                borderRadius: sr(12),
                 backgroundColor: '#1E78F5',
                 alignItems: 'center',
                 justifyContent: 'center',
                 zIndex: 10,
                 shadowColor: '#000',
                 shadowOpacity: 0.15,
-                shadowRadius: 4,
-                shadowOffset: { width: 0, height: 2 },
+                shadowRadius: sr(4),
+                shadowOffset: { width: 0, height: sh(2) },
                 elevation: 4,
               }}
             >
-              <X size={12} color="#fff" strokeWidth={3} />
+              <X size={sf(12)} color="#fff" strokeWidth={3} />
             </TouchableOpacity>
           </View>
         ) : (
@@ -155,27 +153,29 @@ const UploadPhotosScreen = ({ navigation }: any) => {
             onPress={() => openPhotoSource(index)}
             activeOpacity={0.7}
             style={{
-              width: SLOT_WIDTH,
-              height: SLOT_HEIGHT,
-              borderRadius: 16,
+              width: slotWidth,
+              height: slotHeight,
+              borderRadius: sr(16),
               borderWidth: 0.4,
               borderColor: '#A1A1A1',
               borderStyle: 'dashed',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 8,
+              gap: sh(8),
               backgroundColor: '#FAFAFA',
             }}
           >
-            <View style={{
-              width: 17.5,
-              height: 17.5,
-              borderRadius: 16,
-              backgroundColor: '#FBB202',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <Plus size={8.33} color="#fff" strokeWidth={2.5} />
+            <View
+              style={{
+                width: sw(17.5),
+                height: sw(17.5),
+                borderRadius: sr(16),
+                backgroundColor: '#FBB202',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Plus size={sf(8.33)} color="#fff" strokeWidth={2.5} />
             </View>
             <Text style={{ fontSize: sf(14), color: '#FBB202', fontWeight: '500' }}>
               Add
@@ -188,13 +188,12 @@ const UploadPhotosScreen = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-      <View style={{ flex: 1, paddingHorizontal: H_PADDING, paddingTop: 16 }}>
-
+      <View style={{ flex: 1, paddingHorizontal: hPad, paddingTop: sh(16) }}>
         <TouchableOpacity onPress={() => navigation?.goBack()}>
-          <ChevronLeft size={24} color="#000000" />
+          <ChevronLeft size={sf(24)} color="#000000" />
         </TouchableOpacity>
 
-        <View style={{ marginTop: 12, gap: 6 }}>
+        <View style={{ marginTop: sh(12), gap: sh(6) }}>
           <Text style={{ fontSize: sf(28), fontWeight: '600', color: '#000000' }}>
             Show your authentic self
           </Text>
@@ -203,27 +202,30 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           </Text>
         </View>
 
-        <View style={{ marginTop: 28 }}>
-          <View style={{ flexDirection: 'row', gap: GAP }}>
+        <View style={{ marginTop: sh(28) }}>
+          <View style={{ flexDirection: 'row', gap }}>
             {renderSlot(0)}
             {renderSlot(1)}
           </View>
-          <View style={{ flexDirection: 'row', gap: GAP }}>
+          <View style={{ flexDirection: 'row', gap }}>
             {renderSlot(2)}
             {renderSlot(3)}
           </View>
         </View>
         <FieldError message={photosError} />
-
       </View>
 
-      <View style={{
-        position: 'absolute',
-        bottom: 0, left: 0, right: 0,
-        paddingHorizontal: H_PADDING,
-        paddingBottom: 32,
-        backgroundColor: '#fff',
-      }}>
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          paddingHorizontal: hPad,
+          paddingBottom: sh(32),
+          backgroundColor: '#fff',
+        }}
+      >
         <PrimaryButton
           title="Complete Profile!"
           onPress={() => {

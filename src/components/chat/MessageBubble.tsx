@@ -3,7 +3,7 @@ import { Image, TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import ChatAvatar from '@/components/chat/ChatAvatar';
 import { Message } from '@/types/chat';
-import { sf } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/responsive';
 
 export default function MessageBubble({
   message,
@@ -29,13 +29,13 @@ export default function MessageBubble({
         }}
       >
         {isMe ? (
-          <ChatAvatar size={32} variant="me" imageUri={meAvatarUri} />
+          <ChatAvatar size={sf(32)} variant="me" imageUri={meAvatarUri} />
         ) : (
-          <ChatAvatar size={32} variant="friend" imageUri={friendAvatarUri} />
+          <ChatAvatar size={sf(32)} variant="friend" imageUri={friendAvatarUri} />
         )}
         <Image
           source={{ uri: message.imageUri }}
-          style={{ width: 148, height: 208, borderRadius: 16 }}
+          style={{ width: sw(148), height: sh(208), borderRadius: sr(16) }}
           resizeMode="cover"
         />
       </View>
@@ -48,15 +48,15 @@ export default function MessageBubble({
         <View
           style={{
             alignItems: 'flex-end',
-            marginBottom: 4,
-            paddingHorizontal: 16,
+            marginBottom: sh(4),
+            paddingHorizontal: sw(16),
           }}
         >
           <View
             style={{
               flexDirection: 'row',
               alignItems: 'flex-end',
-              gap: 8,
+              gap: sw(8),
             }}
           >
             <View style={{ alignItems: 'flex-end' }}>
@@ -65,10 +65,10 @@ export default function MessageBubble({
                   flexDirection: 'row',
                   alignItems: 'center',
                   backgroundColor: '#1E78F5',
-                  borderRadius: 20,
-                  paddingHorizontal: 16,
-                  paddingVertical: 10,
-                  gap: 6,
+                  borderRadius: sr(20),
+                  paddingHorizontal: sw(16),
+                  paddingVertical: sh(10),
+                  gap: sw(6),
                 }}
               >
                 <Text style={{ fontSize: sf(16), color: '#FFFFFF' }}>✦</Text>
@@ -88,8 +88,8 @@ export default function MessageBubble({
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  gap: 4,
-                  marginTop: 4,
+                  gap: sw(4),
+                  marginTop: sh(4),
                 }}
               >
                 <Text
@@ -97,7 +97,7 @@ export default function MessageBubble({
                     fontFamily: 'Poppins-Regular',
                     fontWeight: '400',
                     fontSize: sf(10),
-                    lineHeight: 10,
+                    lineHeight: sf(10),
                     color: '#7D858E',
                   }}
                 >
@@ -108,7 +108,7 @@ export default function MessageBubble({
                 )}
               </View>
             </View>
-              <ChatAvatar size={40} variant="me" imageUri={meAvatarUri} />
+              <ChatAvatar size={sf(40)} variant="me" imageUri={meAvatarUri} />
           </View>
         </View>
       );
@@ -118,22 +118,22 @@ export default function MessageBubble({
       <View
         style={{
           alignItems: 'flex-start',
-          marginBottom: 4,
-          paddingHorizontal: 16,
+          marginBottom: sh(4),
+          paddingHorizontal: sw(16),
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
-          <ChatAvatar size={40} variant="friend" imageUri={friendAvatarUri} />
+        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: sw(8) }}>
+          <ChatAvatar size={sf(40)} variant="friend" imageUri={friendAvatarUri} />
           <View>
             <TouchableOpacity
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 backgroundColor: 'rgba(251,178,2,0.2)',
-                borderRadius: 20,
-                paddingHorizontal: 14,
-                paddingVertical: 10,
-                gap: 6,
+                borderRadius: sr(20),
+                paddingHorizontal: sw(14),
+                paddingVertical: sh(10),
+                gap: sw(6),
               }}
             >
               <Text style={{ fontSize: sf(16) }}>📷</Text>
@@ -153,8 +153,8 @@ export default function MessageBubble({
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                gap: 4,
-                marginTop: 4,
+                gap: sw(4),
+                marginTop: sh(4),
               }}
             >
               <Text
@@ -162,7 +162,7 @@ export default function MessageBubble({
                   fontFamily: 'Poppins-Regular',
                   fontWeight: '400',
                   fontSize: sf(10),
-                  lineHeight: 10,
+                  lineHeight: sf(10),
                   color: '#DC9B00',
                 }}
               >
@@ -194,20 +194,20 @@ export default function MessageBubble({
       <View
         style={{
           alignItems: 'flex-end',
-          marginBottom: 4,
-          paddingHorizontal: 16,
+          marginBottom: sh(4),
+          paddingHorizontal: sw(16),
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: sw(8) }}>
           <View style={{ alignItems: 'flex-end' }}>
             <View
               style={{
                 backgroundColor: '#1E78F5',
-                borderRadius: 20,
-                borderBottomRightRadius: 4,
-                paddingHorizontal: 16,
-                paddingVertical: 10,
-                maxWidth: 260,
+                borderRadius: sr(20),
+                borderBottomRightRadius: sr(4),
+                paddingHorizontal: sw(16),
+                paddingVertical: sh(10),
+                maxWidth: sw(260),
               }}
             >
               <Text
@@ -226,8 +226,8 @@ export default function MessageBubble({
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                gap: 4,
-                marginTop: 4,
+                gap: sw(4),
+                marginTop: sh(4),
               }}
             >
               <Text
@@ -235,7 +235,7 @@ export default function MessageBubble({
                   fontFamily: 'Poppins-Regular',
                   fontWeight: '400',
                   fontSize: sf(10),
-                  lineHeight: 10,
+                  lineHeight: sf(10),
                   color: '#7D858E',
                 }}
               >
@@ -246,7 +246,7 @@ export default function MessageBubble({
               )}
             </View>
           </View>
-          <ChatAvatar size={40} variant="me" imageUri={meAvatarUri} />
+          <ChatAvatar size={sf(40)} variant="me" imageUri={meAvatarUri} />
         </View>
       </View>
     );
@@ -256,21 +256,21 @@ export default function MessageBubble({
     <View
       style={{
         alignItems: 'flex-start',
-        marginBottom: 4,
-        paddingHorizontal: 16,
+        marginBottom: sh(4),
+        paddingHorizontal: sw(16),
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
-        <ChatAvatar size={40} variant="friend" imageUri={friendAvatarUri} />
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: sw(8) }}>
+        <ChatAvatar size={sf(40)} variant="friend" imageUri={friendAvatarUri} />
         <View>
           <View
             style={{
               backgroundColor: 'rgba(251,178,2,0.2)',
-              borderRadius: 20,
-              borderBottomLeftRadius: 4,
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-              maxWidth: 260,
+              borderRadius: sr(20),
+              borderBottomLeftRadius: sr(4),
+              paddingHorizontal: sw(16),
+              paddingVertical: sh(10),
+              maxWidth: sw(260),
             }}
           >
             <Text
@@ -292,7 +292,7 @@ export default function MessageBubble({
               fontSize: sf(10),
               lineHeight: 10,
               color: '#7D858E',
-              marginTop: 4,
+              marginTop: sh(4),
             }}
           >
             {message.time}

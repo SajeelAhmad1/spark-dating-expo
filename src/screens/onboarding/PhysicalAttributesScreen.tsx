@@ -15,7 +15,7 @@ import PrimaryButton from '@/components/common/PrimaryButton';
 import BODY_TYPES from '@/constants/bodyTypes';
 import ETHNICITIES from '@/constants/ethnicities';
 import HEIGHTS from '@/constants/heights';
-import { sf } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/responsive';
 import { useZodForm } from '@/utils/form';
 import { physicalAttributesSchema } from '@/schemas/onboarding';
 
@@ -71,12 +71,12 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={{ paddingBottom: 120 }}
+        contentContainerStyle={{ paddingBottom: sh(120) }}
         showsVerticalScrollIndicator={false}
       >
         {/* ── Back Button ── */}
         <TouchableOpacity onPress={() => navigation?.goBack()}>
-          <ChevronLeft size={24} color="#000000" />
+          <ChevronLeft size={sf(24)} color="#000000" />
         </TouchableOpacity>
 
         {/* ── Header ── */}
@@ -108,14 +108,14 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
               <TouchableOpacity
                 onPress={() => setOpenDropdown(key)}
                 style={{
-                  height: 56,
-                  borderRadius: 15,
+                  height: sh(56),
+                  borderRadius: sr(15),
                   borderWidth: 1,
                   borderColor: errors[key]?.message ? '#DC2626' : '#B6B9C9',
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  paddingHorizontal: 16,
+                  paddingHorizontal: sw(16),
                 }}
               >
                 <Text
@@ -126,7 +126,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
                 >
                   {dropdownValues[key] || placeholder}
                 </Text>
-                <ChevronDown size={18} color="#000000" />
+                <ChevronDown size={sf(18)} color="#000000" />
               </TouchableOpacity>
               <FieldError message={errors[key]?.message} />
             </View>
@@ -166,7 +166,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
           activeOpacity={1}
           onPress={() => setOpenDropdown(null)}
         >
-          <View style={[styles.modalSheet, { maxHeight: 360 }]}>
+          <View style={[styles.modalSheet, { maxHeight: sh(360) }]}>
             <View style={styles.modalHandle} />
 
             <FlatList
@@ -183,12 +183,12 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
                       openDropdown && handleSelect(openDropdown, item)
                     }
                     style={{
-                      paddingVertical: 14,
+                      paddingVertical: sh(14),
                       borderBottomWidth: 1,
                       borderBottomColor: '#F0F0F0',
                       backgroundColor: isSelected ? '#FFF8E7' : 'transparent',
-                      paddingHorizontal: 8,
-                      borderRadius: 8,
+                      paddingHorizontal: sw(8),
+                      borderRadius: sr(8),
                     }}
                   >
                     <Text
@@ -213,20 +213,20 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  scroll: { flex: 1, paddingHorizontal: 20, paddingTop: 16 },
-  headerBlock: { marginTop: 12, rowGap: 8 },
+  scroll: { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16) },
+  headerBlock: { marginTop: sh(12), rowGap: sh(8) },
   screenTitle: { color: '#000000' },
   screenSubtitle: { color: '#7D858E' },
-  fieldsCol: { marginTop: 12, rowGap: 20 },
-  fieldLabel: { color: '#000000', marginBottom: 8 },
-  skipNote: { color: '#FBB202', marginTop: 20 },
+  fieldsCol: { marginTop: sh(12), rowGap: sh(20) },
+  fieldLabel: { color: '#000000', marginBottom: sh(8) },
+  skipNote: { color: '#FBB202', marginTop: sh(20) },
   footer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    paddingHorizontal: 20,
-    paddingBottom: 32,
+    paddingHorizontal: sw(20),
+    paddingBottom: sh(32),
   },
   modalBackdrop: {
     flex: 1,
@@ -235,19 +235,19 @@ const styles = StyleSheet.create({
   },
   modalSheet: {
     backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 40,
+    borderTopLeftRadius: sr(24),
+    borderTopRightRadius: sr(24),
+    paddingHorizontal: sw(20),
+    paddingTop: sh(16),
+    paddingBottom: sh(40),
   },
   modalHandle: {
-    width: 40,
-    height: 4,
+    width: sw(40),
+    height: sh(4),
     backgroundColor: '#E8EAED',
     borderRadius: 999,
     alignSelf: 'center',
-    marginBottom: 16,
+    marginBottom: sh(16),
   },
 });
 

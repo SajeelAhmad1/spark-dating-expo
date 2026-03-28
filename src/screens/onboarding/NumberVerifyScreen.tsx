@@ -4,7 +4,7 @@ import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/responsive';
 import { useZodForm } from '@/utils/form';
 import { otpFormSchema } from '@/schemas/onboarding';
 import { showToast } from '@/utils/toast';
@@ -143,18 +143,18 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
   page: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 24,
-    marginTop: 80,
+    paddingHorizontal: sw(20),
+    paddingTop: sh(16),
+    paddingBottom: sh(24),
+    marginTop: sh(80),
   },
-  headerBlock: { marginTop: 64, rowGap: 8 },
+  headerBlock: { marginTop: sh(64), rowGap: sh(8) },
   title: { color: '#000000' },
   subtitle: { color: '#7D858E' },
   otpRow: {
-    marginTop: 32,
+    marginTop: sh(32),
     flexDirection: 'row',
-    columnGap: 16,
+    columnGap: sw(16),
     justifyContent: 'center',
   },
   otpCell: {
@@ -162,13 +162,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     letterSpacing: 0,
-    borderRadius: 15,
+    borderRadius: sr(15),
     borderWidth: 1,
     borderColor: '#B6B9C9',
   },
   otpCellError: { borderColor: '#DC2626' },
-  btnWrap: { marginTop: 32 },
-  resendWrap: { marginTop: 16, alignItems: 'center' },
+  btnWrap: { marginTop: sh(32) },
+  resendWrap: { marginTop: sh(16), alignItems: 'center' },
   resend: { color: '#1E78F5' },
   resendDisabled: { color: '#7D858E' },
 });

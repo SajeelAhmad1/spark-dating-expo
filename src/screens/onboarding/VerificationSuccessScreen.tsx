@@ -4,7 +4,7 @@ import { Text } from '@/components/common/Text';
 import { Check } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/responsive';
 
 const VerificationSuccessScreen = ({navigation}: any) => {
   return (
@@ -56,21 +56,21 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
   page: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingBottom: 24,
+    paddingHorizontal: sw(20),
+    paddingBottom: sh(24),
     alignItems: 'center',
-    marginTop: 96,
+    marginTop: sh(96),
   },
   iconWrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+    marginBottom: sh(24),
     borderRadius: 999,
     backgroundColor: '#4CD964',
   },
-  title: { color: '#000000', marginBottom: 32 },
+  title: { color: '#000000', marginBottom: sh(32) },
   btnBlock: { width: '100%' },
-  termsWrap: { marginTop: 16 },
+  termsWrap: { marginTop: sh(16) },
   terms: { color: '#7D858E' },
   termsLink: { textDecorationLine: 'underline', color: '#7D858E' },
 });
