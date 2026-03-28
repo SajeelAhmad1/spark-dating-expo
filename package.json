@@ -9,13 +9,39 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-community/datetimepicker": "8.6.0",
+    "@react-native-masked-view/masked-view": "0.3.2",
+    "@react-navigation/native": "^7.2.1",
+    "@react-navigation/stack": "^7.8.8",
+    "babel-preset-expo": "~55.0.8",
     "expo": "~55.0.9",
+    "expo-blur": "~55.0.10",
+    "expo-build-properties": "~55.0.10",
+    "expo-camera": "~55.0.11",
+    "expo-font": "~55.0.4",
+    "expo-image-picker": "~55.0.14",
+    "expo-linear-gradient": "~55.0.9",
     "expo-status-bar": "~55.0.4",
+    "lucide-react-native": "^1.7.0",
+    "nativewind": "^4.0.36",
     "react": "19.2.0",
-    "react-native": "0.83.4"
+    "react-hook-form": "^7.72.0",
+    "react-native": "0.83.4",
+    "react-native-country-codes-picker": "^2.3.5",
+    "react-native-gesture-handler": "~2.30.0",
+    "react-native-global-props": "^1.1.5",
+    "react-native-safe-area-context": "~5.6.2",
+    "react-native-screens": "~4.23.0",
+    "react-native-shadow-2": "^7.1.2",
+    "react-native-svg": "15.15.3",
+    "react-native-svg-transformer": "^1.5.3",
+    "tailwindcss": "3.3.2",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@babel/plugin-transform-export-namespace-from": "^7.27.1",
     "@types/react": "~19.2.2",
+    "babel-plugin-module-resolver": "^5.0.3",
     "typescript": "~5.9.2"
   },
   "private": true

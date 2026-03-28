@@ -1,0 +1,653 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  TextInput,
+  FlatList,
+  Modal,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Settings,
+  Plus,
+  X,
+  ChevronDown,
+  ChevronRight,
+  Calendar,
+} from 'lucide-react-native';
+import { sf, sr, sw, sh } from '@/utils/responsive';
+import BODY_TYPES from '@/constants/bodyTypes';
+import ETHNICITIES from '@/constants/ethnicities';
+import HEIGHTS from '@/constants/heights';
+import GENDER from '@/constants/gender';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Gender } from '@/types/gender';
+
+type DropdownField = 'gender' | 'height' | 'bodyType' | 'ethnicity' | null;
+
+const DUMMY_URI =
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80';
+
+const EditProfileScreen = ({ navigation }: any) => {
+  const [images, setImages] = useState([
+    DUMMY_URI,
+    DUMMY_URI,
+    DUMMY_URI,
+    DUMMY_URI,
+  ]);
+  const [openDropdown, setOpenDropdown] = useState<DropdownField>(null);
+  const [interests] = useState([
+    '✈️ Travel',
+    '🎵 Music',
+    '☕ Coffee',
+    '📷 Photography',
+  ]);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+
+  const formatDate = (date: Date) =>
+    `${String(date.getDate()).padStart(2, '0')}/${String(
+      date.getMonth() + 1,
+    ).padStart(2, '0')}/${date.getFullYear()}`;
+
+  const editProfileSchema = z.object({
+    firstName: z.string().min(1),
+    lastName: z.string().min(1),
+    bio: z.string(),
+    gender: z
+      .string()
+      .refine(v => Object.values(GENDER).includes(v), 'Invalid gender'),
+    height: z
+      .string()
+      .refine(v => Object.values(HEIGHTS).includes(v), 'Invalid height'),
+    bodyType: z
+      .string()
+      .refine(v => Object.values(BODY_TYPES).includes(v), 'Invalid body type'),
+    ethnicity: z
+      .string()
+      .refine(v => Object.values(ETHNICITIES).includes(v), 'Invalid ethnicity'),
+    birthday: z.date(),
+  });
+
+  type EditProfileFormValues = z.infer<typeof editProfileSchema>;
+
+  const { watch, setValue, getValues } = useForm<EditProfileFormValues>({
+    defaultValues: {
+      firstName: 'Paul',
+      lastName: 'W',
+      bio: "Adventure lover & coffee enthusiast. Always looking for the next trip. Let's explore together! ✈️",
+      gender: 'Male',
+      height: '5\' 10"',
+      bodyType: 'Slim',
+      ethnicity: 'White',
+      birthday: new Date('1998-11-24'),
+    },
+  });
+
+  const profile = watch() as EditProfileFormValues;
+  const birthDate = profile.birthday;
+
+  type ProfileKey = Exclude<keyof EditProfileFormValues, 'birthday'>;
+
+  // On Save
+  const handleSave = () => {
+    const values = getValues();
+    const result = editProfileSchema.safeParse(values);
+    if (!result.success) {
+      // eslint-disable-next-line no-console
+      console.warn('Edit profile validation failed', result.error.flatten());
+    }
+
+    const payload = {
+      ...values,
+      birthday: formatDate(values.birthday),
+    };
+    console.log(payload);
+  };
+
+  const updateProfile = (key: ProfileKey, value: string) => {
+    setValue(key, value);
+  };
+
+  const dropdownOptions: Record<NonNullable<DropdownField>, string[]> = {
+    gender: Object.values(GENDER),
+    height: Object.values(HEIGHTS),
+    bodyType: Object.values(BODY_TYPES),
+    ethnicity: Object.values(ETHNICITIES),
+  };
+
+  const handleSelect = (field: NonNullable<DropdownField>, value: string) => {
+    updateProfile(field, value);
+    setOpenDropdown(null);
+  };
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const labelStyle = {
+    fontFamily: 'Poppins-Medium',
+    fontSize: sf(16),
+    fontWeight: '500' as const,
+    color: '#000000',
+    letterSpacing: 0,
+    marginBottom: sh(8),
+  };
+
+  const inputStyle = {
+    fontFamily: 'Poppins-Regular',
+    fontSize: sf(16),
+    fontWeight: '400' as const,
+    color: '#1C1C1E',
+    letterSpacing: 0,
+    borderWidth: 1,
+    borderColor: '#7D858E',
+    borderRadius: sr(8),
+    paddingHorizontal: sw(12),
+    paddingVertical: sh(12),
+    flex: 1,
+  };
+
+  const renderDropdownTrigger = (field: NonNullable<DropdownField>) => (
+    <TouchableOpacity
+      onPress={() => setOpenDropdown(field)}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderWidth: 1,
+        borderColor: '#7D858E',
+        borderRadius: sr(8),
+        paddingHorizontal: sw(12),
+        paddingVertical: sh(12),
+      }}
+    >
+      <Text
+        style={{
+          fontFamily: 'Poppins-Regular',
+          fontSize: sf(16),
+          color: profile[field] ? '#1C1C1E' : '#7D858E',
+        }}
+      >
+        {profile[field] || `Select ${field}`}
+      </Text>
+      <ChevronDown size={sf(16)} color="#7D858E" />
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+      <SafeAreaView style={{ flex: 1 }}>
+        {/* ── Header ── */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: sw(20),
+            paddingTop: sh(12),
+            paddingBottom: sh(16),
+          }}
+        >
+          <View style={{ width: sf(36) }} />
+          <Text
+            style={{
+              fontFamily: 'Poppins-SemiBold',
+              fontWeight: '600',
+              fontSize: sf(20),
+              lineHeight: sf(20),
+              color: '#000000',
+              letterSpacing: 0,
+            }}
+          >
+            Edit Profile
+          </Text>
+          <TouchableOpacity
+            style={{
+              width: sf(36),
+              height: sf(36),
+              borderRadius: sr(92),
+              backgroundColor: '#FBB20233',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Settings size={sf(20)} color="#000000" />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ paddingBottom: sh(100) }}
+        >
+          {/* ── Image Grid ── */}
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              paddingHorizontal: sw(21),
+              gap: sw(8),
+              marginBottom: sh(24),
+            }}
+          >
+            {[...Array(6)].map((_, i) => {
+              const hasImage = i < images.length;
+              return (
+                <View
+                  key={i}
+                  style={{
+                    width: sw(119),
+                    height: sh(187),
+                    borderRadius: sr(12),
+                    overflow: 'visible',
+                  }}
+                >
+                  {hasImage ? (
+                    <View style={{ width: '100%', height: '100%' }}>
+                      <Image
+                        source={{ uri: images[i] }}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: sr(12),
+                        }}
+                        resizeMode="cover"
+                      />
+                      {i === 0 && (
+                        <View
+                          style={{
+                            position: 'absolute',
+                            bottom: sh(8),
+                            left: sw(8),
+                            backgroundColor: '#00000066',
+                            borderRadius: sr(6),
+                            paddingHorizontal: sw(8),
+                            paddingVertical: sh(4),
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: '#FFFFFF',
+                              fontSize: sf(12),
+                              fontFamily: 'Poppins-Regular',
+                            }}
+                          >
+                            Main
+                          </Text>
+                        </View>
+                      )}
+                      <TouchableOpacity
+                        onPress={() => removeImage(i)}
+                        style={{
+                          position: 'absolute',
+                          top: -sh(6),
+                          right: -sw(6),
+                          width: sf(22),
+                          height: sf(22),
+                          borderRadius: sr(99),
+                          backgroundColor: '#FF3366',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          zIndex: 10,
+                        }}
+                      >
+                        <X size={sf(12)} color="#FFFFFF" strokeWidth={2.5} />
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: sr(12),
+                        backgroundColor: '#EDEDED',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Plus size={sf(18)} color="#FF3366" strokeWidth={2.5} />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              );
+            })}
+          </View>
+
+          {/* ── Form Fields ── */}
+          <View style={{ paddingHorizontal: sw(20), gap: sh(16) }}>
+            {/* First & Last Name */}
+            <View style={{ flexDirection: 'row', gap: sw(12) }}>
+              <View style={{ flex: 1 }}>
+                <Text style={labelStyle}>First name</Text>
+                <TextInput
+                  value={profile.firstName}
+                  onChangeText={v => updateProfile('firstName', v)}
+                  style={inputStyle}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={labelStyle}>Last name</Text>
+                <TextInput
+                  value={profile.lastName}
+                  onChangeText={v => updateProfile('lastName', v)}
+                  style={inputStyle}
+                />
+              </View>
+            </View>
+
+            {/* Gender */}
+            <View>
+              <Text style={labelStyle}>Gender</Text>
+              {renderDropdownTrigger('gender')}
+            </View>
+
+            {/* Birthday */}
+            <View>
+              <Text style={labelStyle}>Birthday</Text>
+              <TouchableOpacity
+                onPress={() => setDatePickerOpen(true)}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  borderWidth: 1,
+                  borderColor: '#7D858E',
+                  borderRadius: sr(8),
+                  paddingHorizontal: sw(8),
+                  paddingVertical: sh(12),
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: 'Poppins-Regular',
+                    fontSize: sf(16),
+                    color: '#1C1C1E',
+                    flex: 1,
+                  }}
+                >
+                  {formatDate(birthDate)}
+                </Text>
+                <Calendar size={sf(16)} color="#7D858E" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Height */}
+            <View>
+              <Text style={labelStyle}>Height</Text>
+              {renderDropdownTrigger('height')}
+            </View>
+
+            {/* Body Type */}
+            <View>
+              <Text style={labelStyle}>Body Type</Text>
+              {renderDropdownTrigger('bodyType')}
+            </View>
+
+            {/* Ethnicity */}
+            <View>
+              <Text style={labelStyle}>Ethnicity</Text>
+              {renderDropdownTrigger('ethnicity')}
+            </View>
+
+            {/* Bio */}
+            <View>
+              <Text style={labelStyle}>Bio</Text>
+              <TextInput
+                value={profile.bio}
+                onChangeText={v => updateProfile('bio', v)}
+                multiline
+                numberOfLines={4}
+                style={{
+                  ...inputStyle,
+                  flex: undefined,
+                  height: sh(100),
+                  textAlignVertical: 'top',
+                  paddingTop: sh(12),
+                }}
+              />
+            </View>
+
+            {/* Interests */}
+            <View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: sh(8),
+                }}
+              >
+                <Text style={labelStyle}>Interests</Text>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('InterestsScreen')}
+                >
+                  <ChevronRight size={sf(20)} color="#000000" />
+                </TouchableOpacity>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  gap: sw(8),
+                  borderWidth: 1,
+                  borderColor: '#7D858E',
+                  borderRadius: sr(8),
+                  paddingHorizontal: sw(12),
+                  paddingVertical: sh(12),
+                  alignItems: 'center',
+                }}
+              >
+                {interests.map((interest, i) => (
+                  <View
+                    key={i}
+                    style={{
+                      backgroundColor: '#FBB20220',
+                      borderRadius: sr(99),
+                      paddingHorizontal: sw(12),
+                      paddingVertical: sh(6),
+                      borderWidth: 1,
+                      borderColor: '#FBB20240',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins-Regular',
+                        fontSize: sf(16),
+                        fontWeight: '400',
+                        lineHeight: 16,
+                        letterSpacing: 0,
+                        color: '#000000',
+                      }}
+                    >
+                      {interest}
+                    </Text>
+                  </View>
+                ))}
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('InterestsScreen')}
+                  style={{
+                    backgroundColor: '#1E78F5',
+                    borderRadius: sr(99),
+                    paddingHorizontal: sw(14),
+                    paddingVertical: sh(6),
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: 'Poppins-Medium',
+                      fontSize: sf(14),
+                      color: '#FFFFFF',
+                    }}
+                  >
+                    Add
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+
+        {/* ── Bottom Buttons ── */}
+        <View
+          style={{
+            flexDirection: 'row',
+            paddingHorizontal: sw(20),
+            paddingVertical: sh(16),
+            gap: sw(12),
+            backgroundColor: '#FFFFFF',
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{
+              width: sw(184),
+              height: sh(56),
+              borderRadius: sr(32),
+              borderWidth: 1,
+              borderColor: '#FF3366',
+              backgroundColor: '#FF33660D',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: 'Poppins-Medium',
+                fontWeight: '500',
+                fontSize: sf(20),
+                lineHeight: sf(20),
+                color: '#1C1C1E',
+                letterSpacing: 0,
+              }}
+            >
+              Cancel
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleSave}
+            style={{
+              width: sw(184),
+              height: sh(56),
+              borderRadius: sr(32),
+              backgroundColor: '#FF3366',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: 'Poppins-Medium',
+                fontWeight: '500',
+                fontSize: sf(20),
+                lineHeight: sf(20),
+                color: '#FFFFFF',
+                letterSpacing: 0,
+              }}
+            >
+              Save
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* ── Dropdown Modal ── */}
+        <Modal
+          visible={openDropdown !== null}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setOpenDropdown(null)}
+        >
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.4)',
+              justifyContent: 'flex-end',
+            }}
+            activeOpacity={1}
+            onPress={() => setOpenDropdown(null)}
+          >
+            <View
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderTopLeftRadius: sr(24),
+                borderTopRightRadius: sr(24),
+                paddingHorizontal: sw(20),
+                paddingTop: sh(16),
+                paddingBottom: sh(40),
+                maxHeight: sh(360),
+              }}
+            >
+              {/* Handle */}
+              <View
+                style={{
+                  width: sw(40),
+                  height: sh(4),
+                  backgroundColor: '#E8EAED',
+                  borderRadius: sr(99),
+                  alignSelf: 'center',
+                  marginBottom: sh(16),
+                }}
+              />
+
+              <FlatList
+                data={openDropdown ? dropdownOptions[openDropdown] : []}
+                keyExtractor={item => item}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => {
+                  const isSelected = openDropdown
+                    ? profile[openDropdown] === item
+                    : false;
+                  return (
+                    <TouchableOpacity
+                      onPress={() =>
+                        openDropdown && handleSelect(openDropdown, item)
+                      }
+                      style={{
+                        paddingVertical: sh(14),
+                        borderBottomWidth: 1,
+                        borderBottomColor: '#F0F0F0',
+                        backgroundColor: isSelected ? '#FFF8E7' : 'transparent',
+                        paddingHorizontal: sw(8),
+                        borderRadius: sr(8),
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: sf(15),
+                          color: isSelected ? '#FBB202' : '#000000',
+                          fontWeight: isSelected ? '600' : '400',
+                          fontFamily: isSelected
+                            ? 'Poppins-SemiBold'
+                            : 'Poppins-Regular',
+                        }}
+                      >
+                        {item}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      </SafeAreaView>
+      <DatePicker
+        modal
+        open={datePickerOpen}
+        date={birthDate}
+        mode="date"
+        maximumDate={new Date()}
+        onConfirm={date => {
+          setDatePickerOpen(false);
+          setValue('birthday', date);
+        }}
+        onCancel={() => setDatePickerOpen(false)}
+      />
+    </View>
+  );
+};
+
+export default EditProfileScreen;
