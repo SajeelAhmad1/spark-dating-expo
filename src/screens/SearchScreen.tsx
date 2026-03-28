@@ -174,9 +174,7 @@ const SearchScreen = ({ navigation }: any) => {
           styles.caption,
           {
             fontFamily: 'Poppins-Regular',
-            fontSize: sf(16),
-            lineHeight: sf(16),
-            letterSpacing: 0,
+            fontSize: sf(16), 
           },
         ]}
       >

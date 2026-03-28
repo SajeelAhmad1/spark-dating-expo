@@ -58,7 +58,7 @@ export default function InboxAvatar({
             borderColor: '#FFFFFF',
           }}
         >
-          <Text style={{ color: '#FFFFFF', fontSize: sf(11), fontWeight: '700', lineHeight: sf(11) }}>
+          <Text style={{ color: '#FFFFFF', fontSize: sf(11), fontWeight: '700', }}>
             1
           </Text>
         </View>

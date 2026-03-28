@@ -27,8 +27,10 @@ export default function MessageInputBar({
         paddingHorizontal: sw(18),
         paddingVertical: sh(4),
         width: '100%',
+        height: sh(56),
         marginBottom: sh(20),
-        backgroundColor: '#000000',
+        backgroundColor: 'rgba(0, 0, 0, 0.12)',
+        
       }}
     >
       <TextInput
@@ -39,15 +41,15 @@ export default function MessageInputBar({
         style={{
           flex: 1,
           fontFamily: 'Poppins-Regular',
-          fontSize: sf(16),
-          lineHeight: sf(16),
+          fontSize: sf(16), 
           padding: sh(4),
           color: '#FFFFFF',
         }}
       />
 
-      <TouchableOpacity onPress={onOpenCamera}>
-        <CameraIcon width={sw(32)} height={sw(32)} />
+      <TouchableOpacity onPress={onOpenCamera} >
+       
+        <CameraIcon width={sw(44)} height={sh(44)} /> 
       </TouchableOpacity>
     </View>
     <FieldError message={errorMessage} />

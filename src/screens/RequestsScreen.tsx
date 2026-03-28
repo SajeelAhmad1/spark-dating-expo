@@ -52,8 +52,7 @@ export default function RequestsScreen({ navigation }: any) {
         <Text
           style={{
             fontFamily: 'Poppins-SemiBold',
-            fontSize: sf(28),
-            lineHeight: sf(28),
+            fontSize: sf(28), 
             color: '#000000',
           }}
         >
@@ -64,9 +63,9 @@ export default function RequestsScreen({ navigation }: any) {
           <Text
             style={{
               fontFamily: 'Poppins-SemiBold',
-              fontSize: sf(13),
-              lineHeight: sf(13),
-              color: '#000000',
+              fontSize: sf(13), 
+              color: '#000000', 
+              textAlign: 'center',
             }}
           >
             {String(REQUESTS.length).padStart(2, '0')}
@@ -91,13 +90,13 @@ export default function RequestsScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingTop: sh(70) },
   flex1: { flex: 1 },
   headerRow: { flexDirection: 'row', alignItems: 'center', columnGap: sw(8) },
   badge: {
     borderRadius: 9999,
-    paddingHorizontal: sw(8),
-    paddingVertical: sh(8),
+    height: sh(28),
+    width: sw(28),
     alignItems: 'center',
     justifyContent: 'center',
   },

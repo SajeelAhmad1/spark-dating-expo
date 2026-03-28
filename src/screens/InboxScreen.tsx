@@ -83,7 +83,7 @@ export default function InboxScreen({ navigation }: any) {
           justifyContent: 'center',
           backgroundColor: '#FFFFFF',
           paddingHorizontal: sw(20),
-          paddingTop: 32,
+          paddingTop: 60,
           paddingBottom: 24,
         }}
       >
@@ -92,29 +92,31 @@ export default function InboxScreen({ navigation }: any) {
           style={{
             position: 'absolute',
             left: sw(20),
-            top: 0,
+            top: 35,
             bottom: 0,
             flexDirection: 'row',
             alignItems: 'center',
             gap: 2,
           }}
         >
-          <ChevronLeft size={sf(18)} color="#555555" strokeWidth={2} />
+        <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4}}>
+            <ChevronLeft size={sf(24)} color="#555555" strokeWidth={2} />
           <Text
             style={{
               fontSize: sf(13),
               color: '#8D8D8D',
               fontWeight: '400',
+              textAlign: 'center'
             }}
           >
             Back
           </Text>
+        </View>
         </TouchableOpacity>
 
         <Text
           style={{
-            fontSize: sf(20),
-            lineHeight: sf(20),
+            fontSize: sf(20), 
             fontWeight: '600',
             color: '#000000',
           }}
@@ -143,7 +145,7 @@ export default function InboxScreen({ navigation }: any) {
             elevation: 2,
           }}
         >
-          <Search size={sf(16)} color="#8D8D8D" strokeWidth={2} />
+          <Search size={sf(24)} color="#8D8D8D" strokeWidth={2} />
           <TextInput
             placeholder="Search conversations..."
             placeholderTextColor="#8D8D8D"
@@ -152,8 +154,7 @@ export default function InboxScreen({ navigation }: any) {
             onBlur={() => trigger('searchQuery')}
             style={{
               flex: 1,
-              fontSize: sf(14),
-              lineHeight: sf(14),
+              fontSize: sf(14), 
               color: '#333333',
               fontWeight: '400',
               padding: 0,
@@ -172,7 +173,7 @@ export default function InboxScreen({ navigation }: any) {
           gap: 8,
           paddingBottom: 4,
         }}
-        style={{ flexGrow: 0, marginBottom: 16 }}
+        style={{ flexGrow: 0, marginBottom: 16, marginTop: 10 }}
       >
         {INBOX_FILTERS.map(filter => {
           const isActive = activeFilter === filter;
@@ -183,15 +184,18 @@ export default function InboxScreen({ navigation }: any) {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                paddingHorizontal: sw(16),
-                paddingVertical: sh(8),
+                paddingHorizontal: sw(8),
+                paddingVertical: sh(4),
                 borderRadius: sr(99),
                 backgroundColor: isActive ? '#1E78F5' : '#FFFFFF',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.09,
-                shadowRadius: 5,
-                elevation: 2,
+                borderWidth: 1,
+                borderColor: isActive ? '#1E78F5' : '#B6B9C9',
+                
+                // shadowColor: '#000',
+                // shadowOffset: { width: 0, height: 0 },
+                // shadowOpacity: 0.09,
+                // shadowRadius: 5,
+                // elevation: 2,
               }}
               activeOpacity={0.75}
             >
@@ -209,7 +213,7 @@ export default function InboxScreen({ navigation }: any) {
                   fontSize: sf(16),
                   lineHeight: sf(16),
                   fontWeight: '500',
-                  color: isActive ? '#FFFFFF' : '#B6B9C9',
+                  color: isActive ? '#FFFFFF' : '#B6B9C9', 
                 }}
               >
                 {filter}
@@ -232,7 +236,7 @@ export default function InboxScreen({ navigation }: any) {
         {activeConversations.length > 0 && (
           <>
             <SectionHeader
-              icon={<Text style={{ fontSize: sf(18) }}>🔥</Text>}
+              icon={<Text style={{ fontSize: sf(16) }}>🔥</Text>}
               label="Active Streaks"
             />
             {activeConversations.map(item => (

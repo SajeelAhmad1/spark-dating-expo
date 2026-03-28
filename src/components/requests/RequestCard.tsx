@@ -19,8 +19,7 @@ export default function RequestCard({
         <Text
           style={{
             fontFamily: 'Poppins-SemiBold',
-            fontSize: sf(16),
-            lineHeight: sf(16),
+            fontSize: sf(16), 
             color: '#000000',
           }}
         >
@@ -29,10 +28,9 @@ export default function RequestCard({
         <Text
           style={{
             fontFamily: 'Poppins-Regular',
-            fontSize: sf(13),
-            lineHeight: sf(13),
+            fontSize: sf(13), 
             color: '#555555',
-            marginTop: sh(4),
+            // marginTop: sh(4),
           }}
         >
           Wants to connect with you
@@ -59,6 +57,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
+    height: sh(72),
     borderRadius: sr(16),
     paddingHorizontal: sw(16),
     paddingVertical: sh(12),
@@ -72,7 +71,7 @@ const styles = StyleSheet.create({
   },
   avatar: {
     width: sw(48),
-    height: sw(48),
+    height: sh(48),
     borderRadius: 9999,
     marginRight: sw(12),
   },
@@ -80,7 +79,7 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', alignItems: 'center', columnGap: sw(8) },
   iconBtn: {
     width: sw(32),
-    height: sw(32),
+    height: sh(32),
     borderRadius: 9999,
     alignItems: 'center',
     justifyContent: 'center',

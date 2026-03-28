@@ -44,13 +44,12 @@ export default function ConversationItem({ item }: { item: Conversation }) {
               flexDirection: 'row',
               alignItems: 'center',
               gap: sw(6),
-              marginBottom: sh(3),
+              // marginBottom: sh(3),
             }}
           >
             <Text
               style={{
-                fontSize: sf(16),
-                lineHeight: sf(16),
+                fontSize: sf(16), 
                 fontWeight: '600',
                 color: '#000000',
               }}
@@ -66,11 +65,10 @@ export default function ConversationItem({ item }: { item: Conversation }) {
           <Text
             numberOfLines={1}
             style={{
-              fontSize: sf(13),
-              lineHeight: sf(13),
+              fontSize: sf(13), 
               fontWeight: item.isUnread ? '600' : '400',
               color: item.isUnread ? '#000000' : '#555555',
-              marginBottom: 3,
+              // marginBottom: 3,
             }}
           >
             {item.lastMessage}
@@ -79,8 +77,7 @@ export default function ConversationItem({ item }: { item: Conversation }) {
           {item.time ? (
             <Text
               style={{
-                fontSize: sf(11),
-                lineHeight: sf(11),
+                fontSize: sf(11), 
                 fontWeight: '500',
                 color: item.timeWarning ? '#FF3B30' : '#7D858E',
               }}
@@ -99,7 +96,7 @@ export default function ConversationItem({ item }: { item: Conversation }) {
               justifyContent: 'center',
             }}
           >
-            <Lock size={22} color="#7D858E" strokeWidth={1.8} />
+            <Lock size={24} color="#7D858E" strokeWidth={1.8} />
           </View>
         ) : (
           <CameraButton />

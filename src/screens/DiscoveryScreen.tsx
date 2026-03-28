@@ -103,10 +103,8 @@ const DiscoveryScreen = ({ navigation }: any) => {
               <Text
                 style={{
                   fontFamily: 'ZenDots-Regular',
-                  fontSize: sf(20),
-                  lineHeight: sf(20),
-                  color: '#FFFFFF',
-                  letterSpacing: 0,
+                  fontSize: sf(20), 
+                  color: '#FFFFFF', 
                 }}
               >
                 SPARK
@@ -125,7 +123,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
                 borderWidth: 1,
               }}
             >
-              <Settings size={sf(20)} color="#FFFFFF" />
+              <Settings size={sf(24)} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
         </LinearGradient>
@@ -137,9 +135,8 @@ const DiscoveryScreen = ({ navigation }: any) => {
           <MaskedView
             maskElement={
               <Text
-                style={{
-                  lineHeight: sf(24),
-                  fontSize: sf(24),
+                style={{ 
+                  fontSize: sf(22),
                   fontWeight: '600',
                 }}
               >
@@ -153,9 +150,8 @@ const DiscoveryScreen = ({ navigation }: any) => {
               end={{ x: 1, y: 0 }}
             >
               <Text
-                style={{
-                  lineHeight: sf(24),
-                  fontSize: sf(24),
+                style={{ 
+                  fontSize: sf(22),
                   opacity: 0,
                   fontWeight: '600',
                 }}

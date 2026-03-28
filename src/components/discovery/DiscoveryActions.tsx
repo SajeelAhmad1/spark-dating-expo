@@ -21,8 +21,8 @@ export default function DiscoveryActions({ onLikePress }: { onLikePress: () => v
       <TouchableOpacity
         activeOpacity={0.8}
         style={{
-          width: sf(52),
-          height: sf(52),
+          width: sw(52),
+          height: sh(52),
           borderRadius: sr(28),
           backgroundColor: '#fff',
           alignItems: 'center',
@@ -41,8 +41,8 @@ export default function DiscoveryActions({ onLikePress }: { onLikePress: () => v
         activeOpacity={0.8}
         onPress={onLikePress}
         style={{
-          width: sf(64),
-          height: sf(64),
+          width: sw(64),
+          height: sh(64),
           borderRadius: sr(32),
           backgroundColor: '#fff',
           alignItems: 'center',
@@ -60,8 +60,8 @@ export default function DiscoveryActions({ onLikePress }: { onLikePress: () => v
       <TouchableOpacity
         activeOpacity={0.8}
         style={{
-          width: sf(52),
-          height: sf(52),
+          width: sw(52),
+          height: sh(52),
           borderRadius: sr(28),
           backgroundColor: '#fff',
           alignItems: 'center',

@@ -181,7 +181,7 @@ export default function ChatScreen({ navigation, route }: any) {
         >
           <TouchableOpacity
             onPress={() => navigation?.goBack()}
-            style={{ marginRight: sw(8) }}
+            style={{ marginRight: sw(12) }}
           >
             <ChevronLeft size={sf(24)} color="#7D858E" strokeWidth={2} />
           </TouchableOpacity>
@@ -204,8 +204,7 @@ export default function ChatScreen({ navigation, route }: any) {
               style={{
                 fontFamily: 'Poppins-Regular',
                 fontWeight: '400',
-                fontSize: sf(12),
-                lineHeight: sf(12),
+                fontSize: sf(12), 
                 color: '#1E78F5',
                 marginTop: sh(2),
               }}
@@ -328,21 +327,22 @@ export default function ChatScreen({ navigation, route }: any) {
                 alignItems: 'center',
                 paddingHorizontal: sw(16),
                 paddingVertical: sh(12),
-                gap: 10,
+                gap: 14,
                 backgroundColor: '#FFFFFF',
               }}
             >
               <TouchableOpacity
                 onPress={() => setIsCameraOpen(true)}
                 style={{
-                  width: sf(56),
-                  height: sf(56),
+                  width: sw(56),
+                  height: sh(56),
                   borderRadius: sr(92),
                   alignItems: 'center',
                   justifyContent: 'center',
+                  // backgroundColor: '#FBB202',
                 }}
               >
-                <CameraIcon width={sf(56)} height={sf(56)} />
+                <CameraIcon />
               </TouchableOpacity>
 
               <View
@@ -350,8 +350,8 @@ export default function ChatScreen({ navigation, route }: any) {
                   flex: 1,
                   flexDirection: 'row',
                   alignItems: 'center',
-                  height: sh(48),
-                  borderRadius: sr(99),
+                  height: sh(56),
+                  borderRadius: sr(15),
                   borderWidth: 1,
                   borderColor: messageError ? '#DC2626' : '#B6B9C9',
                   paddingHorizontal: sw(16),
@@ -377,10 +377,9 @@ export default function ChatScreen({ navigation, route }: any) {
                     flex: 1,
                     fontFamily: 'Poppins-Regular',
                     fontWeight: '400',
-                    fontSize: sf(16),
-                    lineHeight: sf(16),
-                    color: '#333333',
-                    padding: 0,
+                    fontSize: sf(16), 
+                    color: '#000000',
+                    padding: 0, 
                   }}
                 />
 
@@ -397,7 +396,7 @@ export default function ChatScreen({ navigation, route }: any) {
                 </TouchableOpacity>
               </View>
             </View>
-            <View style={{ paddingHorizontal: sw(16), paddingBottom: sh(8) }}>
+            <View style={{ paddingHorizontal: sw(22), paddingBottom: sh(12) }}>
               <FieldError message={messageError} />
             </View>
           </>

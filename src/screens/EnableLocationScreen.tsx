@@ -34,14 +34,12 @@ const EnableLocationScreen = ({ navigation }: any) => {
             styles.body,
             {
               fontFamily: 'Poppins-Regular',
-              fontSize: sf(16),
-              lineHeight: sf(22),
-              letterSpacing: 0,
+              fontSize: sf(16), 
               color: '#B6B9C9',
             },
           ]}
         >
-          You need to enable location to be able to{'\n'}use the spark app
+          You need to enable location to be able to use the spark app
         </Text>
       </View>
 
@@ -62,8 +60,7 @@ const EnableLocationScreen = ({ navigation }: any) => {
               styles.bottomSub,
               {
                 fontFamily: 'Poppins-Regular',
-                fontSize: sf(13),
-                lineHeight: sf(13),
+                fontSize: sf(13), 
                 color: '#555555',
               },
             ]}

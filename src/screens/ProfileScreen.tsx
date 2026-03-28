@@ -45,16 +45,17 @@ const ProfileScreen = ({ navigation }: any) => {
         start={{ x: 0, y: -0.1 }}
         end={{ x: 2, y: 0.7 }}
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-      />
+      /> 
 
       <SafeAreaView style={styles.flex1}>
         {/* ── Header ── */}
         <LinearGradient
           colors={['#1E78F5', '#FBB202']}
-          start={{ x: 1.5, y: 1.5 }}
-          end={{ x: -2, y: -0.8 }}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 9 }}
           style={{
             borderBottomWidth: 1,
+            borderTopWidth: 0,
             borderBottomColor: 'rgba(255,255,255,0.2)',
             shadowColor: '#000000',
             shadowOpacity: 0.032,
@@ -87,7 +88,7 @@ const ProfileScreen = ({ navigation }: any) => {
                   borderWidth: 1,
                 }}
               >
-                <Edit2 size={sf(18)} color="#FFFFFF" />
+                <Edit2 size={sf(20)} color="#FFFFFF" />
               </TouchableOpacity>
             </View>
 
@@ -107,14 +108,14 @@ const ProfileScreen = ({ navigation }: any) => {
                   width: sf(36),
                   height: sf(36),
                   borderRadius: sr(92),
-                  backgroundColor: '#FBB20233',
+                  backgroundColor: 'background: rgba(251, 178, 2, 0.2)',
                   alignItems: 'center',
                   justifyContent: 'center',
                   borderColor: '#FFFFFF',
                   borderWidth: 1,
                 }}
               >
-                <Settings size={sf(18)} color="#FFFFFF" />
+                <Settings size={sf(20)} color="#FFFFFF" />
               </TouchableOpacity>
             </View>
           </View>
@@ -130,9 +131,11 @@ const ProfileScreen = ({ navigation }: any) => {
             style={{
               marginHorizontal: sw(12),
               marginTop: sh(16),
-              borderRadius: sr(16),
+              borderRadius: sr(16), 
               overflow: 'hidden',
-              height: sh(480),
+              height: sh(535),
+              borderWidth: 1,
+              borderColor: '#FFFFFF',
               shadowColor: '#000000',
               shadowOpacity: 0.15,
               shadowRadius: 25,
@@ -152,22 +155,27 @@ const ProfileScreen = ({ navigation }: any) => {
             <View
               style={{
                 position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                backgroundColor: '#0000004D',
+                bottom: 10,
+                left: 10,
+                right: 10,
+                height: sh(70),
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
                 paddingHorizontal: sw(16),
-                paddingVertical: sh(12),
+                // paddingVertical: sh(12),
+                borderColor: '#FFFFFF',
+                // borderWidth: 0.5,
+                borderRadius: sr(12),
+                flexDirection: 'column', 
+                // alignItems: 'flex-start',
+                  justifyContent: 'center', 
               }}
             >
               <Text
                 style={{
                   fontFamily: 'Poppins-SemiBold',
-                  fontSize: sf(20),
-                  lineHeight: sf(20),
-                  color: '#FFFFFF',
-                  letterSpacing: 0,
-                  marginBottom: sh(6),
+                  fontSize: sf(20), 
+                  color: '#FFFFFF', 
+                  // marginBottom: sh(6),
                 }}
               >
                 Paul W (27)
@@ -191,10 +199,8 @@ const ProfileScreen = ({ navigation }: any) => {
                   <Text
                     style={{
                       fontFamily: 'Poppins-Regular',
-                      fontSize: sf(16),
-                      lineHeight: sf(16),
-                      color: '#FFFFFF',
-                      letterSpacing: 0,
+                      fontSize: sf(16), 
+                      color: '#FFFFFF', 
                     }}
                   >
                     New York, USA
@@ -204,10 +210,8 @@ const ProfileScreen = ({ navigation }: any) => {
                 <Text
                   style={{
                     fontFamily: 'Poppins-Regular',
-                    fontSize: sf(16),
-                    lineHeight: sf(16),
-                    color: '#FFFFFF',
-                    letterSpacing: 0,
+                    fontSize: sf(16), 
+                    color: '#FFFFFF', 
                   }}
                 >
                   Men
@@ -233,10 +237,12 @@ const ProfileScreen = ({ navigation }: any) => {
                 key={i}
                 style={{
                   flex: 1,
-                  height: sh(180),
+                  height: sh(220),
                   borderRadius: sr(14),
                   overflow: 'hidden',
                   shadowColor: '#000000',
+                  borderWidth: 1,
+                  borderColor: '#FFFFFF',
                   shadowOpacity: 0.15,
                   shadowRadius: 25,
                   shadowOffset: { width: 0, height: 0 },
@@ -361,13 +367,14 @@ const ProfileScreen = ({ navigation }: any) => {
                       flexDirection: 'row',
                       alignItems: 'center',
                       justifyContent: 'space-between',
+                      height: sh(106),
                     }}
                   >
                     <View
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',
-                        gap: sw(10),
+                        gap: sw(20),
                         flex: 1,
                       }}
                     >

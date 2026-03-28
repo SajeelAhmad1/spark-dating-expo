@@ -154,7 +154,7 @@ const MatchScreen = ({ navigation, route }: any) => {
 
         {/* ── Subtitle ── */}
         <Text
-          style={[styles.matchSubtitle, { lineHeight: sf(20), fontSize: sf(16) }]}
+          style={[styles.matchSubtitle, { fontSize: sf(16) }]}
           weight="medium"
         >
           {`You and ${match.name} liked each other.`}
@@ -205,7 +205,7 @@ const MatchScreen = ({ navigation, route }: any) => {
 };
 
 const styles = StyleSheet.create({
-  matchSubtitle: { color: '#000000', marginBottom: sh(16), textAlign: 'center' },
+  matchSubtitle: { color: '#000000', marginBottom: sh(16), textAlign: 'center', fontWeight: '500'},
 });
 
 export default MatchScreen;

@@ -25,8 +25,7 @@ export default function SectionHeader({
       {icon}
       <Text
         style={{
-          fontSize: sf(16),
-          lineHeight: sf(16),
+          fontSize: sf(16), 
           fontWeight: '500',
           color: '#000000',
         }}
