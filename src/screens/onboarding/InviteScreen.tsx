@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Share, Platform } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
+import { showToast } from '@/utils/toast';
 import { Text } from '@/components/common/Text';
 import { Share2, Copy } from 'lucide-react-native';
 import Gift from '@/assets/images/gift.svg';
@@ -144,12 +146,25 @@ const StatCard = ({
 
 // ─── Main Screen ──────────────────────────────────────────
 const InviteScreen = ({ navigation }: any) => {
-  const handleCopy = () => {
-    console.log('Copied:', REFERRAL_LINK);
+  const handleCopy = async () => {
+    await Clipboard.setStringAsync(REFERRAL_LINK);
+    showToast('Link copied');
   };
 
   const handleSkip = () => {
-    console.log('Skip pressed');
+    navigation.navigate('WaitingScreen');
+  };
+
+  const handleShare = async () => {
+    try {
+      const content =
+        Platform.OS === 'ios'
+          ? { message: REFERRAL_LINK, url: REFERRAL_LINK }
+          : { message: REFERRAL_LINK };
+      await Share.share(content);
+    } catch {
+      showToast('Could not open share', 'error');
+    }
   };
 
   return (
@@ -171,7 +186,7 @@ const InviteScreen = ({ navigation }: any) => {
         <View style={styles.bottomActions}>
           <PrimaryButton
             title="Share Invite Link"
-            onPress={() => navigation.navigate('WaitingScreen')}
+            onPress={handleShare}
             colors={['#1E78F5', '#DC9B00']}
             variant="gradient"
             icon={<Share2 size={20} color="#ffffff" />}

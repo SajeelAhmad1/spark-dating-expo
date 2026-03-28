@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
@@ -7,11 +7,20 @@ import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf } from '@/utils/responsive';
 import { useZodForm } from '@/utils/form';
 import { otpFormSchema } from '@/schemas/onboarding';
+import { showToast } from '@/utils/toast';
 
 const DIGIT_KEYS = ['d0', 'd1', 'd2', 'd3'] as const;
+const RESEND_COOLDOWN_SEC = 60;
 
-const NumberVerifyScreen = ({navigation}: any) => {
+const NumberVerifyScreen = ({ navigation }: any) => {
   const inputs = useRef<(TextInput | null)[]>([]);
+  const [secondsLeft, setSecondsLeft] = useState(RESEND_COOLDOWN_SEC);
+
+  useEffect(() => {
+    if (secondsLeft <= 0) return undefined;
+    const id = setTimeout(() => setSecondsLeft(s => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [secondsLeft]);
 
   const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(otpFormSchema, {
     defaultValues: {
@@ -49,10 +58,17 @@ const NumberVerifyScreen = ({navigation}: any) => {
     navigation.navigate('VerificationSuccessScreen');
   };
 
+  const canResend = secondsLeft <= 0;
+
+  const handleResend = () => {
+    if (!canResend) return;
+    setSecondsLeft(RESEND_COOLDOWN_SEC);
+    showToast('A new code has been sent');
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.page}>
-
         <View style={styles.headerBlock}>
           <Text style={[styles.title, { fontSize: sf(28) }]} weight="semibold">
             Verify Your Number
@@ -97,16 +113,27 @@ const NumberVerifyScreen = ({navigation}: any) => {
             colors={['#1E78F5', '#FBB202']}
             variant="gradient"
             style={{ alignSelf: 'stretch' }}
-            textStyle={{fontWeight: '500', fontSize: sf(20), color: '#ffffff'}}
+            textStyle={{ fontWeight: '500', fontSize: sf(20), color: '#ffffff' }}
           />
         </View>
 
-        <TouchableOpacity style={styles.resendWrap} onPress={() => {}}>
-          <Text style={[styles.resend, { fontSize: sf(16) }]} weight="medium">
-            Resend Code
+        <TouchableOpacity
+          style={styles.resendWrap}
+          onPress={handleResend}
+          disabled={!canResend}
+          activeOpacity={canResend ? 0.7 : 1}
+        >
+          <Text
+            style={[
+              styles.resend,
+              { fontSize: sf(16) },
+              !canResend && styles.resendDisabled,
+            ]}
+            weight="medium"
+          >
+            {canResend ? 'Resend Code' : `Resend code in ${secondsLeft}s`}
           </Text>
         </TouchableOpacity>
-
       </View>
     </SafeAreaView>
   );
@@ -143,6 +170,7 @@ const styles = StyleSheet.create({
   btnWrap: { marginTop: 32 },
   resendWrap: { marginTop: 16, alignItems: 'center' },
   resend: { color: '#1E78F5' },
+  resendDisabled: { color: '#7D858E' },
 });
 
 export default NumberVerifyScreen;

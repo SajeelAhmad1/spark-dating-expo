@@ -31,6 +31,7 @@ import SettingsScreen from '@/screens/SettingsScreen';
 import BlockedUsersScreen from '@/screens/BlockedUsersScreen';
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
+import Toast from 'react-native-toast-message';
 
 const Stack = createStackNavigator();
 
@@ -122,6 +123,7 @@ export default function App() {
           />
         </Stack.Navigator>
       </NavigationContainer>
+      <Toast />
     </GestureHandlerRootView>
   );
 }

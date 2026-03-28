@@ -27,8 +27,15 @@ const UploadPhotosScreen = ({ navigation }: any) => {
   const [photos, setPhotos] = useState<PhotoSlot[]>([null, null, null, null]);
   const [photosError, setPhotosError] = useState<string | undefined>();
 
-  const pickImage = async (index: number) => {
-    // Request permission first
+  const applyPickedUri = (index: number, uri: string | undefined) => {
+    if (!uri) return;
+    const updated = [...photos];
+    updated[index] = { uri, isLocal: true };
+    setPhotos(updated);
+    setPhotosError(undefined);
+  };
+
+  const pickFromLibrary = async (index: number) => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Permission Required', 'Please allow access to your photo library.');
@@ -42,14 +49,31 @@ const UploadPhotosScreen = ({ navigation }: any) => {
     });
 
     if (result.canceled) return;
+    applyPickedUri(index, result.assets?.[0]?.uri);
+  };
 
-    const uri = result.assets?.[0]?.uri;
-    if (uri) {
-      const updated = [...photos];
-      updated[index] = { uri, isLocal: true };
-      setPhotos(updated);
-      setPhotosError(undefined);
+  const takePhoto = async (index: number) => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Required', 'Please allow camera access to take a photo.');
+      return;
     }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8,
+    });
+
+    if (result.canceled) return;
+    applyPickedUri(index, result.assets?.[0]?.uri);
+  };
+
+  const openPhotoSource = (index: number) => {
+    Alert.alert('Add photo', 'Choose a source', [
+      { text: 'Take Photo', onPress: () => takePhoto(index) },
+      { text: 'Choose from Library', onPress: () => pickFromLibrary(index) },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
   };
 
   const removePhoto = (index: number) => {
@@ -128,7 +152,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           </View>
         ) : (
           <TouchableOpacity
-            onPress={() => pickImage(index)}
+            onPress={() => openPhotoSource(index)}
             activeOpacity={0.7}
             style={{
               width: SLOT_WIDTH,

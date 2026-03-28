@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
 import { ChevronDown } from 'lucide-react-native';
@@ -9,6 +15,9 @@ import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf } from '@/utils/responsive';
 import { useZodForm } from '@/utils/form';
 import { onboardingPhoneFormSchema } from '@/schemas/onboarding';
+import { showToast } from '@/utils/toast';
+
+const winH = Dimensions.get('window').height;
 
 const NumberEnterScreen = ({ navigation }: any) => {
   const [show, setShow] = useState(false);
@@ -16,6 +25,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
   const [country, setCountry] = useState({
     flag: '🇳🇱',
     dial_code: '+31',
+    code: 'NL',
   });
 
   const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(
@@ -23,6 +33,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
     {
       defaultValues: {
         phoneNumber: '',
+        countryCode: 'NL',
       },
     },
   );
@@ -31,6 +42,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
   const phoneError = formState.errors.phoneNumber?.message;
 
   const onValid = () => {
+    showToast('Verification code sent');
     navigation.navigate('NumberVerifyScreen');
   };
 
@@ -103,9 +115,42 @@ const NumberEnterScreen = ({ navigation }: any) => {
       <CountryPicker
         lang="en"
         show={show}
+        enableModalAvoiding
+        androidWindowSoftInputMode="pan"
+        onBackdropPress={() => setShow(false)}
+        onRequestClose={() => setShow(false)}
+        inputPlaceholder="Search country"
+        inputPlaceholderTextColor="#7D858E"
+        searchMessage="No countries match your search"
         pickerButtonOnPress={item => {
-          setCountry(item);
+          setCountry({
+            flag: item.flag,
+            dial_code: item.dial_code,
+            code: item.code,
+          });
+          setValue('countryCode', item.code, { shouldValidate: true });
           setShow(false);
+        }}
+        style={{
+          modal: {
+            maxHeight: winH * 0.88,
+            paddingTop: 16,
+          },
+          textInput: {
+            height: 48,
+            borderRadius: 12,
+            paddingHorizontal: 14,
+            paddingVertical: 10,
+            fontSize: 16,
+            color: '#111111',
+            backgroundColor: '#EEF2F6',
+            borderWidth: 1,
+            borderColor: '#C5CCD6',
+          },
+          line: {
+            backgroundColor: '#D0D5DD',
+            marginVertical: 12,
+          },
         }}
       />
     </SafeAreaView>

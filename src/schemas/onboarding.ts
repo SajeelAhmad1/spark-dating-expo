@@ -1,20 +1,39 @@
 import { z } from 'zod';
+import { parsePhoneNumber } from 'libphonenumber-js/max';
+import type { CountryCode } from 'libphonenumber-js';
 import { ErrorMessages as ERR } from '@/constants/ErrorMessages';
 
-export const onboardingPhoneFormSchema = z.object({
-  phoneNumber: z
-    .string()
-    .transform(s => s.replace(/\s/g, ''))
-    .superRefine((digits, ctx) => {
-      if (!digits.length) {
-        ctx.addIssue({ code: 'custom', message: ERR.onboarding.phoneNationalRequired });
-        return;
+export const onboardingPhoneFormSchema = z
+  .object({
+    phoneNumber: z.string().transform(s => s.replace(/\s/g, '')),
+    countryCode: z.string().length(2, ERR.onboarding.phoneNationalInvalid),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.phoneNumber.length) {
+      ctx.addIssue({
+        code: 'custom',
+        message: ERR.onboarding.phoneNationalRequired,
+        path: ['phoneNumber'],
+      });
+      return;
+    }
+    try {
+      const pn = parsePhoneNumber(data.phoneNumber, data.countryCode.toUpperCase() as CountryCode);
+      if (!pn?.isValid()) {
+        ctx.addIssue({
+          code: 'custom',
+          message: ERR.onboarding.phoneNationalInvalid,
+          path: ['phoneNumber'],
+        });
       }
-      if (!/^\d{8,15}$/.test(digits)) {
-        ctx.addIssue({ code: 'custom', message: ERR.onboarding.phoneNationalInvalid });
-      }
-    }),
-});
+    } catch {
+      ctx.addIssue({
+        code: 'custom',
+        message: ERR.onboarding.phoneNationalInvalid,
+        path: ['phoneNumber'],
+      });
+    }
+  });
 
 export type OnboardingPhoneFormValues = z.infer<typeof onboardingPhoneFormSchema>;
 
