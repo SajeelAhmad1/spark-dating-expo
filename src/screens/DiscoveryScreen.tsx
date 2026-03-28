@@ -140,8 +140,8 @@ const DiscoveryScreen = ({ navigation }: any) => {
                 style={{
                   lineHeight: sf(24),
                   fontSize: sf(24),
+                  fontWeight: '600',
                 }}
-                className="font-semibold"
               >
                 {'Connect Through Moments 🔥'}
               </Text>
@@ -157,8 +157,8 @@ const DiscoveryScreen = ({ navigation }: any) => {
                   lineHeight: sf(24),
                   fontSize: sf(24),
                   opacity: 0,
+                  fontWeight: '600',
                 }}
-                className="font-semibold"
               >
                 {'Connect Through Moments 🔥'}
               </Text>

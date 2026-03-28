@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { Share2, Bell, Users2 } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,80 +14,68 @@ const PROGRESS = (CURRENT / TARGET) * 100;
 
 // ─── Screen ───────────────────────────────────────────────
 const WaitingScreen = ({ navigation }: any) => (
-  <SafeAreaView className="flex-1 bg-white">
-    <View className="flex-1 px-5 py-10">
+  <SafeAreaView style={styles.safeArea}>
+    <View style={styles.page}>
 
       {/* ── Main Content ── */}
-      <View className="flex-1 items-center justify-center gap-y-4">
+      <View style={styles.main}>
 
         {/* Icon */}
-        <View className="w-[104px] h-[104px] rounded-full bg-[#1E78F5] items-center justify-center mb-4">
+        <View style={styles.iconCircle}>
           <Users2 width={56} height={56} color="#ffffff" />
         </View>
 
         {/* Title */}
         <Text
-          style={{ fontSize: sf(24),  }}
-          className="text-black text-center font-semibold"
+          style={[styles.title, { fontSize: sf(24) }]}
+          weight="semibold"
         >
           We're Almost There! 🚀
         </Text>
 
         {/* Subtitle */}
         <Text
-          style={{ fontFamily: 'Poppins-Regular', fontSize: sf(16), }}
-          className="text-[#7D858E] text-center"
+          style={[styles.subtitle, { fontFamily: 'Poppins-Regular', fontSize: sf(16) }]}
         >
           Spark goes live when{' '}
-          <Text style={{ fontFamily: 'Poppins-Medium', color: '#1E78F5' }}
-          className='font-medium'
-          >
+          <Text style={{ fontFamily: 'Poppins-Medium', color: '#1E78F5' }} weight="medium">
             {TARGET.toLocaleString()} people
           </Text>{' '}
           join. Invite friends to speed it up!
         </Text>
 
         {/* Progress */}
-        <View className="w-full gap-y-2">
-          <View className="flex-row items-center justify-between">
-            <Text style={{ fontFamily: 'Poppins-Medium', fontSize: sf(16), }} className="text-black">
+        <View style={styles.progressBlock}>
+          <View style={styles.progressRow}>
+            <Text style={[styles.progressLabel, { fontFamily: 'Poppins-Medium', fontSize: sf(16) }]}>
               Launch Progress
             </Text>
-            <Text style={{ fontFamily: 'Poppins-Medium', fontSize: sf(16),  }} className="text-[#1E78F5]">
+            <Text style={[styles.progressValue, { fontFamily: 'Poppins-Medium', fontSize: sf(16) }]}>
               {CURRENT}/{TARGET}
             </Text>
           </View>
 
-          <View className="w-full h-2 rounded-full bg-[#E8EAED] overflow-hidden">
-            <View
-              className="h-full rounded-full bg-[#1E78F5]"
-              style={{ width: `${PROGRESS}%` }}
-            />
+          <View style={styles.track}>
+            <View style={[styles.trackFill, { width: `${PROGRESS}%` }]} />
           </View>
 
           <Text
-            style={{ fontFamily: 'Poppins-Medium', fontSize: sf(14), }}
-            className="text-[#DC9B00] text-center"
+            style={[styles.progressHint, { fontFamily: 'Poppins-Medium', fontSize: sf(14) }]}
           >
             {REMAINING} more to go!
           </Text>
         </View>
 
         {/* Notification Card */}
-        <View
-          className="w-full flex-row  items-center rounded-2xl bg-[#EDEDED] px-4 h-[100px]"
-        >
-          <View
-            className="w-[40px] h-[40px] rounded-full items-center justify-center shrink-0"
-            style={{ backgroundColor: '#FBB20233', borderWidth: 0.4, borderColor: '#DC9B00' }}
-          >
+        <View style={styles.notifyCard}>
+          <View style={styles.notifyIconWrap}>
             <Bell size={24} color="#DC9B00" />
           </View>
-          <View className="flex-1 shrink ml-2">
-            <Text style={{ fontFamily: 'Poppins-SemiBold', fontSize: sf(16), }} className="text-black">
+          <View style={styles.notifyTextCol}>
+            <Text style={[styles.notifyTitle, { fontFamily: 'Poppins-SemiBold', fontSize: sf(16) }]}>
               You'll be notified
             </Text>
-            <Text style={{ fontFamily: 'Poppins-Regular', fontSize: sf(13),  }} className="text-[#555555]">
+            <Text style={[styles.notifyBody, { fontFamily: 'Poppins-Regular', fontSize: sf(13) }]}>
               We will send you a notification when we reach {TARGET} users
             </Text>
           </View>
@@ -101,7 +89,6 @@ const WaitingScreen = ({ navigation }: any) => (
         onPress={() => navigation.navigate("LaunchScreen")}
         colors={['#1E78F5', '#DC9B00']}
         variant="gradient"
-        // icon={<Share2 size={20} color="#ffffff" />}
         iconPosition="start"
         textStyle={{fontSize: sf(18), fontWeight: '500', color: '#ffffff'}}
       />
@@ -109,5 +96,73 @@ const WaitingScreen = ({ navigation }: any) => (
     </View>
   </SafeAreaView>
 );
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  page: { flex: 1, paddingHorizontal: 20, paddingVertical: 40 },
+  main: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    rowGap: 16,
+  },
+  iconCircle: {
+    width: 104,
+    height: 104,
+    borderRadius: 9999,
+    backgroundColor: '#1E78F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  title: {
+    color: '#000000',
+    textAlign: 'center',
+  },
+  subtitle: {
+    color: '#7D858E',
+    textAlign: 'center',
+  },
+  progressBlock: { width: '100%', rowGap: 8 },
+  progressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  progressLabel: { color: '#000000' },
+  progressValue: { color: '#1E78F5' },
+  track: {
+    width: '100%',
+    height: 8,
+    borderRadius: 9999,
+    backgroundColor: '#E8EAED',
+    overflow: 'hidden',
+  },
+  trackFill: { height: '100%', borderRadius: 9999, backgroundColor: '#1E78F5' },
+  progressHint: { color: '#DC9B00', textAlign: 'center' },
+  notifyCard: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 16,
+    backgroundColor: '#EDEDED',
+    paddingHorizontal: 16,
+    height: 100,
+  },
+  notifyIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 9999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+    backgroundColor: '#FBB20233',
+    borderWidth: 0.4,
+    borderColor: '#DC9B00',
+  },
+  notifyTextCol: { flex: 1, flexShrink: 1, marginLeft: 8 },
+  notifyTitle: { color: '#000000' },
+  notifyBody: { color: '#555555' },
+});
 
 export default WaitingScreen;

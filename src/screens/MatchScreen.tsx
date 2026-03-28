@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TouchableOpacity, SafeAreaView, useWindowDimensions } from 'react-native';
+import { View, TouchableOpacity, SafeAreaView, useWindowDimensions, StyleSheet } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { X } from 'lucide-react-native';
 import CameraScreen from './CameraScreen';
@@ -153,11 +153,8 @@ const MatchScreen = ({ navigation, route }: any) => {
 
         {/* ── Subtitle ── */}
         <Text
-          style={{
-            lineHeight: sf(20),
-            fontSize: sf(16),
-          }}
-          className='font-medium text-[#000000] mb-4 text-center'
+          style={[styles.matchSubtitle, { lineHeight: sf(20), fontSize: sf(16) }]}
+          weight="medium"
         >
           {`You and ${match.name} liked each other.`}
         </Text>
@@ -204,5 +201,9 @@ const MatchScreen = ({ navigation, route }: any) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  matchSubtitle: { color: '#000000', marginBottom: 16, textAlign: 'center' },
+});
 
 export default MatchScreen;

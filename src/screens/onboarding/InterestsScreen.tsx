@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, ScrollView } from 'react-native';
+import { View, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { ChevronLeft } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -43,9 +43,9 @@ const InterestsScreen = ({ navigation }: any) => {
   const canContinue = selected.length >= MIN;
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={styles.safeArea}>
       <ScrollView
-        className="flex-1 px-5 pt-4"
+        style={styles.scroll}
         contentContainerStyle={{ paddingBottom: 130 }}
         showsVerticalScrollIndicator={false}
       >
@@ -151,5 +151,10 @@ const InterestsScreen = ({ navigation }: any) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  scroll: { flex: 1, paddingHorizontal: 20, paddingTop: 16 },
+});
 
 export default InterestsScreen;

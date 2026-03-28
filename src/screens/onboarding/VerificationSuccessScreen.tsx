@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { Check } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,31 +8,26 @@ import { sf } from '@/utils/responsive';
 
 const VerificationSuccessScreen = ({navigation}: any) => {
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 px-5 pb-6 items-center mt-24">
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.page}>
 
-        {/* ── Check Icon ── */}
         <View
-          className="items-center justify-center mb-6"
-          style={{
-            width: sf(100),
-            height: sf(100),
-            borderRadius: 999,
-            backgroundColor: '#4CD964',
-          }}
+          style={[
+            styles.iconWrap,
+            {
+              width: sf(100),
+              height: sf(100),
+            },
+          ]}
         >
           <Check size={46} color="#FFFFFF" strokeWidth={3} />
         </View>
 
-        {/* ── Title ── */}
-        <Text className="text-black font-semibold mb-8"
-        style={{ fontSize: sf(24),}}
-        >
+        <Text style={[styles.title, { fontSize: sf(24) }]} weight="semibold">
           Your Number is verified.
         </Text>
 
-        {/* ── Continue Button ── */}
-        <View className="w-full">
+        <View style={styles.btnBlock}>
           <PrimaryButton
             title="Continue"
             onPress={() => {navigation.navigate("ProfileSetupScreen")}}
@@ -43,13 +38,12 @@ const VerificationSuccessScreen = ({navigation}: any) => {
           />
         </View>
 
-        {/* ── Terms ── */}
-        <TouchableOpacity className="mt-4" onPress={() => {}}>
-          <Text className="text-[#7D858E] font-normal" 
-          style={{ fontSize: sf(16),}}
-          >
+        <TouchableOpacity style={styles.termsWrap} onPress={() => {}}>
+          <Text style={[styles.terms, { fontSize: sf(16) }]} weight="regular">
             Agree our{' '}
-            <Text className=" underline">Terms & Condition</Text>
+            <Text style={styles.termsLink} weight="regular">
+              Terms & Condition
+            </Text>
           </Text>
         </TouchableOpacity>
 
@@ -57,5 +51,28 @@ const VerificationSuccessScreen = ({navigation}: any) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  page: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingBottom: 24,
+    alignItems: 'center',
+    marginTop: 96,
+  },
+  iconWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+    borderRadius: 999,
+    backgroundColor: '#4CD964',
+  },
+  title: { color: '#000000', marginBottom: 32 },
+  btnBlock: { width: '100%' },
+  termsWrap: { marginTop: 16 },
+  terms: { color: '#7D858E' },
+  termsLink: { textDecorationLine: 'underline', color: '#7D858E' },
+});
 
 export default VerificationSuccessScreen;

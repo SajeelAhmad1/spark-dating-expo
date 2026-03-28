@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomToggle from '@/components/location/CustomToggle';
@@ -11,40 +11,42 @@ const EnableLocationScreen = ({ navigation }: any) => {
   const [isEnabled, setIsEnabled] = useState(false);
 
   return (
-    <SafeAreaView className="flex-1 bg-white justify-between pb-8">
-      {/* Center Content */}
-      <View className="flex-1 items-center justify-center px-8 gap-5">
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.centerBlock}>
         <LocationIcon />
 
         <Text
-          className="text-black text-center mt-2"
-          style={{
-            fontFamily: 'Poppins-SemiBold',
-            fontSize: sf(24),
-            lineHeight: sf(24),
-            letterSpacing: 0,
-          }}
+          style={[
+            styles.heading,
+            {
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: sf(24),
+              lineHeight: sf(24),
+              letterSpacing: 0,
+            },
+          ]}
         >
           Enable Location
         </Text>
 
         <Text
-          className="text-center"
-          style={{
-            fontFamily: 'Poppins-Regular',
-            fontSize: sf(16),
-            lineHeight: sf(22),
-            letterSpacing: 0,
-            color: '#B6B9C9',
-          }}
+          style={[
+            styles.body,
+            {
+              fontFamily: 'Poppins-Regular',
+              fontSize: sf(16),
+              lineHeight: sf(22),
+              letterSpacing: 0,
+              color: '#B6B9C9',
+            },
+          ]}
         >
           You need to enable location to be able to{'\n'}use the spark app
         </Text>
       </View>
 
-      {/* Bottom Card */}
-      <View className="mx-6 bg-gray-50 rounded-2xl px-5 py-4 flex-row items-center justify-between">
-        <View className="flex-1">
+      <View style={styles.bottomCard}>
+        <View style={styles.bottomTextCol}>
           <Text
             style={{
               fontFamily: 'Poppins-SemiBold',
@@ -56,13 +58,15 @@ const EnableLocationScreen = ({ navigation }: any) => {
             Enable Location
           </Text>
           <Text
-            className="mt-1"
-            style={{
-              fontFamily: 'Poppins-Regular',
-              fontSize: sf(13),
-              lineHeight: sf(13),
-              color: '#555555',
-            }}
+            style={[
+              styles.bottomSub,
+              {
+                fontFamily: 'Poppins-Regular',
+                fontSize: sf(13),
+                lineHeight: sf(13),
+                color: '#555555',
+              },
+            ]}
           >
             Find people near you and get better matches
           </Text>
@@ -79,5 +83,39 @@ const EnableLocationScreen = ({ navigation }: any) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'space-between',
+    paddingBottom: 32,
+  },
+  centerBlock: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+    rowGap: 20,
+  },
+  heading: {
+    color: '#000000',
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  body: { textAlign: 'center' },
+  bottomCard: {
+    marginHorizontal: 24,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  bottomTextCol: { flex: 1 },
+  bottomSub: { marginTop: 4 },
+});
 
 export default EnableLocationScreen;

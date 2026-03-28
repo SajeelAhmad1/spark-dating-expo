@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
@@ -33,57 +33,46 @@ const NumberVerifyScreen = ({navigation}: any) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 px-5 pt-4 pb-6 mt-20">
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.page}>
 
-        {/* ── Header ── */}
-        <View className="mt-16 gap-y-2">
-          <Text className="text-black  font-semibold"
-          style={{ fontSize: sf(28),  }}
-          >
+        <View style={styles.headerBlock}>
+          <Text style={[styles.title, { fontSize: sf(28) }]} weight="semibold">
             Verify Your Number
           </Text>
-          <Text className="text-[#7D858E]  font-normal"
-          style={{ fontSize: sf(15), }}
-          >
+          <Text style={[styles.subtitle, { fontSize: sf(15) }]} weight="regular">
             Enter the 4 digit code
           </Text>
         </View>
 
-        {/* ── OTP Inputs ── */}
-        <View className="mt-8 flex-row gap-x-4 justify-center">
+        <View style={styles.otpRow}>
           {digits.map((digit: string, index: number) => (
             <TextInput
               key={index}
-            //   ref={(ref) => (inputs.current[index] = ref)}
               value={digit}
               onChangeText={(text) => handleChange(text.slice(-1), index)}
               onKeyPress={(e) => handleKeyPress(e, index)}
               keyboardType="number-pad"
               maxLength={1}
-              className="text-black font-semibold text-center"
-              style={{
-                fontSize: sf(20),
-                lineHeight: sf(24),
-                letterSpacing: 0,
-                width: sf(56),
-                height: sf(56),
-                borderRadius: 15,
-                borderWidth: 1,
-                borderColor: '#B6B9C9',
-              }}
+              style={[
+                styles.otpCell,
+                {
+                  fontSize: sf(20),
+                  lineHeight: sf(24),
+                  width: sf(56),
+                  height: sf(56),
+                },
+              ]}
             />
           ))}
         </View>
 
-        {/* ── Verify Button ── */}
-        <View className="mt-8">
+        <View style={styles.btnWrap}>
           <PrimaryButton
             title="Verify"
             onPress={() => {
               const result = otpSchema.safeParse(getValues());
               if (!result.success) {
-                // eslint-disable-next-line no-console
                 console.warn('OTP validation failed', result.error.flatten());
               }
               navigation.navigate('VerificationSuccessScreen');
@@ -95,11 +84,8 @@ const NumberVerifyScreen = ({navigation}: any) => {
           />
         </View>
 
-        {/* ── Resend Code ── */}
-        <TouchableOpacity className="mt-4 items-center" onPress={() => {}}>
-          <Text className="text-[#1E78F5] font-medium"
-          style={{ fontSize: sf(16),  }}
-          >
+        <TouchableOpacity style={styles.resendWrap} onPress={() => {}}>
+          <Text style={[styles.resend, { fontSize: sf(16) }]} weight="medium">
             Resend Code
           </Text>
         </TouchableOpacity>
@@ -108,5 +94,37 @@ const NumberVerifyScreen = ({navigation}: any) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  page: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 24,
+    marginTop: 80,
+  },
+  headerBlock: { marginTop: 64, rowGap: 8 },
+  title: { color: '#000000' },
+  subtitle: { color: '#7D858E' },
+  otpRow: {
+    marginTop: 32,
+    flexDirection: 'row',
+    columnGap: 16,
+    justifyContent: 'center',
+  },
+  otpCell: {
+    color: '#000000',
+    fontWeight: '600',
+    textAlign: 'center',
+    letterSpacing: 0,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#B6B9C9',
+  },
+  btnWrap: { marginTop: 32 },
+  resendWrap: { marginTop: 16, alignItems: 'center' },
+  resend: { color: '#1E78F5' },
+});
 
 export default NumberVerifyScreen;

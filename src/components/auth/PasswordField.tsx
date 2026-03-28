@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { EyeOff } from 'lucide-react-native';
 import { sf, sh, sw } from '@/utils/responsive';
 import { Text } from '../common/Text';
@@ -16,21 +16,21 @@ export default function PasswordField({
   onToggleShowPassword: () => void; 
 }) {
   return (
-    <View className="gap-y-2 pt-4">
-      <Text className="text-black font-semibold"
-      style={{ fontSize: sf(18), lineHeight: sf(18), letterSpacing: 0 }} 
+    <View style={styles.wrap}>
+      <Text
+        style={[styles.label, { fontSize: sf(18), lineHeight: sf(18), letterSpacing: 0 }]}
+        weight="semibold"
       >
         Password
       </Text>
-      <View className="flex-row items-center border-b border-[#B6B9C9]">
+      <View style={styles.fieldRow}>
         <TextInput
           placeholder="••••••••••••"
           placeholderTextColor="#7D858E"
           secureTextEntry={!showPassword}
           value={password}
           onChangeText={onChangeText}
-          style={{ fontSize: sf(12), paddingVertical: sh(8) }}
-          className="flex-1 text-[#7D858E]"
+          style={[styles.input, { fontSize: sf(12), paddingVertical: sh(8) }]}
         />
         <TouchableOpacity
           onPress={onToggleShowPassword}
@@ -43,3 +43,17 @@ export default function PasswordField({
   );
 }
 
+const styles = StyleSheet.create({
+  wrap: { rowGap: 8, paddingTop: 16 },
+  label: { color: '#000000' },
+  fieldRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#B6B9C9',
+  },
+  input: {
+    flex: 1,
+    color: '#7D858E',
+  },
+});

@@ -6,6 +6,7 @@ import {
   ScrollView,
   Modal,
   FlatList,
+  StyleSheet,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { ChevronLeft, ChevronDown } from 'lucide-react-native';
@@ -81,37 +82,40 @@ const ProfileSetupScreen = ({navigation}: any) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={styles.safeArea}>
       <ScrollView
-        className="flex-1 px-5 pt-4"
+        style={styles.scroll}
         contentContainerStyle={{ paddingBottom: 120 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         {/* ── Back Button ── */}
-        <TouchableOpacity className="" onPress={() => {}}>
+        <TouchableOpacity onPress={() => {}}>
           <ChevronLeft size={24} color="#000000" />
         </TouchableOpacity>
 
         {/* ── Header ── */}
-        <View className="gap-y-2" style={{ marginTop: 12 }}>
-          <Text className="text-black font-semibold leading-[28px]"
-          style={{ fontSize: sf(28), lineHeight: sf(28), letterSpacing: 0 }}
+        <View style={styles.headerBlock}>
+          <Text
+            style={[styles.screenTitle, { fontSize: sf(28), lineHeight: sf(28), letterSpacing: 0 }]}
+            weight="semibold"
           >
             Tell Us About You
           </Text>
-          <Text className="text-[#7D858E] font-normal leading-[15px]"
-          style={{ fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }}
+          <Text
+            style={[styles.screenSubtitle, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            weight="regular"
           >
             Complete your profile to get started
           </Text>
         </View>
 
         {/* ── First & Last Name ── */}
-        <View className="mt-6 flex-row gap-x-3">
-          <View className="flex-1">
-            <Text className="text-black font-semibold leading-[100%] tracking-[0%] mb-2"
-            style={{ fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }}
+        <View style={styles.nameRow}>
+          <View style={styles.flex1}>
+            <Text
+              style={[styles.labelSemibold, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+              weight="semibold"
             >First Name</Text>
             <TextInput
               placeholder="JJ"
@@ -121,9 +125,10 @@ const ProfileSetupScreen = ({navigation}: any) => {
               style={inputStyle}
             />
           </View>
-          <View className="flex-1">
-            <Text className="text-black font-semibold leading-[100%] tracking-[0%] mb-2"
-            style={{ fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }}
+          <View style={styles.flex1}>
+            <Text
+              style={[styles.labelSemibold, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+              weight="semibold"
             >Last Name</Text>
             <TextInput
               placeholder="Smith"
@@ -136,11 +141,12 @@ const ProfileSetupScreen = ({navigation}: any) => {
         </View>
 
         {/* ── Gender ── */}
-        <View className="mt-6">
-          <Text className="text-black font-semibold leading-[100%] tracking-[0%] mb-2"
-          style={{ fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }}
+        <View style={styles.section}>
+          <Text
+            style={[styles.labelSemibold, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            weight="semibold"
           >Gender</Text>
-          <View className="flex-row gap-x-3">
+          <View style={styles.rowGap}>
             {GENDERS.map((g) => {
               const selected = gender === g;
               return (
@@ -174,11 +180,12 @@ const ProfileSetupScreen = ({navigation}: any) => {
         </View>
 
         {/* ── Date of Birth ── */}
-        <View className="mt-6">
-          <Text className="text-black  font-semibold leading-[100%] tracking-[0%] mb-2"
-          style={{ fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }}
+        <View style={styles.section}>
+          <Text
+            style={[styles.labelSemibold, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            weight="semibold"
           >Date of birth</Text>
-          <View className="flex-row gap-x-3">
+          <View style={styles.rowGap}>
             {(['day', 'month', 'year'] as NonNullable<DropdownField>[]).map((field) => (
               <TouchableOpacity
                 key={field}
@@ -205,9 +212,10 @@ const ProfileSetupScreen = ({navigation}: any) => {
         </View>
 
         {/* ── Bio ── */}
-        <View className="mt-6">
-          <Text className="text-black font-normal leading-[100%] tracking-[0%] mb-2"
-          style={{ fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }}
+        <View style={styles.section}>
+          <Text
+            style={[styles.labelRegular, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            weight="regular"
           >Add a Bio</Text>
           <TextInput
             placeholder="Write something interesting..."
@@ -231,7 +239,7 @@ const ProfileSetupScreen = ({navigation}: any) => {
       </ScrollView>
 
       {/* ── Continue Button ── */}
-      <View className="absolute bottom-0 left-0 right-0 px-5 pb-8 bg-white">
+      <View style={styles.footer}>
         <PrimaryButton
           title="Continue"
           onPress={() => {
@@ -257,12 +265,12 @@ const ProfileSetupScreen = ({navigation}: any) => {
         onRequestClose={() => setOpenDropdown(null)}
       >
         <TouchableOpacity
-          className="flex-1 bg-black/40 justify-end"
+          style={styles.modalBackdrop}
           activeOpacity={1}
           onPress={() => setOpenDropdown(null)}
         >
-          <View className="bg-white rounded-t-3xl px-5 pt-4 pb-10" style={{ maxHeight: 320 }}>
-            <View className="w-10 h-1 bg-[#E8EAED] rounded-full self-center mb-4" />
+          <View style={[styles.modalSheet, { maxHeight: 320 }]}>
+            <View style={styles.modalHandle} />
             <FlatList
               data={openDropdown ? dropdownOptions[openDropdown] : []}
               keyExtractor={(item) => item}
@@ -301,5 +309,49 @@ const ProfileSetupScreen = ({navigation}: any) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  scroll: { flex: 1, paddingHorizontal: 20, paddingTop: 16 },
+  headerBlock: { marginTop: 12, rowGap: 8 },
+  screenTitle: { color: '#000000' },
+  screenSubtitle: { color: '#7D858E' },
+  nameRow: { marginTop: 24, flexDirection: 'row', columnGap: 12 },
+  flex1: { flex: 1 },
+  labelSemibold: { color: '#000000', marginBottom: 8 },
+  labelRegular: { color: '#000000', marginBottom: 8 },
+  section: { marginTop: 24 },
+  rowGap: { flexDirection: 'row', columnGap: 12 },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    paddingBottom: 32,
+    backgroundColor: '#FFFFFF',
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'flex-end',
+  },
+  modalSheet: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 40,
+  },
+  modalHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#E8EAED',
+    borderRadius: 999,
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+});
 
 export default ProfileSetupScreen;

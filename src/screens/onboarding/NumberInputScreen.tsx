@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { ChevronDown } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,7 +15,6 @@ import {
 const NumberEnterScreen = ({ navigation }: any) => {
   const [show, setShow] = useState(false);
 
-  // ✅ Store full country object
   const [country, setCountry] = useState({
     flag: '🇳🇱',
     dial_code: '+31',
@@ -30,69 +29,45 @@ const NumberEnterScreen = ({ navigation }: any) => {
   const phoneNumber = watch('phoneNumber');
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 px-5 pt-4 mt-20 pb-6">
-        {/* ── Header ── */}
-        <View className="mt-16 gap-y-2">
-          <Text
-            className="text-black    font-semibold"
-            style={{ fontSize: sf(28) }}
-          >
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.page}>
+        <View style={styles.headerBlock}>
+          <Text style={[styles.title, { fontSize: sf(28) }]} weight="semibold">
             My mobile number
           </Text>
-          <Text
-            className="text-[#7D858E]  font-normal   "
-            style={{ fontSize: sf(15) }}
-          >
+          <Text style={[styles.subtitle, { fontSize: sf(15) }]} weight="regular">
             Your streak is waiting 🔥
           </Text>
         </View>
 
-        {/* ── Phone Input ── */}
-        <View className="mt-8 flex-row items-center border border-[#E8EAED] rounded-xl px-4 py-3 gap-x-3">
-          {/* Country Selector */}
-          <TouchableOpacity
-            className="flex-row items-center gap-x-1"
-            onPress={() => setShow(true)}
-          >
-            <Text className="" style={{ fontSize: sf(20) }}>
-              {country.flag}
-            </Text>
-            <Text className="text-black" style={{ fontSize: sf(16) }}>
-              {country.dial_code}
-            </Text>
+        <View style={styles.phoneRow}>
+          <TouchableOpacity style={styles.countryBtn} onPress={() => setShow(true)}>
+            <Text style={{ fontSize: sf(20) }}>{country.flag}</Text>
+            <Text style={[styles.dialCode, { fontSize: sf(16) }]}>{country.dial_code}</Text>
             <ChevronDown size={16} color="#000000" />
           </TouchableOpacity>
 
-          {/* Divider */}
-          <View className="w-[1px] h-5 bg-[#E8EAED]" />
+          <View style={styles.divider} />
 
-          {/* Number Input */}
           <TextInput
             placeholder="300 1234567"
             placeholderTextColor="black"
             keyboardType="phone-pad"
             value={phoneNumber}
-            className="flex-1 text-black  font-medium"
-            style={{ fontSize: sf(16) }}
+            style={[styles.phoneInput, { fontSize: sf(16) }]}
             onChangeText={v => setValue('phoneNumber', v)}
           />
         </View>
 
-        {/* ── Helper Text ── */}
-        <Text
-          className="text-[#7D858E] font-normal    mt-4"
-          style={{ fontSize: sf(15) }}
-        >
+        <Text style={[styles.helper, { fontSize: sf(15) }]} weight="regular">
           We'll text you a code to verify you're really you. Message and data
           rates may apply.{' '}
-          <Text className="text-[#7D858E]">
+          <Text style={styles.helperMuted} weight="regular">
             What happens if your number changes?
           </Text>
         </Text>
 
-        {/* ── Button ── */}
-        <View className="mt-6">
+        <View style={styles.btnWrap}>
           <PrimaryButton
             title="Send verification Code"
             onPress={() => {
@@ -100,7 +75,6 @@ const NumberEnterScreen = ({ navigation }: any) => {
                 getValues().phoneNumber,
               );
               if (!result.success) {
-                // eslint-disable-next-line no-console
                 console.warn(
                   'Phone number validation failed',
                   result.error.flatten(),
@@ -119,16 +93,16 @@ const NumberEnterScreen = ({ navigation }: any) => {
           />
         </View>
 
-        {/* ── Already have account ── */}
-        <View className="mt-4 items-center">
-          <Text className="text-[#7D858E]  font-normal " style={{ fontSize: sf(16) }}>
+        <View style={styles.footerRow}>
+          <Text style={[styles.footerText, { fontSize: sf(16) }]} weight="regular">
             Already have an account?{' '}
-            <Text className="text-[#1E78F5] underline font-medium">Login</Text>
+            <Text style={styles.loginLink} weight="medium">
+              Login
+            </Text>
           </Text>
         </View>
       </View>
 
-      {/* ── Country Picker ── */}
       <CountryPicker
         lang="en"
         show={show}
@@ -140,5 +114,44 @@ const NumberEnterScreen = ({ navigation }: any) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  page: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    marginTop: 80,
+    paddingBottom: 24,
+  },
+  headerBlock: { marginTop: 64, rowGap: 8 },
+  title: { color: '#000000' },
+  subtitle: { color: '#7D858E' },
+  phoneRow: {
+    marginTop: 32,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E8EAED',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    columnGap: 12,
+  },
+  countryBtn: { flexDirection: 'row', alignItems: 'center', columnGap: 4 },
+  dialCode: { color: '#000000' },
+  divider: { width: 1, height: 20, backgroundColor: '#E8EAED' },
+  phoneInput: {
+    flex: 1,
+    color: '#000000',
+    fontWeight: '500',
+  },
+  helper: { color: '#7D858E', marginTop: 16 },
+  helperMuted: { color: '#7D858E' },
+  btnWrap: { marginTop: 24 },
+  footerRow: { marginTop: 16, alignItems: 'center' },
+  footerText: { color: '#7D858E' },
+  loginLink: { color: '#1E78F5', textDecorationLine: 'underline' },
+});
 
 export default NumberEnterScreen;

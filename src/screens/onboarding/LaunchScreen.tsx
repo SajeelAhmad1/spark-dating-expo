@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { Zap, Heart, Camera, Flame, MessageCircle } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -34,32 +34,19 @@ const FEATURES = [
 // ─── Screen ───────────────────────────────────────────────
 const LaunchScreen = ({ navigation }: any) => {
   return (
-    <SafeAreaView className="flex-1">
-      <View className="flex-1 px-5 py-6">
-        {/* ── Main Content ── */}
-        <View className="flex-1 items-center justify-center gap-y-4">
-          {/* Icon */}
-          <View className="w-[104px] h-[104px] rounded-full bg-[#1E78F5] items-center justify-center mb-4">
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.page}>
+        <View style={styles.main}>
+          <View style={styles.iconCircle}>
             <Zap width={35} height={56} color="#ffffff" fill="#ffffff" />
           </View>
 
-          {/* Title */}
-          <Text
-            style={{
-              fontSize: sf(24), 
-            }}
-            className="text-black text-center font-semibold"
-          >
+          <Text style={[styles.title, { fontSize: sf(24) }]} weight="semibold">
             We're Live!
           </Text>
 
-          {/* Subtitle */}
           <Text
-            style={{
-              fontFamily: 'Poppins-Regular',
-              fontSize: sf(16), 
-            }}
-            className="text-[#7D858E] text-center"
+            style={[styles.subtitle, { fontFamily: 'Poppins-Regular', fontSize: sf(16) }]}
           >
             SparkLink is officially live with{' '}
             <Text style={{ fontFamily: 'Poppins-Medium', color: '#1E78F5' }}>
@@ -68,76 +55,56 @@ const LaunchScreen = ({ navigation }: any) => {
             🎉
           </Text>
 
-          {/* Daily Stats Card */}
           <LinearGradient
             colors={['#1E78F51A', '#FBB2021A']}
-            style={{ borderRadius: sf(16), width: '100%', padding: sf(16), }}
+            style={{ borderRadius: sf(16), width: '100%', padding: sf(16) }}
           >
-            {/* Card Header */}
             <Text
-              style={{
-                fontFamily: 'Poppins-Regular',
-                fontSize: sf(16), 
-              }}
-              className="text-black text-center"
+              style={[styles.cardLine, { fontFamily: 'Poppins-Regular', fontSize: sf(16) }]}
             >
               Every Day You'll See
             </Text>
             <Text
-              style={{
-                fontFamily: 'Poppins-SemiBold',
-                fontSize: sf(20), 
-              }}
-              className="text-[#1E78F5] text-center"
+              style={[styles.cardHighlight, { fontFamily: 'Poppins-SemiBold', fontSize: sf(20) }]}
             >
               20 People
             </Text>
             <Text
-              style={{
-                fontFamily: 'Poppins-Regular',
-                fontSize: sf(16), 
-              }}
-              className="text-[#555555] text-center"
+              style={[styles.cardMuted, { fontFamily: 'Poppins-Regular', fontSize: sf(16) }]}
             >
               Fresh matches to connect with
             </Text>
 
-            {/* Feature Grid */}
-            <View className="gap-y-3 mt-1">
-              <View className="flex-row gap-x-2">
+            <View style={styles.featureGrid}>
+              <View style={styles.featureRow}>
                 {FEATURES.slice(0, 2).map(({ id, label, icon }) => (
-                  <View
-                    key={id}
-                    className="flex-1 bg-white rounded-2xl items-center justify-center space-y-3 h-[88px] "
-                  >
+                  <View key={id} style={styles.featureTile}>
                     {icon}
                     <Text
-                      style={{
-                        fontFamily: 'Poppins-Regular',
-                        fontSize: sf(16),
-                        lineHeight: sf(16),
-                        letterSpacing: 0,
-                      }}
-                      className="text-[#7D858E]"
+                      style={[
+                        styles.featureLabel,
+                        {
+                          fontFamily: 'Poppins-Regular',
+                          fontSize: sf(16),
+                          lineHeight: sf(16),
+                          letterSpacing: 0,
+                        },
+                      ]}
                     >
                       {label}
                     </Text>
                   </View>
                 ))}
               </View>
-              <View className="flex-row gap-x-2">
+              <View style={styles.featureRow}>
                 {FEATURES.slice(2, 4).map(({ id, label, icon }) => (
-                  <View
-                    key={id}
-                    className="flex-1 bg-white rounded-2xl items-center justify-center space-y-3 h-[88px]"
-                  >
+                  <View key={id} style={styles.featureTile}>
                     {icon}
                     <Text
-                      style={{
-                        fontFamily: 'Poppins-Regular',
-                        fontSize: sf(16), 
-                      }}
-                      className="text-[#7D858E]"
+                      style={[
+                        styles.featureLabel,
+                        { fontFamily: 'Poppins-Regular', fontSize: sf(16) },
+                      ]}
                     >
                       {label}
                     </Text>
@@ -146,14 +113,9 @@ const LaunchScreen = ({ navigation }: any) => {
               </View>
             </View>
 
-            {/* Premium Banner */}
-            <View className="items-center mt-3">
+            <View style={styles.premiumBanner}>
               <Text
-                style={{
-                  fontFamily: 'Poppins-SemiBold',
-                  fontSize: sf(16), 
-                }}
-                className="text-black text-center"
+                style={[styles.premiumText, { fontFamily: 'Poppins-SemiBold', fontSize: sf(16) }]}
               >
                 Invite 2 friends to unlock premium features
               </Text>
@@ -161,7 +123,6 @@ const LaunchScreen = ({ navigation }: any) => {
           </LinearGradient>
         </View>
 
-        {/* ── Bottom: Action ── */}
         <PrimaryButton
           title="Let's Find your Spark!"
           onPress={() => navigation.navigate('EnableLocationScreen')}
@@ -173,5 +134,44 @@ const LaunchScreen = ({ navigation }: any) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1 },
+  page: { flex: 1, paddingHorizontal: 20, paddingVertical: 24 },
+  main: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    rowGap: 16,
+  },
+  iconCircle: {
+    width: 104,
+    height: 104,
+    borderRadius: 9999,
+    backgroundColor: '#1E78F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  title: { color: '#000000', textAlign: 'center' },
+  subtitle: { color: '#7D858E', textAlign: 'center' },
+  cardLine: { color: '#000000', textAlign: 'center' },
+  cardHighlight: { color: '#1E78F5', textAlign: 'center' },
+  cardMuted: { color: '#555555', textAlign: 'center' },
+  featureGrid: { rowGap: 12, marginTop: 4 },
+  featureRow: { flexDirection: 'row', columnGap: 8 },
+  featureTile: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    rowGap: 12,
+    height: 88,
+  },
+  featureLabel: { color: '#7D858E' },
+  premiumBanner: { alignItems: 'center', marginTop: 12 },
+  premiumText: { color: '#000000', textAlign: 'center' },
+});
 
 export default LaunchScreen;

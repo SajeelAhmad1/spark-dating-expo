@@ -5,6 +5,7 @@ import {
   ScrollView,
   Modal,
   FlatList,
+  StyleSheet,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { ChevronLeft, ChevronDown } from 'lucide-react-native';
@@ -53,9 +54,9 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={styles.safeArea}>
       <ScrollView
-        className="flex-1 px-5 pt-4"
+        style={styles.scroll}
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
       >
@@ -65,25 +66,28 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
         </TouchableOpacity>
 
         {/* ── Header ── */}
-        <View className="gap-y-2" style={{ marginTop: 12 }}>
-          <Text className="text-black  font-semibold leading-[28px]"
-          style={{ fontSize: sf(28), lineHeight: sf(28), letterSpacing: 0 }}
+        <View style={styles.headerBlock}>
+          <Text
+            style={[styles.screenTitle, { fontSize: sf(28), lineHeight: sf(28), letterSpacing: 0 }]}
+            weight="semibold"
           >
             Physical Attributes
           </Text>
-          <Text className="text-[#7D858E] font-normal leading-[15px]"
-          style={{ fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }}
+          <Text
+            style={[styles.screenSubtitle, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            weight="regular"
           >
             Help others learn more about you
           </Text>
         </View>
 
         {/* ── Dropdowns ── */}
-        <View className="gap-y-5" style={{ marginTop: 12 }}>
+        <View style={styles.fieldsCol}>
           {fields.map(({ key, label, placeholder }) => (
             <View key={key}>
-              <Text className="text-black font-semibold leading-[100%] tracking-[0%] mb-2"
-              style={{ fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }}
+              <Text
+                style={[styles.fieldLabel, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+                weight="semibold"
               >
                 {label}
               </Text>
@@ -115,15 +119,16 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
         </View>
 
         {/* ── Skip Note ── */}
-        <Text className="text-[#FBB202] font-normal leading-[100%] tracking-[0%] mt-5"
-        style={{ fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }}
+        <Text
+          style={[styles.skipNote, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+          weight="regular"
         >
           You can always skip this step and edit later
         </Text>
       </ScrollView>
 
       {/* ── Continue Button ── */}
-      <View className="absolute bottom-0 left-0 right-0 px-5 pb-8">
+      <View style={styles.footer}>
         <PrimaryButton
           title="Continue"
           onPress={() => navigation?.navigate('InterestsScreen')}
@@ -142,16 +147,12 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
         onRequestClose={() => setOpenDropdown(null)}
       >
         <TouchableOpacity
-          className="flex-1 bg-black/40 justify-end"
+          style={styles.modalBackdrop}
           activeOpacity={1}
           onPress={() => setOpenDropdown(null)}
         >
-          <View
-            className="bg-white rounded-t-3xl px-5 pt-4 pb-10"
-            style={{ maxHeight: 360 }}
-          >
-            {/* Handle */}
-            <View className="w-10 h-1 bg-[#E8EAED] rounded-full self-center mb-4" />
+          <View style={[styles.modalSheet, { maxHeight: 360 }]}>
+            <View style={styles.modalHandle} />
 
             <FlatList
               data={openDropdown ? dropdownOptions[openDropdown] : []}
@@ -194,5 +195,45 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  scroll: { flex: 1, paddingHorizontal: 20, paddingTop: 16 },
+  headerBlock: { marginTop: 12, rowGap: 8 },
+  screenTitle: { color: '#000000' },
+  screenSubtitle: { color: '#7D858E' },
+  fieldsCol: { marginTop: 12, rowGap: 20 },
+  fieldLabel: { color: '#000000', marginBottom: 8 },
+  skipNote: { color: '#FBB202', marginTop: 20 },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    paddingBottom: 32,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'flex-end',
+  },
+  modalSheet: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 40,
+  },
+  modalHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#E8EAED',
+    borderRadius: 999,
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+});
 
 export default PhysicalAttributesScreen;

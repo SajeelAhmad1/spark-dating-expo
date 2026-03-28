@@ -83,8 +83,9 @@ export default function InboxScreen({ navigation }: any) {
           justifyContent: 'center',
           backgroundColor: '#FFFFFF',
           paddingHorizontal: sw(20),
+          paddingTop: 32,
+          paddingBottom: 24,
         }}
-        className="py-6 pt-8"
       >
         <TouchableOpacity
           onPress={() => navigation?.goBack()}

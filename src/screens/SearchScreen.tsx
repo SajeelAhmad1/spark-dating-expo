@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Animated, Easing } from 'react-native';
+import { View, Animated, Easing, StyleSheet } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
@@ -21,7 +21,7 @@ const OrbitRing = ({
   duration: number;
   color1: string;
   color2: string;
-  color3?: string; // optional
+  color3?: string;
   strokeWidth?: number;
   delay?: number;
   reverse?: boolean;
@@ -48,7 +48,6 @@ const OrbitRing = ({
   const r = size / 2 - strokeWidth;
   const circumference = 2 * Math.PI * r;
 
-  // Dynamically adjust arc math based on 2 or 3 arcs
   const arcCount = color3 ? 3 : 2;
   const arc = circumference * 0.22;
   const gap = (circumference - arc * arcCount) / arcCount;
@@ -63,7 +62,6 @@ const OrbitRing = ({
       }}
     >
       <Svg width={size} height={size}>
-        {/* Arc 1 */}
         <Circle
           cx={size / 2}
           cy={size / 2}
@@ -75,7 +73,6 @@ const OrbitRing = ({
           strokeDashoffset={0}
           strokeLinecap="round"
         />
-        {/* Arc 2 */}
         <Circle
           cx={size / 2}
           cy={size / 2}
@@ -87,7 +84,6 @@ const OrbitRing = ({
           strokeDashoffset={-(arc + gap)}
           strokeLinecap="round"
         />
-        {/* Arc 3 — only if color3 provided */}
         {color3 && (
           <Circle
             cx={size / 2}
@@ -120,12 +116,8 @@ const SearchScreen = ({ navigation }: any) => {
   }, [navigation]);
 
   return (
-    <SafeAreaView className="flex-1 bg-white items-center justify-center">
-      {/* Orbit container */}
-      <View
-        className="items-center justify-center"
-        style={{ width: orbitContainerSize, height: orbitContainerSize }}
-      >
+    <SafeAreaView style={styles.safeArea}>
+      <View style={[styles.orbitWrap, { width: orbitContainerSize, height: orbitContainerSize }]}>
         <OrbitRing
           size={orbitContainerSize}
           duration={7000}
@@ -164,34 +156,56 @@ const SearchScreen = ({ navigation }: any) => {
           reverse
         />
 
-        {/* Center Avatar */}
         <View
-          className="rounded-full overflow-hidden bg-gray-100"
-          style={{
-            width: avatarSize,
-            height: avatarSize,
-            borderWidth: 3,
-            borderColor: '#ffffff',
-          }}
+          style={[
+            styles.avatarRing,
+            {
+              width: avatarSize,
+              height: avatarSize,
+            },
+          ]}
         >
           <ProfileAvatar width={avatarSize} height={avatarSize} />
         </View>
       </View>
 
-      {/* Label */}
       <Text
-        className="text-black text-center mt-10"
-        style={{
-          fontFamily: 'Poppins-Regular',
-          fontSize: sf(16),
-          lineHeight: sf(16),
-          letterSpacing: 0,
-        }}
+        style={[
+          styles.caption,
+          {
+            fontFamily: 'Poppins-Regular',
+            fontSize: sf(16),
+            lineHeight: sf(16),
+            letterSpacing: 0,
+          },
+        ]}
       >
         Finding people near you
       </Text>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  orbitWrap: { alignItems: 'center', justifyContent: 'center' },
+  avatarRing: {
+    borderRadius: 9999,
+    overflow: 'hidden',
+    backgroundColor: '#F3F4F6',
+    borderWidth: 3,
+    borderColor: '#ffffff',
+  },
+  caption: {
+    color: '#000000',
+    textAlign: 'center',
+    marginTop: 40,
+  },
+});
 
 export default SearchScreen;

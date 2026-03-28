@@ -1,3 +1,4 @@
+import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -52,7 +53,7 @@ export default function App() {
   if (!loaded && !error) return null;
 
   return (
-    <GestureHandlerRootView className="flex-1">
+    <GestureHandlerRootView style={styles.root}>
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Onboarding1"
@@ -124,3 +125,7 @@ export default function App() {
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+});

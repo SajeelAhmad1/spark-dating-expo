@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { Share2, Copy } from 'lucide-react-native';
 import Gift from '@/assets/images/gift.svg';
@@ -32,7 +32,7 @@ const STATS = [
 // ─── Sub Components ───────────────────────────────────────
 
 const GiftIcon = () => (
-  <View className="w-[104px] h-[104px] rounded-full bg-[#1E78F5] items-center justify-center mb-8">
+  <View style={styles.giftCircle}>
     <Gift width={56} height={56} color="#ffffff" />
   </View>
 );
@@ -72,10 +72,7 @@ const Subtitle = () => (
 );
 
 const ReferralLinkBox = ({ onCopy }: { onCopy: () => void }) => (
-  <View
-    className="w-full rounded-2xl h-[110px]"
-    style={{ backgroundColor: '#F7F8FA', padding: 16 }}
-  >
+  <View style={styles.linkBoxOuter}>
     <Text
       style={{
         fontFamily: 'Poppins-Regular',
@@ -84,12 +81,11 @@ const ReferralLinkBox = ({ onCopy }: { onCopy: () => void }) => (
         color: '#7D858E',
         marginBottom: 10,
       }}
-      className='text-[#7D858E]'
     >
       Your Referral Link
     </Text>
 
-    <View className="flex-row items-center justify-between h-[44px] bg-white rounded-[8px] px-2">
+    <View style={styles.linkRow}>
       <Text
         numberOfLines={1}
         style={{
@@ -103,10 +99,7 @@ const ReferralLinkBox = ({ onCopy }: { onCopy: () => void }) => (
         {REFERRAL_LINK}
       </Text>
 
-      <TouchableOpacity
-        onPress={onCopy}
-        className="ml-3 w-8 h-8 items-center justify-center"
-      >
+      <TouchableOpacity onPress={onCopy} style={styles.copyBtn}>
         <Copy size={16} color="#1E78F5" />
       </TouchableOpacity>
     </View>
@@ -121,8 +114,7 @@ const StatCard = ({
   border,
 }: (typeof STATS)[0]) => (
   <View
-    className="flex-1  rounded-2xl items-center justify-center ml-2 h-[72px] "
-    style={{ backgroundColor: bg, borderWidth: 0.2, borderColor: border }}
+    style={[styles.statCard, { backgroundColor: bg, borderColor: border }]}
   >
     <Text
       style={{
@@ -153,7 +145,6 @@ const StatCard = ({
 // ─── Main Screen ──────────────────────────────────────────
 const InviteScreen = ({ navigation }: any) => {
   const handleCopy = () => {
-    // Clipboard.setString(REFERRAL_LINK);
     console.log('Copied:', REFERRAL_LINK);
   };
 
@@ -162,27 +153,24 @@ const InviteScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 px-5 py-10">
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.page}>
 
-        {/* ── Top: Main Content ── */}
-        <View className="flex-1 items-center justify-center gap-y-6">
+        <View style={styles.main}>
           <GiftIcon />
           <Title />
           <Subtitle />
           <ReferralLinkBox onCopy={handleCopy} />
-          <View className="flex-row w-full gap-x-3">
+          <View style={styles.statsRow}>
             {STATS.map(stat => (
               <StatCard key={stat.id} {...stat} />
             ))}
           </View>
         </View>
 
-        {/* ── Bottom: Actions ── */}
-        <View className="gap-y-4">
+        <View style={styles.bottomActions}>
           <PrimaryButton
             title="Share Invite Link"
-            // onPress={handleShare}
             onPress={() => navigation.navigate('WaitingScreen')}
             colors={['#1E78F5', '#DC9B00']}
             variant="gradient"
@@ -210,5 +198,52 @@ const InviteScreen = ({ navigation }: any) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  page: { flex: 1, paddingHorizontal: 20, paddingVertical: 40 },
+  main: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    rowGap: 24,
+  },
+  giftCircle: {
+    width: 104,
+    height: 104,
+    borderRadius: 9999,
+    backgroundColor: '#1E78F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 32,
+  },
+  linkBoxOuter: {
+    width: '100%',
+    borderRadius: 16,
+    height: 110,
+    backgroundColor: '#F7F8FA',
+    padding: 16,
+  },
+  linkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: 44,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  copyBtn: { marginLeft: 12, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
+  statsRow: { flexDirection: 'row', width: '100%', columnGap: 12 },
+  statCard: {
+    flex: 1,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 72,
+    borderWidth: 0.2,
+  },
+  bottomActions: { rowGap: 16 },
+});
 
 export default InviteScreen;

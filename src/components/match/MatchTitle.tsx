@@ -1,42 +1,23 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { MATCH_CIRCLE_SIZE } from '@/constants/match';
 import { sf } from '@/utils/responsive';
 
 export default function MatchTitle() {
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Text 
-        className="font-bold  text-[#1C1C1E]"
-        style={{ fontSize: sf(44), lineHeight: sf(46), letterSpacing: 0 }}
+    <View style={styles.row}>
+      <Text
+        style={[styles.titleDark, { fontSize: sf(44), lineHeight: sf(46), letterSpacing: 0 }]}
+        weight="bold"
       >
         {"It's a"}
       </Text>
 
-      <View
-        style={{
-          width: MATCH_CIRCLE_SIZE,
-          height: MATCH_CIRCLE_SIZE,
-          borderRadius: MATCH_CIRCLE_SIZE / 2,
-          backgroundColor: '#1E78F5',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+      <View style={styles.circle}>
         <Text
-          style={{
-            fontSize: sf(44),
-            lineHeight: sf(46),
-            textAlign: 'center',
-          }}
-          className="font-bold text-[#FFFFFF]"
+          style={[styles.titleLight, { fontSize: sf(44), lineHeight: sf(46) }]}
+          weight="bold"
         >
           {'match!'}
         </Text>
@@ -45,3 +26,20 @@ export default function MatchTitle() {
   );
 }
 
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleDark: { color: '#1C1C1E' },
+  circle: {
+    width: MATCH_CIRCLE_SIZE,
+    height: MATCH_CIRCLE_SIZE,
+    borderRadius: MATCH_CIRCLE_SIZE / 2,
+    backgroundColor: '#1E78F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleLight: { color: '#FFFFFF', textAlign: 'center' },
+});

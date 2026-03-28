@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
+  StyleSheet,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { ChevronLeft } from 'lucide-react-native';
@@ -25,7 +26,6 @@ export default function RequestsScreen({ navigation }: any) {
       navLockRef.current = false;
     }, 350);
 
-    // Only update highlight when staying on the same screen.
     if (tab === 'Request') {
       setActiveTab('Request');
       return;
@@ -42,15 +42,13 @@ export default function RequestsScreen({ navigation }: any) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={styles.safeArea}>
 
-      {/* Back button */}
       <TouchableOpacity style={{ paddingHorizontal: sw(16), paddingTop: sh(12), paddingBottom: sh(4) }}>
         <ChevronLeft size={22} color="#000" />
       </TouchableOpacity>
 
-      {/* Header */}
-      <View className="flex-row items-center gap-2" style={{ paddingHorizontal: sw(16), marginBottom: sh(20), marginTop: sh(4) }}>
+      <View style={[styles.headerRow, { paddingHorizontal: sw(16), marginBottom: sh(20), marginTop: sh(4) }]}>
         <Text
           style={{
             fontFamily: 'Poppins-SemiBold',
@@ -62,11 +60,7 @@ export default function RequestsScreen({ navigation }: any) {
           New Matches
         </Text>
 
-        {/* Badge */}
-        <View
-          className="rounded-full px-2 py-2 items-center justify-center"
-          style={{ backgroundColor: '#FBB202' }}
-        >
+        <View style={[styles.badge, { backgroundColor: '#FBB202' }]}>
           <Text
             style={{
               fontFamily: 'Poppins-SemiBold',
@@ -80,10 +74,9 @@ export default function RequestsScreen({ navigation }: any) {
         </View>
       </View>
 
-      {/* Match List */}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        className="flex-1"
+        style={styles.flex1}
         contentContainerStyle={{ paddingBottom: sh(140) }}
       >
         {REQUESTS.map(request => (
@@ -96,3 +89,16 @@ export default function RequestsScreen({ navigation }: any) {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  flex1: { flex: 1 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', columnGap: 8 },
+  badge: {
+    borderRadius: 9999,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

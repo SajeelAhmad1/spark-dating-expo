@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { sf, sr } from '@/utils/responsive';
 
@@ -11,30 +11,41 @@ export default function RememberMeToggle({
   onToggle: () => void;
 }) {
   return (
-    <TouchableOpacity
-      onPress={onToggle}
-      className="flex-row items-center gap-x-2"
-    >
+    <TouchableOpacity onPress={onToggle} style={styles.row}>
       <View
-        style={{
-          width: sf(18),
-          height: sf(18),
-          borderRadius: sr(3),
-        }}
-        className={`border border-[#1E78F5] items-center justify-center ${
-          rememberMe ? 'bg-[#1E78F5]' : 'bg-transparent'
-        }`}
+        style={[
+          styles.checkbox,
+          {
+            width: sf(18),
+            height: sf(18),
+            borderRadius: sr(3),
+          },
+          rememberMe ? styles.checkboxOn : styles.checkboxOff,
+        ]}
       >
         {rememberMe && (
-          <Text style={{ fontSize: sf(11), lineHeight: sf(14) }} className="text-white">
+          <Text style={[styles.checkmark, { fontSize: sf(11), lineHeight: sf(14) }]} weight="regular">
             ✓
           </Text>
         )}
       </View>
-      <Text style={{ fontSize: sf(14) }} className="text-black font-medium">
+      <Text style={[styles.label, { fontSize: sf(14) }]} weight="medium">
         Remember me
       </Text>
     </TouchableOpacity>
   );
 }
 
+const styles = StyleSheet.create({
+  row: { flexDirection: 'row', alignItems: 'center', columnGap: 8 },
+  checkbox: {
+    borderWidth: 1,
+    borderColor: '#1E78F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxOn: { backgroundColor: '#1E78F5' },
+  checkboxOff: { backgroundColor: 'transparent' },
+  checkmark: { color: '#FFFFFF' },
+  label: { color: '#000000' },
+});

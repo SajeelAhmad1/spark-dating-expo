@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import type { AuthSigninTab } from '@/types/auth';
 import { sf, sh } from '@/utils/responsive';
@@ -14,17 +14,18 @@ export default function PhoneEmailField({
   onChangeText: (v: string) => void;
 }) {
   return (
-    <View className="gap-y-2">
-      <Text className="text-black font-semibold"
-      style={{ fontSize: sf(18), lineHeight: sf(18), letterSpacing: 0 }}>
+    <View style={styles.wrap}>
+      <Text
+        style={[styles.label, { fontSize: sf(18), lineHeight: sf(18), letterSpacing: 0 }]}
+        weight="semibold"
+      >
         {activeTab === 'phone' ? 'Phone number' : 'Email'}
       </Text>
       <TextInput
         placeholder={activeTab === 'phone' ? '0000000000' : 'example@email.com'}
         placeholderTextColor="#7D858E"
         keyboardType={activeTab === 'phone' ? 'phone-pad' : 'email-address'}
-        style={{ fontSize: sf(12), paddingVertical: sh(8) }}
-        className="text-[#7D858E] border-b border-[#B6B9C9]"
+        style={[styles.input, { fontSize: sf(12), paddingVertical: sh(8) }]}
         value={value}
         onChangeText={onChangeText}
       />
@@ -32,3 +33,13 @@ export default function PhoneEmailField({
   );
 }
 
+const styles = StyleSheet.create({
+  wrap: { rowGap: 8 },
+  label: { color: '#000000' },
+  input: {
+    width: '100%',
+    color: '#7D858E',
+    borderBottomWidth: 1,
+    borderBottomColor: '#B6B9C9',
+  },
+});

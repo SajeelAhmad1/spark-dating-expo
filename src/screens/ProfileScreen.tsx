@@ -5,6 +5,7 @@ import {
   ScrollView,
   Image,
   Dimensions,
+  StyleSheet,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -37,7 +38,7 @@ const ProfileScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View className="flex-1">
+    <View style={styles.flex1}>
       {/* ── Full Screen Background Gradient ── */}
       <LinearGradient
         colors={['#1E78F5', '#FBB202']}
@@ -46,7 +47,7 @@ const ProfileScreen = ({ navigation }: any) => {
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       />
 
-      <SafeAreaView className="flex-1">
+      <SafeAreaView style={styles.flex1}>
         {/* ── Header ── */}
         <LinearGradient
           colors={['#1E78F5', '#FBB202']}
@@ -695,5 +696,9 @@ const ProfileScreen = ({ navigation }: any) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  flex1: { flex: 1 },
+});
 
 export default ProfileScreen;
