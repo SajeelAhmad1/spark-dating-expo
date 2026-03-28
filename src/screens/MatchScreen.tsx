@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, useWindowDimensions } from 'react-native';
+import { View, TouchableOpacity, SafeAreaView, useWindowDimensions } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { X } from 'lucide-react-native';
 import CameraScreen from './CameraScreen';
 import PhotoPreviewScreen from './PhotoPreviewScreen';

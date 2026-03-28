@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { Zap, Heart, Camera, Flame, MessageCircle } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';

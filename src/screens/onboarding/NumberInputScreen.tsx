@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, TextInput, TouchableOpacity } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { ChevronDown } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CountryPicker } from 'react-native-country-codes-picker';

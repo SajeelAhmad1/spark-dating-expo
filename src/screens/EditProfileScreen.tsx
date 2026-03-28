@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   ScrollView,
   Image,
@@ -9,6 +8,7 @@ import {
   FlatList,
   Modal,
 } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Settings,

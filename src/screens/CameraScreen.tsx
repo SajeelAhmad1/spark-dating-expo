@@ -1,13 +1,13 @@
 import React, { useRef, useState } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   StatusBar,
   Modal,
   ActivityIndicator,
 } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { CameraView, CameraType, useCameraPermissions, FlashMode } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { Cross, FlashlightIcon, FlashlightOffIcon, GalleryVerticalIcon, FlipHorizontal } from 'lucide-react-native';

@@ -1,6 +1,7 @@
 import { sf } from '@/utils/responsive';
 import React from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, View } from 'react-native';
+import { Text } from '@/components/common/Text';
 
 type ChatAvatarVariant = 'friend' | 'me';
 

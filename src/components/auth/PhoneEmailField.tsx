@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
+import { Text } from '@/components/common/Text';
 import type { AuthSigninTab } from '@/types/auth';
 import { sf, sh } from '@/utils/responsive';
 

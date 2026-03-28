@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   Image,
   Dimensions,
   Alert,
 } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { ChevronLeft, Plus, X } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';

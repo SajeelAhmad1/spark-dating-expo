@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   TextInput,
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
 } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { ChevronLeft, Search, Lock } from 'lucide-react-native';
 import BottomTabBar from '@/components/common/BottomTabBar';
 import { CONVERSATIONS } from '@/constants/conversations';

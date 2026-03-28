@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import {
   View,
-  Text,
   TextInput,
   TouchableOpacity,
   ScrollView,
@@ -9,6 +8,7 @@ import {
   Alert,
   StyleSheet,
 } from 'react-native';
+import { Text } from '@/components/common/Text';
 import {
   ChevronLeft,
   MoreVertical,

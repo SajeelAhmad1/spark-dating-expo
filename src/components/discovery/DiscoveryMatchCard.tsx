@@ -1,5 +1,6 @@
 import React from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Image, TouchableOpacity, View } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ProgressDots } from '@/components/ProgressDots';
 import ChatIcon from '@/assets/images/chatIcon.svg';

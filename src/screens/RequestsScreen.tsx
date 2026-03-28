@@ -1,11 +1,11 @@
 import React from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
 } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { ChevronLeft } from 'lucide-react-native';
 import { REQUESTS } from '@/constants/requests';
 import RequestCard from '@/components/requests/RequestCard';

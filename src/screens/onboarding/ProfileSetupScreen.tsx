@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   TextInput,
   TouchableOpacity,
   ScrollView,
   Modal,
   FlatList,
 } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { ChevronLeft, ChevronDown } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { Lock } from 'lucide-react-native';
 import { Conversation } from '@/constants/conversations';
 import CameraButton from '@/components/inbox/CameraButton';

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { sf, sr } from '@/utils/responsive';
 
 export default function RememberMeToggle({

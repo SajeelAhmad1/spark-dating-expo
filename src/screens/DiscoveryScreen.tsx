@@ -1,13 +1,13 @@
 import React, { useState, useRef } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   Dimensions,
   FlatList,
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';

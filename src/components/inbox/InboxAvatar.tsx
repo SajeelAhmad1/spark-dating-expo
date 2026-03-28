@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { Lock } from 'lucide-react-native';
 import { sf } from '@/utils/responsive';
 

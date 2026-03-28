@@ -1,5 +1,6 @@
 import React from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Image, TouchableOpacity, View } from 'react-native';
+import { Text } from '@/components/common/Text';
 import ChatAvatar from '@/components/chat/ChatAvatar';
 import { Message } from '@/types/chat';
 import { sf } from '@/utils/responsive';

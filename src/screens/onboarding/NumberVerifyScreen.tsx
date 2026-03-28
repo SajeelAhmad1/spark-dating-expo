@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, TextInput, TouchableOpacity } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf } from '@/utils/responsive';

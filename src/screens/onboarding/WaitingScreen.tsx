@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { Share2, Bell, Users2 } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';

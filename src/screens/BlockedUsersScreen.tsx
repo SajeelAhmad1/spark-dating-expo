@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   ScrollView,
   Image,
   TextInput,
 } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Search } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/responsive';

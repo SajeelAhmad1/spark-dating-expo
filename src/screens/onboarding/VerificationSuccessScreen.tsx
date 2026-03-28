@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { Check } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';

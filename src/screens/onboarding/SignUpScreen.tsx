@@ -1,4 +1,5 @@
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '@/components/common/Text';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import Logo from '@/assets/images/logo.svg';
 import GoogleIcon from '@/assets/images/google.svg';

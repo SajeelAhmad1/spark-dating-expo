@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, useWindowDimensions, Image } from 'react-native';
+import { View, useWindowDimensions, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import OnboardingCard from './OnboardingCard';
 import CameraIcon from '@/assets/images/cameraIcon.svg';

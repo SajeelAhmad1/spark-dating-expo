@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { Share2, Copy } from 'lucide-react-native';
 import Gift from '@/assets/images/gift.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';

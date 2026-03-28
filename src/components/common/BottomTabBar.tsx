@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { View, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { Users, MessageSquare } from 'lucide-react-native';
 import Svg, { Path } from 'react-native-svg';
 import ProfileAvatar from '@/assets/images/profileAvatar.svg';

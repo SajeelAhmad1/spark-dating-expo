@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomToggle from '@/components/location/CustomToggle';
 import LocationIcon from '@/components/location/LocationIcon';
