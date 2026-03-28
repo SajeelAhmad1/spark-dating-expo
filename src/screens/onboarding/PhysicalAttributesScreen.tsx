@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
+import { FieldError } from '@/components/common/FieldError';
 import { ChevronLeft, ChevronDown } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
@@ -15,14 +16,29 @@ import BODY_TYPES from '@/constants/bodyTypes';
 import ETHNICITIES from '@/constants/ethnicities';
 import HEIGHTS from '@/constants/heights';
 import { sf } from '@/utils/responsive';
+import { useZodForm } from '@/utils/form';
+import { physicalAttributesSchema } from '@/schemas/onboarding';
 
 type DropdownField = 'height' | 'bodyType' | 'ethnicity' | null;
 
 const PhysicalAttributesScreen = ({ navigation }: any) => {
-  const [height, setHeight] = useState('');
-  const [bodyType, setBodyType] = useState('');
-  const [ethnicity, setEthnicity] = useState('');
   const [openDropdown, setOpenDropdown] = useState<DropdownField>(null);
+
+  const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(
+    physicalAttributesSchema,
+    {
+      defaultValues: {
+        height: '',
+        bodyType: '',
+        ethnicity: '',
+      },
+    },
+  );
+
+  const height = watch('height');
+  const bodyType = watch('bodyType');
+  const ethnicity = watch('ethnicity');
+  const { errors } = formState;
 
   const dropdownOptions: Record<NonNullable<DropdownField>, string[]> = {
     height: Object.values(HEIGHTS),
@@ -37,9 +53,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
   };
 
   const handleSelect = (field: NonNullable<DropdownField>, value: string) => {
-    if (field === 'height') setHeight(value);
-    if (field === 'bodyType') setBodyType(value);
-    if (field === 'ethnicity') setEthnicity(value);
+    setValue(field, value, { shouldValidate: true });
     setOpenDropdown(null);
   };
 
@@ -97,7 +111,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
                   height: 56,
                   borderRadius: 15,
                   borderWidth: 1,
-                  borderColor: '#B6B9C9',
+                  borderColor: errors[key]?.message ? '#DC2626' : '#B6B9C9',
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -114,6 +128,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
                 </Text>
                 <ChevronDown size={18} color="#000000" />
               </TouchableOpacity>
+              <FieldError message={errors[key]?.message} />
             </View>
           ))}
         </View>
@@ -131,7 +146,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
       <View style={styles.footer}>
         <PrimaryButton
           title="Continue"
-          onPress={() => navigation?.navigate('InterestsScreen')}
+          onPress={handleSubmit(() => navigation?.navigate('InterestsScreen'))}
           colors={['#1E78F5', '#FBB202']}
           variant="gradient"
           style={{ alignSelf: 'stretch' }}

@@ -18,8 +18,9 @@ import ConversationItem from '@/components/inbox/ConversationItem';
 import SectionHeader from '@/components/inbox/SectionHeader';
 import { sf, sr, sw, sh } from '@/utils/responsive';
 import { MATCHES } from '@/constants/matches';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useZodForm } from '@/utils/form';
+import { inboxSearchFormSchema } from '@/schemas/messaging';
+import { FieldError } from '@/components/common/FieldError';
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
@@ -28,17 +29,16 @@ export default function InboxScreen({ navigation }: any) {
   const [activeTab, setActiveTab] = useState<BottomTab>('Chat');
   const navLockRef = React.useRef(false);
 
-  const searchSchema = z.string();
-  const { watch, setValue } = useForm<{ searchQuery: string }>({
+  const { watch, setValue, trigger, formState } = useZodForm(inboxSearchFormSchema, {
     defaultValues: {
       searchQuery: '',
     },
   });
 
   const searchQuery = watch('searchQuery');
-  const safeSearchQuery = searchSchema.safeParse(searchQuery).success
-    ? searchQuery
-    : '';
+  const searchError = formState.errors.searchQuery?.message;
+  const safeSearchQuery =
+    searchQuery.length > 120 ? searchQuery.slice(0, 120) : searchQuery;
 
   const filtered = filterConversations(
     CONVERSATIONS,
@@ -148,7 +148,8 @@ export default function InboxScreen({ navigation }: any) {
             placeholder="Search conversations..."
             placeholderTextColor="#8D8D8D"
             value={searchQuery}
-            onChangeText={v => setValue('searchQuery', v)}
+            onChangeText={v => setValue('searchQuery', v, { shouldValidate: true })}
+            onBlur={() => trigger('searchQuery')}
             style={{
               flex: 1,
               fontSize: sf(14),
@@ -159,6 +160,7 @@ export default function InboxScreen({ navigation }: any) {
             }}
           />
         </View>
+        <FieldError message={searchError} />
       </View>
 
       {/* ── Filter Chips ── */}

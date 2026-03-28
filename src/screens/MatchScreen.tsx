@@ -10,8 +10,8 @@ import MessageInputBar from '@/components/match/MessageInputBar';
 import { calculateMatchPhotoLayout } from '@/utils/match';
 import { sf, sr, sw, sh } from '@/utils/responsive';
 import { MATCHES } from '@/constants/matches';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useZodForm } from '@/utils/form';
+import { matchCaptionFormSchema } from '@/schemas/messaging';
 
 const MatchScreen = ({ navigation, route }: any) => {
   const match = route?.params?.match ?? MATCHES[0];
@@ -20,13 +20,12 @@ const MatchScreen = ({ navigation, route }: any) => {
   const [isCamOpen, setIsCamOpen] = useState(false);
   const [isPhotoPreviewOpen, setIsPhotoPreviewOpen] = useState(false);
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
-  const inputMessageSchema = z.string();
-  const { watch, setValue, getValues } = useForm<{
-    inputMessage: string;
-  }>({
-    defaultValues: { inputMessage: '' },
-  });
+  const { watch, setValue, getValues, trigger, formState } = useZodForm(
+    matchCaptionFormSchema,
+    { defaultValues: { inputMessage: '' } },
+  );
   const inputMessage = watch('inputMessage');
+  const captionError = formState.errors.inputMessage?.message;
   const [isSending, setIsSending] = useState(false);
   const { width } = useWindowDimensions();
 
@@ -45,6 +44,13 @@ const MatchScreen = ({ navigation, route }: any) => {
 
   // Function to send photo message
   const sendPhotoMessage = async (photoUri: string) => {
+    const captionOk = matchCaptionFormSchema.safeParse({
+      inputMessage: getValues().inputMessage,
+    });
+    if (!captionOk.success) {
+      trigger('inputMessage');
+      return;
+    }
     try {
       setIsSending(true);
       
@@ -75,11 +81,6 @@ const MatchScreen = ({ navigation, route }: any) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       console.log('Photo sent:', photoUri);
-      const messageResult = inputMessageSchema.safeParse(getValues().inputMessage);
-      if (!messageResult.success) {
-        // eslint-disable-next-line no-console
-        console.warn('Message validation failed', messageResult.error.flatten());
-      }
       console.log('Message:', inputMessage);
       
       // Clear after successful send
@@ -161,8 +162,9 @@ const MatchScreen = ({ navigation, route }: any) => {
 
         <MessageInputBar
           value={inputMessage}
-          onChangeText={v => setValue('inputMessage', v)}
+          onChangeText={v => setValue('inputMessage', v, { shouldValidate: true })}
           onOpenCamera={() => setIsCamOpen(true)}
+          errorMessage={captionError}
         />
 
         {/* Camera Modal */}

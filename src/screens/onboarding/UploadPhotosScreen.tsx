@@ -11,7 +11,9 @@ import { ChevronLeft, Plus, X } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import PrimaryButton from '@/components/common/PrimaryButton';
+import { FieldError } from '@/components/common/FieldError';
 import { sf } from '@/utils/responsive';
+import { uploadPhotosFilledSchema } from '@/schemas/onboarding';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const H_PADDING = 24;
@@ -23,6 +25,7 @@ type PhotoSlot = { uri: string; isLocal: boolean } | null;
 
 const UploadPhotosScreen = ({ navigation }: any) => {
   const [photos, setPhotos] = useState<PhotoSlot[]>([null, null, null, null]);
+  const [photosError, setPhotosError] = useState<string | undefined>();
 
   const pickImage = async (index: number) => {
     // Request permission first
@@ -45,6 +48,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
       const updated = [...photos];
       updated[index] = { uri, isLocal: true };
       setPhotos(updated);
+      setPhotosError(undefined);
     }
   };
 
@@ -52,6 +56,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
     const updated = [...photos];
     updated[index] = null;
     setPhotos(updated);
+    setPhotosError(undefined);
   };
 
   const renderSlot = (index: number) => {
@@ -184,6 +189,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
             {renderSlot(3)}
           </View>
         </View>
+        <FieldError message={photosError} />
 
       </View>
 
@@ -196,7 +202,16 @@ const UploadPhotosScreen = ({ navigation }: any) => {
       }}>
         <PrimaryButton
           title="Complete Profile!"
-          onPress={() => { navigation.navigate('InviteScreen'); }}
+          onPress={() => {
+            const filledCount = photos.filter(Boolean).length;
+            const parsed = uploadPhotosFilledSchema.safeParse({ filledCount });
+            if (!parsed.success) {
+              setPhotosError(parsed.error.issues[0]?.message);
+              return;
+            }
+            setPhotosError(undefined);
+            navigation.navigate('InviteScreen');
+          }}
           colors={['#1E78F5', '#FBB202']}
           variant="gradient"
           style={{ alignSelf: 'stretch' }}

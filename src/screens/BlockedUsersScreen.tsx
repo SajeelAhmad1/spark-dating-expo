@@ -12,20 +12,21 @@ import { ChevronLeft, Search } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/responsive';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { BLOCKED_USERS, BlockedUser } from '@/constants/blockedUsers';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useZodForm } from '@/utils/form';
+import { blockedUsersSearchFormSchema } from '@/schemas/messaging';
+import { FieldError } from '@/components/common/FieldError';
 
 const BlockedUsersScreen = ({ navigation }: any) => {
   const [blockedUsers, setBlockedUsers] =
     useState<BlockedUser[]>(BLOCKED_USERS);
 
-  const searchSchema = z.string();
-  const { watch, setValue } = useForm<{ search: string }>({
+  const { watch, setValue, trigger, formState } = useZodForm(blockedUsersSearchFormSchema, {
     defaultValues: { search: '' },
   });
 
   const search = watch('search');
-  const safeSearch = searchSchema.safeParse(search).success ? search : '';
+  const searchError = formState.errors.search?.message;
+  const safeSearch = search.length > 120 ? search.slice(0, 120) : search;
 
   const filtered = blockedUsers.filter(u =>
     u.name.toLowerCase().includes(safeSearch.toLowerCase()),
@@ -85,7 +86,8 @@ const BlockedUsersScreen = ({ navigation }: any) => {
           <Search size={sf(16)} color="#7D858E" />
           <TextInput
             value={search}
-            onChangeText={v => setValue('search', v)}
+            onChangeText={v => setValue('search', v, { shouldValidate: true })}
+            onBlur={() => trigger('search')}
             placeholder="Search blocked users"
             placeholderTextColor="#7D858E"
             style={{
@@ -98,6 +100,9 @@ const BlockedUsersScreen = ({ navigation }: any) => {
               padding: 0,
             }}
           />
+        </View>
+        <View style={{ marginHorizontal: sw(21) }}>
+          <FieldError message={searchError} />
         </View>
 
         {/* ── Count ── */}

@@ -3,17 +3,22 @@ import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { EyeOff } from 'lucide-react-native';
 import { sf, sh, sw } from '@/utils/responsive';
 import { Text } from '../common/Text';
+import { FieldError } from '@/components/common/FieldError';
 
 export default function PasswordField({
   password,
   onChangeText,
+  onBlur,
   showPassword,
-  onToggleShowPassword, 
+  onToggleShowPassword,
+  errorMessage,
 }: {
   password: string;
   onChangeText: (v: string) => void;
+  onBlur?: () => void;
   showPassword: boolean;
-  onToggleShowPassword: () => void; 
+  onToggleShowPassword: () => void;
+  errorMessage?: string;
 }) {
   return (
     <View style={styles.wrap}>
@@ -30,6 +35,7 @@ export default function PasswordField({
           secureTextEntry={!showPassword}
           value={password}
           onChangeText={onChangeText}
+          onBlur={onBlur}
           style={[styles.input, { fontSize: sf(12), paddingVertical: sh(8) }]}
         />
         <TouchableOpacity
@@ -39,6 +45,7 @@ export default function PasswordField({
           <EyeOff size={sf(20)} color="#7D858E" />
         </TouchableOpacity>
       </View>
+      <FieldError message={errorMessage} />
     </View>
   );
 }

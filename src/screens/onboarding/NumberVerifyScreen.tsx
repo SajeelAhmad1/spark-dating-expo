@@ -1,26 +1,39 @@
 import React, { useRef } from 'react';
 import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
 import { Text } from '@/components/common/Text';
+import { FieldError } from '@/components/common/FieldError';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf } from '@/utils/responsive';
 import { useZodForm } from '@/utils/form';
-import { otpSchema } from '@/validations/onboarding';
+import { otpFormSchema } from '@/schemas/onboarding';
+
+const DIGIT_KEYS = ['d0', 'd1', 'd2', 'd3'] as const;
 
 const NumberVerifyScreen = ({navigation}: any) => {
   const inputs = useRef<(TextInput | null)[]>([]);
 
-  const { watch, setValue, getValues } = useZodForm(otpSchema, {
+  const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(otpFormSchema, {
     defaultValues: {
-      digits: ['', '', '', ''],
+      d0: '',
+      d1: '',
+      d2: '',
+      d3: '',
     },
   });
 
-  const digits = watch('digits');
+  const digits = DIGIT_KEYS.map(k => watch(k));
+  const otpErrors = formState.errors;
+  const otpError =
+    otpErrors.d0?.message ||
+    otpErrors.d1?.message ||
+    otpErrors.d2?.message ||
+    otpErrors.d3?.message;
 
   const handleChange = (text: string, index: number) => {
     const nextDigit = text.slice(-1);
-    setValue(`digits.${index}` as const, nextDigit);
+    const key = DIGIT_KEYS[index];
+    setValue(key, nextDigit, { shouldValidate: true });
     if (nextDigit && index < 3) {
       inputs.current[index + 1]?.focus();
     }
@@ -30,6 +43,10 @@ const NumberVerifyScreen = ({navigation}: any) => {
     if (e.nativeEvent.key === 'Backspace' && !digits[index] && index > 0) {
       inputs.current[index - 1]?.focus();
     }
+  };
+
+  const onValid = () => {
+    navigation.navigate('VerificationSuccessScreen');
   };
 
   return (
@@ -46,16 +63,21 @@ const NumberVerifyScreen = ({navigation}: any) => {
         </View>
 
         <View style={styles.otpRow}>
-          {digits.map((digit: string, index: number) => (
+          {DIGIT_KEYS.map((key, index) => (
             <TextInput
-              key={index}
-              value={digit}
-              onChangeText={(text) => handleChange(text.slice(-1), index)}
-              onKeyPress={(e) => handleKeyPress(e, index)}
+              key={key}
+              ref={r => {
+                inputs.current[index] = r;
+              }}
+              value={digits[index]}
+              onChangeText={text => handleChange(text, index)}
+              onKeyPress={e => handleKeyPress(e, index)}
+              onBlur={() => trigger(key)}
               keyboardType="number-pad"
               maxLength={1}
               style={[
                 styles.otpCell,
+                otpErrors[key]?.message ? styles.otpCellError : null,
                 {
                   fontSize: sf(20),
                   lineHeight: sf(24),
@@ -66,17 +88,12 @@ const NumberVerifyScreen = ({navigation}: any) => {
             />
           ))}
         </View>
+        <FieldError message={otpError} />
 
         <View style={styles.btnWrap}>
           <PrimaryButton
             title="Verify"
-            onPress={() => {
-              const result = otpSchema.safeParse(getValues());
-              if (!result.success) {
-                console.warn('OTP validation failed', result.error.flatten());
-              }
-              navigation.navigate('VerificationSuccessScreen');
-            }}
+            onPress={handleSubmit(onValid)}
             colors={['#1E78F5', '#FBB202']}
             variant="gradient"
             style={{ alignSelf: 'stretch' }}
@@ -122,6 +139,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#B6B9C9',
   },
+  otpCellError: { borderColor: '#DC2626' },
   btnWrap: { marginTop: 32 },
   resendWrap: { marginTop: 16, alignItems: 'center' },
   resend: { color: '#1E78F5' },

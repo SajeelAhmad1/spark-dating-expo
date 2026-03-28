@@ -1,0 +1,85 @@
+import { z } from 'zod';
+import { ErrorMessages as ERR } from '@/constants/ErrorMessages';
+
+export const onboardingPhoneFormSchema = z.object({
+  phoneNumber: z
+    .string()
+    .transform(s => s.replace(/\s/g, ''))
+    .superRefine((digits, ctx) => {
+      if (!digits.length) {
+        ctx.addIssue({ code: 'custom', message: ERR.onboarding.phoneNationalRequired });
+        return;
+      }
+      if (!/^\d{8,15}$/.test(digits)) {
+        ctx.addIssue({ code: 'custom', message: ERR.onboarding.phoneNationalInvalid });
+      }
+    }),
+});
+
+export type OnboardingPhoneFormValues = z.infer<typeof onboardingPhoneFormSchema>;
+
+const otpDigitSchema = z
+  .string()
+  .length(1, ERR.auth.otpDigit)
+  .regex(/^\d$/, ERR.auth.otpDigit);
+
+export const otpFormSchema = z.object({
+  d0: otpDigitSchema,
+  d1: otpDigitSchema,
+  d2: otpDigitSchema,
+  d3: otpDigitSchema,
+});
+
+export type OtpFormValues = z.infer<typeof otpFormSchema>;
+
+const name = (label: 'first' | 'last') => {
+  const req = label === 'first' ? ERR.profile.firstNameRequired : ERR.profile.lastNameRequired;
+  const max = label === 'first' ? ERR.profile.firstNameMax : ERR.profile.lastNameMax;
+  const inv = label === 'first' ? ERR.profile.firstNameInvalid : ERR.profile.lastNameInvalid;
+  return z
+    .string()
+    .trim()
+    .min(1, req)
+    .max(50, max)
+    .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, inv);
+};
+
+export function createProfileSetupSchema(opts: {
+  genders: readonly string[];
+  days: readonly string[];
+  months: readonly string[];
+  years: readonly string[];
+}) {
+  const { genders, days, months, years } = opts;
+  return z.object({
+    firstName: name('first'),
+    lastName: name('last'),
+    gender: z
+      .string()
+      .refine(v => genders.includes(v), { message: ERR.profile.genderInvalid }),
+    day: z.string().refine(v => days.includes(v), { message: ERR.profile.dayInvalid }),
+    month: z.string().refine(v => months.includes(v), { message: ERR.profile.monthInvalid }),
+    year: z.string().refine(v => years.includes(v), { message: ERR.profile.yearInvalid }),
+    bio: z.string().max(500, ERR.profile.bioMax),
+  });
+}
+
+export const physicalAttributesSchema = z.object({
+  height: z.string().min(1, ERR.profile.heightRequired),
+  bodyType: z.string().min(1, ERR.profile.bodyTypeRequired),
+  ethnicity: z.string().min(1, ERR.profile.ethnicityRequired),
+});
+
+export type PhysicalAttributesFormValues = z.infer<typeof physicalAttributesSchema>;
+
+export const interestsSelectionSchema = z
+  .array(z.string())
+  .min(3, ERR.interests.min)
+  .max(5, ERR.interests.max);
+
+export const uploadPhotosFilledSchema = z.object({
+  filledCount: z
+    .number()
+    .int()
+    .min(1, ERR.upload.minPhotos),
+});

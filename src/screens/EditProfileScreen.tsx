@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -23,9 +23,9 @@ import BODY_TYPES from '@/constants/bodyTypes';
 import ETHNICITIES from '@/constants/ethnicities';
 import HEIGHTS from '@/constants/heights';
 import GENDER from '@/constants/gender';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { Gender } from '@/types/gender';
+import { useZodForm } from '@/utils/form';
+import { createEditProfileSchema, type EditProfileFormValues } from '@/schemas/editProfile';
+import { FieldError } from '@/components/common/FieldError';
 
 type DropdownField = 'gender' | 'height' | 'bodyType' | 'ethnicity' | null;
 
@@ -53,28 +53,11 @@ const EditProfileScreen = ({ navigation }: any) => {
       date.getMonth() + 1,
     ).padStart(2, '0')}/${date.getFullYear()}`;
 
-  const editProfileSchema = z.object({
-    firstName: z.string().min(1),
-    lastName: z.string().min(1),
-    bio: z.string(),
-    gender: z
-      .string()
-      .refine(v => Object.values(GENDER).includes(v), 'Invalid gender'),
-    height: z
-      .string()
-      .refine(v => Object.values(HEIGHTS).includes(v), 'Invalid height'),
-    bodyType: z
-      .string()
-      .refine(v => Object.values(BODY_TYPES).includes(v), 'Invalid body type'),
-    ethnicity: z
-      .string()
-      .refine(v => Object.values(ETHNICITIES).includes(v), 'Invalid ethnicity'),
-    birthday: z.date(),
-  });
+  const editProfileSchema = useMemo(() => createEditProfileSchema(), []);
 
-  type EditProfileFormValues = z.infer<typeof editProfileSchema>;
-
-  const { watch, setValue, getValues } = useForm<EditProfileFormValues>({
+  const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(
+    editProfileSchema,
+    {
     defaultValues: {
       firstName: 'Paul',
       lastName: 'W',
@@ -89,27 +72,20 @@ const EditProfileScreen = ({ navigation }: any) => {
 
   const profile = watch() as EditProfileFormValues;
   const birthDate = profile.birthday;
+  const { errors } = formState;
 
   type ProfileKey = Exclude<keyof EditProfileFormValues, 'birthday'>;
 
-  // On Save
-  const handleSave = () => {
-    const values = getValues();
-    const result = editProfileSchema.safeParse(values);
-    if (!result.success) {
-      // eslint-disable-next-line no-console
-      console.warn('Edit profile validation failed', result.error.flatten());
-    }
-
+  const handleSave = handleSubmit(values => {
     const payload = {
       ...values,
       birthday: formatDate(values.birthday),
     };
     console.log(payload);
-  };
+  });
 
   const updateProfile = (key: ProfileKey, value: string) => {
-    setValue(key, value);
+    setValue(key, value, { shouldValidate: true });
   };
 
   const dropdownOptions: Record<NonNullable<DropdownField>, string[]> = {
@@ -152,30 +128,33 @@ const EditProfileScreen = ({ navigation }: any) => {
   };
 
   const renderDropdownTrigger = (field: NonNullable<DropdownField>) => (
-    <TouchableOpacity
-      onPress={() => setOpenDropdown(field)}
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderWidth: 1,
-        borderColor: '#7D858E',
-        borderRadius: sr(8),
-        paddingHorizontal: sw(12),
-        paddingVertical: sh(12),
-      }}
-    >
-      <Text
+    <View>
+      <TouchableOpacity
+        onPress={() => setOpenDropdown(field)}
         style={{
-          fontFamily: 'Poppins-Regular',
-          fontSize: sf(16),
-          color: profile[field] ? '#1C1C1E' : '#7D858E',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderWidth: 1,
+          borderColor: errors[field]?.message ? '#DC2626' : '#7D858E',
+          borderRadius: sr(8),
+          paddingHorizontal: sw(12),
+          paddingVertical: sh(12),
         }}
       >
-        {profile[field] || `Select ${field}`}
-      </Text>
-      <ChevronDown size={sf(16)} color="#7D858E" />
-    </TouchableOpacity>
+        <Text
+          style={{
+            fontFamily: 'Poppins-Regular',
+            fontSize: sf(16),
+            color: profile[field] ? '#1C1C1E' : '#7D858E',
+          }}
+        >
+          {profile[field] || `Select ${field}`}
+        </Text>
+        <ChevronDown size={sf(16)} color="#7D858E" />
+      </TouchableOpacity>
+      <FieldError message={errors[field]?.message} />
+    </View>
   );
 
   return (
@@ -326,16 +305,26 @@ const EditProfileScreen = ({ navigation }: any) => {
                 <TextInput
                   value={profile.firstName}
                   onChangeText={v => updateProfile('firstName', v)}
-                  style={inputStyle}
+                  onBlur={() => trigger('firstName')}
+                  style={[
+                    inputStyle,
+                    errors.firstName ? { borderColor: '#DC2626' } : null,
+                  ]}
                 />
+                <FieldError message={errors.firstName?.message} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={labelStyle}>Last name</Text>
                 <TextInput
                   value={profile.lastName}
                   onChangeText={v => updateProfile('lastName', v)}
-                  style={inputStyle}
+                  onBlur={() => trigger('lastName')}
+                  style={[
+                    inputStyle,
+                    errors.lastName ? { borderColor: '#DC2626' } : null,
+                  ]}
                 />
+                <FieldError message={errors.lastName?.message} />
               </View>
             </View>
 
@@ -354,7 +343,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                   flexDirection: 'row',
                   alignItems: 'center',
                   borderWidth: 1,
-                  borderColor: '#7D858E',
+                  borderColor: errors.birthday?.message ? '#DC2626' : '#7D858E',
                   borderRadius: sr(8),
                   paddingHorizontal: sw(8),
                   paddingVertical: sh(12),
@@ -372,6 +361,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                 </Text>
                 <Calendar size={sf(16)} color="#7D858E" />
               </TouchableOpacity>
+              <FieldError message={errors.birthday?.message} />
             </View>
 
             {/* Height */}
@@ -398,6 +388,7 @@ const EditProfileScreen = ({ navigation }: any) => {
               <TextInput
                 value={profile.bio}
                 onChangeText={v => updateProfile('bio', v)}
+                onBlur={() => trigger('bio')}
                 multiline
                 numberOfLines={4}
                 style={{
@@ -406,8 +397,10 @@ const EditProfileScreen = ({ navigation }: any) => {
                   height: sh(100),
                   textAlignVertical: 'top',
                   paddingTop: sh(12),
+                  borderColor: errors.bio ? '#DC2626' : '#7D858E',
                 }}
               />
+              <FieldError message={errors.bio?.message} />
             </View>
 
             {/* Interests */}
@@ -642,7 +635,7 @@ const EditProfileScreen = ({ navigation }: any) => {
         maximumDate={new Date()}
         onConfirm={date => {
           setDatePickerOpen(false);
-          setValue('birthday', date);
+          setValue('birthday', date, { shouldValidate: true });
         }}
         onCancel={() => setDatePickerOpen(false)}
       />

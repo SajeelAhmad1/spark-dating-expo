@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   TextInput,
@@ -9,12 +9,13 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
+import { FieldError } from '@/components/common/FieldError';
 import { ChevronLeft, ChevronDown } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf } from '@/utils/responsive';
 import { useZodForm } from '@/utils/form';
-import { createProfileSetupSchema } from '@/validations/onboarding';
+import { createProfileSetupSchema } from '@/schemas/onboarding';
 
 const GENDERS = ['Male', 'Female', 'Other'];
 
@@ -27,14 +28,18 @@ type DropdownField = 'day' | 'month' | 'year' | null;
 const ProfileSetupScreen = ({navigation}: any) => {
   const [openDropdown, setOpenDropdown] = useState<DropdownField>(null);
 
-  const profileSchema = createProfileSetupSchema({
-    genders: GENDERS,
-    days: DAYS,
-    months: MONTHS,
-    years: YEARS,
-  });
+  const profileSchema = useMemo(
+    () =>
+      createProfileSetupSchema({
+        genders: GENDERS,
+        days: DAYS,
+        months: MONTHS,
+        years: YEARS,
+      }),
+    [],
+  );
 
-  const { watch, setValue, getValues } = useZodForm(profileSchema, {
+  const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(profileSchema, {
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -53,6 +58,9 @@ const ProfileSetupScreen = ({navigation}: any) => {
   const month = watch('month');
   const year = watch('year');
   const bio = watch('bio');
+  const { errors } = formState;
+  const dobError =
+    errors.day?.message || errors.month?.message || errors.year?.message;
 
   const dropdownOptions: Record<NonNullable<DropdownField>, string[]> = {
     day: DAYS,
@@ -67,7 +75,7 @@ const ProfileSetupScreen = ({navigation}: any) => {
   };
 
   const handleSelect = (field: NonNullable<DropdownField>, value: string) => {
-    setValue(field, value);
+    setValue(field, value, { shouldValidate: true });
     setOpenDropdown(null);
   };
 
@@ -121,9 +129,14 @@ const ProfileSetupScreen = ({navigation}: any) => {
               placeholder="JJ"
               placeholderTextColor="#7D858E"
               value={firstName}
-              onChangeText={v => setValue('firstName', v)}
-              style={inputStyle}
+              onChangeText={v => setValue('firstName', v, { shouldValidate: true })}
+              onBlur={() => trigger('firstName')}
+              style={[
+                inputStyle,
+                errors.firstName ? { borderColor: '#DC2626' } : null,
+              ]}
             />
+            <FieldError message={errors.firstName?.message} />
           </View>
           <View style={styles.flex1}>
             <Text
@@ -134,9 +147,14 @@ const ProfileSetupScreen = ({navigation}: any) => {
               placeholder="Smith"
               placeholderTextColor="#7D858E"
               value={lastName}
-              onChangeText={v => setValue('lastName', v)}
-              style={inputStyle}
+              onChangeText={v => setValue('lastName', v, { shouldValidate: true })}
+              onBlur={() => trigger('lastName')}
+              style={[
+                inputStyle,
+                errors.lastName ? { borderColor: '#DC2626' } : null,
+              ]}
             />
+            <FieldError message={errors.lastName?.message} />
           </View>
         </View>
 
@@ -152,7 +170,7 @@ const ProfileSetupScreen = ({navigation}: any) => {
               return (
                 <TouchableOpacity
                   key={g}
-                  onPress={() => setValue('gender', g)}
+                  onPress={() => setValue('gender', g, { shouldValidate: true })}
                   style={{
                     flex: 1,
                     height: 56,
@@ -177,6 +195,7 @@ const ProfileSetupScreen = ({navigation}: any) => {
               );
             })}
           </View>
+          <FieldError message={errors.gender?.message} />
         </View>
 
         {/* ── Date of Birth ── */}
@@ -209,6 +228,7 @@ const ProfileSetupScreen = ({navigation}: any) => {
               </TouchableOpacity>
             ))}
           </View>
+          <FieldError message={dobError} />
         </View>
 
         {/* ── Bio ── */}
@@ -221,12 +241,13 @@ const ProfileSetupScreen = ({navigation}: any) => {
             placeholder="Write something interesting..."
             placeholderTextColor="#7D858E"
             value={bio}
-            onChangeText={v => setValue('bio', v)}
+            onChangeText={v => setValue('bio', v, { shouldValidate: true })}
+            onBlur={() => trigger('bio')}
             multiline
             textAlignVertical="top"
             style={{
               borderWidth: 1,
-              borderColor: '#B6B9C9',
+              borderColor: errors.bio ? '#DC2626' : '#B6B9C9',
               borderRadius: 15,
               height: 120,
               paddingHorizontal: 16,
@@ -235,6 +256,7 @@ const ProfileSetupScreen = ({navigation}: any) => {
               color: '#000000',
             }}
           />
+          <FieldError message={errors.bio?.message} />
         </View>
       </ScrollView>
 
@@ -242,14 +264,9 @@ const ProfileSetupScreen = ({navigation}: any) => {
       <View style={styles.footer}>
         <PrimaryButton
           title="Continue"
-          onPress={() => {
-            const result = profileSchema.safeParse(getValues());
-            if (!result.success) {
-              // eslint-disable-next-line no-console
-              console.warn('Profile setup validation failed', result.error.flatten());
-            }
+          onPress={handleSubmit(() => {
             navigation.navigate('PhysicalAttributesScreen');
-          }}
+          })}
           colors={['#1E78F5', '#FBB202']}
           variant="gradient"
           style={{ alignSelf: 'stretch' }}

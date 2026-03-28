@@ -4,7 +4,9 @@ import { Text } from '@/components/common/Text';
 import { ChevronLeft } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
+import { FieldError } from '@/components/common/FieldError';
 import { sf } from '@/utils/responsive';
+import { interestsSelectionSchema } from '@/schemas/onboarding';
 
 const INTERESTS = [
   {
@@ -30,6 +32,7 @@ const MIN = 3;
 
 const InterestsScreen = ({ navigation }: any) => {
   const [selected, setSelected] = useState<string[]>(['Photography', 'Travel', 'Traveling for Work']);
+  const [interestsError, setInterestsError] = useState<string | undefined>();
 
   const toggle = (item: string) => {
     if (selected.includes(item)) {
@@ -38,6 +41,7 @@ const InterestsScreen = ({ navigation }: any) => {
       if (selected.length >= MAX) return;
       setSelected([...selected, item]);
     }
+    setInterestsError(undefined);
   };
 
   const canContinue = selected.length >= MIN;
@@ -136,9 +140,18 @@ const InterestsScreen = ({ navigation }: any) => {
           {selected.length}/{MAX} selected
         </Text>
 
+        <FieldError message={interestsError} />
         <PrimaryButton
           title="Continue"
-          onPress={() => navigation?.navigate('UploadPhotosScreen')}
+          onPress={() => {
+            const parsed = interestsSelectionSchema.safeParse(selected);
+            if (!parsed.success) {
+              setInterestsError(parsed.error.issues[0]?.message);
+              return;
+            }
+            setInterestsError(undefined);
+            navigation?.navigate('UploadPhotosScreen');
+          }}
           colors={['#1E78F5', '#FBB202']}
           variant="gradient"
           style={{

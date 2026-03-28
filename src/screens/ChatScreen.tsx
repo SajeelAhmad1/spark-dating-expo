@@ -27,8 +27,9 @@ import type { Message } from '@/types/chat';
 import { INITIAL_MESSAGES } from '@/constants/chat';
 import { generateId, getTimeString } from '@/utils/chat';
 import { sf, sr, sw, sh } from '@/utils/responsive';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useZodForm } from '@/utils/form';
+import { chatMessageFormSchema } from '@/schemas/messaging';
+import { FieldError } from '@/components/common/FieldError';
 
 export default function ChatScreen({ navigation, route }: any) {
   const chatUserName: string = route?.params?.chatUserName ?? 'Jenny';
@@ -56,12 +57,13 @@ export default function ChatScreen({ navigation, route }: any) {
     return INITIAL_MESSAGES;
   });
 
-  const messageSchema = z.string();
-  const { watch, setValue } = useForm<{ messageText: string }>({
-    defaultValues: { messageText: '' },
-  });
+  const { watch, setValue, handleSubmit, reset, trigger, formState } = useZodForm(
+    chatMessageFormSchema,
+    { defaultValues: { messageText: '' } },
+  );
 
   const messageText = watch('messageText');
+  const messageError = formState.errors.messageText?.message;
 
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [capturedPhotoUri, setCapturedPhotoUri] = useState<string | null>(null);
@@ -72,13 +74,8 @@ export default function ChatScreen({ navigation, route }: any) {
 
   // ── Text send ──────────────────────────────────────────────────────────────
 
-  const handleSendText = () => {
-    const trimmed = messageText.trim();
-    if (!trimmed) return;
-
-    const result = messageSchema.safeParse(trimmed);
-    if (!result.success) return;
-
+  const handleSendText = handleSubmit(data => {
+    const trimmed = data.messageText.trim();
     const newMsg: Message = {
       id: generateId(),
       type: 'text',
@@ -89,9 +86,9 @@ export default function ChatScreen({ navigation, route }: any) {
     };
 
     setMessages(prev => [...prev, newMsg]);
-    setValue('messageText', '');
+    reset({ messageText: '' });
     setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
-  };
+  });
 
   // ── Camera flow ────────────────────────────────────────────────────────────
 
@@ -324,80 +321,86 @@ export default function ChatScreen({ navigation, route }: any) {
             </Text>
           </TouchableOpacity>
         ) : (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingHorizontal: sw(16),
-              paddingVertical: sh(12),
-              gap: 10,
-              backgroundColor: '#FFFFFF',
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => setIsCameraOpen(true)}
-              style={{
-                width: sf(56),
-                height: sf(56),
-                borderRadius: sr(92),
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <CameraIcon width={sf(56)} height={sf(56)} />
-            </TouchableOpacity>
-
+          <>
             <View
               style={{
-                flex: 1,
                 flexDirection: 'row',
                 alignItems: 'center',
-                height: sh(48),
-                borderRadius: sr(99),
-                borderWidth: 1,
-                borderColor: '#B6B9C9',
                 paddingHorizontal: sw(16),
-                gap: 8,
+                paddingVertical: sh(12),
+                gap: 10,
                 backgroundColor: '#FFFFFF',
-                shadowColor: '#000000',
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.04,
-                shadowRadius: 24,
-                elevation: 1,
               }}
             >
-              <TextInput
-                placeholder="Type a message..."
-                placeholderTextColor="#B6B9C9"
-                value={messageText}
-                onChangeText={v => setValue('messageText', v)}
-                onSubmitEditing={handleSendText}
-                returnKeyType="send"
-                blurOnSubmit={false}
+              <TouchableOpacity
+                onPress={() => setIsCameraOpen(true)}
+                style={{
+                  width: sf(56),
+                  height: sf(56),
+                  borderRadius: sr(92),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <CameraIcon width={sf(56)} height={sf(56)} />
+              </TouchableOpacity>
+
+              <View
                 style={{
                   flex: 1,
-                  fontFamily: 'Poppins-Regular',
-                  fontWeight: '400',
-                  fontSize: sf(16),
-                  lineHeight: sf(16),
-                  color: '#333333',
-                  padding: 0,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  height: sh(48),
+                  borderRadius: sr(99),
+                  borderWidth: 1,
+                  borderColor: messageError ? '#DC2626' : '#B6B9C9',
+                  paddingHorizontal: sw(16),
+                  gap: 8,
+                  backgroundColor: '#FFFFFF',
+                  shadowColor: '#000000',
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.04,
+                  shadowRadius: 24,
+                  elevation: 1,
                 }}
-              />
-
-              <TouchableOpacity onPress={handleOpenGallery}>
-                <ImageIcon size={sf(20)} color="#7D858E" strokeWidth={1.8} />
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={handleSendText} disabled={!messageText.trim()}>
-                <Send
-                  size={sf(20)}
-                  color={messageText.trim() ? '#1E78F5' : '#B6B9C9'}
-                  strokeWidth={2}
+              >
+                <TextInput
+                  placeholder="Type a message..."
+                  placeholderTextColor="#B6B9C9"
+                  value={messageText}
+                  onChangeText={v => setValue('messageText', v, { shouldValidate: true })}
+                  onBlur={() => trigger('messageText')}
+                  onSubmitEditing={handleSendText}
+                  returnKeyType="send"
+                  blurOnSubmit={false}
+                  style={{
+                    flex: 1,
+                    fontFamily: 'Poppins-Regular',
+                    fontWeight: '400',
+                    fontSize: sf(16),
+                    lineHeight: sf(16),
+                    color: '#333333',
+                    padding: 0,
+                  }}
                 />
-              </TouchableOpacity>
+
+                <TouchableOpacity onPress={handleOpenGallery}>
+                  <ImageIcon size={sf(20)} color="#7D858E" strokeWidth={1.8} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={handleSendText} disabled={!messageText.trim()}>
+                  <Send
+                    size={sf(20)}
+                    color={messageText.trim() ? '#1E78F5' : '#B6B9C9'}
+                    strokeWidth={2}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+            <View style={{ paddingHorizontal: sw(16), paddingBottom: sh(8) }}>
+              <FieldError message={messageError} />
+            </View>
+          </>
         )}
 
         {/* ── Camera Screen ── */}

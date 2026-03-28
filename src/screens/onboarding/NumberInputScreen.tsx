@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
 import { Text } from '@/components/common/Text';
+import { FieldError } from '@/components/common/FieldError';
 import { ChevronDown } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CountryPicker } from 'react-native-country-codes-picker';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf } from '@/utils/responsive';
 import { useZodForm } from '@/utils/form';
-import {
-  onboardingPhoneSchema,
-  onboardingPhoneFormSchema,
-} from '@/validations/onboarding';
+import { onboardingPhoneFormSchema } from '@/schemas/onboarding';
 
 const NumberEnterScreen = ({ navigation }: any) => {
   const [show, setShow] = useState(false);
@@ -20,13 +18,21 @@ const NumberEnterScreen = ({ navigation }: any) => {
     dial_code: '+31',
   });
 
-  const { watch, setValue, getValues } = useZodForm(onboardingPhoneFormSchema, {
-    defaultValues: {
-      phoneNumber: '',
+  const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(
+    onboardingPhoneFormSchema,
+    {
+      defaultValues: {
+        phoneNumber: '',
+      },
     },
-  });
+  );
 
   const phoneNumber = watch('phoneNumber');
+  const phoneError = formState.errors.phoneNumber?.message;
+
+  const onValid = () => {
+    navigation.navigate('NumberVerifyScreen');
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -40,7 +46,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
           </Text>
         </View>
 
-        <View style={styles.phoneRow}>
+        <View style={[styles.phoneRow, phoneError ? styles.phoneRowError : null]}>
           <TouchableOpacity style={styles.countryBtn} onPress={() => setShow(true)}>
             <Text style={{ fontSize: sf(20) }}>{country.flag}</Text>
             <Text style={[styles.dialCode, { fontSize: sf(16) }]}>{country.dial_code}</Text>
@@ -55,9 +61,11 @@ const NumberEnterScreen = ({ navigation }: any) => {
             keyboardType="phone-pad"
             value={phoneNumber}
             style={[styles.phoneInput, { fontSize: sf(16) }]}
-            onChangeText={v => setValue('phoneNumber', v)}
+            onChangeText={v => setValue('phoneNumber', v, { shouldValidate: true })}
+            onBlur={() => trigger('phoneNumber')}
           />
         </View>
+        <FieldError message={phoneError} />
 
         <Text style={[styles.helper, { fontSize: sf(15) }]} weight="regular">
           We'll text you a code to verify you're really you. Message and data
@@ -70,18 +78,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
         <View style={styles.btnWrap}>
           <PrimaryButton
             title="Send verification Code"
-            onPress={() => {
-              const result = onboardingPhoneSchema.safeParse(
-                getValues().phoneNumber,
-              );
-              if (!result.success) {
-                console.warn(
-                  'Phone number validation failed',
-                  result.error.flatten(),
-                );
-              }
-              navigation.navigate('NumberVerifyScreen');
-            }}
+            onPress={handleSubmit(onValid)}
             colors={['#1E78F5', '#FBB202']}
             variant="gradient"
             style={{ alignSelf: 'stretch' }}
@@ -138,6 +135,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     columnGap: 12,
   },
+  phoneRowError: { borderColor: '#DC2626' },
   countryBtn: { flexDirection: 'row', alignItems: 'center', columnGap: 4 },
   dialCode: { color: '#000000' },
   divider: { width: 1, height: 20, backgroundColor: '#E8EAED' },
