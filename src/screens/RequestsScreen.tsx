@@ -17,28 +17,18 @@ import { sf, sh, sw } from '@/utils/responsive';
 
 export default function RequestsScreen({ navigation }: any) {
   const [activeTab, setActiveTab] = React.useState<BottomTab>('Request');
-  const navLockRef = React.useRef(false);
 
   const handleTabPress = (tab: BottomTab) => {
-    if (navLockRef.current) return;
-    navLockRef.current = true;
-    setTimeout(() => {
-      navLockRef.current = false;
-    }, 350);
-
     if (tab === 'Request') {
       setActiveTab('Request');
       return;
     }
 
-    if (tab === 'Home') navigation.navigate('DiscoveryScreen');
+    if (tab === 'Home') navigation.replace('DiscoveryScreen');
     if (tab === 'Camera')
-      navigation.navigate('MatchScreen', {
-        match: MATCHES[0],
-        autoOpenCamera: true,
-      });
-    if (tab === 'Chat') navigation.navigate('InboxScreen');
-    if (tab === 'Profile') navigation.navigate('ProfileScreen');
+      navigation.replace('InboxScreen', { cameraSelectMode: true });
+    if (tab === 'Chat') navigation.replace('InboxScreen');
+    if (tab === 'Profile') navigation.replace('ProfileScreen');
   };
 
   return (

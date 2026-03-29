@@ -9,10 +9,12 @@ export default function MessageBubble({
   message,
   friendAvatarUri,
   meAvatarUri,
+  onSnapPress,
 }: {
   message: Message;
   friendAvatarUri?: string | null;
   meAvatarUri?: string | null;
+  onSnapPress?: (message: Message) => void;
 }) {
   const isMe = message.sender === 'me';
 
@@ -61,6 +63,7 @@ export default function MessageBubble({
           >
             <View style={{ alignItems: 'flex-end' }}>
               <TouchableOpacity
+                onPress={() => onSnapPress?.(message)}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -126,6 +129,7 @@ export default function MessageBubble({
           <ChatAvatar size={sf(40)} variant="friend" imageUri={friendAvatarUri} />
           <View>
             <TouchableOpacity
+              onPress={() => onSnapPress?.(message)}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',

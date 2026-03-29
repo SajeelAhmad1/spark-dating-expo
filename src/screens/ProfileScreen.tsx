@@ -21,6 +21,7 @@ import BottomTabBar from '@/components/common/BottomTabBar';
 import Logo from '@/assets/images/logo.svg';
 import { sf, sr, sw, sh } from '@/utils/responsive';
 import type { BottomTab } from '@/types/bottomTabs';
+import { MATCHES } from '@/constants/matches';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -30,10 +31,11 @@ const ProfileScreen = ({ navigation }: any) => {
   const [premiumUnlocked, setPremiumUnlocked] = useState(false);
 
   const handleTabPress = (tab: BottomTab) => {
-    if (tab === 'Home') navigation.navigate('DiscoveryScreen');
-    if (tab === 'Request') navigation.navigate('RequestsScreen');
-    if (tab === 'Camera') navigation.navigate('MatchScreen');
-    if (tab === 'Chat') navigation.navigate('InboxScreen');
+    if (tab === 'Home') navigation.replace('DiscoveryScreen');
+    if (tab === 'Request') navigation.replace('RequestsScreen');
+    if (tab === 'Camera')
+      navigation.replace('InboxScreen', { cameraSelectMode: true, match: MATCHES[0] });
+    if (tab === 'Chat') navigation.replace('InboxScreen');
     if (tab === 'Profile') setActiveTab('Profile');
   };
 

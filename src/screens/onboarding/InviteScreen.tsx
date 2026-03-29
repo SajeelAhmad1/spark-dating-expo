@@ -162,6 +162,7 @@ const InviteScreen = ({ navigation }: any) => {
           ? { message: REFERRAL_LINK, url: REFERRAL_LINK }
           : { message: REFERRAL_LINK };
       await Share.share(content);
+      navigation.navigate('WaitingScreen');
     } catch {
       showToast('Could not open share', 'error');
     }

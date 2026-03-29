@@ -29,6 +29,8 @@ export const INITIAL_MESSAGES: Message[] = [
     type: 'snap',
     sender: 'friend',
     text: 'Tap to view snap',
+    imageUri:
+      'https://images.unsplash.com/photo-1512310604669-443f26c35f52?w=600&q=80',
     time: '10:05 AM',
     snapDuration: '20s',
   },

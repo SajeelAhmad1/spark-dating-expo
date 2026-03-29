@@ -26,6 +26,7 @@ import MatchScreen from '@/screens/MatchScreen';
 import RequestsScreen from '@/screens/RequestsScreen';
 import InboxScreen from '@/screens/InboxScreen';
 import ChatScreen from '@/screens/ChatScreen';
+import SnapViewScreen from '@/screens/SnapViewScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
 import SettingsScreen from '@/screens/SettingsScreen';
 import BlockedUsersScreen from '@/screens/BlockedUsersScreen';
@@ -110,6 +111,7 @@ export default function App() {
           <Stack.Screen name="RequestsScreen" component={RequestsScreen} />
           <Stack.Screen name="InboxScreen" component={InboxScreen} />
           <Stack.Screen name="ChatScreen" component={ChatScreen} />
+          <Stack.Screen name="SnapViewScreen" component={SnapViewScreen} />
 
           <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
           <Stack.Screen

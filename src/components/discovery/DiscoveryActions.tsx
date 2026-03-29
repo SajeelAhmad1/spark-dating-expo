@@ -3,7 +3,15 @@ import { TouchableOpacity, View } from 'react-native';
 import { Heart, Star, X } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/responsive';
 
-export default function DiscoveryActions({ onLikePress }: { onLikePress: () => void }) {
+export default function DiscoveryActions({
+  onLikePress,
+  onStarPress,
+  onCrossPress,
+}: {
+  onLikePress: () => void;
+  onStarPress: () => void;
+  onCrossPress: () => void;
+}) {
   return (
     <View
       style={{
@@ -20,6 +28,7 @@ export default function DiscoveryActions({ onLikePress }: { onLikePress: () => v
     >
       <TouchableOpacity
         activeOpacity={0.8}
+        onPress={onCrossPress}
         style={{
           width: sw(52),
           height: sh(52),
@@ -59,6 +68,7 @@ export default function DiscoveryActions({ onLikePress }: { onLikePress: () => v
 
       <TouchableOpacity
         activeOpacity={0.8}
+        onPress={onStarPress}
         style={{
           width: sw(52),
           height: sh(52),

@@ -1,4 +1,4 @@
-import { Conversation } from '@/constants/conversations';
+import { Conversation, getConversationUserName } from '@/constants/conversations';
 import { InboxFilterType } from '@/types/inbox';
 
 export function filterConversations(
@@ -10,7 +10,7 @@ export function filterConversations(
 
   if (query.trim()) {
     filtered = filtered.filter(c =>
-      c.name.toLowerCase().includes(query.toLowerCase()),
+      getConversationUserName(c).toLowerCase().includes(query.toLowerCase()),
     );
   }
 

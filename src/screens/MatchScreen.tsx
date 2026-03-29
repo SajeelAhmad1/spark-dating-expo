@@ -12,6 +12,8 @@ import { sf, sr, sw, sh } from '@/utils/responsive';
 import { MATCHES } from '@/constants/matches';
 import { useZodForm } from '@/utils/form';
 import { matchCaptionFormSchema } from '@/schemas/messaging';
+import * as MediaLibrary from 'expo-media-library';
+import { showToast } from '@/utils/toast';
 
 const MatchScreen = ({ navigation, route }: any) => {
   const match = route?.params?.match ?? MATCHES[0];
@@ -40,6 +42,7 @@ const MatchScreen = ({ navigation, route }: any) => {
     setIsCamOpen(false);
     setIsPhotoPreviewOpen(false);
     setCapturedPhoto(null);
+    navigation.replace('DiscoveryScreen');
   };
 
   // Function to send photo message
@@ -104,12 +107,15 @@ const MatchScreen = ({ navigation, route }: any) => {
   };
 
   // Function to download photo
-  const downloadPhoto = () => {
-    if (capturedPhoto) {
-      // Implement download functionality
-      console.log('Downloading photo:', capturedPhoto);
-      // You can use react-native-fs or similar library to save to device
+  const downloadPhoto = async () => {
+    if (!capturedPhoto) return;
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status !== 'granted') {
+      showToast('Please allow gallery permission', 'error');
+      return;
     }
+    await MediaLibrary.createAssetAsync(capturedPhoto);
+    showToast('Photo saved');
   };
 
   // Function to handle captured photo from camera

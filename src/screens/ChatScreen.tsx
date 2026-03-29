@@ -21,6 +21,7 @@ import PhotoPreviewScreen from './PhotoPreviewScreen';
 import CameraScreen from './CameraScreen';
 import * as ImagePicker from 'expo-image-picker';
 import { BlurView } from 'expo-blur';
+import * as MediaLibrary from 'expo-media-library';
 import ChatAvatar from '@/components/chat/ChatAvatar';
 import MessageBubble from '@/components/chat/MessageBubble';
 import type { Message } from '@/types/chat';
@@ -37,6 +38,7 @@ export default function ChatScreen({ navigation, route }: any) {
   const initialLocked: boolean = route?.params?.initialLocked ?? true;
   const initialPhotoUri: string | undefined = route?.params?.initialPhotoUri;
   const initialMessages: Message[] | undefined = route?.params?.initialMessages;
+  const autoOpenCamera: boolean = !!route?.params?.autoOpenCamera;
 
   const [isLocked, setIsLocked] = useState(initialLocked);
   const [messages, setMessages] = useState<Message[]>(() => {
@@ -71,6 +73,12 @@ export default function ChatScreen({ navigation, route }: any) {
   const [isSendingPhoto, setIsSendingPhoto] = useState(false);
 
   const scrollViewRef = useRef<ScrollView>(null);
+
+  React.useEffect(() => {
+    if (autoOpenCamera) {
+      setIsCameraOpen(true);
+    }
+  }, [autoOpenCamera]);
 
   // ── Text send ──────────────────────────────────────────────────────────────
 
@@ -134,6 +142,12 @@ export default function ChatScreen({ navigation, route }: any) {
   const handleDownloadPhoto = async () => {
     if (!capturedPhotoUri) return;
     try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Please allow gallery permission.');
+        return;
+      }
+      await MediaLibrary.createAssetAsync(capturedPhotoUri);
       Alert.alert('Saved', 'Photo saved to your gallery.');
     } catch {
       Alert.alert('Error', 'Could not save photo.');
@@ -157,6 +171,7 @@ export default function ChatScreen({ navigation, route }: any) {
     };
 
     setMessages(prev => [...prev, snapMsg]);
+    if (isLocked) setIsLocked(false);
     setIsSendingPhoto(false);
     setIsPreviewOpen(false);
     setCapturedPhotoUri(null);
@@ -259,7 +274,19 @@ export default function ChatScreen({ navigation, route }: any) {
           </View>
 
           {messages.map(msg => (
-            <MessageBubble key={msg.id} message={msg} friendAvatarUri={chatUserImageUri} />
+            <MessageBubble
+              key={msg.id}
+              message={msg}
+              friendAvatarUri={chatUserImageUri}
+              onSnapPress={snapMessage => {
+                if (snapMessage.sender === 'friend') {
+                  navigation.navigate('SnapViewScreen', {
+                    snapUri: snapMessage.imageUri ?? chatUserImageUri,
+                    chatUserName,
+                  });
+                }
+              }}
+            />
           ))}
         </ScrollView>
 
@@ -291,7 +318,7 @@ export default function ChatScreen({ navigation, route }: any) {
         {/* ── Bottom bar ── */}
         {isLocked ? (
           <TouchableOpacity
-            onPress={handleOpenGallery}
+            onPress={() => setIsCameraOpen(true)}
             style={{
               flexDirection: 'row',
               alignItems: 'center',

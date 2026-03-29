@@ -24,10 +24,10 @@ import { FieldError } from '@/components/common/FieldError';
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
-export default function InboxScreen({ navigation }: any) {
+export default function InboxScreen({ navigation, route }: any) {
   const [activeFilter, setActiveFilter] = useState<InboxFilterType>('All');
   const [activeTab, setActiveTab] = useState<BottomTab>('Chat');
-  const navLockRef = React.useRef(false);
+  const cameraSelectMode: boolean = !!route?.params?.cameraSelectMode;
 
   const { watch, setValue, trigger, formState } = useZodForm(inboxSearchFormSchema, {
     defaultValues: {
@@ -51,26 +51,38 @@ export default function InboxScreen({ navigation }: any) {
   const lockedConversations = filtered.filter(c => c.status === 'locked');
 
   const handleTabPress = (tab: BottomTab) => {
-    if (navLockRef.current) return;
-    navLockRef.current = true;
-    setTimeout(() => {
-      navLockRef.current = false;
-    }, 350);
-
-    // Only update highlight when staying on the same screen.
     if (tab === 'Chat') {
       setActiveTab('Chat');
       return;
     }
 
-    if (tab === 'Home') navigation.navigate('DiscoveryScreen');
-    if (tab === 'Request') navigation.navigate('RequestsScreen');
+    if (tab === 'Home') navigation.replace('DiscoveryScreen');
+    if (tab === 'Request') navigation.replace('RequestsScreen');
     if (tab === 'Camera')
-      navigation.navigate('MatchScreen', {
-        match: MATCHES[0],
-        autoOpenCamera: true,
-      });
-    if (tab === 'Profile') navigation.navigate('ProfileScreen');
+      navigation.replace('InboxScreen', { cameraSelectMode: true });
+    if (tab === 'Profile') navigation.replace('ProfileScreen');
+  };
+
+  const openConversation = (item: any) => {
+    const user = MATCHES.find(m => m.id === item.userId) ?? MATCHES[0];
+    navigation.navigate('ChatScreen', {
+      chatUserId: user.id,
+      chatUserName: user.name,
+      chatUserImageUri: user.image,
+      initialLocked: item.status === 'locked',
+      autoOpenCamera: false,
+    });
+  };
+
+  const openCameraForConversation = (item: any) => {
+    const user = MATCHES.find(m => m.id === item.userId) ?? MATCHES[0];
+    navigation.navigate('ChatScreen', {
+      chatUserId: user.id,
+      chatUserName: user.name,
+      chatUserImageUri: user.image,
+      initialLocked: false,
+      autoOpenCamera: true,
+    });
   };
 
   return (
@@ -240,7 +252,12 @@ export default function InboxScreen({ navigation }: any) {
               label="Active Streaks"
             />
             {activeConversations.map(item => (
-              <ConversationItem key={item.id} item={item} />
+              <ConversationItem
+                key={item.id}
+                item={item}
+                onPress={cameraSelectMode ? openCameraForConversation : openConversation}
+                onCameraPress={openCameraForConversation}
+              />
             ))}
           </>
         )}
@@ -254,7 +271,12 @@ export default function InboxScreen({ navigation }: any) {
               label="Locking Soon"
             />
             {lockingConversations.map(item => (
-              <ConversationItem key={item.id} item={item} />
+              <ConversationItem
+                key={item.id}
+                item={item}
+                onPress={cameraSelectMode ? openCameraForConversation : openConversation}
+                onCameraPress={openCameraForConversation}
+              />
             ))}
           </>
         )}
@@ -273,7 +295,11 @@ export default function InboxScreen({ navigation }: any) {
               label="Locked Chats"
             />
             {lockedConversations.map(item => (
-              <ConversationItem key={item.id} item={item} />
+              <ConversationItem
+                key={item.id}
+                item={item}
+                onPress={openConversation}
+              />
             ))}
           </>
         )}

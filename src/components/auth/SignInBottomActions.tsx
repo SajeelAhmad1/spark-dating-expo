@@ -6,8 +6,10 @@ import { sf, sh } from '@/utils/responsive';
 
 export default function SignInBottomActions({
   onLogin,
+  onSignUp,
 }: {
   onLogin: () => void;
+  onSignUp: () => void;
 }) {
   return (
     <>
@@ -21,10 +23,14 @@ export default function SignInBottomActions({
           textStyle={{fontSize: sf(20), fontWeight: '500'}}
         />
 
-        <Text style={[styles.accountLine, { fontSize: sf(16) }]} weight="medium">
-          Don't have an account?{' '}
-          <Text weight="medium" style={styles.signUpLink}>Sign Up</Text>
-        </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={[styles.accountLine, { fontSize: sf(16) }]} weight="medium">
+            Don't have an account?{' '}
+          </Text>
+          <TouchableOpacity onPress={onSignUp}>
+            <Text weight="medium" style={styles.signUpLink}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.helpWrap}>

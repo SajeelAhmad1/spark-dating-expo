@@ -2,13 +2,24 @@ import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { Lock } from 'lucide-react-native';
-import { Conversation } from '@/constants/conversations';
+import {
+  Conversation,
+  getConversationUserName,
+} from '@/constants/conversations';
 import CameraButton from '@/components/inbox/CameraButton';
 import InboxAvatar from '@/components/inbox/InboxAvatar';
 import StreakBadge from '@/components/inbox/StreakBadge';
 import { sf, sw, sh, sr } from '@/utils/responsive';
 
-export default function ConversationItem({ item }: { item: Conversation }) {
+export default function ConversationItem({
+  item,
+  onPress,
+  onCameraPress,
+}: {
+  item: Conversation;
+  onPress?: (item: Conversation) => void;
+  onCameraPress?: (item: Conversation) => void;
+}) {
   const isLocked = item.status === 'locked';
 
   return (
@@ -25,6 +36,7 @@ export default function ConversationItem({ item }: { item: Conversation }) {
       }}
     >
       <TouchableOpacity
+        onPress={() => onPress?.(item)}
         activeOpacity={0.75}
         style={{
           flexDirection: 'row',
@@ -54,7 +66,7 @@ export default function ConversationItem({ item }: { item: Conversation }) {
                 color: '#000000',
               }}
             >
-              {item.name}
+              {getConversationUserName(item)}
             </Text>
 
             {!isLocked && (
@@ -99,7 +111,7 @@ export default function ConversationItem({ item }: { item: Conversation }) {
             <Lock size={24} color="#7D858E" strokeWidth={1.8} />
           </View>
         ) : (
-          <CameraButton />
+          <CameraButton onPress={() => onCameraPress?.(item)} />
         )}
       </TouchableOpacity>
     </View>

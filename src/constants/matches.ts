@@ -1,5 +1,13 @@
 // ── Match Data ─────────────────────────────────────────────
-export const MATCHES = [
+export type MatchProfile = {
+  id: string;
+  name: string;
+  age: number;
+  bio: string;
+  image: string;
+};
+
+export const MATCHES: MatchProfile[] = [
   {
     id: '1',
     name: 'Emma',

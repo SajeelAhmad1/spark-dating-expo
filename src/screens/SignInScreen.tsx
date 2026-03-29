@@ -98,7 +98,10 @@ function SignInFormBody({
         </TouchableOpacity>
       </View>
 
-      <SignInBottomActions onLogin={handleSubmit(onValid)} />
+      <SignInBottomActions
+        onLogin={handleSubmit(onValid)}
+        onSignUp={() => navigation.navigate('SignUpScreen')}
+      />
     </>
   );
 }

@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   Dimensions,
   FlatList,
+  Alert,
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from 'react-native';
@@ -31,7 +32,6 @@ const DiscoveryScreen = ({ navigation }: any) => {
   const [activeTab, setActiveTab] = useState<BottomTab>('Home');
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
-  const navLockRef = useRef(false);
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const index = Math.round(e.nativeEvent.contentOffset.x / (CARD_WIDTH + 12));
@@ -41,23 +41,30 @@ const DiscoveryScreen = ({ navigation }: any) => {
   const activeMatch = MATCHES[Math.max(0, Math.min(currentIndex, MATCHES.length - 1))];
 
   const handleTabPress = (tab: BottomTab) => {
-    if (navLockRef.current) return;
-    navLockRef.current = true;
-    setTimeout(() => {
-      navLockRef.current = false;
-    }, 350);
-
-    // Only update highlight when we stay on the same screen.
     if (tab === 'Home') {
       setActiveTab('Home');
       return;
     }
 
-    if (tab === 'Request') navigation.navigate('RequestsScreen');
+    if (tab === 'Request') navigation.replace('RequestsScreen');
     if (tab === 'Camera')
-      navigation.navigate('MatchScreen', { match: activeMatch, autoOpenCamera: true });
-    if (tab === 'Chat') navigation.navigate('InboxScreen');
-    if (tab === 'Profile') navigation.navigate('ProfileScreen');
+      navigation.replace('InboxScreen', { cameraSelectMode: true });
+    if (tab === 'Chat') navigation.replace('InboxScreen');
+    if (tab === 'Profile') navigation.replace('ProfileScreen');
+  };
+
+  const goToNextUser = () => {
+    const nextIndex = Math.min(currentIndex + 1, MATCHES.length - 1);
+    flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+  };
+
+  const openChatForActiveMatch = () => {
+    navigation.navigate('ChatScreen', {
+      chatUserId: activeMatch.id,
+      chatUserName: activeMatch.name,
+      chatUserImageUri: activeMatch.image,
+      initialLocked: false,
+    });
   };
 
   return (
@@ -189,6 +196,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
                 btnOverlap={BTN_OVERLAP}
                 total={MATCHES.length}
                 currentIndex={currentIndex}
+                rightChatOnPress={openChatForActiveMatch}
               />
             )}
           />
@@ -196,6 +204,10 @@ const DiscoveryScreen = ({ navigation }: any) => {
           {/* ── Action Buttons ── */}
           <DiscoveryActions
             onLikePress={() => navigation.navigate('MatchScreen', { match: activeMatch })}
+            onStarPress={() =>
+              Alert.alert('Starred', `${activeMatch.name} added to starred users`)
+            }
+            onCrossPress={goToNextUser}
           />
         </View>
 

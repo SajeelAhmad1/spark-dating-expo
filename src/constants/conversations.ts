@@ -1,8 +1,9 @@
 type ChatStatus = 'active' | 'locking' | 'locked';
+import { getUserById } from '@/constants/users';
 
 export interface Conversation {
   id: string;
-  name: string;
+  userId: string;
   lastMessage: string;
   time: string;
   timeWarning?: boolean;
@@ -15,7 +16,7 @@ export interface Conversation {
 export const CONVERSATIONS: Conversation[] = [
   {
     id: '1',
-    name: 'Maria',
+    userId: '1',
     lastMessage: '📷 Sent a photo',
     time: '23h',
     streakCount: 7,
@@ -25,7 +26,7 @@ export const CONVERSATIONS: Conversation[] = [
   },
   {
     id: '2',
-    name: 'Maria',
+    userId: '2',
     lastMessage: 'Hey!',
     time: '11h',
     streakCount: 101,
@@ -36,7 +37,7 @@ export const CONVERSATIONS: Conversation[] = [
   },
   {
     id: '3',
-    name: 'Maria',
+    userId: '3',
     lastMessage: '📷 Sent a photo',
     time: '30 Minutes',
     timeWarning: true,
@@ -45,9 +46,17 @@ export const CONVERSATIONS: Conversation[] = [
   },
   {
     id: '4',
-    name: 'Maria',
+    userId: '4',
     lastMessage: 'Send a snap to unlock',
     time: '',
     status: 'locked',
   },
 ];
+
+export function getConversationUserName(conversation: Conversation): string {
+  return getUserById(conversation.userId)?.name ?? 'Unknown';
+}
+
+export function getConversationUserImage(conversation: Conversation): string | undefined {
+  return getUserById(conversation.userId)?.image;
+}
