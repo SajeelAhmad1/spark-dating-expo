@@ -10,25 +10,37 @@ import { otpFormSchema } from '@/schemas/onboarding';
 import { showToast } from '@/utils/toast';
 
 const DIGIT_KEYS = ['d0', 'd1', 'd2', 'd3'] as const;
-const RESEND_COOLDOWN_SEC = 60;
+const RESEND_COOLDOWN_SEC = 30;
 
 const NumberVerifyScreen = ({ navigation }: any) => {
   const inputs = useRef<(TextInput | null)[]>([]);
-  const [secondsLeft, setSecondsLeft] = useState(RESEND_COOLDOWN_SEC);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null); // ✅ hold interval ref
 
+  // ✅ Clear interval helper — reusable
+  const clearTimer = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  // ✅ Stop timer when screen is left (back, navigate away, swipe)
   useEffect(() => {
-    if (secondsLeft <= 0) return undefined;
-    const id = setTimeout(() => setSecondsLeft(s => s - 1), 1000);
-    return () => clearTimeout(id);
-  }, [secondsLeft]);
+    const unsubscribe = navigation.addListener('blur', () => {
+      clearTimer();
+      setSecondsLeft(0);
+    });
+    return unsubscribe; // ✅ cleanup listener on unmount
+  }, [navigation]);
+
+  // ✅ Cleanup interval on unmount as a safety net
+  useEffect(() => {
+    return () => clearTimer();
+  }, []);
 
   const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(otpFormSchema, {
-    defaultValues: {
-      d0: '',
-      d1: '',
-      d2: '',
-      d3: '',
-    },
+    defaultValues: { d0: '', d1: '', d2: '', d3: '' },
   });
 
   const digits = DIGIT_KEYS.map(k => watch(k));
@@ -55,16 +67,32 @@ const NumberVerifyScreen = ({ navigation }: any) => {
   };
 
   const onValid = () => {
+    clearTimer();       // ✅ stop timer on verify
+    setSecondsLeft(0);
     navigation.navigate('VerificationSuccessScreen');
   };
 
-  const canResend = secondsLeft <= 0;
-
   const handleResend = () => {
-    if (!canResend) return;
+    if (secondsLeft > 0) return; // guard — button should be disabled anyway
+
+    clearTimer(); // ✅ clear any leftover interval before starting fresh
+
     setSecondsLeft(RESEND_COOLDOWN_SEC);
     showToast('A new code has been sent');
+
+    // ✅ Start interval — ticks every second, stops itself at 0
+    intervalRef.current = setInterval(() => {
+      setSecondsLeft(prev => {
+        if (prev <= 1) {
+          clearTimer(); // ✅ auto-stop when countdown reaches 0
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
   };
+
+  const canResend = secondsLeft <= 0;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -82,9 +110,7 @@ const NumberVerifyScreen = ({ navigation }: any) => {
           {DIGIT_KEYS.map((key, index) => (
             <TextInput
               key={key}
-              ref={r => {
-                inputs.current[index] = r;
-              }}
+              ref={r => { inputs.current[index] = r; }}
               value={digits[index]}
               onChangeText={text => handleChange(text, index)}
               onKeyPress={e => handleKeyPress(e, index)}
@@ -131,7 +157,7 @@ const NumberVerifyScreen = ({ navigation }: any) => {
             ]}
             weight="medium"
           >
-            {canResend ? 'Resend Code' : `Resend code in ${secondsLeft}s`}
+            {secondsLeft > 0 ? `Resend code in ${secondsLeft}s` : 'Resend Code'}
           </Text>
         </TouchableOpacity>
       </View>

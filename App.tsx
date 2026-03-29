@@ -57,7 +57,7 @@ export default function App() {
     <GestureHandlerRootView style={styles.root}>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="InboxScreen"
+          initialRouteName="Onboarding1"
           screenOptions={{ headerShown: false }}
         >
           <Stack.Screen name="Onboarding1" component={OnboardingScreen1} />

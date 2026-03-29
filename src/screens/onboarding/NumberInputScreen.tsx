@@ -1,20 +1,30 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  StyleSheet,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Dimensions,
+  Keyboard,
+  Platform,
+} from 'react-native';
 import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
 import { ChevronDown } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CountryPicker } from 'react-native-country-codes-picker';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sh, sw, sr, useResponsive } from '@/utils/responsive';
+import { sf, sh, sw, sr } from '@/utils/responsive';
 import { useZodForm } from '@/utils/form';
 import { onboardingPhoneFormSchema } from '@/schemas/onboarding';
 import { showToast } from '@/utils/toast';
 
-const winH = Dimensions.get('window').height;
+const { height: winH } = Dimensions.get('window');
 
 const NumberEnterScreen = ({ navigation }: any) => {
   const [show, setShow] = useState(false);
+  const [pickerKeyboardHeight, setPickerKeyboardHeight] = useState(0);
+  const lastKnownKeyboardHeight = useRef(300); // ✅ persist last known height across renders
 
   const [country, setCountry] = useState({
     flag: '🇳🇱',
@@ -35,10 +45,41 @@ const NumberEnterScreen = ({ navigation }: any) => {
   const phoneNumber = watch('phoneNumber');
   const phoneError = formState.errors.phoneNumber?.message;
 
+  useEffect(() => {
+    const showSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      (e) => {
+        lastKnownKeyboardHeight.current = e.endCoordinates.height;
+        setPickerKeyboardHeight(e.endCoordinates.height);
+      },
+    );
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => {
+        setPickerKeyboardHeight(0);
+      },
+    );
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
+  const handleOpenPicker = () => {
+    // ✅ Pre-apply last known keyboard height BEFORE modal opens
+    // so layout is already correct when search bar is tapped
+    setPickerKeyboardHeight(lastKnownKeyboardHeight.current);
+    setShow(true);
+  };
+
   const onValid = () => {
     showToast('Verification code sent');
     navigation.navigate('NumberVerifyScreen');
   };
+
+  const modalMaxHeight = pickerKeyboardHeight > 0
+    ? winH - pickerKeyboardHeight - sh(24)
+    : winH * 0.88;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -53,7 +94,8 @@ const NumberEnterScreen = ({ navigation }: any) => {
         </View>
 
         <View style={[styles.phoneRow, phoneError ? styles.phoneRowError : null]}>
-          <TouchableOpacity style={styles.countryBtn} onPress={() => setShow(true)}>
+          {/* ✅ Use handleOpenPicker instead of directly setShow(true) */}
+          <TouchableOpacity style={styles.countryBtn} onPress={handleOpenPicker}>
             <Text style={{ fontSize: sf(20) }}>{country.flag}</Text>
             <Text style={[styles.dialCode, { fontSize: sf(16) }]}>{country.dial_code}</Text>
             <ChevronDown size={sf(16)} color="#000000" />
@@ -74,8 +116,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
         <FieldError message={phoneError} />
 
         <Text style={[styles.helper, { fontSize: sf(15) }]} weight="regular">
-          We'll text you a code to verify you're really you. Message and data
-          rates may apply.{' '}
+          We'll text you a code to verify you're really you. Message and data rates may apply.{' '}
           <Text style={styles.helperMuted} weight="regular">
             What happens if your number changes?
           </Text>
@@ -99,7 +140,9 @@ const NumberEnterScreen = ({ navigation }: any) => {
         <View style={styles.footerRow}>
           <Text style={[styles.footerText, { fontSize: sf(16) }]} weight="regular">
             Already have an account?{' '}
-            <Text style={styles.loginLink} weight="medium">
+            <Text 
+            onPress={() => navigation.navigate('SignInScreen')}
+            style={styles.loginLink} weight="medium">
               Login
             </Text>
           </Text>
@@ -110,9 +153,15 @@ const NumberEnterScreen = ({ navigation }: any) => {
         lang="en"
         show={show}
         enableModalAvoiding={false}
-        androidWindowSoftInputMode="adjustResize"
-        onBackdropPress={() => setShow(false)}
-        onRequestClose={() => setShow(false)}
+        androidWindowSoftInputMode="adjustNothing"
+        onBackdropPress={() => {
+          setShow(false);
+          setPickerKeyboardHeight(0); // ✅ reset on close
+        }}
+        onRequestClose={() => {
+          setShow(false);
+          setPickerKeyboardHeight(0); // ✅ reset on close
+        }}
         inputPlaceholder="Search country"
         inputPlaceholderTextColor="#7D858E"
         searchMessage="No countries match your search"
@@ -124,11 +173,13 @@ const NumberEnterScreen = ({ navigation }: any) => {
           });
           setValue('countryCode', item.code, { shouldValidate: true });
           setShow(false);
+          setPickerKeyboardHeight(0); // ✅ reset on close
         }}
         style={{
           modal: {
-            maxHeight: winH * 0.88,
+            maxHeight: modalMaxHeight,
             paddingTop: sh(16),
+            paddingBottom: pickerKeyboardHeight > 0 ? 0 : sh(16),
           },
           textInput: {
             height: sh(48),

@@ -9,9 +9,9 @@ export const ErrorMessages = Object.freeze({
 
   auth: Object.freeze({
     phoneRequired: 'Enter your phone number.',
-    phoneInvalid: 'Enter a valid phone number (8–15 digits).',
+    phoneInvalid: 'Invalid phone number',
     emailRequired: 'Enter your email address.',
-    emailInvalid: 'Enter a valid email address.',
+    emailInvalid: 'Invalid email address.',
     passwordRequired: 'Enter your password.',
     passwordMin: 'Password must be at least 8 characters.',
     passwordMax: 'Password must be at most 128 characters.',
@@ -22,10 +22,10 @@ export const ErrorMessages = Object.freeze({
   profile: Object.freeze({
     firstNameRequired: 'First name is required.',
     firstNameMax: 'First name must be at most 50 characters.',
-    firstNameInvalid: 'Use letters, spaces, hyphens, or apostrophes only.',
+    firstNameInvalid: 'Invalid first name',
     lastNameRequired: 'Last name is required.',
     lastNameMax: 'Last name must be at most 50 characters.',
-    lastNameInvalid: 'Use letters, spaces, hyphens, or apostrophes only.',
+    lastNameInvalid: 'Invalid last name',
     genderInvalid: 'Select a valid gender.',
     dayInvalid: 'Select a valid day.',
     monthInvalid: 'Select a valid month.',

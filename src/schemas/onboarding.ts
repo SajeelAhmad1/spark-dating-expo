@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { parsePhoneNumber } from 'libphonenumber-js/max';
+import { parsePhoneNumber, isValidPhoneNumber  } from 'libphonenumber-js/max';
 import type { CountryCode } from 'libphonenumber-js';
 import { ErrorMessages as ERR } from '@/constants/ErrorMessages';
 
@@ -17,22 +17,36 @@ export const onboardingPhoneFormSchema = z
       });
       return;
     }
-    try {
-      const pn = parsePhoneNumber(data.phoneNumber, data.countryCode.toUpperCase() as CountryCode);
-      if (!pn?.isValid()) {
+    // try {
+      const country = data.countryCode.toUpperCase() as CountryCode;
+
+      // ✅ First check: is it valid format + possible number for this country
+      const valid = isValidPhoneNumber(data.phoneNumber, country);
+      if (!valid) {
+        ctx.addIssue({
+          code: 'custom',
+          message: ERR.onboarding.phoneNationalInvalid,
+          path: ['phoneNumber'],
+        });
+        return;
+      }
+
+      // ✅ Second check: parse and verify type is not UNKNOWN (libphonenumber-js/max only)
+      const pn = parsePhoneNumber(data.phoneNumber, country);
+      if (!pn?.isValid() || pn.getType() === undefined) {
         ctx.addIssue({
           code: 'custom',
           message: ERR.onboarding.phoneNationalInvalid,
           path: ['phoneNumber'],
         });
       }
-    } catch {
-      ctx.addIssue({
-        code: 'custom',
-        message: ERR.onboarding.phoneNationalInvalid,
-        path: ['phoneNumber'],
-      });
-    }
+    // } catch {
+    //   ctx.addIssue({
+    //     code: 'custom',
+    //     message: ERR.onboarding.phoneNationalInvalid,
+    //     path: ['phoneNumber'],
+    //   });
+    // }
   });
 
 export type OnboardingPhoneFormValues = z.infer<typeof onboardingPhoneFormSchema>;
@@ -84,9 +98,9 @@ export function createProfileSetupSchema(opts: {
 }
 
 export const physicalAttributesSchema = z.object({
-  height: z.string().min(1, ERR.profile.heightRequired),
-  bodyType: z.string().min(1, ERR.profile.bodyTypeRequired),
-  ethnicity: z.string().min(1, ERR.profile.ethnicityRequired),
+  height: z.string().optional(),
+  bodyType: z.string().optional(),
+  ethnicity: z.string().optional(),
 });
 
 export type PhysicalAttributesFormValues = z.infer<typeof physicalAttributesSchema>;
