@@ -8,7 +8,7 @@ export default function MatchTitle() {
   return (
     <View style={styles.row}>
       <Text
-        style={[styles.titleDark, { fontSize: sf(44), lineHeight: sf(46), letterSpacing: 0 }]}
+        style={[styles.titleDark, { fontSize: sf(44), }]}
         weight="bold"
       >
         {"It's a"}
@@ -16,7 +16,7 @@ export default function MatchTitle() {
 
       <View style={styles.circle}>
         <Text
-          style={[styles.titleLight, { fontSize: sf(44), lineHeight: sf(46) }]}
+          style={[styles.titleLight, { fontSize: sf(44), }]}
           weight="bold"
         >
           {'match!'}

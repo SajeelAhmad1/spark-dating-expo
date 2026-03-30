@@ -22,8 +22,6 @@ import { useZodForm } from '@/utils/form';
 import { inboxSearchFormSchema } from '@/schemas/messaging';
 import { FieldError } from '@/components/common/FieldError';
 
-// ─── Main Screen ──────────────────────────────────────────────────────────────
-
 export default function InboxScreen({ navigation, route }: any) {
   const [activeFilter, setActiveFilter] = useState<InboxFilterType>('All');
   const [activeTab, setActiveTab] = useState<BottomTab>('Chat');
@@ -55,7 +53,6 @@ export default function InboxScreen({ navigation, route }: any) {
       setActiveTab('Chat');
       return;
     }
-
     if (tab === 'Home') navigation.navigate('DiscoveryScreen');
     if (tab === 'Request') navigation.navigate('RequestsScreen');
     if (tab === 'Camera')
@@ -92,49 +89,31 @@ export default function InboxScreen({ navigation, route }: any) {
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
           backgroundColor: '#FFFFFF',
           paddingHorizontal: sw(20),
-          paddingTop: 60,
+          paddingTop: 34,
           paddingBottom: 24,
         }}
       >
+        {/* Back button — fixed width */}
         <TouchableOpacity
           onPress={() => navigation?.goBack()}
-          style={{
-            position: 'absolute',
-            left: sw(20),
-            top: 35,
-            bottom: 0,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 2,
-          }}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 4, width: sw(60) }}
         >
-        <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4}}>
-            <ChevronLeft size={sf(24)} color="#555555" strokeWidth={2} />
-          <Text
-            style={{
-              fontSize: sf(13),
-              color: '#8D8D8D',
-              fontWeight: '400',
-              textAlign: 'center'
-            }}
-          >
+          <ChevronLeft size={sf(24)} color="#555555" strokeWidth={2} />
+          <Text style={{ fontSize: sf(13), color: '#8D8D8D', fontWeight: '400' }}>
             Back
           </Text>
-        </View>
         </TouchableOpacity>
 
-        <Text
-          style={{
-            fontSize: sf(20), 
-            fontWeight: '600',
-            color: '#000000',
-          }}
-        >
+        {/* Title */}
+        <Text style={{ fontSize: sf(20), fontWeight: '600', color: '#000000' }}>
           Inbox
         </Text>
+
+        {/* Spacer — mirrors back button width */}
+        <View style={{ width: sw(60) }} />
       </View>
 
       {/* ── Search Bar ── */}
@@ -166,7 +145,7 @@ export default function InboxScreen({ navigation, route }: any) {
             onBlur={() => trigger('searchQuery')}
             style={{
               flex: 1,
-              fontSize: sf(14), 
+              fontSize: sf(14),
               color: '#333333',
               fontWeight: '400',
               padding: 0,
@@ -202,12 +181,6 @@ export default function InboxScreen({ navigation, route }: any) {
                 backgroundColor: isActive ? '#1E78F5' : '#FFFFFF',
                 borderWidth: 1,
                 borderColor: isActive ? '#1E78F5' : '#B6B9C9',
-                
-                // shadowColor: '#000',
-                // shadowOffset: { width: 0, height: 0 },
-                // shadowOpacity: 0.09,
-                // shadowRadius: 5,
-                // elevation: 2,
               }}
               activeOpacity={0.75}
             >
@@ -223,9 +196,8 @@ export default function InboxScreen({ navigation, route }: any) {
               <Text
                 style={{
                   fontSize: sf(16),
-                  lineHeight: sf(16),
                   fontWeight: '500',
-                  color: isActive ? '#FFFFFF' : '#B6B9C9', 
+                  color: isActive ? '#FFFFFF' : '#B6B9C9',
                 }}
               >
                 {filter}
@@ -286,8 +258,7 @@ export default function InboxScreen({ navigation, route }: any) {
           <>
             <SectionHeader
               mt={
-                lockingConversations.length > 0 ||
-                activeConversations.length > 0
+                lockingConversations.length > 0 || activeConversations.length > 0
                   ? 8
                   : 0
               }
@@ -315,10 +286,7 @@ export default function InboxScreen({ navigation, route }: any) {
       </ScrollView>
 
       {/* ── Bottom Tab Bar ── */}
-      <BottomTabBar
-        activeTab={activeTab}
-        onTabPress={handleTabPress}
-      />
+      <BottomTabBar activeTab={activeTab} onTabPress={handleTabPress} />
     </SafeAreaView>
   );
 }

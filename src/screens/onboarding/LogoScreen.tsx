@@ -1,5 +1,6 @@
 import { View } from 'react-native';
 import { Text } from '@/components/common/Text';
+import {Text as RNText} from 'react-native';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import Logo from '@/assets/images/logo.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -45,18 +46,16 @@ export default function LogoScreen({ navigation }: any) {
           </View>
 
           {/* App name */}
-          <Text
+          <RNText
             style={{
-              fontSize: sf(40),
-              lineHeight: sf(40),
-              letterSpacing: 0,
+              fontSize: sf(40), 
               fontFamily: 'ZenDots-Regular',
               fontWeight: '400',
               color: '#ffffff',
             }}
           >
             SPARK
-          </Text>
+          </RNText>
 
           {/* Subtitle */}
           <Text

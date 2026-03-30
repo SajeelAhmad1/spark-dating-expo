@@ -37,7 +37,7 @@ const OnboardingCard: React.FC<Props> = ({
           borderTopRightRadius: sr(32),
           paddingTop: sh(40),
           paddingBottom: sh(32),
-          minHeight: sh(300),
+          minHeight: sh(362),
         }}
       >
         <View style={{ width: "100%" }}>
@@ -49,9 +49,7 @@ const OnboardingCard: React.FC<Props> = ({
               color: "#000000",
               paddingHorizontal: sw(24),
               marginBottom: sh(8),
-              fontSize: sf(24),
-              lineHeight: sf(32),
-              letterSpacing: 0,
+              fontSize: sf(24),  
             }}
           >
             {title}
@@ -64,9 +62,7 @@ const OnboardingCard: React.FC<Props> = ({
               color: "#7D858E",
               textAlign: "center",
               paddingHorizontal: sw(40),
-              fontSize: sf(16),
-              lineHeight: sf(20),
-              letterSpacing: 0,
+              fontSize: sf(16), 
               height: sf(80),
             }}
           >
@@ -111,9 +107,7 @@ const OnboardingCard: React.FC<Props> = ({
               onPress={onPress}
               colors={[Colors.gradientStart, Colors.gradientEnd]}
               textStyle={{
-                fontSize: sf(18),
-                lineHeight: sf(18),
-                letterSpacing: 0,
+                fontSize: sf(18), 
               }}
             />
           </View>

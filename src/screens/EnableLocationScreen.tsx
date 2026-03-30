@@ -20,9 +20,7 @@ const EnableLocationScreen = ({ navigation }: any) => {
             styles.heading,
             {
               fontFamily: 'Poppins-SemiBold',
-              fontSize: sf(24),
-              lineHeight: sf(24),
-              letterSpacing: 0,
+              fontSize: sf(24), 
             },
           ]}
         >
@@ -48,8 +46,7 @@ const EnableLocationScreen = ({ navigation }: any) => {
           <Text
             style={{
               fontFamily: 'Poppins-SemiBold',
-              fontSize: sf(16),
-              lineHeight: sf(16),
+              fontSize: sf(16), 
               color: '#000000',
             }}
           >

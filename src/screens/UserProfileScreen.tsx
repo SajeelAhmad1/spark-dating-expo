@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@/components/common/Text';
-import { ChevronLeft, MoreVertical, MapPin, Ruler, UserRound } from 'lucide-react-native';
+import { ChevronLeft, MoreVertical, MapPin, Ruler, UserRound, X } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/responsive';
 import DiscoveryMatchCard from '@/components/discovery/DiscoveryMatchCard';
 import DiscoveryActions from '@/components/discovery/DiscoveryActions';
@@ -76,6 +76,7 @@ const UserProfileScreen = ({ navigation, route }: any) => {
             paddingHorizontal: CARD_H_PADDING,
             paddingBottom: BTN_OVERLAP,
             position: 'relative',
+            marginTop: sh(12),
           }}>
            <View
   style={{
@@ -105,7 +106,7 @@ const UserProfileScreen = ({ navigation, route }: any) => {
         fontWeight: '600',
       }}
     >
-      101
+     🔥 101
     </Text>
   </View>
 </View>
@@ -201,7 +202,7 @@ const Header = ({ navigation }: any) => (
     }}
   >
     <TouchableOpacity onPress={() => navigation.goBack()}>
-      <ChevronLeft size={sf(24)} color="#000" />
+      <X size={sf(24)} color="#000" />
     </TouchableOpacity>
 
     <Text style={styles.headerTitle}>Profile</Text>

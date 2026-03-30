@@ -125,8 +125,7 @@ const EditProfileScreen = ({ navigation }: any) => {
     borderWidth: 1,
     borderColor: '#7D858E',
     borderRadius: sr(8),
-    paddingHorizontal: sw(12),
-  lineHeight: sf(20), 
+    paddingHorizontal: sw(12), 
     height: sh(48),
     flex: 1,  
   };

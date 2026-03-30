@@ -105,7 +105,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
 
           <TextInput
             placeholder="300 1234567"
-            placeholderTextColor="black"
+            placeholderTextColor="#7D858E"
             keyboardType="phone-pad"
             value={phoneNumber}
             style={[styles.phoneInput, { fontSize: sf(16) }]}

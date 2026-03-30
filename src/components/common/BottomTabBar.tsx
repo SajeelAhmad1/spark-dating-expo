@@ -78,10 +78,8 @@ const BottomTabBar = ({ activeTab, onTabPress }: BottomTabBarProps) => {
         {icon}
         <Text
           style={{
-            fontFamily: 'Poppins-Regular',
-            fontSize: sf(13),
-            lineHeight: sf(13),
-            letterSpacing: 0,
+            // fontFamily: 'Poppins-Regular',
+            fontSize: sf(13), 
             color: isActive ? ACTIVE_COLOR : INACTIVE_COLOR,
           }}
         >
@@ -103,13 +101,6 @@ const BottomTabBar = ({ activeTab, onTabPress }: BottomTabBarProps) => {
       }}
     >
       {/* Consistent bottom bar background on all screens */}
-      {/* <LinearGradient
-        colors={['#1E78F5', '#FBB202']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        pointerEvents="none"
-        style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
-      /> */}
 
       {/* ── Camera button — center aligned on the pill's top edge ── */}
       <View

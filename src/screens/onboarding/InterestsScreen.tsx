@@ -60,10 +60,10 @@ const InterestsScreen = ({ navigation }: any) => {
 
         {/* ── Header ── */}
         <View style={{ marginTop: sh(12), gap: sh(6) }}>
-          <Text style={{ fontSize: sf(28), fontWeight: '600', color: '#000000', lineHeight: sf(28) }}>
+          <Text style={{ fontSize: sf(28), fontWeight: '600', color: '#000000',  }}>
             Your Interests
           </Text>
-          <Text style={{ fontSize: sf(15), fontWeight: '400', color: '#7D858E', lineHeight: sf(15) }}>
+          <Text style={{ fontSize: sf(15), fontWeight: '400', color: '#7D858E', }}>
             Choose at least 3 interests (max 5)
           </Text>
         </View>
@@ -77,8 +77,7 @@ const InterestsScreen = ({ navigation }: any) => {
               <Text style={{
                 fontSize: sf(15),
                 fontWeight: '600',
-                color: '#000000',
-                lineHeight: sf(15),
+                color: '#000000', 
                 marginBottom: sh(12),
               }}>
                 {category}
@@ -106,8 +105,7 @@ const InterestsScreen = ({ navigation }: any) => {
                       <Text style={{
                         fontSize: sf(13),
                         fontWeight: '400',
-                        color: isSelected ? '#000000' : '#7D858E',
-                        lineHeight: sf(13),
+                        color: isSelected ? '#000000' : '#7D858E', 
                       }}>
                         {item}
                       </Text>
@@ -127,6 +125,7 @@ const InterestsScreen = ({ navigation }: any) => {
         bottom: 0, left: 0, right: 0,
         paddingHorizontal: sw(24),
         paddingBottom: sh(32),
+        paddingTop: sh(8),
         backgroundColor: '#fff',
         alignItems: 'center',
         gap: sh(12),
@@ -134,8 +133,7 @@ const InterestsScreen = ({ navigation }: any) => {
         <Text style={{
           fontSize: sf(15),
           fontWeight: '500',
-          color: '#FBB202',
-          lineHeight: sf(15),
+          color: '#FBB202', 
         }}>
           {selected.length}/{MAX} selected
         </Text>
@@ -158,7 +156,7 @@ const InterestsScreen = ({ navigation }: any) => {
             alignSelf: 'stretch',
             opacity: canContinue ? 1 : 0.5,
           }}
-          textStyle={{fontSize: sf(20), fontWeight: '500', lineHeight: sf(20), letterSpacing: 0}}
+          textStyle={{fontSize: sf(20), fontWeight: '500', }}
         />
       </View>
     </SafeAreaView>
@@ -166,7 +164,7 @@ const InterestsScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(32) },
   scroll: { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16) },
 });
 

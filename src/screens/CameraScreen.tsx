@@ -10,7 +10,7 @@ import {
 import { Text } from '@/components/common/Text';
 import { CameraView, CameraType, useCameraPermissions, FlashMode } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import { Cross, FlashlightIcon, FlashlightOffIcon, GalleryVerticalIcon, FlipHorizontal } from 'lucide-react-native';
+import { Cross, FlashlightIcon, FlashlightOffIcon, GalleryVerticalIcon, FlipHorizontal, X } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/responsive';
 
 interface CameraScreenProps {
@@ -104,7 +104,7 @@ export default function CameraScreen({ visible, onClose, onPhotoCapture }: Camer
 
             <View style={styles.topControls}>
               <TouchableOpacity style={styles.controlButton} onPress={onClose}>
-                <Cross size={24} color="#FFFFFF" />
+                <X size={24} color="#FFFFFF" />
               </TouchableOpacity>
               <TouchableOpacity style={styles.controlButton} onPress={toggleFlash}>
                 {flashEnabled

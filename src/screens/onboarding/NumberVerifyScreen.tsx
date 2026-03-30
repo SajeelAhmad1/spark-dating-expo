@@ -121,8 +121,7 @@ const NumberVerifyScreen = ({ navigation }: any) => {
                 styles.otpCell,
                 otpErrors[key]?.message ? styles.otpCellError : null,
                 {
-                  fontSize: sf(20),
-                  lineHeight: sf(24),
+                  fontSize: sf(20), 
                   width: sf(56),
                   height: sf(56),
                 },

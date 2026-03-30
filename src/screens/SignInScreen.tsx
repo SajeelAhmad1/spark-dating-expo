@@ -135,9 +135,7 @@ export default function SignInScreen({
             style={{
               color: '#000000',
               fontWeight: '600',
-              fontSize: sf(28),
-              lineHeight: sf(28),
-              letterSpacing: 0,
+              fontSize: sf(28), 
             }}
           >
             Welcome Back!
@@ -145,9 +143,7 @@ export default function SignInScreen({
           <Text
             style={{
               color: '#7D858E',
-              fontSize: sf(15),
-              lineHeight: sf(15),
-              letterSpacing: 0,
+              fontSize: sf(15), 
             }}
           >
             Please enter your number & password to signin

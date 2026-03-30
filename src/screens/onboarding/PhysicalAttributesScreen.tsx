@@ -82,13 +82,13 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
         {/* ── Header ── */}
         <View style={styles.headerBlock}>
           <Text
-            style={[styles.screenTitle, { fontSize: sf(28), lineHeight: sf(28), letterSpacing: 0 }]}
+            style={[styles.screenTitle, { fontSize: sf(28), }]}
             weight="semibold"
           >
             Physical Attributes
           </Text>
           <Text
-            style={[styles.screenSubtitle, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            style={[styles.screenSubtitle, { fontSize: sf(15),  }]}
             weight="regular"
           >
             Help others learn more about you
@@ -100,7 +100,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
           {fields.map(({ key, label, placeholder }) => (
             <View key={key}>
               <Text
-                style={[styles.fieldLabel, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+                style={[styles.fieldLabel, { fontSize: sf(15)}]}
                 weight="semibold"
               >
                 {label}
@@ -135,7 +135,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
 
         {/* ── Skip Note ── */}
         <Text
-          style={[styles.skipNote, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+          style={[styles.skipNote, { fontSize: sf(15)  }]}
           weight="regular"
         >
           You can always skip this step and edit later
@@ -150,7 +150,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
           colors={['#1E78F5', '#FBB202']}
           variant="gradient"
           style={{ alignSelf: 'stretch' }}
-          textStyle={{fontSize: sf(20), fontWeight: '500', lineHeight: sf(20), letterSpacing: 0}}
+          textStyle={{fontSize: sf(20), fontWeight: '500' }}
         />
       </View>
 

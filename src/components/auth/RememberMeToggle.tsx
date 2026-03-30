@@ -24,7 +24,7 @@ export default function RememberMeToggle({
         ]}
       >
         {rememberMe && (
-          <Text style={[styles.checkmark, { fontSize: sf(11), lineHeight: sf(14) }]} weight="regular">
+          <Text style={[styles.checkmark, { fontSize: sf(11), }]} weight="regular">
             ✓
           </Text>
         )}

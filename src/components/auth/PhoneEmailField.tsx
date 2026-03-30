@@ -21,7 +21,7 @@ export default function PhoneEmailField({
   return (
     <View style={styles.wrap}>
       <Text
-        style={[styles.label, { fontSize: sf(18), lineHeight: sf(18), letterSpacing: 0 }]}
+        style={[styles.label, { fontSize: sf(18),  }]}
         weight="semibold"
       >
         {activeTab === 'phone' ? 'Phone number' : 'Email'}

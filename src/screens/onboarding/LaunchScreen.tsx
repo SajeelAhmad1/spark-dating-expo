@@ -85,8 +85,7 @@ const LaunchScreen = ({ navigation }: any) => {
                         styles.featureLabel,
                         {
                           fontFamily: 'Poppins-Regular',
-                          fontSize: sf(16),
-                          lineHeight: sf(16),
+                          fontSize: sf(16), 
                           letterSpacing: 0,
                         },
                       ]}
@@ -128,7 +127,7 @@ const LaunchScreen = ({ navigation }: any) => {
           onPress={() => navigation.navigate('EnableLocationScreen')}
           colors={['#1E78F5', '#FBB202']}
           variant="gradient"
-          textStyle={{fontSize: sf(18), fontWeight: '500', lineHeight: sf(18), letterSpacing: 0}}
+          textStyle={{fontSize: sf(18), fontWeight: '500', }}
         />
       </View>
     </SafeAreaView>

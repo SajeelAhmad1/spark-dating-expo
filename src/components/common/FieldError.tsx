@@ -10,8 +10,7 @@ export function FieldError({ message }: { message?: string }) {
 const styles = StyleSheet.create({
   text: {
     marginTop: 6,
-    fontSize: sf(12),
-    lineHeight: sf(16),
+    fontSize: sf(12), 
     color: '#DC2626',
     fontFamily: 'Poppins-Regular',
   },

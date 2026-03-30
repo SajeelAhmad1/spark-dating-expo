@@ -31,7 +31,7 @@ export default function SignUpScreen({ navigation }: any) {
             justifyContent: 'space-between',
             alignItems: 'center',
             paddingTop: sh(80),
-            paddingHorizontal: sw(20),
+            paddingHorizontal: sw(0),
           }}
         >
 

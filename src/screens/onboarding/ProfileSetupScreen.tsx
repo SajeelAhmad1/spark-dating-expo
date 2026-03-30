@@ -105,13 +105,13 @@ const ProfileSetupScreen = ({navigation}: any) => {
         {/* ── Header ── */}
         <View style={styles.headerBlock}>
           <Text
-            style={[styles.screenTitle, { fontSize: sf(28), lineHeight: sf(28), letterSpacing: 0 }]}
+            style={[styles.screenTitle, { fontSize: sf(28)  }]}
             weight="semibold"
           >
             Tell Us About You
           </Text>
           <Text
-            style={[styles.screenSubtitle, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            style={[styles.screenSubtitle, { fontSize: sf(15) }]}
             weight="regular"
           >
             Complete your profile to get started
@@ -122,7 +122,7 @@ const ProfileSetupScreen = ({navigation}: any) => {
         <View style={styles.nameRow}>
           <View style={styles.flex1}>
             <Text
-              style={[styles.labelSemibold, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+              style={[styles.labelSemibold, { fontSize: sf(15)  }]}
               weight="semibold"
             >First Name</Text>
             <TextInput
@@ -140,7 +140,7 @@ const ProfileSetupScreen = ({navigation}: any) => {
           </View>
           <View style={styles.flex1}>
             <Text
-              style={[styles.labelSemibold, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+              style={[styles.labelSemibold, { fontSize: sf(15),   }]}
               weight="semibold"
             >Last Name</Text>
             <TextInput
@@ -161,7 +161,7 @@ const ProfileSetupScreen = ({navigation}: any) => {
         {/* ── Gender ── */}
         <View style={styles.section}>
           <Text
-            style={[styles.labelSemibold, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            style={[styles.labelSemibold, { fontSize: sf(15),   }]}
             weight="semibold"
           >Gender</Text>
           <View style={styles.rowGap}>
@@ -201,7 +201,7 @@ const ProfileSetupScreen = ({navigation}: any) => {
         {/* ── Date of Birth ── */}
         <View style={styles.section}>
           <Text
-            style={[styles.labelSemibold, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            style={[styles.labelSemibold, { fontSize: sf(15),   }]}
             weight="semibold"
           >Date of birth</Text>
           <View style={styles.rowGap}>
@@ -234,7 +234,7 @@ const ProfileSetupScreen = ({navigation}: any) => {
         {/* ── Bio ── */}
         <View style={styles.section}>
           <Text
-            style={[styles.labelRegular, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            style={[styles.labelRegular, { fontSize: sf(15),   }]}
             weight="regular"
           >Add a Bio</Text>
           <TextInput
@@ -270,7 +270,7 @@ const ProfileSetupScreen = ({navigation}: any) => {
           colors={['#1E78F5', '#FBB202']}
           variant="gradient"
           style={{ alignSelf: 'stretch' }}
-          textStyle={{fontSize: sf(20), fontWeight: '500', lineHeight: sf(20), letterSpacing: 0}}
+          textStyle={{fontSize: sf(20), fontWeight: '500',  }}
         />
       </View>
 
