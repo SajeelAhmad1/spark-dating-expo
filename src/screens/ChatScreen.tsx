@@ -17,7 +17,6 @@ import {
   Send,
 } from 'lucide-react-native';
 import CameraIcon from '@/assets/images/cameraIcon.svg';
-import PhotoPreviewScreen from './PhotoPreviewScreen';
 import CameraScreen from './CameraScreen';
 import * as ImagePicker from 'expo-image-picker';
 import { BlurView } from 'expo-blur';
@@ -31,6 +30,7 @@ import { sf, sr, sw, sh } from '@/utils/responsive';
 import { useZodForm } from '@/utils/form';
 import { chatMessageFormSchema } from '@/schemas/messaging';
 import { FieldError } from '@/components/common/FieldError';
+import PhotoPreviewScreen from './PhotoPreviewScreen';
 
 export default function ChatScreen({ navigation, route }: any) {
   const chatUserName: string = route?.params?.chatUserName ?? 'Jenny';
@@ -39,6 +39,7 @@ export default function ChatScreen({ navigation, route }: any) {
   const initialPhotoUri: string | undefined = route?.params?.initialPhotoUri;
   const initialMessages: Message[] | undefined = route?.params?.initialMessages;
   const autoOpenCamera: boolean = !!route?.params?.autoOpenCamera;
+  const [snapPreview, setSnapPreview] = useState<{ uri: string } | null>(null);
 
   const [isLocked, setIsLocked] = useState(initialLocked);
   const [messages, setMessages] = useState<Message[]>(() => {
@@ -68,9 +69,6 @@ export default function ChatScreen({ navigation, route }: any) {
   const messageError = formState.errors.messageText?.message;
 
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [capturedPhotoUri, setCapturedPhotoUri] = useState<string | null>(null);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [isSendingPhoto, setIsSendingPhoto] = useState(false);
 
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -92,18 +90,46 @@ export default function ChatScreen({ navigation, route }: any) {
       time: getTimeString(),
       seen: false,
     };
-
     setMessages(prev => [...prev, newMsg]);
     reset({ messageText: '' });
     setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
   });
 
-  // ── Camera flow ────────────────────────────────────────────────────────────
+  // ── Camera callbacks ───────────────────────────────────────────────────────
+  // CameraScreen handles its own internal preview. These callbacks are called
+  // ONLY after the user has confirmed send inside CameraScreen's preview.
+  // Do NOT open any additional preview from here.
 
   const handlePhotoCapture = (uri: string) => {
-    setCapturedPhotoUri(uri);
+    const snapMsg: Message = {
+      id: generateId(),
+      type: 'snap',
+      sender: 'me',
+      text: 'Photo',
+      imageUri: uri,
+      time: getTimeString(),
+      seen: false,
+    };
+    setMessages(prev => [...prev, snapMsg]);
+    if (isLocked) setIsLocked(false);
     setIsCameraOpen(false);
-    setIsPreviewOpen(true);
+    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
+  };
+
+  const handleVideoCapture = (uri: string) => {
+    const videoMsg: Message = {
+      id: generateId(),
+      type: 'snap',
+      sender: 'me',
+      text: 'Video',
+      imageUri: uri,
+      time: getTimeString(),
+      seen: false,
+    };
+    setMessages(prev => [...prev, videoMsg]);
+    if (isLocked) setIsLocked(false);
+    setIsCameraOpen(false);
+    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
   };
 
   // ── Gallery flow ───────────────────────────────────────────────────────────
@@ -118,9 +144,7 @@ export default function ChatScreen({ navigation, route }: any) {
 
     if (!result.canceled && result.assets?.[0]?.uri) {
       const uri = result.assets[0].uri;
-
       if (isLocked) setIsLocked(false);
-
       const imageMsg: Message = {
         id: generateId(),
         type: 'image',
@@ -128,54 +152,9 @@ export default function ChatScreen({ navigation, route }: any) {
         imageUri: uri,
         time: getTimeString(),
       };
-
       setMessages(prev => [...prev, imageMsg]);
-      setTimeout(
-        () => scrollViewRef.current?.scrollToEnd({ animated: true }),
-        100,
-      );
+      setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
     }
-  };
-
-  // ── Camera photo send ──────────────────────────────────────────────────────
-
-  const handleDownloadPhoto = async () => {
-    if (!capturedPhotoUri) return;
-    try {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Please allow gallery permission.');
-        return;
-      }
-      await MediaLibrary.createAssetAsync(capturedPhotoUri);
-      Alert.alert('Saved', 'Photo saved to your gallery.');
-    } catch {
-      Alert.alert('Error', 'Could not save photo.');
-    }
-  };
-
-  const handleSendPhoto = async () => {
-    if (!capturedPhotoUri) return;
-    setIsSendingPhoto(true);
-
-    await new Promise(res => setTimeout(res, 600));
-
-    const snapMsg: Message = {
-      id: generateId(),
-      type: 'snap',
-      sender: 'me',
-      text: 'Photo',
-      imageUri: capturedPhotoUri,
-      time: getTimeString(),
-      seen: false,
-    };
-
-    setMessages(prev => [...prev, snapMsg]);
-    if (isLocked) setIsLocked(false);
-    setIsSendingPhoto(false);
-    setIsPreviewOpen(false);
-    setCapturedPhotoUri(null);
-    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
   };
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -219,7 +198,7 @@ export default function ChatScreen({ navigation, route }: any) {
               style={{
                 fontFamily: 'Poppins-Regular',
                 fontWeight: '400',
-                fontSize: sf(12), 
+                fontSize: sf(12),
                 color: '#1E78F5',
                 marginTop: sh(2),
               }}
@@ -279,11 +258,8 @@ export default function ChatScreen({ navigation, route }: any) {
               message={msg}
               friendAvatarUri={chatUserImageUri}
               onSnapPress={snapMessage => {
-                if (snapMessage.sender === 'friend') {
-                  navigation.navigate('SnapViewScreen', {
-                    snapUri: snapMessage.imageUri ?? chatUserImageUri,
-                    chatUserName,
-                  });
+                if (snapMessage.sender === 'friend' && snapMessage.imageUri) {
+                  setSnapPreview({ uri: snapMessage.imageUri });
                 }
               }}
             />
@@ -293,12 +269,7 @@ export default function ChatScreen({ navigation, route }: any) {
         {/* ── Blur overlay ── */}
         {isLocked && (
           <View style={StyleSheet.absoluteFill}>
-            <BlurView
-              style={StyleSheet.absoluteFill}
-              // blurType="light"
-              // blurAmount={10}
-              // overlayColor="rgba(251, 178, 2, 0.20)"
-            />
+            <BlurView style={StyleSheet.absoluteFill} />
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 }}>
               <Text style={{ fontSize: sf(40) }}>🔒</Text>
               <Text
@@ -366,7 +337,6 @@ export default function ChatScreen({ navigation, route }: any) {
                   borderRadius: sr(92),
                   alignItems: 'center',
                   justifyContent: 'center',
-                  // backgroundColor: '#FBB202',
                 }}
               >
                 <CameraIcon />
@@ -404,9 +374,9 @@ export default function ChatScreen({ navigation, route }: any) {
                     flex: 1,
                     fontFamily: 'Poppins-Regular',
                     fontWeight: '400',
-                    fontSize: sf(16), 
+                    fontSize: sf(16),
                     color: '#000000',
-                    padding: 0, 
+                    padding: 0,
                   }}
                 />
 
@@ -429,25 +399,22 @@ export default function ChatScreen({ navigation, route }: any) {
           </>
         )}
 
-        {/* ── Camera Screen ── */}
+        {/* ── Camera Screen (handles preview internally) ── */}
         <CameraScreen
           visible={isCameraOpen}
           onClose={() => setIsCameraOpen(false)}
           onPhotoCapture={handlePhotoCapture}
+          onVideoCapture={handleVideoCapture}
         />
-
-        {/* ── Photo Preview Screen ── */}
         <PhotoPreviewScreen
-          visible={isPreviewOpen}
-          photoUri={capturedPhotoUri}
-          isSending={isSendingPhoto}
-          onClose={() => {
-            setIsPreviewOpen(false);
-            setCapturedPhotoUri(null);
-          }}
-          onDownload={handleDownloadPhoto}
-          onSend={handleSendPhoto}
-        />
+  visible={!!snapPreview}
+  mediaUri={snapPreview?.uri ?? null}
+  mediaType="photo"
+  isSending={false}
+  onClose={() => setSnapPreview(null)}
+  onDownload={() => {}} // wire up if needed
+  onSend={() => setSnapPreview(null)}
+/>
       </View>
     </SafeAreaView>
   );

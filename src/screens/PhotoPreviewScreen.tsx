@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   View,
   Image,
@@ -8,12 +8,14 @@ import {
   StyleSheet,
 } from 'react-native';
 import { X, Download } from 'lucide-react-native';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sr, sw, sh } from '@/utils/responsive';
 
 interface PhotoPreviewScreenProps {
   visible: boolean;
-  photoUri: string | null;
+  mediaUri: string | null;
+  mediaType?: 'photo' | 'video';
   isSending: boolean;
   onClose: () => void;
   onDownload: () => void;
@@ -22,12 +24,21 @@ interface PhotoPreviewScreenProps {
 
 export default function PhotoPreviewScreen({
   visible,
-  photoUri,
+  mediaUri,
+  mediaType = 'photo',
   isSending,
   onClose,
   onDownload,
   onSend,
 }: PhotoPreviewScreenProps) {
+  const player = useVideoPlayer(
+    mediaType === 'video' && mediaUri ? mediaUri : null,
+    p => {
+      p.loop = true;
+      p.play();
+    },
+  );
+
   return (
     <Modal
       visible={visible}
@@ -36,10 +47,11 @@ export default function PhotoPreviewScreen({
       transparent={false}
     >
       <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
-        {/* Fullscreen photo background */}
-        {photoUri && (
+
+        {/* Fullscreen media background */}
+        {mediaUri && mediaType === 'photo' && (
           <Image
-            source={{ uri: photoUri }}
+            source={{ uri: mediaUri }}
             style={{
               ...StyleSheet.absoluteFillObject,
               width: '100%',
@@ -49,7 +61,16 @@ export default function PhotoPreviewScreen({
           />
         )}
 
-        {/* Header (over photo) */}
+        {mediaUri && mediaType === 'video' && (
+          <VideoView
+            player={player}
+            style={StyleSheet.absoluteFillObject}
+            contentFit="cover"
+            nativeControls={false}
+          />
+        )}
+
+        {/* Header */}
         <View
           style={{
             position: 'absolute',
@@ -78,7 +99,7 @@ export default function PhotoPreviewScreen({
           </TouchableOpacity>
         </View>
 
-        {/* Bottom Buttons (over photo) */}
+        {/* Bottom Buttons */}
         <View
           style={{
             position: 'absolute',
@@ -94,7 +115,6 @@ export default function PhotoPreviewScreen({
             zIndex: 10,
           }}
         >
-          {/* Download Button with Yellow Background */}
           <TouchableOpacity
             onPress={onDownload}
             style={{
@@ -110,7 +130,6 @@ export default function PhotoPreviewScreen({
             <Download size={sf(28)} color="#000000" />
           </TouchableOpacity>
 
-          {/* Send Button */}
           <View style={{ flex: 1 }}>
             <PrimaryButton
               title={isSending ? 'Sending...' : 'Send'}
@@ -123,6 +142,7 @@ export default function PhotoPreviewScreen({
             />
           </View>
         </View>
+
       </SafeAreaView>
     </Modal>
   );
