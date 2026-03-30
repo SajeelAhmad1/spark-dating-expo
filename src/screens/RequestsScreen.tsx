@@ -24,11 +24,11 @@ export default function RequestsScreen({ navigation }: any) {
       return;
     }
 
-    if (tab === 'Home') navigation.replace('DiscoveryScreen');
+    if (tab === 'Home') navigation.navigate('DiscoveryScreen');
     if (tab === 'Camera')
-      navigation.replace('InboxScreen', { cameraSelectMode: true });
-    if (tab === 'Chat') navigation.replace('InboxScreen');
-    if (tab === 'Profile') navigation.replace('ProfileScreen');
+      navigation.navigate('InboxScreen', { cameraSelectMode: true });
+    if (tab === 'Chat') navigation.navigate('InboxScreen');
+    if (tab === 'Profile') navigation.navigate('ProfileScreen');
   };
 
   return (

@@ -46,11 +46,11 @@ const DiscoveryScreen = ({ navigation }: any) => {
       return;
     }
 
-    if (tab === 'Request') navigation.replace('RequestsScreen');
+    if (tab === 'Request') navigation.navigate('RequestsScreen');
     if (tab === 'Camera')
-      navigation.replace('InboxScreen', { cameraSelectMode: true });
-    if (tab === 'Chat') navigation.replace('InboxScreen');
-    if (tab === 'Profile') navigation.replace('ProfileScreen');
+      navigation.navigate('InboxScreen', { cameraSelectMode: true });
+    if (tab === 'Chat') navigation.navigate('InboxScreen');
+    if (tab === 'Profile') navigation.navigate('ProfileScreen');
   };
 
   const goToNextUser = () => {

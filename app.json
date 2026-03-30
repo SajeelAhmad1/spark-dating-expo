@@ -35,6 +35,14 @@
             "targetSdkVersion": 35
           }
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow access to photos.",
+          "savePhotosPermission": "Allow saving photos.",
+          "isAccessMediaLocationEnabled": false
+        }
       ]
     ]
   }

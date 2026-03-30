@@ -56,11 +56,11 @@ export default function InboxScreen({ navigation, route }: any) {
       return;
     }
 
-    if (tab === 'Home') navigation.replace('DiscoveryScreen');
-    if (tab === 'Request') navigation.replace('RequestsScreen');
+    if (tab === 'Home') navigation.navigate('DiscoveryScreen');
+    if (tab === 'Request') navigation.navigate('RequestsScreen');
     if (tab === 'Camera')
-      navigation.replace('InboxScreen', { cameraSelectMode: true });
-    if (tab === 'Profile') navigation.replace('ProfileScreen');
+      navigation.navigate('InboxScreen', { cameraSelectMode: true });
+    if (tab === 'Profile') navigation.navigate('ProfileScreen');
   };
 
   const openConversation = (item: any) => {
