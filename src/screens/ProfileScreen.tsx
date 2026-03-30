@@ -269,9 +269,9 @@ const ProfileScreen = ({ navigation }: any) => {
             <View
               style={{
                 backgroundColor: '#FFFFFF',
-                borderRadius: sr(16),
+                borderRadius: sr(12),
                 paddingHorizontal: sw(16),
-                paddingVertical: sh(20),
+                // paddingVertical: sh(20),
                 shadowColor: '#000000',
                 shadowOpacity: 0.09,
                 shadowRadius: 25,
@@ -286,13 +286,14 @@ const ProfileScreen = ({ navigation }: any) => {
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    minHeight: sh(79),
                   }}
                 >
                   <View
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
-                      gap: sw(10),
+                      gap: sw(16),
                       flex: 1,
                     }}
                   >
@@ -316,10 +317,8 @@ const ProfileScreen = ({ navigation }: any) => {
                       <Text
                         style={{
                           fontFamily: 'Poppins-SemiBold',
-                          fontSize: sf(15),
-                          lineHeight: sf(15),
-                          color: '#000000',
-                          letterSpacing: 0,
+                          fontSize: sf(15), 
+                          color: '#000000', 
                         }}
                       >
                         Premium Unlocked! ⭐
@@ -327,10 +326,9 @@ const ProfileScreen = ({ navigation }: any) => {
                       <Text
                         style={{
                           fontFamily: 'Poppins-Regular',
-                          fontSize: sf(13),
-                          lineHeight: sf(13),
+                          fontSize: sf(13), 
                           color: '#555555',
-                          marginTop: sh(8),
+                          // marginTop: sh(8),
                         }}
                       >
                         You've earned free Premium
@@ -363,13 +361,18 @@ const ProfileScreen = ({ navigation }: any) => {
                 </View>
               ) : (
                 // ── Default State ──
-                <TouchableOpacity onPress={() => setPremiumUnlocked(true)} activeOpacity={0.8}>
+                <TouchableOpacity onPress={() => setPremiumUnlocked(true)} activeOpacity={0.8} 
+                style={{ minHeight: sh(106),
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                       gap: sh(14)
+                      }}>
                   <View
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      height: sh(106),
+                     
                     }}
                   >
                     <View
@@ -382,8 +385,8 @@ const ProfileScreen = ({ navigation }: any) => {
                     >
                       <View
                         style={{
-                          width: sf(40),
-                          height: sf(40),
+                          width: sw(40),
+                          height: sh(40),
                           borderRadius: sr(92),
                           backgroundColor: '#FBB20233',
                           borderWidth: 0.4,
@@ -393,8 +396,8 @@ const ProfileScreen = ({ navigation }: any) => {
                         }}
                       >
                         <Bell
-                          width={sf(18)}
-                          height={sf(20)}
+                          width={sw(18)}
+                          height={sh(20)}
                           size={sf(18)}
                           color="#DC9B00"
                           strokeWidth={1.5}
@@ -405,10 +408,8 @@ const ProfileScreen = ({ navigation }: any) => {
                         <Text
                           style={{
                             fontFamily: 'Poppins-SemiBold',
-                            fontSize: sf(15),
-                            lineHeight: sf(15),
-                            color: '#000000',
-                            letterSpacing: 0,
+                            fontSize: sf(15), 
+                            color: '#000000', 
                           }}
                         >
                           Invite Friends, Get Premium Free!
@@ -416,10 +417,9 @@ const ProfileScreen = ({ navigation }: any) => {
                         <Text
                           style={{
                             fontFamily: 'Poppins-Regular',
-                            fontSize: sf(13),
-                            lineHeight: sf(13),
+                            fontSize: sf(13), 
                             color: '#555555',
-                            marginTop: sh(8),
+                            // marginTop: sh(8),
                           }}
                         >
                           0 of 2 friends invited
@@ -432,7 +432,7 @@ const ProfileScreen = ({ navigation }: any) => {
                   {/* Progress Bar */}
                   <View
                     style={{
-                      marginTop: sh(10),
+                      // marginTop: sh(10),
                       flexDirection: 'row',
                       gap: sw(6),
                       justifyContent: 'space-between',
@@ -463,9 +463,10 @@ const ProfileScreen = ({ navigation }: any) => {
             <View
               style={{
                 backgroundColor: '#FFFFFF',
-                borderRadius: sr(16),
-                paddingHorizontal: sw(16),
-                paddingVertical: sh(28),
+                borderRadius: sr(12),
+                paddingHorizontal: sw(2),
+                // paddingVertical: sh(28), 
+                height: sh(94),
                 shadowColor: '#000000',
                 shadowOpacity: 0.09,
                 shadowRadius: 25,
@@ -485,10 +486,8 @@ const ProfileScreen = ({ navigation }: any) => {
                     <Text
                       style={{
                         fontFamily: 'Poppins-SemiBold',
-                        fontSize: sf(20),
-                        lineHeight: sf(20),
-                        color: '#FBB202',
-                        letterSpacing: 0,
+                        fontSize: sf(20), 
+                        color: '#FBB202', 
                         textAlign: 'center',
                       }}
                     >
@@ -497,17 +496,15 @@ const ProfileScreen = ({ navigation }: any) => {
                     <Text
                       style={{
                         fontFamily: 'Poppins-Regular',
-                        fontSize: sf(13),
-                        lineHeight: sf(13),
-                        color: '#555555',
-                        marginTop: sh(8),
+                        fontSize: sf(13), 
+                        color: '#555555', 
                         textAlign: 'center',
                       }}
                     >
                       {stat.label}
                     </Text>
                   </View>
-                  {i < 2 && (
+                  {/* {i < 2 && (
                     <View
                       style={{
                         width: 1,
@@ -515,7 +512,7 @@ const ProfileScreen = ({ navigation }: any) => {
                         backgroundColor: '#EDEDED',
                       }}
                     />
-                  )}
+                  )} */}
                 </React.Fragment>
               ))}
             </View>
@@ -524,9 +521,13 @@ const ProfileScreen = ({ navigation }: any) => {
             <View
               style={{
                 backgroundColor: '#FFFFFF',
-                borderRadius: sr(16),
+                borderRadius: sr(12),
                 paddingHorizontal: sw(16),
-                paddingVertical: sh(20),
+                // paddingVertical: sh(20),
+                height: sh(139),
+                flexDirection: 'column',
+                justifyContent: 'center',
+                // gap: sh(12),
                 shadowColor: '#000000',
                 shadowOpacity: 0.09,
                 shadowRadius: 25,
@@ -537,10 +538,8 @@ const ProfileScreen = ({ navigation }: any) => {
               <Text
                 style={{
                   fontFamily: 'Poppins-SemiBold',
-                  fontSize: sf(18),
-                  lineHeight: sf(18),
-                  color: '#000000',
-                  letterSpacing: 0,
+                  fontSize: sf(18), 
+                  color: '#000000', 
                   marginBottom: sh(8),
                 }}
               >
@@ -562,9 +561,11 @@ const ProfileScreen = ({ navigation }: any) => {
             <View
               style={{
                 backgroundColor: '#FFFFFF',
-                borderRadius: sr(16),
+                borderRadius: sr(12),
                 paddingHorizontal: sw(16),
-                paddingVertical: sh(20),
+                // paddingVertical: sh(20),
+                minHeight: sh(152),
+                justifyContent: 'center',
                 shadowColor: '#000000',
                 shadowOpacity: 0.09,
                 shadowRadius: 25,
@@ -575,10 +576,8 @@ const ProfileScreen = ({ navigation }: any) => {
               <Text
                 style={{
                   fontFamily: 'Poppins-SemiBold',
-                  fontSize: sf(18),
-                  lineHeight: sf(18),
-                  color: '#000000',
-                  letterSpacing: 0,
+                  fontSize: sf(18), 
+                  color: '#000000', 
                   marginBottom: sh(12),
                 }}
               >
@@ -592,21 +591,19 @@ const ProfileScreen = ({ navigation }: any) => {
                     <View
                       key={i}
                       style={{
-                        backgroundColor: '#FBB20220',
-                        borderRadius: sr(99),
+                        backgroundColor: '#FBB202',
+                        borderRadius: sr(20),
                         paddingHorizontal: sw(14),
-                        paddingVertical: sh(8),
-                        borderWidth: 1,
-                        borderColor: '#FBB20240',
+                        // paddingVertical: sh(8),
+                        height: sh(36),
+                        justifyContent: 'center', 
                       }}
                     >
                       <Text
                         style={{
                           fontFamily: 'Poppins-Regular',
-                          fontSize: sf(16),
-                          lineHeight: sf(16),
-                          color: '#000000',
-                          letterSpacing: 0,
+                          fontSize: sf(16), 
+                          color: '#000000', 
                         }}
                       >
                         {interest}
@@ -621,9 +618,11 @@ const ProfileScreen = ({ navigation }: any) => {
             <View
               style={{
                 backgroundColor: '#FFFFFF',
-                borderRadius: sr(16),
+                borderRadius: sr(12),
                 paddingHorizontal: sw(16),
-                paddingVertical: sh(20),
+                // paddingVertical: sh(20),
+                minHeight: sh(163),
+                justifyContent: 'center',
                 shadowColor: '#000000',
                 shadowOpacity: 0.09,
                 shadowRadius: 25,
@@ -635,11 +634,9 @@ const ProfileScreen = ({ navigation }: any) => {
               <Text
                 style={{
                   fontFamily: 'Poppins-SemiBold',
-                  fontSize: sf(18),
-                  lineHeight: sf(18),
-                  color: '#000000',
-                  letterSpacing: 0,
-                  marginBottom: sh(12),
+                  fontSize: sf(18), 
+                  color: '#000000', 
+                  marginBottom: sh(1),
                 }}
               >
                 Details
@@ -656,16 +653,15 @@ const ProfileScreen = ({ navigation }: any) => {
                       flexDirection: 'row',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      paddingVertical: sh(10),
+                      
+                      paddingVertical: sh(1),
                     }}
                   >
                     <Text
                       style={{
                         fontFamily: 'Poppins-Regular',
-                        fontSize: sf(13),
-                        lineHeight: sf(13),
-                        color: '#555555',
-                        letterSpacing: 0,
+                        fontSize: sf(13), 
+                        color: '#555555', 
                       }}
                     >
                       {detail.label}
@@ -673,24 +669,22 @@ const ProfileScreen = ({ navigation }: any) => {
                     <Text
                       style={{
                         fontFamily: 'Poppins-Medium',
-                        fontSize: sf(16),
-                        lineHeight: sf(16),
-                        color: '#000000',
-                        letterSpacing: 0,
+                        fontSize: sf(16), 
+                        color: '#000000', 
                         textAlign: 'right',
                       }}
                     >
                       {detail.value}
                     </Text>
                   </View>
-                  {i < 2 && (
+                  {/* {i < 2 && (
                     <View
                       style={{
                         height: 1,
                         backgroundColor: '#EDEDED',
                       }}
                     />
-                  )}
+                  )} */}
                 </React.Fragment>
               ))}
             </View>

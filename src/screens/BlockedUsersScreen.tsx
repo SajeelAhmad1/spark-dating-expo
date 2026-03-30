@@ -46,7 +46,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingHorizontal: sw(20),
-            paddingTop: sh(12),
+            paddingTop: sh(16),
             paddingBottom: sh(16),
           }}
         >
@@ -58,9 +58,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
               fontFamily: 'Poppins-SemiBold',
               fontSize: sf(20),
               fontWeight: '600',
-              color: '#000000',
-              letterSpacing: 0,
-              lineHeight: sf(20),
+              color: '#000000', 
             }}
           >
             Blocked Users
@@ -83,7 +81,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
             gap: sw(8),
           }}
         >
-          <Search size={sf(16)} color="#7D858E" />
+          <Search size={sf(24)} color="#7D858E" />
           <TextInput
             value={search}
             onChangeText={v => setValue('search', v, { shouldValidate: true })}
@@ -95,8 +93,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
               fontFamily: 'Poppins-Regular',
               fontSize: sf(14),
               fontWeight: '400',
-              color: '#1C1C1E',
-              letterSpacing: 0,
+              color: '#1C1C1E', 
               padding: 0,
             }}
           />
@@ -111,9 +108,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
             fontFamily: 'Poppins-Regular',
             fontSize: sf(14),
             fontWeight: '400',
-            color: '#7D858E',
-            letterSpacing: 0,
-            lineHeight: sf(14),
+            color: '#7D858E', 
             paddingHorizontal: sw(21),
             marginBottom: sh(4),
           }}
@@ -127,24 +122,25 @@ const BlockedUsersScreen = ({ navigation }: any) => {
           contentContainerStyle={{ paddingBottom: sh(20) }}
         >
           {filtered.map(user => (
-            <View key={user.id}>
+            <View key={user.id} style={{}}>
               {/* Row */}
               <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   paddingHorizontal: sw(21),
-                  paddingVertical: sh(14),
+                  paddingVertical: sh(8),
                   gap: sw(12),
+                  // height: sh(60),
                 }}
               >
                 {/* Avatar */}
                 <Image
                   source={{ uri: user.avatar }}
                   style={{
-                    width: sf(60),
-                    height: sf(60),
-                    borderRadius: sf(30),
+                    width: sw(60),
+                    height: sh(60),
+                    borderRadius: (999),
                   }}
                   resizeMode="cover"
                 />
@@ -163,9 +159,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
                         fontFamily: 'Poppins-Regular',
                         fontSize: sf(20),
                         fontWeight: '400',
-                        color: '#000000',
-                        letterSpacing: 0,
-                        lineHeight: sf(20),
+                        color: '#000000', 
                       }}
                     >
                       {user.name}
@@ -175,9 +169,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
                         fontFamily: 'Poppins-Regular',
                         fontSize: sf(14),
                         fontWeight: '400',
-                        color: '#7D858E',
-                        letterSpacing: 0,
-                        lineHeight: sf(14),
+                        color: '#7D858E', 
                       }}
                     >
                       {user.age}
@@ -188,10 +180,8 @@ const BlockedUsersScreen = ({ navigation }: any) => {
                       fontFamily: 'Poppins-Regular',
                       fontSize: sf(14),
                       fontWeight: '400',
-                      color: '#7D858E',
-                      letterSpacing: 0,
-                      lineHeight: sf(14),
-                      marginTop: sh(6),
+                      color: '#7D858E', 
+                      // marginTop: sh(6),
                     }}
                   >
                     Blocked {user.blockedDate}
@@ -205,12 +195,12 @@ const BlockedUsersScreen = ({ navigation }: any) => {
                     onPress={() => handleUnblock(user.id)}
                     colors={['#1E78F5', '#FBB202']}
                     variant="gradient"
-                    height={36}
-                    borderRadius={18}
-                    paddingHorizontal={sw(16)}
+                    height={40}
+                    borderRadius={12}
+                    // paddingHorizontal={sw(2)}
                     textStyle={{
-                      fontSize: sf(14),
-                      lineHeight: sf(14),
+                      fontSize: sf(15),
+                      fontWeight: '500',
                     }}
                   />
                 </View>
@@ -222,7 +212,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
                   height: 1,
                   backgroundColor: '#7D858E',
                   marginHorizontal: sw(21),
-                  opacity: 0.25,
+                  // opacity: 0.25,
                 }}
               />
             </View>
@@ -242,8 +232,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
                   fontFamily: 'Poppins-Regular',
                   fontSize: sf(14),
                   color: '#7D858E',
-                  textAlign: 'center',
-                  lineHeight: sf(20),
+                  textAlign: 'center', 
                 }}
               >
                 No blocked users found.
@@ -267,8 +256,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
               fontWeight: '400',
               color: '#7D858E',
               letterSpacing: 0,
-              textAlign: 'center',
-              lineHeight: sf(20),
+              textAlign: 'center', 
             }}
           >
             Blocked users cannot send you messages, see your profile, or find

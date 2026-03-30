@@ -63,44 +63,45 @@ export default function DiscoveryMatchCard({
         >
           <View
             style={{
-              backgroundColor: 'rgba(251,178,2,0.2)',
-              borderWidth: sf(2),
-              borderColor: 'rgba(251,178,2,0.2)',
-              borderRadius: sr(14),
+              backgroundColor: 'rgba(251,178,2,0.1)',
+              borderWidth: 1,
+              borderColor: 'rgba(251,178,2,0.5)',
+              borderRadius: sr(12),
               paddingHorizontal: sw(12),
-              paddingVertical: sh(10),
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
+              // paddingVertical: sh(10), 
+              height: (60), 
+              justifyContent: 'center', 
             }}
           >
-            <View style={{ flex: 1, marginRight: sw(10) }}>
-              <Text
+             <Text
                 style={{
                   fontFamily: 'Poppins-SemiBold',
-                  fontSize: sf(18),
+                  fontSize: sf(16),
                   color: '#fff',
-                  lineHeight: sf(22),
                 }}
               >
                 {item.name}, {item.age}
               </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', }}>
+
               <Text
                 style={{
                   fontFamily: 'Poppins-Regular',
-                  fontSize: sf(12),
+                  fontSize: sf(13),
                   color: 'rgba(255,255,255,0.85)',
-                  marginTop: sh(2),
+                  // marginTop: sh(2),
+                  flex: 1,
                 }}
                 numberOfLines={1}
               >
                 {item.bio}
               </Text>
+              <TouchableOpacity onPress={rightChatOnPress}>
+              <ChatIcon width={24} height={24} />
+            </TouchableOpacity>
             </View>
 
-            <TouchableOpacity onPress={rightChatOnPress}>
-              <ChatIcon width={sf(36)} height={sf(36)} />
-            </TouchableOpacity>
+            
           </View>
         </LinearGradient>
       </View>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, ScrollView, Switch } from 'react-native';
+import { View, TouchableOpacity, ScrollView, Switch, TextStyle } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, ChevronRight, Zap } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Icon, LogOut, Trash2, Zap } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/responsive';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import CustomToggle from '@/components/location/CustomToggle';
@@ -37,8 +37,7 @@ const SettingsScreen = ({ navigation }: any) => {
           fontFamily: 'Poppins-Regular',
           fontSize: sf(16),
           fontWeight: '400',
-          color: '#1C1C1E',
-          letterSpacing: 0,
+          color: '#1C1C1E', 
         }}
       >
         {label}
@@ -50,8 +49,7 @@ const SettingsScreen = ({ navigation }: any) => {
               fontFamily: 'Poppins-Regular',
               fontSize: sf(16),
               fontWeight: '400',
-              color: '#A1A1A1',
-              letterSpacing: 0,
+              color: '#A1A1A1', 
             }}
           >
             {value}
@@ -66,17 +64,19 @@ const SettingsScreen = ({ navigation }: any) => {
     <View style={{ height: 1, backgroundColor: '#F0F0F0' }} />
   );
 
-  const SectionTitle = ({ title }: { title: string }) => (
+  const SectionTitle = ({ title, style }: { title: string; style?: TextStyle }) => (
     <Text
-      style={{
+        style={[
+      {
         fontFamily: 'Poppins-Bold',
         fontSize: sf(20),
         fontWeight: '700',
         color: '#1C1C1E',
-        letterSpacing: 0,
         marginTop: sh(24),
         marginBottom: sh(8),
-      }}
+      },
+      style, // 👈 override / extend styles
+    ]}
     >
       {title}
     </Text>
@@ -112,8 +112,7 @@ const SettingsScreen = ({ navigation }: any) => {
               fontFamily: 'Poppins-Medium',
               fontSize: sf(16),
               fontWeight: '500',
-              color: '#000000',
-              letterSpacing: 0,
+              color: '#000000', 
             }}
           >
             {label}
@@ -123,9 +122,8 @@ const SettingsScreen = ({ navigation }: any) => {
               fontFamily: 'Poppins-Regular',
               fontSize: sf(13),
               fontWeight: '400',
-              color: '#555555',
-              letterSpacing: 0,
-              marginTop: sh(4),
+              color: '#555555', 
+              // marginTop: sh(4),
             }}
           >
             {description}
@@ -159,8 +157,7 @@ const SettingsScreen = ({ navigation }: any) => {
               fontFamily: 'Poppins-SemiBold',
               fontSize: sf(20),
               fontWeight: '600',
-              color: '#1C1C1E',
-              letterSpacing: 0,
+              color: '#1C1C1E', 
             }}
           >
             Setting
@@ -178,19 +175,19 @@ const SettingsScreen = ({ navigation }: any) => {
           {/* ── Account ── */}
           <SectionTitle title="Account" />
           <SettingRow label="Email" value="Example@gmail.com" />
-          <Divider />
+          {/* <Divider /> */}
           <SettingRow label="Password" />
-          <Divider />
+          {/* <Divider /> */}
           <SettingRow label="Blocked Users" />
 
           {/* ── Discovery ── */}
           <SectionTitle title="Discovery" />
           <SettingRow label="Gender" value="Women" />
-          <Divider />
+          {/* <Divider /> */}
           <SettingRow label="Show me" value="Women" />
-          <Divider />
+          {/* <Divider /> */}
           <SettingRow label="Age" value="24-72" />
-          <Divider />
+          {/* <Divider /> */}
           <SettingRow label="Distance" value="10 miles" />
 
           {/* ── General ── */}
@@ -211,6 +208,8 @@ const SettingsScreen = ({ navigation }: any) => {
               shadowOffset: { width: 0, height: 0 },
               elevation: 4,
               overflow: 'hidden',
+              marginTop: sh(12),
+              minHeight: sh(323),
             }}
           >
             <ToggleRow
@@ -241,14 +240,31 @@ const SettingsScreen = ({ navigation }: any) => {
           </View>
 
           {/* ── Spark Premium ── */}
-          <SectionTitle title="⚡ Spark Premium" />
+         <View style={{
+           backgroundColor: '#FFFFFF',
+           borderRadius: sr(12),
+           borderWidth: 1,
+           borderColor: '#E6E7E8',
+           shadowColor: '#000000',
+           shadowOpacity: 0.09,
+           shadowRadius: 11,
+           shadowOffset: { width: 0, height: 0 },
+           elevation: 4,
+           overflow: 'hidden', 
+           minHeight: sh(178),
+                 paddingVertical: sh(14),
+          paddingHorizontal: sw(16),
+          marginTop: sh(24),
+          marginBottom: sh(8),
+         }}>
+           <SectionTitle title="⚡ Spark Premium" style={{        marginTop: sh(0),
+        marginBottom: sh(0), }} />
           <Text
             style={{
               fontFamily: 'Poppins-Regular',
               fontSize: sf(16),
               fontWeight: '400',
-              color: '#7D858E',
-              letterSpacing: 0,
+              color: '#7D858E', 
               marginBottom: sh(14),
             }}
           >
@@ -261,20 +277,24 @@ const SettingsScreen = ({ navigation }: any) => {
             variant="gradient"
             style={{ alignSelf: 'stretch' }}
             textStyle={{fontSize: sf(16), fontWeight: '500'}}
+            height={sh(48)}
           />
+         </View>
 
           {/* ── Support ── */}
           <SectionTitle title="Support" />
           <SettingRow label="Help Center" />
-          <Divider />
+          {/* <Divider /> */}
           <SettingRow label="Safety Guidelines" />
-          <Divider />
+          {/* <Divider /> */}
           <SettingRow label="Contact Us" />
 
           {/* ── Buttons ── */}
           <View style={{ marginTop: sh(24), gap: sh(12) }}>
             <PrimaryButton
-              title="Logout"
+              title="Logout" 
+              icon={<LogOut width={sf(24)} height={sf(24)} color="#FFFFFF" />}
+              iconPosition="middle"
               onPress={() => {}}
               colors={['#1E78F5']}
               variant="solid"
@@ -283,6 +303,9 @@ const SettingsScreen = ({ navigation }: any) => {
             />
             <PrimaryButton
               title="Delete Account"
+                          icon={<Trash2 width={sf(24)} height={sf(24)} color="#FFFFFF" />}
+              iconPosition="middle"
+ 
               onPress={() => {}}
               colors={['#FF073E']}
               variant="solid"

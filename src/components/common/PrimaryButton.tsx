@@ -1,4 +1,4 @@
-import { sf, sw } from '@/utils/responsive';
+import { sf, sh, sw } from '@/utils/responsive';
 import React from 'react';
 import {
   TouchableOpacity,
@@ -58,8 +58,8 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       return (
         <View
           style={{
-            width: sf(48),
-            height: sf(48),
+            width: sw(48),
+            height: sh(48),
             borderRadius: 999,
             backgroundColor: iconBackground,
             alignItems: 'center',

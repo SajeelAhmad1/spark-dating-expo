@@ -33,6 +33,7 @@ import BlockedUsersScreen from '@/screens/BlockedUsersScreen';
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
 import Toast from 'react-native-toast-message';
+import UserProfileScreen from '@/screens/UserProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -58,7 +59,7 @@ export default function App() {
     <GestureHandlerRootView style={styles.root}>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Onboarding1"
+          initialRouteName="UserProfileScreen"
           screenOptions={{ headerShown: false }}
         >
           <Stack.Screen name="Onboarding1" component={OnboardingScreen1} />
@@ -122,6 +123,10 @@ export default function App() {
           <Stack.Screen
             name="BlockedUsersScreen"
             component={BlockedUsersScreen}
+          />
+          <Stack.Screen
+            name="UserProfileScreen"
+            component={UserProfileScreen}
           />
         </Stack.Navigator>
       </NavigationContainer>

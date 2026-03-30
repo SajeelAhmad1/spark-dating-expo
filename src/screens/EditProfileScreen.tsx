@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DatePicker from 'react-native-date-picker';
 import {
   Settings,
   Plus,
@@ -17,6 +18,9 @@ import {
   ChevronDown,
   ChevronRight,
   Calendar,
+  AlignCenter,
+  AlignJustify,
+  TextAlignCenter,
 } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/responsive';
 import BODY_TYPES from '@/constants/bodyTypes';
@@ -26,6 +30,7 @@ import GENDER from '@/constants/gender';
 import { useZodForm } from '@/utils/form';
 import { createEditProfileSchema, type EditProfileFormValues } from '@/schemas/editProfile';
 import { FieldError } from '@/components/common/FieldError';
+import { he } from 'zod/v4/locales';
 
 type DropdownField = 'gender' | 'height' | 'bodyType' | 'ethnicity' | null;
 
@@ -108,23 +113,22 @@ const EditProfileScreen = ({ navigation }: any) => {
     fontFamily: 'Poppins-Medium',
     fontSize: sf(16),
     fontWeight: '500' as const,
-    color: '#000000',
-    letterSpacing: 0,
-    marginBottom: sh(8),
+    color: '#1E1E1E', 
+    // marginBottom: sh(8),
   };
 
   const inputStyle = {
     fontFamily: 'Poppins-Regular',
     fontSize: sf(16),
     fontWeight: '400' as const,
-    color: '#1C1C1E',
-    letterSpacing: 0,
+    color: '#1C1C1E', 
     borderWidth: 1,
     borderColor: '#7D858E',
     borderRadius: sr(8),
     paddingHorizontal: sw(12),
-    paddingVertical: sh(12),
-    flex: 1,
+  lineHeight: sf(20), 
+    height: sh(48),
+    flex: 1,  
   };
 
   const renderDropdownTrigger = (field: NonNullable<DropdownField>) => (
@@ -139,7 +143,8 @@ const EditProfileScreen = ({ navigation }: any) => {
           borderColor: errors[field]?.message ? '#DC2626' : '#7D858E',
           borderRadius: sr(8),
           paddingHorizontal: sw(12),
-          paddingVertical: sh(12),
+          // paddingVertical: sh(12),
+          height: sh(48),
         }}
       >
         <Text
@@ -167,7 +172,7 @@ const EditProfileScreen = ({ navigation }: any) => {
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingHorizontal: sw(20),
-            paddingTop: sh(12),
+            paddingTop: sh(16),
             paddingBottom: sh(16),
           }}
         >
@@ -176,10 +181,8 @@ const EditProfileScreen = ({ navigation }: any) => {
             style={{
               fontFamily: 'Poppins-SemiBold',
               fontWeight: '600',
-              fontSize: sf(20),
-              lineHeight: sf(20),
-              color: '#000000',
-              letterSpacing: 0,
+              fontSize: sf(20), 
+              color: '#000000', 
             }}
           >
             Edit Profile
@@ -201,7 +204,7 @@ const EditProfileScreen = ({ navigation }: any) => {
         <ScrollView
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ paddingBottom: sh(100) }}
+          contentContainerStyle={{ paddingBottom: sh(10) }}
         >
           {/* ── Image Grid ── */}
           <View
@@ -209,7 +212,8 @@ const EditProfileScreen = ({ navigation }: any) => {
               flexDirection: 'row',
               flexWrap: 'wrap',
               paddingHorizontal: sw(21),
-              gap: sw(8),
+              gap: sw(12),
+              marginTop: sh(6),
               marginBottom: sh(24),
             }}
           >
@@ -242,7 +246,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                             position: 'absolute',
                             bottom: sh(8),
                             left: sw(8),
-                            backgroundColor: '#00000066',
+                            // backgroundColor: '#00000066',
                             borderRadius: sr(6),
                             paddingHorizontal: sw(8),
                             paddingVertical: sh(4),
@@ -346,7 +350,8 @@ const EditProfileScreen = ({ navigation }: any) => {
                   borderColor: errors.birthday?.message ? '#DC2626' : '#7D858E',
                   borderRadius: sr(8),
                   paddingHorizontal: sw(8),
-                  paddingVertical: sh(12),
+                  // paddingVertical: sh(12),
+                  height: sh(48),
                 }}
               >
                 <Text
@@ -394,7 +399,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                 style={{
                   ...inputStyle,
                   flex: undefined,
-                  height: sh(100),
+                  minHeight: sh(112),
                   textAlignVertical: 'top',
                   paddingTop: sh(12),
                   borderColor: errors.bio ? '#DC2626' : '#7D858E',
@@ -404,32 +409,41 @@ const EditProfileScreen = ({ navigation }: any) => {
             </View>
 
             {/* Interests */}
-            <View>
+            <View style={{ 
+              borderWidth: 1,
+              borderColor: '#7D858E',
+              borderRadius: sr(8),
+              minHeight: sh(164),
+              marginTop: sh(70),
+              marginBottom: sh(12),
+                    paddingHorizontal: sw(12),
+                  paddingVertical: sh(12),
+                  gap: sh(12),
+              }}>
               <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  marginBottom: sh(8),
                 }}
-              >
-                <Text style={labelStyle}>Interests</Text>
+              > 
+                           <Text style={labelStyle}>Interests</Text>
+              
                 <TouchableOpacity
                   onPress={() => navigation.navigate('InterestsScreen')}
                 >
-                  <ChevronRight size={sf(20)} color="#000000" />
+                  <ChevronRight size={sf(20)} color="#7D858E" />
                 </TouchableOpacity>
               </View>
+                <View style={{height: 1, width: '100%', backgroundColor: '#7D858E', marginBottom: sh(8)}}></View>
               <View
                 style={{
                   flexDirection: 'row',
                   flexWrap: 'wrap',
-                  gap: sw(8),
-                  borderWidth: 1,
-                  borderColor: '#7D858E',
+                  gap: sw(10),
+                 
                   borderRadius: sr(8),
-                  paddingHorizontal: sw(12),
-                  paddingVertical: sh(12),
+            
                   alignItems: 'center',
                 }}
               >
@@ -437,21 +451,22 @@ const EditProfileScreen = ({ navigation }: any) => {
                   <View
                     key={i}
                     style={{
-                      backgroundColor: '#FBB20220',
-                      borderRadius: sr(99),
+                      // backgroundColor: '#FBB20220',
+                      borderRadius: sr(20),
+                      height: sh(36), 
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       paddingHorizontal: sw(12),
-                      paddingVertical: sh(6),
+                      // paddingVertical: sh(6),
                       borderWidth: 1,
-                      borderColor: '#FBB20240',
+                      borderColor: '#7D858E',
                     }}
                   >
                     <Text
                       style={{
                         fontFamily: 'Poppins-Regular',
                         fontSize: sf(16),
-                        fontWeight: '400',
-                        lineHeight: 16,
-                        letterSpacing: 0,
+                        fontWeight: '400', 
                         color: '#000000',
                       }}
                     >
@@ -501,7 +516,7 @@ const EditProfileScreen = ({ navigation }: any) => {
               borderRadius: sr(32),
               borderWidth: 1,
               borderColor: '#FF3366',
-              backgroundColor: '#FF33660D',
+              backgroundColor: 'rgba(255, 51, 102, 0.05)',
               alignItems: 'center',
               justifyContent: 'center',
             }}
@@ -510,10 +525,8 @@ const EditProfileScreen = ({ navigation }: any) => {
               style={{
                 fontFamily: 'Poppins-Medium',
                 fontWeight: '500',
-                fontSize: sf(20),
-                lineHeight: sf(20),
-                color: '#1C1C1E',
-                letterSpacing: 0,
+                fontSize: sf(20), 
+                color: '#1C1C1E', 
               }}
             >
               Cancel
@@ -535,10 +548,8 @@ const EditProfileScreen = ({ navigation }: any) => {
               style={{
                 fontFamily: 'Poppins-Medium',
                 fontWeight: '500',
-                fontSize: sf(20),
-                lineHeight: sf(20),
-                color: '#FFFFFF',
-                letterSpacing: 0,
+                fontSize: sf(20), 
+                color: '#FFFFFF', 
               }}
             >
               Save
