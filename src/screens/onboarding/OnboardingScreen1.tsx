@@ -56,7 +56,7 @@ const OnboardingScreen1 = ({ navigation }: any) => {
   }, [width]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
+    <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
       <View
         style={{
           flex: 1,
@@ -176,7 +176,7 @@ const OnboardingScreen1 = ({ navigation }: any) => {
         buttonLabel="Next"
         onPress={() => navigation.navigate('Onboarding2')}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

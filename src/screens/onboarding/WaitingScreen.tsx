@@ -14,7 +14,7 @@ const PROGRESS = (CURRENT / TARGET) * 100;
 
 // ─── Screen ───────────────────────────────────────────────
 const WaitingScreen = ({ navigation }: any) => (
-  <SafeAreaView style={styles.safeArea}>
+  <View style={styles.safeArea}>
     <View style={styles.page}>
 
       {/* ── Main Content ── */}
@@ -94,12 +94,12 @@ const WaitingScreen = ({ navigation }: any) => (
       />
 
     </View>
-  </SafeAreaView>
+  </View>
 );
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  page: { flex: 1, paddingHorizontal: sw(20), paddingVertical: sh(40) },
+  page: { flex: 1, paddingHorizontal: sw(20) },
   main: {
     flex: 1,
     alignItems: 'center',

@@ -82,7 +82,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
     : winH * 0.88;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <View style={styles.page}>
         <View style={styles.headerBlock}>
           <Text style={[styles.title, { fontSize: sf(28) }]} weight="semibold">
@@ -198,7 +198,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
           },
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

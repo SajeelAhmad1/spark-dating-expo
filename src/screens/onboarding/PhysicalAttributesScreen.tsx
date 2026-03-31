@@ -47,9 +47,9 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
   };
 
   const dropdownValues: Record<NonNullable<DropdownField>, string> = {
-    height,
-    bodyType,
-    ethnicity,
+    height: height || '',
+    bodyType: bodyType || '',
+    ethnicity: ethnicity || '',
   };
 
   const handleSelect = (field: NonNullable<DropdownField>, value: string) => {
@@ -68,7 +68,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
   ];
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: sh(120) }}
@@ -207,13 +207,13 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
           </View>
         </TouchableOpacity>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  scroll: { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16) },
+  scroll: { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16), marginTop: sh(60) },
   headerBlock: { marginTop: sh(12), rowGap: sh(8) },
   screenTitle: { color: '#000000' },
   screenSubtitle: { color: '#7D858E' },
@@ -221,12 +221,12 @@ const styles = StyleSheet.create({
   fieldLabel: { color: '#000000', marginBottom: sh(8) },
   skipNote: { color: '#FBB202', marginTop: sh(20) },
   footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    // position: 'absolute',
+    // bottom: 0,
+    // left: 0,
+    // right: 0,
     paddingHorizontal: sw(20),
-    paddingBottom: sh(32),
+    // paddingBottom: sh(32),
   },
   modalBackdrop: {
     flex: 1,

@@ -3,8 +3,7 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  Image,
-  Dimensions,
+  Image, 
   StyleSheet,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
@@ -18,26 +17,11 @@ import {
   ChevronRight,
 } from 'lucide-react-native';
 import BottomTabBar from '@/components/common/BottomTabBar';
-import Logo from '@/assets/images/logo.svg';
-import { sf, sr, sw, sh } from '@/utils/responsive';
-import type { BottomTab } from '@/types/bottomTabs';
-import { MATCHES } from '@/constants/matches';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import { sf, sr, sw, sh } from '@/utils/responsive'; 
 
 // ── Profile Screen ─────────────────────────────────────────
-const ProfileScreen = ({ navigation }: any) => {
-  const [activeTab, setActiveTab] = useState<BottomTab>('Profile');
-  const [premiumUnlocked, setPremiumUnlocked] = useState(false);
-
-  const handleTabPress = (tab: BottomTab) => {
-    if (tab === 'Home') navigation.navigate('DiscoveryScreen');
-    if (tab === 'Request') navigation.navigate('RequestsScreen');
-    if (tab === 'Camera')
-      navigation.navigate('InboxScreen', { cameraSelectMode: true, match: MATCHES[0] });
-    if (tab === 'Chat') navigation.navigate('InboxScreen');
-    if (tab === 'Profile') setActiveTab('Profile');
-  };
+const ProfileScreen = () => { 
+  const [premiumUnlocked, setPremiumUnlocked] = useState(false); 
 
   return (
     <View style={styles.flex1}>
@@ -49,7 +33,7 @@ const ProfileScreen = ({ navigation }: any) => {
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       /> 
 
-      <SafeAreaView style={styles.flex1}>
+      <View style={styles.flex1}>
         {/* ── Header ── */}
         <LinearGradient
           colors={['#1E78F5', '#FBB202']}
@@ -73,6 +57,7 @@ const ProfileScreen = ({ navigation }: any) => {
               justifyContent: 'space-between',
               paddingHorizontal: sw(20),
               paddingTop: sh(12),
+              marginTop: sh(60),
               paddingBottom: sh(16),
             }}
           >
@@ -163,12 +148,9 @@ const ProfileScreen = ({ navigation }: any) => {
                 height: sh(70),
                 backgroundColor: 'rgba(0, 0, 0, 0.3)',
                 paddingHorizontal: sw(16),
-                // paddingVertical: sh(12),
                 borderColor: '#FFFFFF',
-                // borderWidth: 0.5,
                 borderRadius: sr(12),
                 flexDirection: 'column', 
-                // alignItems: 'flex-start',
                   justifyContent: 'center', 
               }}
             >
@@ -177,7 +159,6 @@ const ProfileScreen = ({ navigation }: any) => {
                   fontFamily: 'Poppins-SemiBold',
                   fontSize: sf(20), 
                   color: '#FFFFFF', 
-                  // marginBottom: sh(6),
                 }}
               >
                 Paul W (27)
@@ -692,8 +673,8 @@ const ProfileScreen = ({ navigation }: any) => {
         </ScrollView>
 
         {/* ── Bottom Tab Bar ── */}
-        <BottomTabBar activeTab={activeTab} onTabPress={handleTabPress} />
-      </SafeAreaView>
+        <BottomTabBar />
+      </View>
     </View>
   );
 };

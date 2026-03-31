@@ -23,11 +23,6 @@ export default function LogoScreen({ navigation }: any) {
           bottom: 0,
         }}
       />
-
-      <SafeAreaView
-        style={{ flex: 1 }}
-        edges={['top', 'bottom']}
-      >
         {/* Center content */}
         <View
           style={{
@@ -73,7 +68,7 @@ export default function LogoScreen({ navigation }: any) {
         </View>
 
         {/* Bottom Next button */}
-        <View style={{ paddingHorizontal: sw(16), paddingBottom: sh(24) }}>
+        <View style={{ paddingHorizontal: sw(16) }}>
           <PrimaryButton
             title="Next"
             onPress={() => navigation.navigate('SignUpScreen')}
@@ -81,7 +76,6 @@ export default function LogoScreen({ navigation }: any) {
             variant="solid"
           />
         </View>
-      </SafeAreaView>
     </View>
   );
 }

@@ -4,9 +4,10 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
   Alert,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Text } from "@/components/common/Text";
 import {
@@ -30,7 +31,6 @@ import { generateId, getTimeString } from "@/utils/chat";
 import { sf, sr, sw, sh } from "@/utils/responsive";
 import { useZodForm } from "@/utils/form";
 import { chatMessageFormSchema } from "@/schemas/messaging";
-import { FieldError } from "@/components/common/FieldError";
 
 export default function ChatScreen({ navigation, route }: any) {
   const chatUserName: string = route?.params?.chatUserName ?? "Jenny";
@@ -185,217 +185,256 @@ export default function ChatScreen({ navigation, route }: any) {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
-      <View style={{ flex: 1 }}>
-        {/* ── Nav Bar ── */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            paddingHorizontal: sw(16),
-            paddingVertical: sh(12),
-            backgroundColor: "#FFFFFF",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => navigation?.goBack()}
-            style={{ marginRight: sw(12) }}
-          >
-            <ChevronLeft size={sf(24)} color="#7D858E" strokeWidth={2} />
-          </TouchableOpacity>
+    // FIX 2: KeyboardAvoidingView keeps the input bar visible when keyboard opens
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={0}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#FFFFFF",
+          paddingTop: sh(40),
+          borderWidth: 0.4,
+          borderColor: "#B6B9C9",
+        }}
+      >
+        <View style={{ flex: 1 }}>
 
-          <ChatAvatar
-            size={sf(40)}
-            variant="friend"
-            imageUri={chatUserImageUri}
-          />
-
-          <View style={{ flex: 1, marginLeft: sw(10) }}>
-            <Text
-              style={{
-                fontFamily: "Poppins-Regular",
-                fontWeight: "400",
-                fontSize: sf(20),
-                color: "#000000",
-              }}
-            >
-              {chatUserName}
-            </Text>
-            <Text
-              style={{
-                fontFamily: "Poppins-Regular",
-                fontWeight: "400",
-                fontSize: sf(12),
-                color: "#1E78F5",
-                marginTop: sh(2),
-              }}
-            >
-              Online
-            </Text>
-          </View>
-
+          {/* ── Nav Bar ── */}
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
-              gap: 4,
-              marginRight: sw(12),
+              paddingHorizontal: sw(16),
+              paddingBottom: sh(14),
+              backgroundColor: "#FFFFFF",
+              borderBottomWidth: 0.4,
+              borderBottomColor: "#B6B9C9",
             }}
           >
-            <Clock size={sf(14)} color="#7D858E" strokeWidth={2} />
-            <Text
-              style={{
-                fontFamily: "Poppins-Medium",
-                fontWeight: "500",
-                fontSize: sf(13),
-                color: "#7D858E",
-              }}
+            <TouchableOpacity
+              onPress={() => navigation?.goBack()}
+              style={{ marginRight: sw(12) }}
             >
-              23h
-            </Text>
-          </View>
+              <ChevronLeft size={sf(24)} color="#7D858E" strokeWidth={2} />
+            </TouchableOpacity>
 
-          <TouchableOpacity>
-            <MoreVertical size={sf(22)} color="#1E78F5" strokeWidth={2} />
-          </TouchableOpacity>
-        </View>
+            <ChatAvatar
+              size={sf(40)}
+              variant="friend"
+              imageUri={chatUserImageUri}
+            />
 
-        {/* ── Messages ── */}
-        <ScrollView
-          ref={scrollViewRef}
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingVertical: sh(12) }}
-          showsVerticalScrollIndicator={false}
-          onContentSizeChange={() =>
-            scrollViewRef.current?.scrollToEnd({ animated: false })
-          }
-        >
-          <View style={{ alignItems: "center", marginBottom: sh(16) }}>
             <View
               style={{
-                backgroundColor: "rgba(0,0,0,0.06)",
-                borderRadius: sr(99),
-                paddingHorizontal: sw(14),
-                paddingVertical: sh(4),
+                flex: 1,
+                flexDirection: "column",
+                gap: sh(0),
+                justifyContent: "center",
+                marginLeft: sw(10),
               }}
             >
               <Text
                 style={{
-                  fontFamily: "Poppins-Regular",
+                  fontWeight: "400",
+                  fontSize: sf(20),
+                  lineHeight: sf(20),
+                  color: "#000000",
+                }}
+              >
+                {chatUserName}
+              </Text>
+              <Text
+                style={{
+                  fontWeight: "400",
                   fontSize: sf(12),
+                  color: "#1E78F5",
+                }}
+              >
+                Online
+              </Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 4,
+                marginRight: sw(12),
+              }}
+            >
+              <Clock size={sf(14)} color="#7D858E" strokeWidth={2} />
+              <Text
+                style={{
+                  fontFamily: "Poppins-Medium",
+                  fontWeight: "500",
+                  fontSize: sf(13),
                   color: "#7D858E",
                 }}
               >
-                Today
+                23h
               </Text>
             </View>
+
+            <TouchableOpacity>
+              <MoreVertical size={sf(22)} color="#1E78F5" strokeWidth={2} />
+            </TouchableOpacity>
           </View>
 
-          {messages.map((msg) => (
-            <MessageBubble
-              key={msg.id}
-              message={msg}
-              friendAvatarUri={chatUserImageUri}
-              onSnapPress={(snapMessage) => {
-                if (snapMessage.sender === "friend") {
-                  navigation.navigate("SnapViewScreen", {
-                    snapUri: snapMessage.imageUri ?? chatUserImageUri,
-                    chatUserName,
-                  });
-                }
-              }}
-            />
-          ))}
-
-          {/* ── Blur overlay ── */}
-          {isLocked && (
-            <View style={StyleSheet.absoluteFill}>
-              <BlurView
-                style={{
-                  ...StyleSheet.absoluteFill,
-                  backgroundColor: "rgba(251, 178, 2, 0.2)",
-                }}
-                intensity={100}
-                tint="dark"
-              />
+          {/* ── Messages ── */}
+          <ScrollView
+            ref={scrollViewRef}
+            style={{ flex: 1 }}
+            contentContainerStyle={{
+              paddingVertical: sh(12),
+              // FIX 3: Messages stick to the bottom when there are only a few
+              flexGrow: 1,
+              justifyContent: "flex-end",
+            }}
+            showsVerticalScrollIndicator={false}
+            onContentSizeChange={() =>
+              scrollViewRef.current?.scrollToEnd({ animated: false })
+            }
+          >
+            <View style={{ alignItems: "center", marginBottom: sh(16) }}>
               <View
                 style={{
-                  ...StyleSheet.absoluteFillObject,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 12,
+                  backgroundColor: "rgba(0,0,0,0.06)",
+                  borderRadius: sr(99),
+                  paddingHorizontal: sw(14),
+                  paddingVertical: sh(4),
                 }}
               >
-                <Text style={{ fontSize: sf(40) }}>🔒</Text>
                 <Text
                   style={{
-                    fontFamily: "Poppins-Medium",
-                    fontWeight: "500",
-                    fontSize: sf(32),
-                    color: "#000000",
+                    fontFamily: "Poppins-Regular",
+                    fontSize: sf(12),
+                    color: "#7D858E",
                   }}
                 >
-                  Chat Locked
+                  Today
                 </Text>
               </View>
             </View>
-          )}
-        </ScrollView>
 
-        {/* ── Bottom bar ── */}
-        {isLocked ? (
-          <TouchableOpacity
-            onPress={() => setIsCameraOpen(true)}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 10,
-              backgroundColor: "rgba(251, 178, 2, 0.6)",
-              marginHorizontal: sw(16),
-              marginBottom: sh(16),
-              marginTop: sh(8),
-              borderRadius: sr(15),
-              paddingVertical: sh(16),
-              height: sh(56),
-              paddingHorizontal: sw(20),
-            }}
-          >
-            <Text style={{ fontSize: sf(20) }}>🔓</Text>
-            <Text
+            {messages.map((msg) => (
+              <MessageBubble
+                key={msg.id}
+                message={msg}
+                friendAvatarUri={chatUserImageUri}
+                onSnapPress={(snapMessage) => {
+                  if (snapMessage.sender === "friend") {
+                    navigation.navigate("SnapViewScreen", {
+                      snapUri: snapMessage.imageUri ?? chatUserImageUri,
+                      chatUserName,
+                    });
+                  }
+                }}
+              />
+            ))}
+
+            {/* ── Blur overlay ── */}
+            {isLocked && (
+              <View style={StyleSheet.absoluteFill}>
+                <BlurView
+                  style={{
+                    ...StyleSheet.absoluteFill,
+                    backgroundColor: "rgba(251, 178, 2, 0.2)",
+                  }}
+                  intensity={100}
+                  tint="dark"
+                />
+                <View
+                  style={{
+                    ...StyleSheet.absoluteFillObject,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 12,
+                  }}
+                >
+                  <Text style={{ fontSize: sf(40) }}>🔒</Text>
+                  <Text
+                    style={{
+                      fontFamily: "Poppins-Medium",
+                      fontWeight: "500",
+                      fontSize: sf(32),
+                      color: "#000000",
+                    }}
+                  >
+                    Chat Locked
+                  </Text>
+                </View>
+              </View>
+            )}
+          </ScrollView>
+
+          {/* ── Bottom bar ── */}
+          {isLocked ? (
+            <TouchableOpacity
+              onPress={() => setIsCameraOpen(true)}
               style={{
-                fontWeight: "500",
-                fontSize: sf(16),
-                color: "#000000",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 10,
+                backgroundColor: "rgba(251, 178, 2, 0.6)",
+                marginHorizontal: sw(16),
+                marginBottom: sh(16),
+                marginTop: sh(8),
+                borderRadius: sr(15),
+                paddingVertical: sh(16),
+                height: sh(56),
+                paddingHorizontal: sw(20),
               }}
             >
-              Send Image to Unlock the chat
-            </Text>
-          </TouchableOpacity>
-        ) : (
-          <>
+              <Text style={{ fontSize: sf(20) }}>🔓</Text>
+              <Text
+                style={{
+                  fontWeight: "500",
+                  fontSize: sf(16),
+                  color: "#000000",
+                }}
+              >
+                Send Image to Unlock the chat
+              </Text>
+            </TouchableOpacity>
+          ) : (
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
                 paddingHorizontal: sw(16),
-                paddingVertical: sh(12),
+                paddingVertical: sh(8),
                 gap: 14,
                 backgroundColor: "#FFFFFF",
               }}
             >
+              {/* FIX 1: Camera icon constrained to exact dimensions */}
               <TouchableOpacity
                 onPress={() => setIsCameraOpen(true)}
                 style={{
-                  width: sw(56),
-                  height: sh(56),
-                  borderRadius: sr(92),
+                  width: sw(40),
+                  height: sh(40),
                   alignItems: "center",
                   justifyContent: "center",
-                  // backgroundColor: '#FBB202',
                 }}
               >
-                <CameraIcon />
+                <View
+                  style={{
+                    width: sw(56),
+                    height: sh(56),
+                    overflow: "hidden",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: sr(94),
+                    borderWidth: 1,
+                    borderColor: "transparent",
+                  }}
+                >
+                  <CameraIcon />
+                </View>
               </TouchableOpacity>
 
               <View
@@ -435,6 +474,7 @@ export default function ChatScreen({ navigation, route }: any) {
                     fontSize: sf(16),
                     color: "#000000",
                     padding: 0,
+                    height: sh(56),
                   }}
                 />
 
@@ -454,32 +494,29 @@ export default function ChatScreen({ navigation, route }: any) {
                 </TouchableOpacity>
               </View>
             </View>
-            <View style={{ paddingHorizontal: sw(22), paddingBottom: sh(12) }}>
-              <FieldError message={messageError} />
-            </View>
-          </>
-        )}
+          )}
 
-        {/* ── Camera Screen ── */}
-        <CameraScreen
-          visible={isCameraOpen}
-          onClose={() => setIsCameraOpen(false)}
-          onPhotoCapture={handlePhotoCapture}
-        />
+          {/* ── Camera Screen ── */}
+          <CameraScreen
+            visible={isCameraOpen}
+            onClose={() => setIsCameraOpen(false)}
+            onPhotoCapture={handlePhotoCapture}
+          />
 
-        {/* ── Photo Preview Screen ── */}
-        <PhotoPreviewScreen
-          visible={isPreviewOpen}
-          photoUri={capturedPhotoUri}
-          isSending={isSendingPhoto}
-          onClose={() => {
-            setIsPreviewOpen(false);
-            setCapturedPhotoUri(null);
-          }}
-          onDownload={handleDownloadPhoto}
-          onSend={handleSendPhoto}
-        />
+          {/* ── Photo Preview Screen ── */}
+          <PhotoPreviewScreen
+            visible={isPreviewOpen}
+            photoUri={capturedPhotoUri}
+            isSending={isSendingPhoto}
+            onClose={() => {
+              setIsPreviewOpen(false);
+              setCapturedPhotoUri(null);
+            }}
+            onDownload={handleDownloadPhoto}
+            onSend={handleSendPhoto}
+          />
+        </View>
       </View>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }

@@ -36,7 +36,6 @@ const OnboardingCard: React.FC<Props> = ({
           borderTopLeftRadius: sr(32),
           borderTopRightRadius: sr(32),
           paddingTop: sh(40),
-          paddingBottom: sh(32),
           minHeight: sh(362),
         }}
       >

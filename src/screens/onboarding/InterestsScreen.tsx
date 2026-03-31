@@ -47,7 +47,7 @@ const InterestsScreen = ({ navigation }: any) => {
   const canContinue = selected.length >= MIN;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: sh(130) }}
@@ -124,7 +124,7 @@ const InterestsScreen = ({ navigation }: any) => {
         position: 'absolute',
         bottom: 0, left: 0, right: 0,
         paddingHorizontal: sw(24),
-        paddingBottom: sh(32),
+        // paddingBottom: sh(32),
         paddingTop: sh(8),
         backgroundColor: '#fff',
         alignItems: 'center',
@@ -159,13 +159,13 @@ const InterestsScreen = ({ navigation }: any) => {
           textStyle={{fontSize: sf(20), fontWeight: '500', }}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(32) },
-  scroll: { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16) },
+  scroll: { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16), marginTop: sh(60) },
 });
 
 export default InterestsScreen;

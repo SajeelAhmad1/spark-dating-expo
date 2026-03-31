@@ -117,13 +117,12 @@ export default function SignInScreen({
   const [activeTab, setActiveTab] = useState<AuthSigninTab>(initialTab);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
+    <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
       <View
         style={{
           flex: 1,
           paddingHorizontal: sw(20),
-          paddingTop: sh(24),
-          paddingBottom: sh(16),
+          paddingTop: sh(72),
         }}
       >
         <TouchableOpacity style={{ width: sw(32), height: sw(32) }} onPress={() => {}}>
@@ -154,6 +153,6 @@ export default function SignInScreen({
 
         <SignInFormBody key={activeTab} tab={activeTab} navigation={navigation} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

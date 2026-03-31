@@ -187,8 +187,8 @@ const UploadPhotosScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-      <View style={{ flex: 1, paddingHorizontal: hPad, paddingTop: sh(16) }}>
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <View style={{ flex: 1, paddingHorizontal: hPad, paddingTop: sh(16), marginTop: sh(60) }}>
         <TouchableOpacity onPress={() => navigation?.goBack()}>
           <ChevronLeft size={sf(24)} color="#000000" />
         </TouchableOpacity>
@@ -217,12 +217,12 @@ const UploadPhotosScreen = ({ navigation }: any) => {
 
       <View
         style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
+          // position: 'absolute',
+          // bottom: 0,
+          // left: 0,
+          // right: 0,
           paddingHorizontal: hPad,
-          paddingBottom: sh(32),
+          // paddingBottom: sh(32),
           backgroundColor: '#fff',
         }}
       >
@@ -244,7 +244,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           textStyle={{ fontSize: sf(20), fontWeight: '500' }}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -95,7 +95,7 @@ const NumberVerifyScreen = ({ navigation }: any) => {
   const canResend = secondsLeft <= 0;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <View style={styles.page}>
         <View style={styles.headerBlock}>
           <Text style={[styles.title, { fontSize: sf(28) }]} weight="semibold">
@@ -160,7 +160,7 @@ const NumberVerifyScreen = ({ navigation }: any) => {
           </Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

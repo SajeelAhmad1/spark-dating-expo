@@ -24,7 +24,7 @@ export default function SignUpScreen({ navigation }: any) {
         }}
       />
 
-      <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+      <View style={{ flex: 1 }}>
         <View
           style={{
             flex: 1,
@@ -75,7 +75,7 @@ export default function SignUpScreen({ navigation }: any) {
           <View
             style={{
               paddingHorizontal: sw(20),
-              paddingBottom: sh(24),
+              // paddingBottom: sh(24),
               gap: sh(12),
             }}
           >
@@ -128,7 +128,7 @@ export default function SignUpScreen({ navigation }: any) {
               >
                 Already have an account?{' '}
                 <Text
-                  style={{ color: '#1E78F5', fontWeight: '500' }}
+                  style={{ color: '#1E78F5', fontWeight: '500', textDecorationLine: 'underline' }}
                   onPress={() => navigation.navigate('SignInScreen')}
                 >
                   Login
@@ -138,7 +138,7 @@ export default function SignUpScreen({ navigation }: any) {
           </View>
 
         </View>
-      </SafeAreaView>
+      </View>
     </View>
   );
 }

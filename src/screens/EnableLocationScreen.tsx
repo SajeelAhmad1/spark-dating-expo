@@ -11,7 +11,7 @@ const EnableLocationScreen = ({ navigation }: any) => {
   const [isEnabled, setIsEnabled] = useState(false);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <View style={styles.centerBlock}>
         <LocationIcon />
 
@@ -74,7 +74,7 @@ const EnableLocationScreen = ({ navigation }: any) => {
           }}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
     justifyContent: 'space-between',
-    paddingBottom: sh(32),
+    // paddingBottom: sh(32),
   },
   centerBlock: {
     flex: 1,

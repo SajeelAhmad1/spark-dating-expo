@@ -17,7 +17,6 @@ export const onboardingPhoneFormSchema = z
       });
       return;
     }
-    // try {
       const country = data.countryCode.toUpperCase() as CountryCode;
 
       // ✅ First check: is it valid format + possible number for this country
@@ -40,13 +39,6 @@ export const onboardingPhoneFormSchema = z
           path: ['phoneNumber'],
         });
       }
-    // } catch {
-    //   ctx.addIssue({
-    //     code: 'custom',
-    //     message: ERR.onboarding.phoneNationalInvalid,
-    //     path: ['phoneNumber'],
-    //   });
-    // }
   });
 
 export type OnboardingPhoneFormValues = z.infer<typeof onboardingPhoneFormSchema>;

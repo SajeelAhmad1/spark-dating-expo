@@ -1,11 +1,11 @@
-import React from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
-import { Text } from '@/components/common/Text';
-import { LinearGradient } from 'expo-linear-gradient';
-import { ProgressDots } from '@/components/ProgressDots';
-import ChatIcon from '@/assets/images/chatIcon.svg';
-import type { MATCHES } from '@/constants/matches';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import React from "react";
+import { Image, TouchableOpacity, View } from "react-native";
+import { Text } from "@/components/common/Text";
+import { LinearGradient } from "expo-linear-gradient";
+import { ProgressDots } from "@/components/ProgressDots";
+import ChatIcon from "@/assets/images/chatIcon.svg";
+import type { MATCHES } from "@/constants/matches";
+import { sf, sr, sw, sh } from "@/utils/responsive";
 
 type MatchItem = (typeof MATCHES)[number];
 
@@ -40,19 +40,19 @@ export default function DiscoveryMatchCard({
         style={{
           flex: 1,
           borderRadius: sr(24),
-          overflow: 'hidden',
+          overflow: "hidden",
         }}
       >
         <Image
           source={{ uri: item.image }}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: "100%", height: "100%" }}
           resizeMode="cover"
         />
 
         <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.88)']}
+          colors={["transparent", "rgba(0,0,0,0.88)"]}
           style={{
-            position: 'absolute',
+            position: "absolute",
             bottom: 0,
             left: 0,
             right: 0,
@@ -63,33 +63,37 @@ export default function DiscoveryMatchCard({
         >
           <View
             style={{
-              backgroundColor: 'rgba(251,178,2,0.1)',
+              backgroundColor: "rgba(251,178,2,0.1)",
               borderWidth: 1,
-              borderColor: 'rgba(251,178,2,0.5)',
+              borderColor: "rgba(251,178,2,0.5)",
               borderRadius: sr(12),
               paddingHorizontal: sw(12),
-              // paddingVertical: sh(10), 
-              height: (60), 
-              justifyContent: 'center', 
+              // paddingVertical: sh(10),
+              height: 60,
+              justifyContent: "center",
             }}
           >
-             <Text
-                style={{
-                  fontFamily: 'Poppins-SemiBold',
-                  fontSize: sf(16),
-                  color: '#fff',
-                }}
-              >
-                {item.name}, {item.age}
-              </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', }}>
-
+            <Text
+              style={{
+                fontFamily: "Poppins-SemiBold",
+                fontSize: sf(16),
+                color: "#fff",
+              }}
+            >
+              {item.name}, {item.age}
+            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Text
                 style={{
-                  fontFamily: 'Poppins-Regular',
+                  fontFamily: "Poppins-Regular",
                   fontSize: sf(13),
-                  color: 'rgba(255,255,255,0.85)',
-                  // marginTop: sh(2),
+                  color: "rgba(255,255,255,0.85)",
                   flex: 1,
                 }}
                 numberOfLines={1}
@@ -97,11 +101,19 @@ export default function DiscoveryMatchCard({
                 {item.bio}
               </Text>
               <TouchableOpacity onPress={rightChatOnPress}>
-              <ChatIcon width={24} height={24} />
-            </TouchableOpacity>
+                <View
+                  style={{
+                    width: 24,
+                    height: 24,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginTop: sh(-8),
+                  }}
+                >
+                  <ChatIcon />
+                </View>
+              </TouchableOpacity>
             </View>
-
-            
           </View>
         </LinearGradient>
       </View>
@@ -109,7 +121,7 @@ export default function DiscoveryMatchCard({
       {showProgressDots && (
         <View
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: sh(10),
             left: sw(12),
             right: sw(12),
@@ -122,4 +134,3 @@ export default function DiscoveryMatchCard({
     </View>
   );
 }
-

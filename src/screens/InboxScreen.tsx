@@ -9,8 +9,7 @@ import {
 import { Text } from '@/components/common/Text';
 import { ChevronLeft, Search, Lock } from 'lucide-react-native';
 import BottomTabBar from '@/components/common/BottomTabBar';
-import { CONVERSATIONS } from '@/constants/conversations';
-import type { BottomTab } from '@/types/bottomTabs';
+import { CONVERSATIONS } from '@/constants/conversations'; 
 import { INBOX_FILTERS } from '@/constants/inbox';
 import type { InboxFilterType } from '@/types/inbox';
 import { filterConversations } from '@/utils/inbox';
@@ -23,8 +22,7 @@ import { inboxSearchFormSchema } from '@/schemas/messaging';
 import { FieldError } from '@/components/common/FieldError';
 
 export default function InboxScreen({ navigation, route }: any) {
-  const [activeFilter, setActiveFilter] = useState<InboxFilterType>('All');
-  const [activeTab, setActiveTab] = useState<BottomTab>('Chat');
+  const [activeFilter, setActiveFilter] = useState<InboxFilterType>('All'); 
   const cameraSelectMode: boolean = !!route?.params?.cameraSelectMode;
 
   const { watch, setValue, trigger, formState } = useZodForm(inboxSearchFormSchema, {
@@ -47,18 +45,7 @@ export default function InboxScreen({ navigation, route }: any) {
   const activeConversations = filtered.filter(c => c.status === 'active');
   const lockingConversations = filtered.filter(c => c.status === 'locking');
   const lockedConversations = filtered.filter(c => c.status === 'locked');
-
-  const handleTabPress = (tab: BottomTab) => {
-    if (tab === 'Chat') {
-      setActiveTab('Chat');
-      return;
-    }
-    if (tab === 'Home') navigation.navigate('DiscoveryScreen');
-    if (tab === 'Request') navigation.navigate('RequestsScreen');
-    if (tab === 'Camera')
-      navigation.navigate('InboxScreen', { cameraSelectMode: true });
-    if (tab === 'Profile') navigation.navigate('ProfileScreen');
-  };
+ 
 
   const openConversation = (item: any) => {
     const user = MATCHES.find(m => m.id === item.userId) ?? MATCHES[0];
@@ -83,7 +70,7 @@ export default function InboxScreen({ navigation, route }: any) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
       {/* ── Nav Bar ── */}
       <View
         style={{
@@ -286,7 +273,7 @@ export default function InboxScreen({ navigation, route }: any) {
       </ScrollView>
 
       {/* ── Bottom Tab Bar ── */}
-      <BottomTabBar activeTab={activeTab} onTabPress={handleTabPress} />
-    </SafeAreaView>
+      <BottomTabBar  />
+    </View>
   );
 }

@@ -13,9 +13,8 @@ export default function Onboarding3({ navigation }: any) {
   const illustrationHeight = height * 0.58;
 
   return (
-    <SafeAreaView
+    <View
       style={{ flex: 1, backgroundColor: '#ffffff' }}
-      edges={['top']}
     >
       {/* ── Illustration area ── */}
       <View
@@ -86,6 +85,6 @@ export default function Onboarding3({ navigation }: any) {
         buttonLabel="Next"
         onPress={() => navigation.navigate('LogoScreen')}
       />
-    </SafeAreaView>
+    </View>
   );
 }

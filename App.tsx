@@ -2,10 +2,7 @@ import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
-// ✅ ADD THESE IMPORTS
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-
 import OnboardingScreen1 from '@/screens/onboarding/OnboardingScreen1';
 import OnboardingScreen2 from '@/screens/onboarding/OnboardingScreen2';
 import OnboardingScreen3 from '@/screens/onboarding/OnboardingScreen3';
@@ -37,6 +34,7 @@ import BlockedUsersScreen from '@/screens/BlockedUsersScreen';
 import { useFonts } from 'expo-font';
 import Toast from 'react-native-toast-message';
 import UserProfileScreen from '@/screens/UserProfileScreen';
+import { toastConfig } from '@/utils/toastConfig';
 
 const Stack = createStackNavigator();
 
@@ -62,10 +60,9 @@ export default function App() {
       {/* ✅ WRAP EVERYTHING */}
       <SafeAreaProvider>
         <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
-          
           <NavigationContainer>
             <Stack.Navigator
-              initialRouteName="Onboarding1"
+              initialRouteName="ChatScreen"
               screenOptions={{ headerShown: false }}
             >
               <Stack.Screen name="Onboarding1" component={OnboardingScreen1} />
@@ -107,7 +104,7 @@ export default function App() {
             </Stack.Navigator>
           </NavigationContainer>
 
-          <Toast />
+          <Toast config={toastConfig} />
         </SafeAreaView>
       </SafeAreaProvider>
     </GestureHandlerRootView>

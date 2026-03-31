@@ -8,7 +8,7 @@ import { sf, sw, sh, sr } from '@/utils/responsive';
 
 const VerificationSuccessScreen = ({navigation}: any) => {
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <View style={styles.page}>
 
         <View
@@ -48,18 +48,18 @@ const VerificationSuccessScreen = ({navigation}: any) => {
         </TouchableOpacity>
 
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
   page: {
-    flex: 1,
+    // flex: 1,
     paddingHorizontal: sw(20),
-    paddingBottom: sh(24),
+    // paddingBottom: sh(24),
     alignItems: 'center',
-    marginTop: sh(96),
+    marginTop: sh(104),
   },
   iconWrap: {
     alignItems: 'center',
