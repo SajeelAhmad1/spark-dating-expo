@@ -25,7 +25,7 @@ const ProfileScreen = ({ navigation }: any) => {
   const [premiumUnlocked, setPremiumUnlocked] = useState(false);
 
   return (
-    <View style={styles.flex1}>
+    <View style={{ flex: 1 }}>
       {/* ── Full Screen Background Gradient ── */}
       <LinearGradient
         colors={["#1E78F5", "#FBB202"]}

@@ -8,6 +8,7 @@ export interface Message {
   sender: MessageSender;
   text?: string;
   imageUri?: string;
+  snapMediaType?: 'photo' | 'video';
   time: string;
   snapDuration?: string;
   seen?: boolean;
