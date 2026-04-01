@@ -122,6 +122,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
                   style={{
                     fontSize: sf(15),
                     color: dropdownValues[key] ? '#000000' : '#7D858E',
+                    lineHeight: sh(56)
                   }}
                 >
                   {dropdownValues[key] || placeholder}
@@ -150,7 +151,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
           colors={['#1E78F5', '#FBB202']}
           variant="gradient"
           style={{ alignSelf: 'stretch' }}
-          textStyle={{fontSize: sf(20), fontWeight: '500' }}
+          textStyle={{fontSize: sf(20), fontWeight: '500', lineHeight: sh(56) }}
         />
       </View>
 

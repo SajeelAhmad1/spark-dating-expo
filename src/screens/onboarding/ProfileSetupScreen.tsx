@@ -100,7 +100,7 @@ const ProfileSetupScreen = ({ navigation }: any) => {
     borderColor: "#B6B9C9",
     borderRadius: sr(15),
     height: sh(56),
-    paddingHorizontal: sw(16),
+    paddingHorizontal: sw(10),
     fontSize: sf(15),
     color: "#000000",
   };
@@ -215,6 +215,7 @@ const ProfileSetupScreen = ({ navigation }: any) => {
                       fontSize: sf(15),
                       color: "#000000",
                       fontWeight: "400",
+                      lineHeight: sh(46),
                     }}
                   >
                     {g}
@@ -252,7 +253,7 @@ const ProfileSetupScreen = ({ navigation }: any) => {
                     paddingHorizontal: sw(12),
                   }}
                 >
-                  <Text style={{ fontSize: sf(15), color: "#000000" }}>
+                  <Text style={{ fontSize: sf(15), color: "#000000", lineHeight: sh(40) }}>
                     {dropdownValues[field]}
                   </Text>
                   <ChevronDown size={sf(16)} color="#000000" />
@@ -304,7 +305,7 @@ const ProfileSetupScreen = ({ navigation }: any) => {
           colors={["#1E78F5", "#FBB202"]}
           variant="gradient"
           style={{ alignSelf: "stretch" }}
-          textStyle={{ fontSize: sf(20), fontWeight: "500" }}
+          textStyle={{ fontSize: sf(20), fontWeight: "500", lineHeight: sh(56) }}
         />
       </View>
 

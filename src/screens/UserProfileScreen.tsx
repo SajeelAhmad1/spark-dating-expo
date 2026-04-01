@@ -204,7 +204,7 @@ const UserProfileScreen = ({ navigation, route }: any) => {
           />
         </View>
 
-        <Card>
+        <Card style={{gap: 10}}>
           <InfoRow
             icon={<Ruler size={sf(16)} />}
             text={user.height}
@@ -242,13 +242,13 @@ const UserProfileScreen = ({ navigation, route }: any) => {
             title='Physical attributes'
             style={{ minHeight: 107 }}
           >
-            <Wrap style={{ marginTop: sh(2) }}>
+            <Wrap style={{ marginTop: sh(6) }}>
               {user.attributes.map((attr, i) => (
                 <Chip
                   key={i}
                   label={attr}
                   style={{ borderColor: '#7D858E', borderWidth: 1 }}
-                  textStyle={{ color: '#7D858E' }}
+                  textStyle={{ color: '#7D858E', lineHeight: sh(36) }}
                 />
               ))}
             </Wrap>
@@ -274,6 +274,7 @@ const UserProfileScreen = ({ navigation, route }: any) => {
                   label={interest}
                   filled
                   style={{ backgroundColor: '#FBB202' }}
+                  textStyle={{  lineHeight: sh(36) }}
                 />
               ))}
             </Wrap>
@@ -319,7 +320,7 @@ const Header = ({
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingHorizontal: sw(20),
+      paddingHorizontal: sw(14),
       paddingVertical: sh(12),
     }}
   >
@@ -355,7 +356,7 @@ const Card = ({
     style={[
       {
         marginTop: sh(30),
-        marginHorizontal: sw(16),
+        marginHorizontal: sw(12.5),
         backgroundColor: '#fff',
         borderRadius: sr(12),
         paddingHorizontal: sw(16),
@@ -391,7 +392,7 @@ const Section = ({
 
 const InfoRow = ({ icon, text }: any) => (
   <View
-    style={{ flexDirection: 'row', alignItems: 'center', marginBottom: sh(8) }}
+    style={{ flexDirection: 'row', alignItems: 'center',  }}
   >
     {icon}
     <Text style={styles.infoText}>{text}</Text>
@@ -437,14 +438,14 @@ const Chip = ({
         backgroundColor: filled ? '#FBB202' : '#F1F1F1',
         paddingHorizontal: sw(12),
         borderRadius: sr(32),
-        height: 36,
+        height: 36, 
         justifyContent: 'center',
         gap: sw(4),
       },
       style,
     ]}
   >
-    <Text style={[{ color: filled ? '#000' : '#333' }, textStyle]}>
+    <Text style={[{ color: filled ? '#000' : '#333', justifyContent: 'center', alignItems: 'center',  }, textStyle]}>
       {label}
     </Text>
   </View>

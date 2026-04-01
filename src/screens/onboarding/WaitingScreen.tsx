@@ -90,7 +90,7 @@ const WaitingScreen = ({ navigation }: any) => (
         colors={['#1E78F5', '#DC9B00']}
         variant="gradient"
         iconPosition="start"
-        textStyle={{fontSize: sf(18), fontWeight: '500', color: '#ffffff'}}
+        textStyle={{fontSize: sf(18), fontWeight: '500', color: '#ffffff', lineHeight: sh(56)}}
       />
 
     </View>
