@@ -4,7 +4,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
@@ -18,11 +17,9 @@ import {
   Send,
 } from "lucide-react-native";
 import CameraIcon from "@/assets/images/cameraIcon.svg";
-import PhotoPreviewScreen from "./PhotoPreviewScreen";
 import CameraScreen from "./CameraScreen";
 import * as ImagePicker from "expo-image-picker";
 import { BlurView } from "expo-blur";
-import * as MediaLibrary from "expo-media-library";
 import ChatAvatar from "@/components/chat/ChatAvatar";
 import MessageBubble from "@/components/chat/MessageBubble";
 import type { Message } from "@/types/chat";
@@ -66,9 +63,6 @@ export default function ChatScreen({ navigation, route }: any) {
   const messageError = formState.errors.messageText?.message;
 
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [capturedPhotoUri, setCapturedPhotoUri] = useState<string | null>(null);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [isSendingPhoto, setIsSendingPhoto] = useState(false);
 
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -102,9 +96,35 @@ export default function ChatScreen({ navigation, route }: any) {
   // ── Camera flow ────────────────────────────────────────────────────────────
 
   const handlePhotoCapture = (uri: string) => {
-    setCapturedPhotoUri(uri);
+    const snapMsg: Message = {
+      id: generateId(),
+      type: "snap",
+      sender: "me",
+      text: "Photo",
+      imageUri: uri,
+      time: getTimeString(),
+      seen: false,
+    };
+    setMessages((prev) => [...prev, snapMsg]);
+    if (isLocked) setIsLocked(false);
     setIsCameraOpen(false);
-    setIsPreviewOpen(true);
+    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
+  };
+
+  const handleVideoCapture = (uri: string) => {
+    const snapMsg: Message = {
+      id: generateId(),
+      type: "snap",
+      sender: "me",
+      text: "Video",
+      imageUri: uri,
+      time: getTimeString(),
+      seen: false,
+    };
+    setMessages((prev) => [...prev, snapMsg]);
+    if (isLocked) setIsLocked(false);
+    setIsCameraOpen(false);
+    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
   };
 
   // ── Gallery flow ───────────────────────────────────────────────────────────
@@ -136,50 +156,6 @@ export default function ChatScreen({ navigation, route }: any) {
         100,
       );
     }
-  };
-
-  // ── Camera photo send ──────────────────────────────────────────────────────
-
-  const handleDownloadPhoto = async () => {
-    if (!capturedPhotoUri) return;
-    try {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission needed", "Please allow gallery permission.");
-        return;
-      }
-      await MediaLibrary.createAssetAsync(capturedPhotoUri);
-      Alert.alert("Saved", "Photo saved to your gallery.");
-    } catch {
-      Alert.alert("Error", "Could not save photo.");
-    }
-  };
-
-  const handleSendPhoto = async () => {
-    if (!capturedPhotoUri) return;
-    setIsSendingPhoto(true);
-
-    await new Promise((res) => setTimeout(res, 600));
-
-    const snapMsg: Message = {
-      id: generateId(),
-      type: "snap",
-      sender: "me",
-      text: "Photo",
-      imageUri: capturedPhotoUri,
-      time: getTimeString(),
-      seen: false,
-    };
-
-    setMessages((prev) => [...prev, snapMsg]);
-    if (isLocked) setIsLocked(false);
-    setIsSendingPhoto(false);
-    setIsPreviewOpen(false);
-    setCapturedPhotoUri(null);
-    setTimeout(
-      () => scrollViewRef.current?.scrollToEnd({ animated: true }),
-      100,
-    );
   };
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -540,19 +516,7 @@ export default function ChatScreen({ navigation, route }: any) {
             visible={isCameraOpen}
             onClose={() => setIsCameraOpen(false)}
             onPhotoCapture={handlePhotoCapture}
-          />
-
-          {/* ── Photo Preview Screen ── */}
-          <PhotoPreviewScreen
-            visible={isPreviewOpen}
-            photoUri={capturedPhotoUri}
-            isSending={isSendingPhoto}
-            onClose={() => {
-              setIsPreviewOpen(false);
-              setCapturedPhotoUri(null);
-            }}
-            onDownload={handleDownloadPhoto}
-            onSend={handleSendPhoto}
+            onVideoCapture={handleVideoCapture}
           />
         </View>
       </View>

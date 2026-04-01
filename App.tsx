@@ -27,7 +27,6 @@ import MatchScreen from '@/screens/MatchScreen';
 import RequestsScreen from '@/screens/RequestsScreen';
 import InboxScreen from '@/screens/InboxScreen';
 import ChatScreen from '@/screens/ChatScreen';
-import SnapViewScreen from '@/screens/SnapViewScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
 import SettingsScreen from '@/screens/SettingsScreen';
 import BlockedUsersScreen from '@/screens/BlockedUsersScreen';
@@ -35,6 +34,7 @@ import { useFonts } from 'expo-font';
 import Toast from 'react-native-toast-message';
 import UserProfileScreen from '@/screens/UserProfileScreen';
 import { toastConfig } from '@/utils/toastConfig';
+import SnapViewScreen from '@/screens/SnapViewScreen';
 
 const Stack = createStackNavigator();
 

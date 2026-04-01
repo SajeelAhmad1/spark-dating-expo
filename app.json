@@ -4,7 +4,10 @@
     "slug": "sparkdating",
     "version": "1.0.0",
     "orientation": "portrait",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.yourcompany.sparkdating",
@@ -43,7 +46,8 @@
           "savePhotosPermission": "Allow saving photos.",
           "isAccessMediaLocationEnabled": false
         }
-      ]
+      ],
+      "expo-video"
     ]
   }
 }
