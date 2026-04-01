@@ -84,7 +84,7 @@ const InterestsScreen = ({ navigation }: any) => {
               </Text>
 
               {/* Chips */}
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap : 10 }}>
                 {items.map((item) => {
                   const isSelected = selected.includes(item);
                   return (
@@ -93,19 +93,23 @@ const InterestsScreen = ({ navigation }: any) => {
                       onPress={() => toggle(item)}
                       style={{
                         paddingHorizontal: sw(14),
-                        paddingVertical: sh(9),
+                        // paddingVertical: sh(9),
                         borderRadius: 999,
                         borderWidth: isSelected ? 0 : 0.4,
                         borderColor: '#B6B9C9',
                         backgroundColor: isSelected ? '#FBB202' : 'transparent',
-                        marginRight: sw(8),
-                        marginBottom: sh(8),
+                        // marginRight: sw(8),
+                        // marginBottom: sh(8),
+                        height: 40,
+                          alignItems: "center",
+                    justifyContent: "center",
                       }}
                     >
                       <Text style={{
                         fontSize: sf(13),
                         fontWeight: '400',
                         color: isSelected ? '#000000' : '#7D858E', 
+                        lineHeight: 40,
                       }}>
                         {item}
                       </Text>
@@ -156,7 +160,7 @@ const InterestsScreen = ({ navigation }: any) => {
             alignSelf: 'stretch',
             opacity: canContinue ? 1 : 0.5,
           }}
-          textStyle={{fontSize: sf(20), fontWeight: '500', }}
+          textStyle={{fontSize: sf(20), fontWeight: '500', lineHeight: sh(56) }}
         />
       </View>
     </View>

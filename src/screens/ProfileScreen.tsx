@@ -595,6 +595,7 @@ const ProfileScreen = ({ navigation }: any) => {
                           fontFamily: "Poppins-Regular",
                           fontSize: sf(16),
                           color: "#000000",
+                          lineHeight: sh(16),
                         }}
                       >
                         {interest}

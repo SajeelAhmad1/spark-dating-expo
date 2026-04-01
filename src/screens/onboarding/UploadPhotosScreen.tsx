@@ -241,7 +241,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           colors={['#1E78F5', '#FBB202']}
           variant="gradient"
           style={{ alignSelf: 'stretch' }}
-          textStyle={{ fontSize: sf(20), fontWeight: '500' }}
+          textStyle={{ fontSize: sf(20), fontWeight: '500', lineHeight: sh(56) }}
         />
       </View>
     </View>

@@ -202,6 +202,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
                     textStyle={{
                       fontSize: sf(15),
                       fontWeight: '500',
+                      lineHeight: sh(40),
                     }}
                   />
                 </View>
