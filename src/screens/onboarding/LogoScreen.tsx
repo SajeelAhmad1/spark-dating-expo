@@ -9,7 +9,7 @@ import { sf, sr, sw, sh } from '@/utils/responsive';
 
 export default function LogoScreen({ navigation }: any) {
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingBottom: sh(20) }}>
       {/* Gradient overlay */}
       <LinearGradient
         colors={['#1E78F5', '#FBB202']}

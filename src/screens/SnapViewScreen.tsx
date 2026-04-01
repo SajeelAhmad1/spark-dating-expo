@@ -156,7 +156,7 @@ export default function SnapViewScreen({ navigation, route }: any) {
           left: sw(16),
           right: sw(16),
           backgroundColor: "transparent",
-          paddingTop: sh(40),
+          // paddingTop: sh(40),
         }}
       >
         <View
@@ -228,7 +228,7 @@ export default function SnapViewScreen({ navigation, route }: any) {
               borderRadius: sr(94),
               borderWidth: 1,
               borderColor: "transparent",
-              backgroundColor: "transparent", // ← transparent
+              backgroundColor: "transparent",
             }}
           >
             <CameraIcon />
@@ -270,10 +270,10 @@ export default function SnapViewScreen({ navigation, route }: any) {
               fontFamily: "Poppins-Regular",
               fontWeight: "400",
               fontSize: sf(16),
-              color: "#B6B9C9", // ← gray text on white bg
+              color: "#B6B9C9",
               padding: 0,
               height: sh(56),
-              backgroundColor: "transparent", // ← transparent
+              backgroundColor: "transparent",
             }}
           />
 

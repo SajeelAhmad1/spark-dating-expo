@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
     justifyContent: 'space-between',
-    // paddingBottom: sh(32),
+    paddingBottom: sh(20),
   },
   centerBlock: {
     flex: 1,

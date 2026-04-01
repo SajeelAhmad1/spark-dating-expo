@@ -3,7 +3,6 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
   StyleSheet,
 } from "react-native";
 import { Text } from "@/components/common/Text";
@@ -13,7 +12,7 @@ import RequestCard from "@/components/requests/RequestCard";
 import BottomTabBar from "@/components/common/BottomTabBar"; 
 import { sf, sh, sw } from "@/utils/responsive";
 
-export default function RequestsScreen() {
+export default function RequestsScreen({navigation}:any) {
  
 
   return (
@@ -68,6 +67,7 @@ export default function RequestsScreen() {
             key={request.id}
             name={request.name}
             avatar={request.avatar}
+            navigation={navigation}
           />
         ))}
       </ScrollView>
@@ -78,7 +78,7 @@ export default function RequestsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, paddingTop: sh(72), backgroundColor: "#FFFFFF" },
+  safeArea: { flex: 1, paddingTop: sh(72), backgroundColor: "#FFFFFF", paddingBottom: sh(20) },
   flex1: { flex: 1 },
   headerRow: { flexDirection: "row", alignItems: "center", columnGap: sw(8) },
   badge: {

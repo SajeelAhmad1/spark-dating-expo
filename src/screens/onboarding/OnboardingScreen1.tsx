@@ -56,7 +56,7 @@ const OnboardingScreen1 = ({ navigation }: any) => {
   }, [width]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+    <View style={{ flex: 1, backgroundColor: '#ffffff', paddingBottom: sh(20) }}>
       <View
         style={{
           flex: 1,

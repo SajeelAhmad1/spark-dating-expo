@@ -54,7 +54,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingBottom: sh(20) }}>
       {/* ── Full screen background gradient ── */}
       <LinearGradient
         colors={["#1E78F5", "#FBB202"]}
@@ -84,7 +84,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
             alignItems: "center",
             justifyContent: "space-between",
             paddingHorizontal: sw(20),
-            paddingTop: sh(72),
+            paddingTop: sh(40),
             paddingBottom: sh(16),
           }}
         >
@@ -104,6 +104,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
           </View>
 
           <TouchableOpacity
+            onPress={() => { navigation.navigate("SettingsScreen") }}
             style={{
               width: sf(36),
               height: sf(36),

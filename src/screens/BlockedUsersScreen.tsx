@@ -7,14 +7,14 @@ import {
   TextInput,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Search } from 'lucide-react-native';
+import { ChevronLeft, Handshake, Search, SubscriptIcon } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/responsive';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { BLOCKED_USERS, BlockedUser } from '@/constants/blockedUsers';
 import { useZodForm } from '@/utils/form';
 import { blockedUsersSearchFormSchema } from '@/schemas/messaging';
 import { FieldError } from '@/components/common/FieldError';
+import { showToast } from '@/utils/toast';
 
 const BlockedUsersScreen = ({ navigation }: any) => {
   const [blockedUsers, setBlockedUsers] =
@@ -32,13 +32,14 @@ const BlockedUsersScreen = ({ navigation }: any) => {
     u.name.toLowerCase().includes(safeSearch.toLowerCase()),
   );
 
-  const handleUnblock = (id: string) => {
+  const handleUnblock = (id: string, name: string) => {
     setBlockedUsers(prev => prev.filter(u => u.id !== id));
+    showToast({ text1: 'Unblocked', text2: `${name} removed from blocked users`, icon: Handshake });
+
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-      <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: sh(40), paddingBottom: sh(20) }}>
         {/* ── Header ── */}
         <View
           style={{
@@ -192,7 +193,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
                 <View style={{ width: sw(130), alignItems: 'flex-end' }}>
                   <PrimaryButton
                     title="Unblock"
-                    onPress={() => handleUnblock(user.id)}
+                    onPress={() => handleUnblock(user.id, user.name)}
                     colors={['#1E78F5', '#FBB202']}
                     variant="gradient"
                     height={40}
@@ -245,8 +246,6 @@ const BlockedUsersScreen = ({ navigation }: any) => {
         <View
           style={{
             paddingHorizontal: sw(21),
-            paddingTop: sh(16),
-            paddingBottom: sh(28),
           }}
         >
           <Text
@@ -263,7 +262,6 @@ const BlockedUsersScreen = ({ navigation }: any) => {
             your location.
           </Text>
         </View>
-      </SafeAreaView>
     </View>
   );
 };

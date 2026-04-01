@@ -18,9 +18,7 @@ import {
   ChevronDown,
   ChevronRight,
   Calendar,
-  AlignCenter,
-  AlignJustify,
-  TextAlignCenter,
+  Check,
 } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/responsive';
 import BODY_TYPES from '@/constants/bodyTypes';
@@ -30,7 +28,7 @@ import GENDER from '@/constants/gender';
 import { useZodForm } from '@/utils/form';
 import { createEditProfileSchema, type EditProfileFormValues } from '@/schemas/editProfile';
 import { FieldError } from '@/components/common/FieldError';
-import { he } from 'zod/v4/locales';
+import { showToast } from '@/utils/toast';
 
 type DropdownField = 'gender' | 'height' | 'bodyType' | 'ethnicity' | null;
 
@@ -68,9 +66,9 @@ const EditProfileScreen = ({ navigation }: any) => {
       lastName: 'W',
       bio: "Adventure lover & coffee enthusiast. Always looking for the next trip. Let's explore together! ✈️",
       gender: 'Male',
-      height: '5\' 10"',
+      height: '5\'4"',
       bodyType: 'Slim',
-      ethnicity: 'White',
+      ethnicity: 'Asian',
       birthday: new Date('1998-11-24'),
     },
   });
@@ -82,13 +80,8 @@ const EditProfileScreen = ({ navigation }: any) => {
   type ProfileKey = Exclude<keyof EditProfileFormValues, 'birthday'>;
 
   const handleSave = handleSubmit(values => {
-    const payload = {
-      ...values,
-      birthday: formatDate(values.birthday),
-    };
-    console.log(payload);
+    showToast({text1: "Profile saved successfully.", type: 'success', icon: Check})
   });
-
   const updateProfile = (key: ProfileKey, value: string) => {
     setValue(key, value, { shouldValidate: true });
   };
@@ -110,11 +103,9 @@ const EditProfileScreen = ({ navigation }: any) => {
   };
 
   const labelStyle = {
-    fontFamily: 'Poppins-Medium',
     fontSize: sf(16),
     fontWeight: '500' as const,
     color: '#1E1E1E', 
-    // marginBottom: sh(8),
   };
 
   const inputStyle = {
@@ -142,7 +133,6 @@ const EditProfileScreen = ({ navigation }: any) => {
           borderColor: errors[field]?.message ? '#DC2626' : '#7D858E',
           borderRadius: sr(8),
           paddingHorizontal: sw(12),
-          // paddingVertical: sh(12),
           height: sh(48),
         }}
       >
@@ -162,8 +152,8 @@ const EditProfileScreen = ({ navigation }: any) => {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-      <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: sh(40), paddingBottom: sh(20) }}>
+      <View style={{ flex: 1 }}>
         {/* ── Header ── */}
         <View
           style={{
@@ -187,6 +177,7 @@ const EditProfileScreen = ({ navigation }: any) => {
             Edit Profile
           </Text>
           <TouchableOpacity
+            onPress={()=>navigation.navigate("SettingsScreen")}
             style={{
               width: sf(36),
               height: sf(36),
@@ -216,7 +207,7 @@ const EditProfileScreen = ({ navigation }: any) => {
               marginBottom: sh(24),
             }}
           >
-            {[...Array(6)].map((_, i) => {
+            {[...Array(5)].map((_, i) => {
               const hasImage = i < images.length;
               return (
                 <View
@@ -312,6 +303,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                   style={[
                     inputStyle,
                     errors.firstName ? { borderColor: '#DC2626' } : null,
+                    { lineHeight: sh(20) },
                   ]}
                 />
                 <FieldError message={errors.firstName?.message} />
@@ -325,6 +317,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                   style={[
                     inputStyle,
                     errors.lastName ? { borderColor: '#DC2626' } : null,
+                    { lineHeight: sh(20) },
                   ]}
                 />
                 <FieldError message={errors.lastName?.message} />
@@ -636,7 +629,7 @@ const EditProfileScreen = ({ navigation }: any) => {
             </View>
           </TouchableOpacity>
         </Modal>
-      </SafeAreaView>
+      </View>
       <DatePicker
         modal
         open={datePickerOpen}

@@ -73,7 +73,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
   };
 
   const onValid = () => {
-    showToast('Verification code sent');
+    showToast({ text1: 'Verification code sent' });
     navigation.navigate('NumberVerifyScreen');
   };
 
@@ -203,7 +203,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
   page: {
     flex: 1,
     paddingHorizontal: sw(20),

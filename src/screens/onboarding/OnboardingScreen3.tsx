@@ -14,7 +14,7 @@ export default function Onboarding3({ navigation }: any) {
 
   return (
     <View
-      style={{ flex: 1, backgroundColor: '#ffffff' }}
+      style={{ flex: 1, backgroundColor: '#ffffff', paddingBottom: sh(20) }}
     >
       {/* ── Illustration area ── */}
       <View

@@ -1,11 +1,24 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, ScrollView, Switch, TextStyle } from 'react-native';
-import { Text } from '@/components/common/Text';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, ChevronRight, Icon, LogOut, Trash2, Zap } from 'lucide-react-native';
-import { sf, sr, sw, sh } from '@/utils/responsive';
-import PrimaryButton from '@/components/common/PrimaryButton';
-import CustomToggle from '@/components/location/CustomToggle';
+import React, { useState } from "react";
+import {
+  View,
+  TouchableOpacity,
+  ScrollView,
+  Switch,
+  TextStyle,
+} from "react-native";
+import { Text } from "@/components/common/Text";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Icon,
+  LogOut,
+  Trash2,
+  Zap,
+} from "lucide-react-native";
+import { sf, sr, sw, sh } from "@/utils/responsive";
+import PrimaryButton from "@/components/common/PrimaryButton";
+import CustomToggle from "@/components/location/CustomToggle";
 
 const SettingsScreen = ({ navigation }: any) => {
   const [pushNotifications, setPushNotifications] = useState(false);
@@ -26,30 +39,30 @@ const SettingsScreen = ({ navigation }: any) => {
     <TouchableOpacity
       onPress={onPress}
       style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
         paddingVertical: sh(14),
       }}
     >
       <Text
         style={{
-          fontFamily: 'Poppins-Regular',
+          fontFamily: "Poppins-Regular",
           fontSize: sf(16),
-          fontWeight: '400',
-          color: '#1C1C1E', 
+          fontWeight: "400",
+          color: "#1C1C1E",
         }}
       >
         {label}
       </Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: sw(6) }}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: sw(6) }}>
         {value && (
           <Text
             style={{
-              fontFamily: 'Poppins-Regular',
+              fontFamily: "Poppins-Regular",
               fontSize: sf(16),
-              fontWeight: '400',
-              color: '#A1A1A1', 
+              fontWeight: "400",
+              color: "#A1A1A1",
             }}
           >
             {value}
@@ -61,22 +74,28 @@ const SettingsScreen = ({ navigation }: any) => {
   );
 
   const Divider = () => (
-    <View style={{ height: 1, backgroundColor: '#F0F0F0' }} />
+    <View style={{ height: 1, backgroundColor: "#F0F0F0" }} />
   );
 
-  const SectionTitle = ({ title, style }: { title: string; style?: TextStyle }) => (
+  const SectionTitle = ({
+    title,
+    style,
+  }: {
+    title: string;
+    style?: TextStyle;
+  }) => (
     <Text
-        style={[
-      {
-        fontFamily: 'Poppins-Bold',
-        fontSize: sf(20),
-        fontWeight: '700',
-        color: '#1C1C1E',
-        marginTop: sh(24),
-        marginBottom: sh(8),
-      },
-      style, // 👈 override / extend styles
-    ]}
+      style={[
+        {
+          fontFamily: "Poppins-Bold",
+          fontSize: sf(20),
+          fontWeight: "700",
+          color: "#1C1C1E",
+          marginTop: sh(24),
+          marginBottom: sh(8),
+        },
+        style, // 👈 override / extend styles
+      ]}
     >
       {title}
     </Text>
@@ -99,9 +118,9 @@ const SettingsScreen = ({ navigation }: any) => {
     <>
       <View
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
           paddingVertical: sh(14),
           paddingHorizontal: sw(16),
         }}
@@ -109,20 +128,20 @@ const SettingsScreen = ({ navigation }: any) => {
         <View style={{ flex: 1, marginRight: sw(12) }}>
           <Text
             style={{
-              fontFamily: 'Poppins-Medium',
+              fontFamily: "Poppins-Medium",
               fontSize: sf(16),
-              fontWeight: '500',
-              color: '#000000', 
+              fontWeight: "500",
+              color: "#000000",
             }}
           >
             {label}
           </Text>
           <Text
             style={{
-              fontFamily: 'Poppins-Regular',
+              fontFamily: "Poppins-Regular",
               fontSize: sf(13),
-              fontWeight: '400',
-              color: '#555555', 
+              fontWeight: "400",
+              color: "#555555",
               // marginTop: sh(4),
             }}
           >
@@ -136,135 +155,140 @@ const SettingsScreen = ({ navigation }: any) => {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-      <SafeAreaView style={{ flex: 1 }}>
-        {/* ── Header ── */}
+    <View style={{ flex: 1, backgroundColor: "#FFFFFF", paddingTop: sh(40), paddingBottom: sh(20) }}>
+      {/* ── Header ── */}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingHorizontal: sw(20),
+          paddingTop: sh(12),
+          paddingBottom: sh(16),
+        }}
+      >
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <ChevronLeft size={sf(24)} color="#000000" />
+        </TouchableOpacity>
+        <Text
+          style={{
+            fontFamily: "Poppins-SemiBold",
+            fontSize: sf(20),
+            fontWeight: "600",
+            color: "#1C1C1E",
+          }}
+        >
+          Setting
+        </Text>
+        <View style={{ width: sf(24) }} />
+      </View>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingHorizontal: sw(20),
+        }}
+      >
+        {/* ── Account ── */}
+        <SectionTitle title="Account" />
+        <SettingRow label="Email" value="example@gmail.com" />
+        {/* <Divider /> */}
+        <SettingRow label="Password" />
+        {/* <Divider /> */}
+        <SettingRow
+          label="Blocked Users"
+          onPress={() => navigation.navigate("BlockedUsersScreen")}
+        />
+
+        {/* ── Discovery ── */}
+        <SectionTitle title="Discovery" />
+        <SettingRow label="Gender" value="Women" />
+        {/* <Divider /> */}
+        <SettingRow label="Show me" value="Women" />
+        {/* <Divider /> */}
+        <SettingRow label="Age" value="24-72" />
+        {/* <Divider /> */}
+        <SettingRow label="Distance" value="10 miles" />
+
+        {/* ── General ── */}
+        <SectionTitle title="General" />
+        <SettingRow label="Invite Friends" />
+
+        {/* ── Preferences ── */}
+        <SectionTitle title="Preferences" />
         <View
           style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingHorizontal: sw(20),
-            paddingTop: sh(12),
-            paddingBottom: sh(16),
+            backgroundColor: "#FFFFFF",
+            borderRadius: sr(16),
+            borderWidth: 1,
+            borderColor: "#E6E7E8",
+            shadowColor: "#000000",
+            shadowOpacity: 0.09,
+            shadowRadius: 11,
+            shadowOffset: { width: 0, height: 0 },
+            elevation: 1,
+            overflow: "hidden",
+            marginTop: sh(12),
+            minHeight: sh(323),
           }}
         >
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <ChevronLeft size={sf(24)} color="#000000" />
-          </TouchableOpacity>
-          <Text
-            style={{
-              fontFamily: 'Poppins-SemiBold',
-              fontSize: sf(20),
-              fontWeight: '600',
-              color: '#1C1C1E', 
-            }}
-          >
-            Setting
-          </Text>
-          <View style={{ width: sf(24) }} />
+          <ToggleRow
+            label="Push Notifications"
+            description="Get notified about matches and messages"
+            value={pushNotifications}
+            onValueChange={setPushNotifications}
+          />
+          <ToggleRow
+            label="Show Distance"
+            description="Display distance on your profile"
+            value={showDistance}
+            onValueChange={setShowDistance}
+          />
+          <ToggleRow
+            label="Show Age"
+            description="Display your age on your profile"
+            value={showAge}
+            onValueChange={setShowAge}
+          />
+          <ToggleRow
+            label="Auto Boost"
+            description="Automatically boost during peak hours"
+            value={autoBoost}
+            onValueChange={setAutoBoost}
+            showDivider={false}
+          />
         </View>
 
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingHorizontal: sw(20),
-            paddingBottom: sh(40),
+        {/* ── Spark Premium ── */}
+        <View
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: sr(12),
+            borderWidth: 1,
+            borderColor: "#E6E7E8",
+            shadowColor: "#000000",
+            shadowOpacity: 0.09,
+            shadowRadius: 11,
+            shadowOffset: { width: 0, height: 0 },
+            elevation: 1,
+            overflow: "hidden",
+            minHeight: sh(178),
+            paddingVertical: sh(14),
+            paddingHorizontal: sw(16),
+            marginTop: sh(24),
+            marginBottom: sh(8),
           }}
         >
-          {/* ── Account ── */}
-          <SectionTitle title="Account" />
-          <SettingRow label="Email" value="Example@gmail.com" />
-          {/* <Divider /> */}
-          <SettingRow label="Password" />
-          {/* <Divider /> */}
-          <SettingRow label="Blocked Users" />
-
-          {/* ── Discovery ── */}
-          <SectionTitle title="Discovery" />
-          <SettingRow label="Gender" value="Women" />
-          {/* <Divider /> */}
-          <SettingRow label="Show me" value="Women" />
-          {/* <Divider /> */}
-          <SettingRow label="Age" value="24-72" />
-          {/* <Divider /> */}
-          <SettingRow label="Distance" value="10 miles" />
-
-          {/* ── General ── */}
-          <SectionTitle title="General" />
-          <SettingRow label="Invite Friends" />
-
-          {/* ── Preferences ── */}
-          <SectionTitle title="Preferences" />
-          <View
-            style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: sr(16),
-              borderWidth: 1,
-              borderColor: '#E6E7E8',
-              shadowColor: '#000000',
-              shadowOpacity: 0.09,
-              shadowRadius: 11,
-              shadowOffset: { width: 0, height: 0 },
-              elevation: 4,
-              overflow: 'hidden',
-              marginTop: sh(12),
-              minHeight: sh(323),
-            }}
-          >
-            <ToggleRow
-              label="Push Notifications"
-              description="Get notified about matches and messages"
-              value={pushNotifications}
-              onValueChange={setPushNotifications}
-            />
-            <ToggleRow
-              label="Show Distance"
-              description="Display distance on your profile"
-              value={showDistance}
-              onValueChange={setShowDistance}
-            />
-            <ToggleRow
-              label="Show Age"
-              description="Display your age on your profile"
-              value={showAge}
-              onValueChange={setShowAge}
-            />
-            <ToggleRow
-              label="Auto Boost"
-              description="Automatically boost during peak hours"
-              value={autoBoost}
-              onValueChange={setAutoBoost}
-              showDivider={false}
-            />
-          </View>
-
-          {/* ── Spark Premium ── */}
-         <View style={{
-           backgroundColor: '#FFFFFF',
-           borderRadius: sr(12),
-           borderWidth: 1,
-           borderColor: '#E6E7E8',
-           shadowColor: '#000000',
-           shadowOpacity: 0.09,
-           shadowRadius: 11,
-           shadowOffset: { width: 0, height: 0 },
-           elevation: 4,
-           overflow: 'hidden', 
-           minHeight: sh(178),
-                 paddingVertical: sh(14),
-          paddingHorizontal: sw(16),
-          marginTop: sh(24),
-          marginBottom: sh(8),
-         }}>
-           <SectionTitle title="⚡ Spark Premium" style={{        marginTop: sh(0),
-        marginBottom: sh(0), }} />
+          <SectionTitle
+            title="⚡ Spark Premium"
+            style={{ marginTop: sh(0), marginBottom: sh(0) }}
+          />
           <Text
             style={{
-              fontFamily: 'Poppins-Regular',
+              fontFamily: "Poppins-Regular",
               fontSize: sf(16),
-              fontWeight: '400',
-              color: '#7D858E', 
+              fontWeight: "400",
+              color: "#7D858E",
               marginBottom: sh(14),
             }}
           >
@@ -273,48 +297,46 @@ const SettingsScreen = ({ navigation }: any) => {
           <PrimaryButton
             title="Upgrade to Premium"
             onPress={() => {}}
-            colors={['#1E78F5', '#FBB202']}
+            colors={["#1E78F5", "#FBB202"]}
             variant="gradient"
-            style={{ alignSelf: 'stretch' }}
-            textStyle={{fontSize: sf(16), fontWeight: '500'}}
+            style={{ alignSelf: "stretch" }}
+            textStyle={{ fontSize: sf(16), fontWeight: "500" }}
             height={sh(48)}
           />
-         </View>
+        </View>
 
-          {/* ── Support ── */}
-          <SectionTitle title="Support" />
-          <SettingRow label="Help Center" />
-          {/* <Divider /> */}
-          <SettingRow label="Safety Guidelines" />
-          {/* <Divider /> */}
-          <SettingRow label="Contact Us" />
+        {/* ── Support ── */}
+        <SectionTitle title="Support" />
+        <SettingRow label="Help Center" />
+        {/* <Divider /> */}
+        <SettingRow label="Safety Guidelines" />
+        {/* <Divider /> */}
+        <SettingRow label="Contact Us" />
 
-          {/* ── Buttons ── */}
-          <View style={{ marginTop: sh(24), gap: sh(12) }}>
-            <PrimaryButton
-              title="Logout" 
-              icon={<LogOut width={sf(24)} height={sf(24)} color="#FFFFFF" />}
-              iconPosition="middle"
-              onPress={() => {}}
-              colors={['#1E78F5']}
-              variant="solid"
-              style={{ alignSelf: 'stretch' }}
-              textStyle={{fontSize: sf(20), fontWeight: '500'}}
-            />
-            <PrimaryButton
-              title="Delete Account"
-                          icon={<Trash2 width={sf(24)} height={sf(24)} color="#FFFFFF" />}
-              iconPosition="middle"
- 
-              onPress={() => {}}
-              colors={['#FF073E']}
-              variant="solid"
-              style={{ alignSelf: 'stretch' }}
-              textStyle={{fontSize: sf(20), fontWeight: '500'}}
-            />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+        {/* ── Buttons ── */}
+        <View style={{ marginTop: sh(24), gap: sh(12) }}>
+          <PrimaryButton
+            title="Logout"
+            icon={<LogOut width={sf(24)} height={sf(24)} color="#FFFFFF" />}
+            iconPosition="middle"
+            onPress={() => {}}
+            colors={["#1E78F5"]}
+            variant="solid"
+            style={{ alignSelf: "stretch" }}
+            textStyle={{ fontSize: sf(20), fontWeight: "500" }}
+          />
+          <PrimaryButton
+            title="Delete Account"
+            icon={<Trash2 width={sf(24)} height={sf(24)} color="#FFFFFF" />}
+            iconPosition="middle"
+            onPress={() => {}}
+            colors={["#FF073E"]}
+            variant="solid"
+            style={{ alignSelf: "stretch" }}
+            textStyle={{ fontSize: sf(20), fontWeight: "500" }}
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 };

@@ -98,7 +98,7 @@ const WaitingScreen = ({ navigation }: any) => (
 );
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
   page: { flex: 1, paddingHorizontal: sw(20) },
   main: {
     flex: 1,

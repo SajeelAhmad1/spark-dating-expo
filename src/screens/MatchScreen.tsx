@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TouchableOpacity, SafeAreaView, useWindowDimensions, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, useWindowDimensions, StyleSheet } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { X } from 'lucide-react-native';
 import CameraScreen from './CameraScreen';
@@ -111,11 +111,11 @@ const MatchScreen = ({ navigation, route }: any) => {
     if (!capturedPhoto) return;
     const { status } = await MediaLibrary.requestPermissionsAsync();
     if (status !== 'granted') {
-      showToast('Please allow gallery permission', 'error');
+      showToast({ text1: 'Please allow gallery permission', type: 'error' });
       return;
     }
     await MediaLibrary.createAssetAsync(capturedPhoto);
-    showToast('Photo saved');
+    showToast({ text1: 'Photo saved' });
   };
 
   // Function to handle captured photo from camera
@@ -139,13 +139,13 @@ const MatchScreen = ({ navigation, route }: any) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FBB202' }}>
+    <View style={{ flex: 1, backgroundColor: '#FBB202', paddingBottom: sh(20) }}>
       <View
         style={{
           flex: 1,
           alignItems: 'center',
           paddingHorizontal: sw(24),
-          paddingTop: sh(28),
+          paddingTop: sh(40),
           paddingBottom: sh(24),
         }}
       >
@@ -206,7 +206,7 @@ const MatchScreen = ({ navigation, route }: any) => {
         </TouchableOpacity>
 
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

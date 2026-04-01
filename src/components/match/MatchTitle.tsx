@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  titleDark: { color: '#1C1C1E' },
+  titleDark: { color: '#1C1C1E', marginRight: sf(4) },
   circle: {
     width: MATCH_CIRCLE_SIZE,
     height: MATCH_CIRCLE_SIZE,

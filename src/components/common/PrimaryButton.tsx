@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: 'Poppins-Medium',
     fontWeight: '500',
-    fontSize: sf(16), 
+    fontSize: sf(16),
   },
   iconAbsoluteStart: {
     position: 'absolute',

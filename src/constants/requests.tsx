@@ -1,11 +1,11 @@
 export const REQUESTS = [
   { id: '1', name: 'Maria, 23', avatar: 'https://i.pravatar.cc/150?img=67' },
-  { id: '2', name: 'Janny, 25', avatar: 'https://i.pravatar.cc/150?img=85' },
+  { id: '2', name: 'Janny, 25', avatar: 'https://i.pravatar.cc/150?img=23' },
   { id: '3', name: 'Ava, 26', avatar: 'https://i.pravatar.cc/150?img=7' },
   { id: '4', name: 'Sophie, 33', avatar: 'https://i.pravatar.cc/150?img=23' },
   { id: '5', name: 'Leah, 19', avatar: 'https://i.pravatar.cc/150?img=33' },
   { id: '6', name: 'Adams, 25', avatar: 'https://i.pravatar.cc/150?img=53' },
-  { id: '7', name: 'Jay, 24', avatar: 'https://i.pravatar.cc/150?img=73' },
+  { id: '7', name: 'Jay, 24', avatar: 'https://i.pravatar.cc/150?img=29' },
   { id: '8', name: 'Sara, 20', avatar: 'https://i.pravatar.cc/150?img=35' },
   { id: '9', name: 'Mia, 18', avatar: 'https://i.pravatar.cc/150?img=51' },
   { id: '10', name: 'Lara, 33', avatar: 'https://i.pravatar.cc/150?img=50' },

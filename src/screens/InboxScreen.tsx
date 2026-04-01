@@ -70,7 +70,7 @@ export default function InboxScreen({ navigation, route }: any) {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) }}>
       {/* ── Nav Bar ── */}
       <View
         style={{

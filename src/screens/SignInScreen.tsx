@@ -117,7 +117,7 @@ export default function SignInScreen({
   const [activeTab, setActiveTab] = useState<AuthSigninTab>(initialTab);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+    <View style={{ flex: 1, backgroundColor: '#ffffff', paddingBottom: sh(20) }}>
       <View
         style={{
           flex: 1,

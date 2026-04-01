@@ -62,7 +62,7 @@ export default function App() {
         <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
           <NavigationContainer>
             <Stack.Navigator
-              initialRouteName="DiscoveryScreen"
+              initialRouteName="Onboarding1"
               screenOptions={{ headerShown: false }}
             >
               <Stack.Screen name="Onboarding1" component={OnboardingScreen1} />

@@ -1,2 +1,2 @@
-export const MATCH_CIRCLE_SIZE = 156;
+export const MATCH_CIRCLE_SIZE = 172;
 

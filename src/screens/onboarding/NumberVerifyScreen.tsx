@@ -78,7 +78,7 @@ const NumberVerifyScreen = ({ navigation }: any) => {
     clearTimer(); // ✅ clear any leftover interval before starting fresh
 
     setSecondsLeft(RESEND_COOLDOWN_SEC);
-    showToast('A new code has been sent');
+    showToast({ text1: 'A new code has been sent' });
 
     // ✅ Start interval — ticks every second, stops itself at 0
     intervalRef.current = setInterval(() => {

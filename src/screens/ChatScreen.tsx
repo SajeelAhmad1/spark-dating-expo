@@ -198,10 +198,10 @@ export default function ChatScreen({ navigation, route }: any) {
           paddingTop: sh(40),
           borderWidth: 0.4,
           borderColor: "#B6B9C9",
+          paddingBottom: sh(20)
         }}
       >
         <View style={{ flex: 1 }}>
-
           {/* ── Nav Bar ── */}
           <View
             style={{
@@ -337,34 +337,72 @@ export default function ChatScreen({ navigation, route }: any) {
 
             {/* ── Blur overlay ── */}
             {isLocked && (
-              <View style={StyleSheet.absoluteFill}>
-                <BlurView
-                  style={{
-                    ...StyleSheet.absoluteFill,
-                    backgroundColor: "rgba(251, 178, 2, 0.2)",
-                  }}
-                  intensity={100}
-                  tint="dark"
-                />
+              <View
+                style={{
+                  ...StyleSheet.absoluteFill,
+                  padding: 12,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {/* Rounded blur container */}
                 <View
                   style={{
-                    ...StyleSheet.absoluteFillObject,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 12,
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: 20,
+                    overflow: "hidden",
                   }}
                 >
-                  <Text style={{ fontSize: sf(40) }}>🔒</Text>
-                  <Text
+                  {/* Strong opaque base to block background bleed */}
+                  <View
                     style={{
-                      fontFamily: "Poppins-Medium",
-                      fontWeight: "500",
-                      fontSize: sf(32),
-                      color: "#000000",
+                      ...StyleSheet.absoluteFill,
+                      backgroundColor: "rgba(255, 243, 200, 0.55)",
+                    }}
+                  />
+
+                  {/* Stack two BlurViews for stronger blur */}
+                  <BlurView
+                    style={StyleSheet.absoluteFill}
+                    intensity={85}
+                    tint="light"
+                  />
+                  <BlurView
+                    style={StyleSheet.absoluteFill}
+                    intensity={85}
+                    tint="light"
+                  />
+
+                  {/* Warm yellow tint on top */}
+                  <View
+                    style={{
+                      ...StyleSheet.absoluteFill,
+                      backgroundColor: "rgba(251, 178, 2, 0.2)",
+                    }}
+                  />
+
+                  {/* Lock icon + label */}
+                  <View
+                    style={{
+                      ...StyleSheet.absoluteFillObject,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 12,
                     }}
                   >
-                    Chat Locked
-                  </Text>
+                    <Text style={{ fontSize: sf(40) }}>🔒</Text>
+                    <Text
+                      style={{
+                        fontFamily: "Poppins-Medium",
+                        fontWeight: "500",
+                        fontSize: sf(32),
+                        color: "#000000",
+                      }}
+                    >
+                      Chat Locked
+                    </Text>
+                  </View>
                 </View>
               </View>
             )}
@@ -378,7 +416,7 @@ export default function ChatScreen({ navigation, route }: any) {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 10,
+                gap: 6,
                 backgroundColor: "rgba(251, 178, 2, 0.6)",
                 marginHorizontal: sw(16),
                 marginBottom: sh(16),
@@ -389,7 +427,8 @@ export default function ChatScreen({ navigation, route }: any) {
                 paddingHorizontal: sw(20),
               }}
             >
-              <Text style={{ fontSize: sf(20) }}>🔓</Text>
+              <CameraIcon width={40} height={40} />
+
               <Text
                 style={{
                   fontWeight: "500",

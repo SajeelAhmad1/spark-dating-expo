@@ -10,7 +10,7 @@ import { sf, sr, sw, sh } from '@/utils/responsive';
 
 export default function SignUpScreen({ navigation }: any) {
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingBottom: sh(20) }}>
       <LinearGradient
         colors={['#1E78F5', '#FBB202']}
         start={{ x: 0, y: 0 }}

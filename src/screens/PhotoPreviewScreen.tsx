@@ -7,7 +7,7 @@ import {
   Modal,
   StyleSheet,
 } from 'react-native';
-import { X, Download } from 'lucide-react-native';
+import { X, Download, Send } from 'lucide-react-native';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sr, sw, sh } from '@/utils/responsive';
 
@@ -35,7 +35,7 @@ export default function PhotoPreviewScreen({
       statusBarTranslucent
       transparent={false}
     >
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
+      <View style={{ flex: 1 }}>
         {/* Fullscreen photo background */}
         {photoUri && (
           <Image
@@ -89,9 +89,10 @@ export default function PhotoPreviewScreen({
             justifyContent: 'center',
             gap: sw(20),
             paddingHorizontal: sw(20),
-            paddingBottom: sh(40),
+            paddingBottom: sh(20),
             paddingTop: sh(20),
             zIndex: 10,
+            backgroundColor: 'rgba(251, 178, 2, 0.2)',
           }}
         >
           {/* Download Button with Yellow Background */}
@@ -119,11 +120,12 @@ export default function PhotoPreviewScreen({
               variant="gradient"
               style={{ alignSelf: 'stretch' }}
               iconPosition="end"
+              // icon={<Send size={sf(20)} color="#FFFFFF" />}
               disabled={isSending}
             />
           </View>
         </View>
-      </SafeAreaView>
+      </View>
     </Modal>
   );
 }

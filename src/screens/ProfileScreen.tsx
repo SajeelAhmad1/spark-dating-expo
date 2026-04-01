@@ -1,49 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   TouchableOpacity,
   ScrollView,
-  Image, 
+  Image,
   StyleSheet,
-} from 'react-native';
-import { Text } from '@/components/common/Text';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+} from "react-native";
+import { Text } from "@/components/common/Text";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   Settings,
   Edit2,
   Bell,
   MapPin,
   ChevronRight,
-} from 'lucide-react-native';
-import BottomTabBar from '@/components/common/BottomTabBar';
-import { sf, sr, sw, sh } from '@/utils/responsive'; 
+  Venus,
+} from "lucide-react-native";
+import BottomTabBar from "@/components/common/BottomTabBar";
+import { sf, sr, sw, sh } from "@/utils/responsive";
 
 // ── Profile Screen ─────────────────────────────────────────
-const ProfileScreen = () => { 
-  const [premiumUnlocked, setPremiumUnlocked] = useState(false); 
+const ProfileScreen = ({ navigation }: any) => {
+  const [premiumUnlocked, setPremiumUnlocked] = useState(false);
 
   return (
     <View style={styles.flex1}>
       {/* ── Full Screen Background Gradient ── */}
       <LinearGradient
-        colors={['#1E78F5', '#FBB202']}
+        colors={["#1E78F5", "#FBB202"]}
         start={{ x: 0, y: -0.1 }}
         end={{ x: 2, y: 0.7 }}
-        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-      /> 
+        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+      />
 
       <View style={styles.flex1}>
         {/* ── Header ── */}
         <LinearGradient
-          colors={['#1E78F5', '#FBB202']}
+          colors={["#1E78F5", "#FBB202"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 9 }}
           style={{
             borderBottomWidth: 1,
             borderTopWidth: 0,
-            borderBottomColor: 'rgba(255,255,255,0.2)',
-            shadowColor: '#000000',
+            borderBottomColor: "rgba(255,255,255,0.2)",
+            shadowColor: "#000000",
             shadowOpacity: 0.032,
             shadowRadius: 7,
             shadowOffset: { width: 0, height: 2 },
@@ -52,9 +53,9 @@ const ProfileScreen = () => {
         >
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
               paddingHorizontal: sw(20),
               paddingTop: sh(12),
               marginTop: sh(60),
@@ -62,16 +63,17 @@ const ProfileScreen = () => {
             }}
           >
             {/* Left: Edit Icon */}
-            <View style={{ width: sf(36), alignItems: 'flex-start' }}>
+            <View style={{ width: sf(36), alignItems: "flex-start" }}>
               <TouchableOpacity
+                onPress={() => navigation.navigate("EditProfileScreen")}
                 style={{
                   width: sf(36),
                   height: sf(36),
                   borderRadius: sr(92),
-                  backgroundColor: '#FBB20233',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderColor: '#FFFFFF',
+                  backgroundColor: "#FBB20233",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderColor: "#FFFFFF",
                   borderWidth: 1,
                 }}
               >
@@ -80,25 +82,26 @@ const ProfileScreen = () => {
             </View>
 
             {/* Center: Profile Text */}
-            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ alignItems: "center", justifyContent: "center" }}>
               <Text
-                style={{ color: '#FFF', fontSize: sf(20), fontWeight: '600' }}
+                style={{ color: "#FFF", fontSize: sf(20), fontWeight: "600" }}
               >
                 Profile
               </Text>
             </View>
 
             {/* Right: Settings Icon */}
-            <View style={{ width: sf(36), alignItems: 'flex-end' }}>
+            <View style={{ width: sf(36), alignItems: "flex-end" }}>
               <TouchableOpacity
+                onPress={() => navigation.navigate("SettingsScreen")}
                 style={{
                   width: sf(36),
                   height: sf(36),
                   borderRadius: sr(92),
-                  backgroundColor: 'background: rgba(251, 178, 2, 0.2)',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderColor: '#FFFFFF',
+                  backgroundColor: "background: rgba(251, 178, 2, 0.2)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderColor: "#FFFFFF",
                   borderWidth: 1,
                 }}
               >
@@ -118,12 +121,12 @@ const ProfileScreen = () => {
             style={{
               marginHorizontal: sw(12),
               marginTop: sh(16),
-              borderRadius: sr(16), 
-              overflow: 'hidden',
+              borderRadius: sr(16),
+              overflow: "hidden",
               height: sh(535),
               borderWidth: 1,
-              borderColor: '#FFFFFF',
-              shadowColor: '#000000',
+              borderColor: "#FFFFFF",
+              shadowColor: "#000000",
               shadowOpacity: 0.15,
               shadowRadius: 25,
               shadowOffset: { width: 0, height: 0 },
@@ -132,73 +135,81 @@ const ProfileScreen = () => {
           >
             <Image
               source={{
-                uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80',
+                uri: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80",
               }}
-              style={{ width: '100%', height: '100%' }}
+              style={{ width: "100%", height: "100%" }}
               resizeMode="cover"
             />
 
             {/* ── Name/Location Banner ── */}
             <View
               style={{
-                position: 'absolute',
+                position: "absolute",
                 bottom: 10,
                 left: 10,
                 right: 10,
-                height: sh(70),
-                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                height: 70,
+                backgroundColor: "rgba(0, 0, 0, 0.3)",
                 paddingHorizontal: sw(16),
-                borderColor: '#FFFFFF',
+                borderColor: "#FFFFFF",
                 borderRadius: sr(12),
-                flexDirection: 'column', 
-                  justifyContent: 'center', 
+                flexDirection: "column",
+                justifyContent: "center",
               }}
             >
               <Text
                 style={{
-                  fontFamily: 'Poppins-SemiBold',
-                  fontSize: sf(20), 
-                  color: '#FFFFFF', 
+                  fontFamily: "Poppins-SemiBold",
+                  fontSize: sf(20),
+                  color: "#FFFFFF",
                 }}
               >
                 Paul W (27)
               </Text>
               <View
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
                 {/* Location */}
                 <View
                   style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    alignItems: "center",
                     gap: sw(4),
                   }}
                 >
                   <MapPin size={sf(14)} color="#FFFFFF" />
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
-                      fontSize: sf(16), 
-                      color: '#FFFFFF', 
+                      fontFamily: "Poppins-Regular",
+                      fontSize: sf(16),
+                      color: "#FFFFFF",
                     }}
                   >
                     New York, USA
                   </Text>
                 </View>
                 {/* Gender */}
+                <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 4
+                }}
+                >
+                  <Venus size={sf(16)} color="#FFFFFF" />
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Regular',
-                    fontSize: sf(16), 
-                    color: '#FFFFFF', 
+                    fontSize: sf(16),
+                    color: "#FFFFFF",
                   }}
                 >
-                  Men
+                  Woman
                 </Text>
+                </View>
               </View>
             </View>
           </View>
@@ -206,15 +217,15 @@ const ProfileScreen = () => {
           {/* ── Two Small Images ── */}
           <View
             style={{
-              flexDirection: 'row',
+              flexDirection: "row",
               gap: sw(10),
               marginHorizontal: sw(12),
               marginTop: sh(10),
             }}
           >
             {[
-              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80',
-              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80',
+              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80",
+              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80",
             ].map((uri, i) => (
               <View
                 key={i}
@@ -222,10 +233,10 @@ const ProfileScreen = () => {
                   flex: 1,
                   height: sh(220),
                   borderRadius: sr(14),
-                  overflow: 'hidden',
-                  shadowColor: '#000000',
+                  overflow: "hidden",
+                  shadowColor: "#000000",
                   borderWidth: 1,
-                  borderColor: '#FFFFFF',
+                  borderColor: "#FFFFFF",
                   shadowOpacity: 0.15,
                   shadowRadius: 25,
                   shadowOffset: { width: 0, height: 0 },
@@ -234,7 +245,7 @@ const ProfileScreen = () => {
               >
                 <Image
                   source={{ uri }}
-                  style={{ width: '100%', height: '100%' }}
+                  style={{ width: "100%", height: "100%" }}
                   resizeMode="cover"
                 />
               </View>
@@ -246,14 +257,13 @@ const ProfileScreen = () => {
             style={{ marginHorizontal: sw(12), marginTop: sh(20), gap: sh(18) }}
           >
             {/* ── Invite Friends Card ── */}
-            {/* ── Invite Friends Card ── */}
             <View
               style={{
-                backgroundColor: '#FFFFFF',
+                backgroundColor: "#FFFFFF",
                 borderRadius: sr(12),
                 paddingHorizontal: sw(16),
                 // paddingVertical: sh(20),
-                shadowColor: '#000000',
+                shadowColor: "#000000",
                 shadowOpacity: 0.09,
                 shadowRadius: 25,
                 shadowOffset: { width: 0, height: 0 },
@@ -264,16 +274,16 @@ const ProfileScreen = () => {
                 // ── Premium Unlocked State ──
                 <View
                   style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    minHeight: sh(79),
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    minHeight: 79,
                   }}
                 >
                   <View
                     style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
+                      flexDirection: "row",
+                      alignItems: "center",
                       gap: sw(16),
                       flex: 1,
                     }}
@@ -284,11 +294,11 @@ const ProfileScreen = () => {
                         width: sf(40),
                         height: sf(40),
                         borderRadius: sr(92),
-                        backgroundColor: '#FBB20233',
+                        backgroundColor: "#FBB20233",
                         borderWidth: 0.4,
-                        borderColor: '#DC9B00',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        borderColor: "#DC9B00",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
                       <Text style={{ fontSize: sf(20) }}>👑</Text>
@@ -297,18 +307,18 @@ const ProfileScreen = () => {
                     <View style={{ flex: 1 }}>
                       <Text
                         style={{
-                          fontFamily: 'Poppins-SemiBold',
-                          fontSize: sf(15), 
-                          color: '#000000', 
+                          fontFamily: "Poppins-SemiBold",
+                          fontSize: sf(15),
+                          color: "#000000",
                         }}
                       >
                         Premium Unlocked! ⭐
                       </Text>
                       <Text
                         style={{
-                          fontFamily: 'Poppins-Regular',
-                          fontSize: sf(13), 
-                          color: '#555555',
+                          fontFamily: "Poppins-Regular",
+                          fontSize: sf(13),
+                          color: "#555555",
                           // marginTop: sh(8),
                         }}
                       >
@@ -324,16 +334,16 @@ const ProfileScreen = () => {
                       height: sf(32),
                       borderRadius: sr(92),
                       borderWidth: 2,
-                      borderColor: '#22C55E',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      borderColor: "#22C55E",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
                     <Text
                       style={{
-                        color: '#22C55E',
+                        color: "#22C55E",
                         fontSize: sf(16),
-                        fontWeight: '700',
+                        fontWeight: "700",
                       }}
                     >
                       ✓
@@ -342,24 +352,27 @@ const ProfileScreen = () => {
                 </View>
               ) : (
                 // ── Default State ──
-                <TouchableOpacity onPress={() => setPremiumUnlocked(true)} activeOpacity={0.8} 
-                style={{ minHeight: sh(106),
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                       gap: sh(14)
-                      }}>
+                <TouchableOpacity
+                  onPress={() => setPremiumUnlocked(true)}
+                  activeOpacity={0.8}
+                  style={{
+                    minHeight: 106,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: sh(14),
+                  }}
+                >
                   <View
                     style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                     
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
                     }}
                   >
                     <View
                       style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
+                        flexDirection: "row",
+                        alignItems: "center",
                         gap: sw(20),
                         flex: 1,
                       }}
@@ -369,11 +382,11 @@ const ProfileScreen = () => {
                           width: sw(40),
                           height: sh(40),
                           borderRadius: sr(92),
-                          backgroundColor: '#FBB20233',
+                          backgroundColor: "#FBB20233",
                           borderWidth: 0.4,
-                          borderColor: '#DC9B00',
-                          alignItems: 'center',
-                          justifyContent: 'center',
+                          borderColor: "#DC9B00",
+                          alignItems: "center",
+                          justifyContent: "center",
                         }}
                       >
                         <Bell
@@ -388,18 +401,18 @@ const ProfileScreen = () => {
                       <View style={{ flex: 1 }}>
                         <Text
                           style={{
-                            fontFamily: 'Poppins-SemiBold',
-                            fontSize: sf(15), 
-                            color: '#000000', 
+                            fontFamily: "Poppins-SemiBold",
+                            fontSize: sf(15),
+                            color: "#000000",
                           }}
                         >
                           Invite Friends, Get Premium Free!
                         </Text>
                         <Text
                           style={{
-                            fontFamily: 'Poppins-Regular',
-                            fontSize: sf(13), 
-                            color: '#555555',
+                            fontFamily: "Poppins-Regular",
+                            fontSize: sf(13),
+                            color: "#555555",
                             // marginTop: sh(8),
                           }}
                         >
@@ -414,25 +427,25 @@ const ProfileScreen = () => {
                   <View
                     style={{
                       // marginTop: sh(10),
-                      flexDirection: 'row',
+                      flexDirection: "row",
                       gap: sw(6),
-                      justifyContent: 'space-between',
+                      justifyContent: "space-between",
                     }}
                   >
                     <View
                       style={{
                         height: sh(10),
-                        backgroundColor: '#EDEDED',
+                        backgroundColor: "#EDEDED",
                         borderRadius: sr(99),
-                        width: '49%',
+                        width: "49%",
                       }}
                     />
                     <View
                       style={{
                         height: sh(10),
-                        backgroundColor: '#EDEDED',
+                        backgroundColor: "#EDEDED",
                         borderRadius: sr(99),
-                        width: '49%',
+                        width: "49%",
                       }}
                     />
                   </View>
@@ -443,43 +456,43 @@ const ProfileScreen = () => {
             {/* ── Stats Card ── */}
             <View
               style={{
-                backgroundColor: '#FFFFFF',
+                backgroundColor: "#FFFFFF",
                 borderRadius: sr(12),
                 paddingHorizontal: sw(2),
-                // paddingVertical: sh(28), 
+                // paddingVertical: sh(28),
                 height: sh(94),
-                shadowColor: '#000000',
+                shadowColor: "#000000",
                 shadowOpacity: 0.09,
                 shadowRadius: 25,
                 shadowOffset: { width: 0, height: 0 },
                 elevation: 5,
-                flexDirection: 'row',
-                alignItems: 'center',
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
               {[
-                { value: '50', label: 'Matches' },
-                { value: '200', label: 'Photos Sent' },
-                { value: '17', label: 'Day Streak' },
+                { value: "50", label: "Matches" },
+                { value: "200", label: "Photos Sent" },
+                { value: "17", label: "Day Streak" },
               ].map((stat, i) => (
                 <React.Fragment key={i}>
-                  <View style={{ flex: 1, alignItems: 'center' }}>
+                  <View style={{ flex: 1, alignItems: "center" }}>
                     <Text
                       style={{
-                        fontFamily: 'Poppins-SemiBold',
-                        fontSize: sf(20), 
-                        color: '#FBB202', 
-                        textAlign: 'center',
+                        fontFamily: "Poppins-SemiBold",
+                        fontSize: sf(20),
+                        color: "#FBB202",
+                        textAlign: "center",
                       }}
                     >
                       {stat.value}
                     </Text>
                     <Text
                       style={{
-                        fontFamily: 'Poppins-Regular',
-                        fontSize: sf(13), 
-                        color: '#555555', 
-                        textAlign: 'center',
+                        fontFamily: "Poppins-Regular",
+                        fontSize: sf(13),
+                        color: "#555555",
+                        textAlign: "center",
                       }}
                     >
                       {stat.label}
@@ -501,15 +514,14 @@ const ProfileScreen = () => {
             {/* ── Bio Card ── */}
             <View
               style={{
-                backgroundColor: '#FFFFFF',
+                backgroundColor: "#FFFFFF",
                 borderRadius: sr(12),
                 paddingHorizontal: sw(16),
-                // paddingVertical: sh(20),
-                height: sh(139),
-                flexDirection: 'column',
-                justifyContent: 'center',
+                height: 139,
+                flexDirection: "column",
+                justifyContent: "center",
                 // gap: sh(12),
-                shadowColor: '#000000',
+                shadowColor: "#000000",
                 shadowOpacity: 0.09,
                 shadowRadius: 25,
                 shadowOffset: { width: 0, height: 0 },
@@ -518,19 +530,18 @@ const ProfileScreen = () => {
             >
               <Text
                 style={{
-                  fontFamily: 'Poppins-SemiBold',
-                  fontSize: sf(18), 
-                  color: '#000000', 
-                  marginBottom: sh(8),
+                  fontFamily: "Poppins-SemiBold",
+                  fontSize: sf(18),
+                  color: "#000000",
                 }}
               >
                 Bio
               </Text>
               <Text
                 style={{
-                  fontFamily: 'Poppins-Regular',
+                  fontFamily: "Poppins-Regular",
                   fontSize: sf(16),
-                  color: '#7D858E', 
+                  color: "#7D858E",
                 }}
               >
                 Adventure lover & coffee enthusiast. Always looking for the next
@@ -541,13 +552,13 @@ const ProfileScreen = () => {
             {/* ── Interests Card ── */}
             <View
               style={{
-                backgroundColor: '#FFFFFF',
+                backgroundColor: "#FFFFFF",
                 borderRadius: sr(12),
                 paddingHorizontal: sw(16),
                 // paddingVertical: sh(20),
-                minHeight: sh(152),
-                justifyContent: 'center',
-                shadowColor: '#000000',
+                minHeight: 152,
+                justifyContent: "center",
+                shadowColor: "#000000",
                 shadowOpacity: 0.09,
                 shadowRadius: 25,
                 shadowOffset: { width: 0, height: 0 },
@@ -556,35 +567,34 @@ const ProfileScreen = () => {
             >
               <Text
                 style={{
-                  fontFamily: 'Poppins-SemiBold',
-                  fontSize: sf(18), 
-                  color: '#000000', 
+                  fontFamily: "Poppins-SemiBold",
+                  fontSize: sf(18),
+                  color: "#000000",
                   marginBottom: sh(12),
                 }}
               >
                 Interests
               </Text>
               <View
-                style={{ flexDirection: 'row', flexWrap: 'wrap', gap: sw(8) }}
+                style={{ flexDirection: "row", flexWrap: "wrap", gap: sw(10) }}
               >
-                {['✈️ Travel', '🎵 Music', '☕ Coffee', '📷 Photography'].map(
+                {["✈️ Travel", "🎵 Music", "☕ Coffee", "📷 Photography"].map(
                   (interest, i) => (
                     <View
                       key={i}
                       style={{
-                        backgroundColor: '#FBB202',
+                        backgroundColor: "#FBB202",
                         borderRadius: sr(20),
                         paddingHorizontal: sw(14),
-                        // paddingVertical: sh(8),
-                        height: sh(36),
-                        justifyContent: 'center', 
+                        height: 36,
+                        justifyContent: "center",
                       }}
                     >
                       <Text
                         style={{
-                          fontFamily: 'Poppins-Regular',
-                          fontSize: sf(16), 
-                          color: '#000000', 
+                          fontFamily: "Poppins-Regular",
+                          fontSize: sf(16),
+                          color: "#000000",
                         }}
                       >
                         {interest}
@@ -598,13 +608,13 @@ const ProfileScreen = () => {
             {/* ── Details Card ── */}
             <View
               style={{
-                backgroundColor: '#FFFFFF',
+                backgroundColor: "#FFFFFF",
                 borderRadius: sr(12),
                 paddingHorizontal: sw(16),
                 // paddingVertical: sh(20),
-                minHeight: sh(163),
-                justifyContent: 'center',
-                shadowColor: '#000000',
+                minHeight: 163,
+                justifyContent: "center",
+                shadowColor: "#000000",
                 shadowOpacity: 0.09,
                 shadowRadius: 25,
                 shadowOffset: { width: 0, height: 0 },
@@ -614,9 +624,9 @@ const ProfileScreen = () => {
             >
               <Text
                 style={{
-                  fontFamily: 'Poppins-SemiBold',
-                  fontSize: sf(18), 
-                  color: '#000000', 
+                  fontFamily: "Poppins-SemiBold",
+                  fontSize: sf(18),
+                  color: "#000000",
                   marginBottom: sh(1),
                 }}
               >
@@ -624,35 +634,35 @@ const ProfileScreen = () => {
               </Text>
 
               {[
-                { label: 'Height', value: '5\' 10"' },
-                { label: 'Body Type', value: 'Slim' },
-                { label: 'Ethnicity', value: 'White' },
+                { label: "Height", value: "5' 10\"" },
+                { label: "Body Type", value: "Slim" },
+                { label: "Ethnicity", value: "White" },
               ].map((detail, i) => (
                 <React.Fragment key={i}>
                   <View
                     style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+
                       paddingVertical: sh(1),
                     }}
                   >
                     <Text
                       style={{
-                        fontFamily: 'Poppins-Regular',
-                        fontSize: sf(13), 
-                        color: '#555555', 
+                        fontFamily: "Poppins-Regular",
+                        fontSize: sf(13),
+                        color: "#555555",
                       }}
                     >
                       {detail.label}
                     </Text>
                     <Text
                       style={{
-                        fontFamily: 'Poppins-Medium',
-                        fontSize: sf(16), 
-                        color: '#000000', 
-                        textAlign: 'right',
+                        fontFamily: "Poppins-Medium",
+                        fontSize: sf(16),
+                        color: "#000000",
+                        textAlign: "right",
                       }}
                     >
                       {detail.value}
@@ -680,7 +690,7 @@ const ProfileScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  flex1: { flex: 1 },
+  flex1: { flex: 1, paddingBottom: sh(20) },
 });
 
 export default ProfileScreen;

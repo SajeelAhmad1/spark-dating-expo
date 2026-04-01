@@ -124,7 +124,7 @@ const InterestsScreen = ({ navigation }: any) => {
         position: 'absolute',
         bottom: 0, left: 0, right: 0,
         paddingHorizontal: sw(24),
-        // paddingBottom: sh(32),
+        paddingBottom: sh(20),
         paddingTop: sh(8),
         backgroundColor: '#fff',
         alignItems: 'center',
@@ -164,7 +164,7 @@ const InterestsScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(32) },
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(40) },
   scroll: { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16), marginTop: sh(60) },
 });
 

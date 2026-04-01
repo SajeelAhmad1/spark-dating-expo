@@ -222,7 +222,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           // left: 0,
           // right: 0,
           paddingHorizontal: hPad,
-          // paddingBottom: sh(32),
+          paddingBottom: sh(20),
           backgroundColor: '#fff',
         }}
       >
