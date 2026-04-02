@@ -7,7 +7,7 @@ import MatchTitle from '@/components/match/MatchTitle';
 import PhotoStack from '@/components/match/PhotoStack';
 import MessageInputBar from '@/components/match/MessageInputBar';
 import { calculateMatchPhotoLayout } from '@/utils/match';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { MATCHES } from '@/constants/matches';
 import { useZodForm } from '@/utils/form';
 import { matchCaptionFormSchema } from '@/schemas/messaging';

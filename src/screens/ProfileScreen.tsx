@@ -18,7 +18,7 @@ import {
   Venus,
 } from "lucide-react-native";
 import BottomTabBar from "@/components/common/BottomTabBar";
-import { sf, sr, sw, sh } from "@/utils/responsive";
+import { sf, sr, sw, sh } from "@/utils/sizeMatters";
 
 // ── Profile Screen ─────────────────────────────────────────
 const ProfileScreen = ({ navigation }: any) => {

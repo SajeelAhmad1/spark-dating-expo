@@ -5,7 +5,19 @@ export type MatchProfile = {
   age: number;
   bio: string;
   image: string;
+  images: string[];
 };
+
+const makeUserImages = (seed: string) =>
+  Array.from({ length: 7 }, (_, i) => `https://picsum.photos/seed/${seed}-${i}/600/900`);
+
+const USER_IMAGES_1 = makeUserImages("1");
+const USER_IMAGES_2 = makeUserImages("2");
+const USER_IMAGES_3 = makeUserImages("3");
+const USER_IMAGES_4 = makeUserImages("4");
+const USER_IMAGES_5 = makeUserImages("5");
+const USER_IMAGES_6 = makeUserImages("6");
+const USER_IMAGES_7 = makeUserImages("7");
 
 export const MATCHES: MatchProfile[] = [
   {
@@ -13,55 +25,55 @@ export const MATCHES: MatchProfile[] = [
     name: 'Emma',
     age: 25,
     bio: 'Coffee lover ☕ | Travel enthusiast ✈️',
-    image:
-      'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&q=80',
+    images: USER_IMAGES_1,
+    image: USER_IMAGES_1[0],
   },
   {
     id: '2',
     name: 'Sophia',
     age: 23,
     bio: 'Bookworm 📚 | Hiking addict 🏔️',
-    image:
-      'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80',
+    images: USER_IMAGES_2,
+    image: USER_IMAGES_2[0],
   },
   {
     id: '3',
     name: 'Olivia',
     age: 27,
     bio: 'Yoga & good vibes 🧘 | Dog mom 🐶',
-    image:
-      'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80',
+    images: USER_IMAGES_3,
+    image: USER_IMAGES_3[0],
   },
   {
     id: '4',
     name: 'Isabella',
     age: 24,
     bio: 'Chef in training 🍳 | Jazz lover 🎷',
-    image:
-      'https://images.unsplash.com/photo-1488716820095-cbe80883c496?w=600&q=80',
+    images: USER_IMAGES_4,
+    image: USER_IMAGES_4[0],
   },
   {
     id: '5',
     name: 'Mia',
     age: 26,
     bio: 'Art & design 🎨 | Cinema obsessed 🎬',
-    image:
-      'https://images.unsplash.com/photo-1502767089025-6572583495b9?w=600&q=80',
+    images: USER_IMAGES_5,
+    image: USER_IMAGES_5[0],
   },
   {
     id: '6',
     name: 'Ava',
     age: 22,
     bio: 'Surfer girl 🏄 | Sunset chaser 🌅',
-    image:
-      'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&q=80',
+    images: USER_IMAGES_6,
+    image: USER_IMAGES_6[0],
   },
   {
     id: '7',
     name: 'Luna',
     age: 28,
     bio: 'Photographer 📷 | City explorer 🗺️',
-    image:
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80',
+    images: USER_IMAGES_7,
+    image: USER_IMAGES_7[0],
   },
 ];

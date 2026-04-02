@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import { Eye, EyeOff } from "lucide-react-native";
-import { sf, sh, sw } from "@/utils/responsive";
+import { sf, sh, sw } from "@/utils/sizeMatters";
 import { Text } from "../common/Text";
 import { FieldError } from "@/components/common/FieldError";
 

@@ -21,7 +21,7 @@ import {
   Flag,
   UserRoundX,
 } from 'lucide-react-native';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import DiscoveryMatchCard from '@/components/discovery/DiscoveryMatchCard';
 import DiscoveryActions from '@/components/discovery/DiscoveryActions';
 import { ViewStyle } from 'react-native';
@@ -189,12 +189,12 @@ const UserProfileScreen = ({ navigation, route }: any) => {
             </View>
           </View>
           <DiscoveryMatchCard
-            item={{ ...user, image: user.images[0] }}
+            item={{ ...user, image: user.images[0], images: user.images, bio: user.bio }}
             cardWidth={CARD_WIDTH}
             cardHeight={CARD_HEIGHT}
             btnOverlap={BTN_OVERLAP}
-            total={1}
-            currentIndex={0}
+            photoTotal={user.images.length}
+            photoIndex={0}
             showProgressDots={false}
           />
           <DiscoveryActions

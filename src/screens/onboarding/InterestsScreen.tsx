@@ -5,7 +5,7 @@ import { ChevronLeft } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { FieldError } from '@/components/common/FieldError';
-import { sf, sw, sh } from '@/utils/responsive';
+import { sf, sw, sh } from '@/utils/sizeMatters';
 import { interestsSelectionSchema } from '@/schemas/onboarding';
 
 const INTERESTS = [

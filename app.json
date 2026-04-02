@@ -6,11 +6,12 @@
     "orientation": "portrait",
     "platforms": [
       "ios",
-      "android"
+      "android",
+      "web"
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.yourcompany.sparkdating",
+      "bundleIdentifier": "com.sparkdating.app",
       "infoPlist": {
         "NSCameraUsageDescription": "We need camera access to take photos.",
         "NSLocationWhenInUseUsageDescription": "We need your location.",
@@ -19,12 +20,17 @@
       }
     },
     "android": {
-      "package": "com.yourcompany.sparkdating",
+      "package": "com.sparkdating.app",
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.INTERNET",
         "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE"
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO"
       ]
     },
     "plugins": [
@@ -34,8 +40,8 @@
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 35
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36
           }
         }
       ],
@@ -48,6 +54,11 @@
         }
       ],
       "expo-video"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "5964fbfc-515b-4d82-b4f8-1a3ad7bb0eb1"
+      }
+    }
   }
 }

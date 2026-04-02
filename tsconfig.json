@@ -6,12 +6,16 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@env": [
+        "src/env.ts"
       ]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    ".expo/types/**/*.d.ts"
+    ".expo/types/**/*.d.ts",
+    "nativewind-env.d.ts"
   ]
 }

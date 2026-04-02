@@ -10,7 +10,7 @@ import { ChevronLeft } from "lucide-react-native";
 import { REQUESTS } from "@/constants/requests";
 import RequestCard from "@/components/requests/RequestCard";
 import BottomTabBar from "@/components/common/BottomTabBar"; 
-import { sf, sh, sw } from "@/utils/responsive";
+import { sf, sh, sw } from "@/utils/sizeMatters";
 
 export default function RequestsScreen({navigation}:any) {
  

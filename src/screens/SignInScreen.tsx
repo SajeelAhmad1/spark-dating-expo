@@ -11,7 +11,7 @@ import RememberMeToggle from '@/components/auth/RememberMeToggle';
 import SignInBottomActions from '@/components/auth/SignInBottomActions';
 import { useZodForm } from '@/utils/form';
 import { createSignInSchema } from '@/schemas/auth';
-import { sf, sw, sh } from '@/utils/responsive';
+import { sf, sw, sh } from '@/utils/sizeMatters';
 
 function SignInFormBody({
   tab,

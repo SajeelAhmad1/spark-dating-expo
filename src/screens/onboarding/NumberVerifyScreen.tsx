@@ -4,7 +4,7 @@ import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sw, sh, sr } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { otpFormSchema } from '@/schemas/onboarding';
 import { showToast } from '@/utils/toast';

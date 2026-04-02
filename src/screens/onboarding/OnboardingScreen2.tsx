@@ -1,10 +1,10 @@
-import React from 'react';
-import { View, useWindowDimensions, Image } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Easing, Image, View, useWindowDimensions } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import OnboardingCard from './OnboardingCard';
 import CameraIcon from '@/assets/images/cameraIcon.svg';
-import { sf, sw, sh } from '@/utils/responsive';
+import { sf, sw, sh } from '@/utils/sizeMatters';
 
 export default function Onboarding2({ navigation }: any) {
   const { width, height } = useWindowDimensions();
@@ -12,6 +12,78 @@ export default function Onboarding2({ navigation }: any) {
   const imgWidth = Math.round(width * 0.55);
   const imgHeight = Math.round(imgWidth * 2);
   const illustrationHeight = height * 0.58;
+
+  const upperEntrance = useRef(new Animated.Value(0)).current;
+  const lowerEntrance = useRef(new Animated.Value(0)).current;
+  const cameraEntrance = useRef(new Animated.Value(0)).current;
+  const cameraPulse = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(upperEntrance, {
+        toValue: 1,
+        duration: 700,
+        delay: 120,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(lowerEntrance, {
+        toValue: 1,
+        duration: 700,
+        delay: 220,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(cameraEntrance, {
+        toValue: 1,
+        duration: 650,
+        delay: 160,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(cameraPulse, {
+          toValue: 1,
+          duration: 900,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(cameraPulse, {
+          toValue: 0,
+          duration: 900,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    loop.start();
+
+    return () => loop.stop();
+  }, [upperEntrance, lowerEntrance, cameraEntrance, cameraPulse]);
+
+  const upperOpacity = upperEntrance.interpolate({ inputRange: [0, 1], outputRange: [0, 1] });
+  const upperTranslateY = upperEntrance.interpolate({
+    inputRange: [0, 1],
+    outputRange: [18, 0],
+  });
+  const lowerOpacity = lowerEntrance.interpolate({ inputRange: [0, 1], outputRange: [0, 1] });
+  const lowerTranslateY = lowerEntrance.interpolate({
+    inputRange: [0, 1],
+    outputRange: [14, 0],
+  });
+
+  const cameraOpacity = cameraEntrance.interpolate({ inputRange: [0, 1], outputRange: [0, 1] });
+  const cameraScaleEntrance = cameraEntrance.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.92, 1],
+  });
+  const cameraScalePulse = cameraPulse.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.05],
+  });
 
   return (
     <View
@@ -28,18 +100,20 @@ export default function Onboarding2({ navigation }: any) {
           overflow: 'hidden',
         }}
       >
-        <View
+        <Animated.View
           style={{
             position: 'absolute',
             left: -(imgWidth * 0.01),
             top: illustrationHeight * 0.6 - imgHeight * 0.65,
+            opacity: upperOpacity,
+            transform: [{ translateY: upperTranslateY }],
           }}
         >
           <Image
             source={require('@/assets/images/streakImage1.png')}
             style={{ width: imgWidth, height: imgHeight }}
           />
-        </View>
+        </Animated.View>
 
         {/* 🔥 upper */}
         <Text
@@ -55,7 +129,7 @@ export default function Onboarding2({ navigation }: any) {
         </Text>
 
         {/* Camera icon */}
-        <View
+        <Animated.View
           style={{
             position: 'absolute',
             top: illustrationHeight * 0.5 - sh(20),
@@ -72,10 +146,12 @@ export default function Onboarding2({ navigation }: any) {
             shadowOpacity: 0.3,
             shadowRadius: sf(16),
             elevation: 8,
+            opacity: cameraOpacity,
+            transform: [{ scale: cameraScaleEntrance }, { scale: cameraScalePulse }],
           }}
         >
           <CameraIcon width={sf(56)} height={sf(56)} />
-        </View>
+        </Animated.View>
 
         {/* 🔥 lower */}
         <Text
@@ -90,18 +166,20 @@ export default function Onboarding2({ navigation }: any) {
           🔥
         </Text>
 
-        <View
+        <Animated.View
           style={{
             position: 'absolute',
             right: -(imgWidth * 0.01),
             top: illustrationHeight * 0.5 - imgHeight * 0.38,
+            opacity: lowerOpacity,
+            transform: [{ translateY: lowerTranslateY }],
           }}
         >
           <Image
             source={require('@/assets/images/streakImage2.png')}
             style={{ width: imgWidth, height: imgHeight }}
           />
-        </View>
+        </Animated.View>
       </View>
 
       {/* ── Bottom card ── */}

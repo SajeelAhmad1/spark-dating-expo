@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import type { AuthSigninTab } from '@/types/auth';
-import { sf, sh, sr, sw } from '@/utils/responsive';
+import { sf, sh, sr, sw } from '@/utils/sizeMatters';
 
 export default function SignInTabs({
   activeTab,

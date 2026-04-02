@@ -4,7 +4,7 @@ import type { ToastConfig } from "react-native-toast-message";
 import type { LucideIcon } from "lucide-react-native";
 import { X, Zap } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { sh, sr, sw } from "./responsive";
+import { sh, sr, sw } from "./sizeMatters";
 
 type ToastProps = {
   text1?: string;

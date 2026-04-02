@@ -15,7 +15,7 @@ import PrimaryButton from '@/components/common/PrimaryButton';
 import BODY_TYPES from '@/constants/bodyTypes';
 import ETHNICITIES from '@/constants/ethnicities';
 import HEIGHTS from '@/constants/heights';
-import { sf, sw, sh, sr } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { physicalAttributesSchema } from '@/schemas/onboarding';
 

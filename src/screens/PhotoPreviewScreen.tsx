@@ -10,7 +10,7 @@ import {
 import { X, Download } from 'lucide-react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 
 interface PhotoPreviewScreenProps {
   visible: boolean;

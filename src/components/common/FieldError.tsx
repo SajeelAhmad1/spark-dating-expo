@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
-import { sf } from '@/utils/responsive';
+import { sf } from '@/utils/sizeMatters';
 
 export function FieldError({ message }: { message?: string }) {
   if (!message) return null;

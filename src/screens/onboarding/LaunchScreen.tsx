@@ -4,7 +4,7 @@ import { Text } from '@/components/common/Text';
 import { Zap } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sw, sh, sr } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import Camera from '@/assets/images/camera.svg';
 import Fire from '@/assets/images/fire.svg';
 import Like from '@/assets/images/like.svg';

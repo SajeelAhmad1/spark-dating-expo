@@ -3,7 +3,7 @@ import { StyleSheet, TextInput, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
 import type { AuthSigninTab } from '@/types/auth';
-import { sf, sh } from '@/utils/responsive';
+import { sf, sh } from '@/utils/sizeMatters';
 
 export default function PhoneEmailField({
   activeTab,

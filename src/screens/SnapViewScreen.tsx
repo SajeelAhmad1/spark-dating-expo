@@ -11,7 +11,7 @@ import { useEvent } from "expo";
 import { Text } from "@/components/common/Text";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { sf, sw, sh } from "@/utils/responsive";
+import { sf, sw, sh } from "@/utils/sizeMatters";
 import ChatAvatar from "@/components/chat/ChatAvatar";
 import CameraScreen from "@/screens/CameraScreen";
 import CameraIcon from "@/assets/images/cameraIcon.svg";

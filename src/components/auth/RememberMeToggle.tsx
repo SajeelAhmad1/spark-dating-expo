@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/common/Text';
-import { sf, sr } from '@/utils/responsive';
+import { sf, sr } from '@/utils/sizeMatters';
 
 export default function RememberMeToggle({
   rememberMe,

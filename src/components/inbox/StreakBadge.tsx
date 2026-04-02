@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Text } from '@/components/common/Text';
-import { sf, sh, sr } from '@/utils/responsive';
+import { sf, sh, sr } from '@/utils/sizeMatters';
 
 export default function StreakBadge({
   count,

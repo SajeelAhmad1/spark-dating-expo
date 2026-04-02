@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Shadow } from "react-native-shadow-2";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import { Colors } from "@/theme";
-import { sf, sw, sh, sr } from "@/utils/responsive";
+import { sf, sw, sh, sr } from "@/utils/sizeMatters";
 import { Text } from "@/components/common/Text";
 
 interface Props {

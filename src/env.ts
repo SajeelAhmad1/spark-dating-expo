@@ -1,0 +1,2 @@
+export const SIZE_MATTERS_BASE_WIDTH = 430;
+export const SIZE_MATTERS_BASE_HEIGHT = 932;

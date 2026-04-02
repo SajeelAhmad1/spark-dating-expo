@@ -17,7 +17,7 @@ import {
   GalleryVerticalIcon,
   FlipHorizontal,
 } from 'lucide-react-native';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import PhotoPreviewScreen from './PhotoPreviewScreen';
 
 interface CameraScreenProps {

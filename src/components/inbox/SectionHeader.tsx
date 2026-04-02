@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Text } from '@/components/common/Text';
-import { sf, sw, sh } from '@/utils/responsive';
+import { sf, sw, sh } from '@/utils/sizeMatters';
 
 export default function SectionHeader({
   icon,

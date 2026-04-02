@@ -14,7 +14,7 @@ import { ChevronDown } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CountryPicker } from 'react-native-country-codes-picker';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sh, sw, sr } from '@/utils/responsive';
+import { sf, sh, sw, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { onboardingPhoneFormSchema } from '@/schemas/onboarding';
 import { showToast } from '@/utils/toast';

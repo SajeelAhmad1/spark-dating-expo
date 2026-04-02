@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import { Animated, TouchableOpacity, View } from 'react-native';
-import { sw, sh } from '@/utils/responsive';
+import { sw, sh } from '@/utils/sizeMatters';
 
 export default function CustomToggle({
   value,

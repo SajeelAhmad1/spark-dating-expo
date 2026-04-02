@@ -20,7 +20,7 @@ import {
   Calendar,
   Check,
 } from 'lucide-react-native';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import BODY_TYPES from '@/constants/bodyTypes';
 import ETHNICITIES from '@/constants/ethnicities';
 import HEIGHTS from '@/constants/heights';
@@ -334,7 +334,7 @@ const EditProfileScreen = ({ navigation }: any) => {
             <View>
               <Text style={labelStyle}>Birthday</Text>
               <TouchableOpacity
-                onPress={() => setDatePickerOpen(true)}
+                // onPress={() => setDatePickerOpen(true)}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',

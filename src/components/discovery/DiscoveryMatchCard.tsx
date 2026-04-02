@@ -5,7 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ProgressDots } from "@/components/ProgressDots";
 import ChatIcon from "@/assets/images/chatIcon.svg";
 import type { MATCHES } from "@/constants/matches";
-import { sf, sr, sw, sh } from "@/utils/responsive";
+import { sf, sr, sw, sh } from "@/utils/sizeMatters";
 
 type MatchItem = (typeof MATCHES)[number];
 
@@ -14,8 +14,8 @@ export default function DiscoveryMatchCard({
   cardWidth,
   cardHeight,
   btnOverlap,
-  total,
-  currentIndex,
+  photoTotal,
+  photoIndex,
   showProgressDots = true,
   rightChatOnPress,
 }: {
@@ -23,11 +23,13 @@ export default function DiscoveryMatchCard({
   cardWidth: number;
   cardHeight: number;
   btnOverlap: number;
-  total: number;
-  currentIndex: number;
+  photoTotal: number;
+  photoIndex: number;
   showProgressDots?: boolean;
   rightChatOnPress?: () => void;
 }) {
+  const imageUri = item.images?.[photoIndex] ?? item.image;
+
   return (
     <View
       style={{
@@ -44,7 +46,7 @@ export default function DiscoveryMatchCard({
         }}
       >
         <Image
-          source={{ uri: item.image }}
+          source={{ uri: imageUri }}
           style={{ width: "100%", height: "100%" }}
           resizeMode="cover"
         />
@@ -108,6 +110,7 @@ export default function DiscoveryMatchCard({
                     alignItems: "center",
                     justifyContent: "center",
                     marginTop: sh(-8),
+                    zIndex: 50,
                   }}
                 >
                   <ChatIcon />
@@ -128,7 +131,7 @@ export default function DiscoveryMatchCard({
             zIndex: 10,
           }}
         >
-          <ProgressDots total={total} current={currentIndex} />
+          <ProgressDots total={photoTotal} current={photoIndex} />
         </View>
       )}
     </View>

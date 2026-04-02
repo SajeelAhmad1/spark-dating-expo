@@ -1,4 +1,4 @@
-import { sf } from '@/utils/responsive';
+import { sf } from '@/utils/sizeMatters';
 import React from 'react';
 import { Image, View } from 'react-native';
 import { Text } from '@/components/common/Text';

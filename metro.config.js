@@ -14,6 +14,9 @@ config.resolver = {
   ...config.resolver,
   assetExts: assetExts.filter(ext => ext !== 'svg'),
   sourceExts: [...sourceExts, 'svg'],
+  extraNodeModules: {
+    '@env': path.resolve(__dirname, 'src/env.ts'),
+  },
 };
 
 module.exports = withNativeWind(config, { input: './global.css' });
