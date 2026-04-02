@@ -6,11 +6,11 @@ import GoogleIcon from '@/assets/images/google.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Phone } from 'lucide-react-native';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 
 export default function SignUpScreen({ navigation }: any) {
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingBottom: sh(20) }}>
       <LinearGradient
         colors={['#1E78F5', '#FBB202']}
         start={{ x: 0, y: 0 }}
@@ -24,14 +24,14 @@ export default function SignUpScreen({ navigation }: any) {
         }}
       />
 
-      <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+      <View style={{ flex: 1 }}>
         <View
           style={{
             flex: 1,
             justifyContent: 'space-between',
             alignItems: 'center',
             paddingTop: sh(80),
-            paddingHorizontal: sw(20),
+            paddingHorizontal: sw(0),
           }}
         >
 
@@ -75,7 +75,7 @@ export default function SignUpScreen({ navigation }: any) {
           <View
             style={{
               paddingHorizontal: sw(20),
-              paddingBottom: sh(24),
+              // paddingBottom: sh(24),
               gap: sh(12),
             }}
           >
@@ -128,7 +128,7 @@ export default function SignUpScreen({ navigation }: any) {
               >
                 Already have an account?{' '}
                 <Text
-                  style={{ color: '#1E78F5', fontWeight: '500' }}
+                  style={{ color: '#1E78F5', fontWeight: '500', textDecorationLine: 'underline' }}
                   onPress={() => navigation.navigate('SignInScreen')}
                 >
                   Login
@@ -138,7 +138,7 @@ export default function SignUpScreen({ navigation }: any) {
           </View>
 
         </View>
-      </SafeAreaView>
+      </View>
     </View>
   );
 }

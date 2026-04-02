@@ -2,7 +2,7 @@ import React from 'react';
 import { TextInput, TouchableOpacity, View } from 'react-native';
 import CameraIcon from '@/assets/images/cameraIcon.svg';
 import { FieldError } from '@/components/common/FieldError';
-import { sf, sw, sh } from '@/utils/responsive';
+import { sf, sw, sh } from '@/utils/sizeMatters';
 
 export default function MessageInputBar({
   value,

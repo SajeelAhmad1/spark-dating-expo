@@ -1,14 +1,15 @@
 import { View } from 'react-native';
 import { Text } from '@/components/common/Text';
+import {Text as RNText} from 'react-native';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import Logo from '@/assets/images/logo.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 
 export default function LogoScreen({ navigation }: any) {
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingBottom: sh(20) }}>
       {/* Gradient overlay */}
       <LinearGradient
         colors={['#1E78F5', '#FBB202']}
@@ -22,11 +23,6 @@ export default function LogoScreen({ navigation }: any) {
           bottom: 0,
         }}
       />
-
-      <SafeAreaView
-        style={{ flex: 1 }}
-        edges={['top', 'bottom']}
-      >
         {/* Center content */}
         <View
           style={{
@@ -45,18 +41,16 @@ export default function LogoScreen({ navigation }: any) {
           </View>
 
           {/* App name */}
-          <Text
+          <RNText
             style={{
-              fontSize: sf(40),
-              lineHeight: sf(40),
-              letterSpacing: 0,
+              fontSize: sf(40), 
               fontFamily: 'ZenDots-Regular',
               fontWeight: '400',
               color: '#ffffff',
             }}
           >
             SPARK
-          </Text>
+          </RNText>
 
           {/* Subtitle */}
           <Text
@@ -74,7 +68,7 @@ export default function LogoScreen({ navigation }: any) {
         </View>
 
         {/* Bottom Next button */}
-        <View style={{ paddingHorizontal: sw(16), paddingBottom: sh(24) }}>
+        <View style={{ paddingHorizontal: sw(16) }}>
           <PrimaryButton
             title="Next"
             onPress={() => navigation.navigate('SignUpScreen')}
@@ -82,7 +76,6 @@ export default function LogoScreen({ navigation }: any) {
             variant="solid"
           />
         </View>
-      </SafeAreaView>
     </View>
   );
 }

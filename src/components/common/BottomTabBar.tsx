@@ -1,22 +1,16 @@
-import React from 'react';
-import { View, TouchableOpacity, useWindowDimensions } from 'react-native';
-import { Text } from '@/components/common/Text';
-import { Users, MessageSquare } from 'lucide-react-native';
-import Svg, { Path } from 'react-native-svg';
-import ProfileAvatar from '@/assets/images/profileAvatar.svg';
-import CameraIcon from '@/assets/images/cameraIcon.svg';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import React, { useCallback } from "react";
+import { View, TouchableOpacity, useWindowDimensions } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import type { NavigationProp } from "@react-navigation/native";
+import Svg, { Path } from "react-native-svg";
+import CameraIcon from "@/assets/images/cameraIcon.svg";
+import { sf, sr, sw, sh } from "@/utils/sizeMatters";
+import { useTabStore } from "@/store/tabStore";
+import TabItem from "./TabItem";
+import type { BottomTab } from "@/types/bottomTabs";
+import type { RootStackParamList } from "@/types/navigation";
 
-import type { BottomTab } from '@/types/bottomTabs';
-
-interface BottomTabBarProps {
-  activeTab: BottomTab;
-  onTabPress: (tab: BottomTab) => void;
-}
-
-const ACTIVE_COLOR = '#1E78F5';
-const INACTIVE_COLOR = '#7D858E';
-const PILL_COLOR = '#F0EEE6';
+const PILL_COLOR = "#F0EEE6";
 
 const HORIZONTAL_PADDING = sw(16);
 const PILL_HEIGHT = sh(72);
@@ -44,231 +38,136 @@ function buildNotchPath(w: number, h: number): string {
     `L 0 ${r}`,
     `Q 0 0 ${r} 0`,
     `Z`,
-  ].join(' ');
+  ].join(" ");
 }
 
-const BottomTabBar = ({ activeTab, onTabPress }: BottomTabBarProps) => {
+const BottomTabBar = () => {
   const { width: screenWidth } = useWindowDimensions();
+  const activeTab = useTabStore((s) => s.activeTab);
+  const setActiveTab = useTabStore((s) => s.setActiveTab);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
   const pillWidth = screenWidth - HORIZONTAL_PADDING * 2;
-  const iconSize = sf(24);
 
-  const TabItem = ({
-    tab,
-    label,
-    icon,
-  }: {
-    tab: BottomTab;
-    label: string;
-    icon: React.ReactNode;
-  }) => {
-    const isActive = activeTab === tab;
-
-    return (
-      <TouchableOpacity
-        onPress={() => onTabPress(tab)}
-        activeOpacity={0.7}
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingVertical: sh(10),
-          gap: 2,
-        }}
-      >
-        {icon}
-        <Text
-          style={{
-            fontFamily: 'Poppins-Regular',
-            fontSize: sf(13),
-            lineHeight: sf(13),
-            letterSpacing: 0,
-            color: isActive ? ACTIVE_COLOR : INACTIVE_COLOR,
-          }}
-        >
-          {label}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
+  const handleTabPress = useCallback(
+    (tab: BottomTab) => {
+      setActiveTab(tab);
+      switch (tab) {
+        case "Home":
+          navigation.navigate("DiscoveryScreen");
+          break;
+        case "Request":
+          navigation.navigate("RequestsScreen");
+          break;
+        case "Camera":
+          navigation.navigate("InboxScreen", { cameraSelectMode: true });
+          break;
+        case "Chat":
+          navigation.navigate("InboxScreen");
+          break;
+        case "Profile":
+          navigation.navigate("ProfileScreen");
+          break;
+      }
+    },
+    [navigation, setActiveTab]
+  );
 
   return (
     <View
+      pointerEvents="box-none"
       style={{
         paddingHorizontal: HORIZONTAL_PADDING,
-        paddingBottom: sh(16),
         paddingTop: CAMERA_SIZE / 2,
-        alignItems: 'center',
-        backgroundColor: 'transparent',
-        position: 'relative',
+        alignItems: "center",
+        backgroundColor: "transparent",
+        position: "relative",
       }}
     >
-      {/* Consistent bottom bar background on all screens */}
-      {/* <LinearGradient
-        colors={['#1E78F5', '#FBB202']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        pointerEvents="none"
-        style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
-      /> */}
-
-      {/* ── Camera button — center aligned on the pill's top edge ── */}
+      {/* Camera button */}
       <View
+        pointerEvents="box-none"
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: 0,
           zIndex: 20,
-          alignItems: 'center',
-          width: '100%',
+          alignItems: "center",
+          width: "100%",
         }}
       >
-        <TouchableOpacity onPress={() => onTabPress('Camera')} activeOpacity={0.85}>
+        <TouchableOpacity
+          onPress={() => handleTabPress("Camera")}
+          activeOpacity={0.85}
+        >
           <CameraIcon width={CAMERA_SIZE} height={CAMERA_SIZE} />
         </TouchableOpacity>
       </View>
 
-      {/* ── Pill with SVG notch background ── */}
+      {/* Pill */}
       <View
+        pointerEvents="box-none"
         style={{
           width: pillWidth,
           height: PILL_HEIGHT,
-          shadowColor: '#000',
-          shadowOpacity: 0.10,
+          shadowColor: "#000",
+          shadowOpacity: 0.1,
           shadowRadius: sr(16),
           shadowOffset: { width: 0, height: sh(4) },
           elevation: 10,
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
           zIndex: 1,
         }}
       >
-        {/* SVG pill shape with arc notch */}
+        {/* SVG background — non-interactive */}
         <Svg
           width={pillWidth}
           height={PILL_HEIGHT}
-          style={{ position: 'absolute', top: 0, left: 0 }}
+          pointerEvents="none"
+          style={{ position: "absolute", top: 0, left: 0 }}
         >
-          <Path
-            d={buildNotchPath(pillWidth, PILL_HEIGHT)}
-            fill={PILL_COLOR}
-          />
+          <Path d={buildNotchPath(pillWidth, PILL_HEIGHT)} fill={PILL_COLOR} />
         </Svg>
 
-        {/* Tab items row — sits on top of the SVG */}
+        {/* Tab items row */}
         <View
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            flexDirection: 'row',
-            alignItems: 'center',
+            flexDirection: "row",
+            alignItems: "center",
             paddingHorizontal: sw(8),
           }}
         >
           <TabItem
             tab="Home"
             label="Home"
-            icon={
-              <View
-                style={{
-                  borderWidth: activeTab === 'Home' ? 1 : 0,
-                  borderColor: '#FFFFFF',
-                  borderRadius: sr(6),
-                }}
-              >
-                <View style={{ width: iconSize + sw(6), height: iconSize + sw(6) }}>
-                  {/* Back card */}
-                  <View
-                    style={{
-                      position: 'absolute',
-                      top: sh(2),
-                      left: sw(6),
-                      width: iconSize - sw(2),
-                      height: iconSize,
-                      backgroundColor: activeTab === 'Home' ? '#5BA4F5' : INACTIVE_COLOR,
-                      borderRadius: sr(4),
-                      opacity: 0.55,
-                      transform: [{ rotate: '-8deg' }],
-                    }}
-                  />
-                  {/* Front card */}
-                  <View
-                    style={{
-                      position: 'absolute',
-                      top: sh(2),
-                      left: 0,
-                      width: iconSize - sw(2),
-                      height: iconSize,
-                      backgroundColor: activeTab === 'Home' ? ACTIVE_COLOR : INACTIVE_COLOR,
-                      borderRadius: sr(4),
-                      transform: [{ rotate: '4deg' }],
-                    }}
-                  />
-                </View>
-              </View>
-            }
+            activeTab={activeTab}
+            onTabPress={handleTabPress}
           />
-
           <TabItem
             tab="Request"
             label="Request"
-            icon={
-              <View
-                style={{
-                  borderWidth: activeTab === 'Request' ? 1 : 0,
-                  borderColor: '#FFFFFF',
-                  borderRadius: sr(6),
-                }}
-              >
-                <Users
-                  size={iconSize}
-                  color={activeTab === 'Request' ? ACTIVE_COLOR : INACTIVE_COLOR}
-                  strokeWidth={1.8}
-                />
-              </View>
-            }
+            activeTab={activeTab}
+            onTabPress={handleTabPress}
           />
 
-          {/* Center gap — sits under the camera notch */}
-          <View style={{ flex: 1 }} />
+          {/* Center gap under camera notch */}
+          <View pointerEvents="none" style={{ flex: 1 }} />
 
           <TabItem
             tab="Chat"
             label="Chat"
-            icon={
-              <View
-                style={{
-                  borderWidth: activeTab === 'Chat' ? 1 : 0,
-                  borderColor: '#FFFFFF',
-                  borderRadius: sr(6),
-                }}
-              >
-                <MessageSquare
-                  size={iconSize}
-                  color={activeTab === 'Chat' ? ACTIVE_COLOR : INACTIVE_COLOR}
-                  strokeWidth={1.8}
-                />
-              </View>
-            }
+            activeTab={activeTab}
+            onTabPress={handleTabPress}
           />
-
           <TabItem
             tab="Profile"
             label="Profile"
-            icon={
-              <View
-                style={{
-                  width: iconSize + sw(6),
-                  height: iconSize + sw(6),
-                  borderRadius: (iconSize + sw(6)) / 2,
-                  overflow: 'hidden',
-                  borderWidth: activeTab === 'Profile' ? 1 : 0,
-                  borderColor: '#FFFFFF',
-                }}
-              >
-                <ProfileAvatar width={iconSize + sw(6)} height={iconSize + sw(6)} />
-              </View>
-            }
+            activeTab={activeTab}
+            onTabPress={handleTabPress}
           />
         </View>
       </View>
@@ -276,4 +175,4 @@ const BottomTabBar = ({ activeTab, onTabPress }: BottomTabBarProps) => {
   );
 };
 
-export default BottomTabBar;
+export default React.memo(BottomTabBar);

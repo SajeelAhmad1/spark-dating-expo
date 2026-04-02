@@ -7,7 +7,7 @@ import { Share2, Copy } from 'lucide-react-native';
 import Gift from '@/assets/images/gift.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sw, sh, sr } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 
 // ─── Constants ────────────────────────────────────────────
 const REFERRAL_LINK = 'https://spark.app/invite/SPARK-QT53V4';
@@ -148,7 +148,7 @@ const StatCard = ({
 const InviteScreen = ({ navigation }: any) => {
   const handleCopy = async () => {
     await Clipboard.setStringAsync(REFERRAL_LINK);
-    showToast('Link copied');
+    showToast({ text1: 'Link copied' });
   };
 
   const handleSkip = () => {
@@ -164,12 +164,12 @@ const InviteScreen = ({ navigation }: any) => {
       await Share.share(content);
       navigation.navigate('WaitingScreen');
     } catch {
-      showToast('Could not open share', 'error');
+      showToast({ text1: 'Could not open share', type: 'error' });
     }
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <View style={styles.page}>
 
         <View style={styles.main}>
@@ -211,13 +211,13 @@ const InviteScreen = ({ navigation }: any) => {
         </View>
 
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  page: { flex: 1, paddingHorizontal: sw(20), paddingVertical: sh(40) },
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
+  page: { flex: 1, paddingHorizontal: sw(20) },
   main: {
     flex: 1,
     alignItems: 'center',

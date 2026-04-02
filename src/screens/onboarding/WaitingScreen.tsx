@@ -4,7 +4,7 @@ import { Text } from '@/components/common/Text';
 import { Share2, Bell, Users2 } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sw, sh, sr } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 
 // ─── Constants ────────────────────────────────────────────
 const CURRENT = 454;
@@ -14,7 +14,7 @@ const PROGRESS = (CURRENT / TARGET) * 100;
 
 // ─── Screen ───────────────────────────────────────────────
 const WaitingScreen = ({ navigation }: any) => (
-  <SafeAreaView style={styles.safeArea}>
+  <View style={styles.safeArea}>
     <View style={styles.page}>
 
       {/* ── Main Content ── */}
@@ -90,16 +90,16 @@ const WaitingScreen = ({ navigation }: any) => (
         colors={['#1E78F5', '#DC9B00']}
         variant="gradient"
         iconPosition="start"
-        textStyle={{fontSize: sf(18), fontWeight: '500', color: '#ffffff'}}
+        textStyle={{fontSize: sf(18), fontWeight: '500', color: '#ffffff', lineHeight: sh(56)}}
       />
 
     </View>
-  </SafeAreaView>
+  </View>
 );
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  page: { flex: 1, paddingHorizontal: sw(20), paddingVertical: sh(40) },
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
+  page: { flex: 1, paddingHorizontal: sw(20) },
   main: {
     flex: 1,
     alignItems: 'center',

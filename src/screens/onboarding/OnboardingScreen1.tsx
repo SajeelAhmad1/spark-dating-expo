@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, SafeAreaView, useWindowDimensions } from 'react-native';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { Animated, Easing, View, useWindowDimensions } from 'react-native';
 import OnboardingCard from './OnboardingCard';
 
 import Profile1 from '@/assets/images/avatar1.svg';
@@ -10,7 +10,7 @@ import Profile5 from '@/assets/images/avatar5.svg';
 import CenterProfile from '@/assets/images/avatar6.svg';
 import LocationIcon from '@/assets/images/locationIcon.svg';
 import Svg, { Circle } from 'react-native-svg';
-import { sf, sr, sh } from '@/utils/responsive';
+import { sf, sr, sh } from '@/utils/sizeMatters';
 
 // ─── Geometry ──────────────────────────────────────────────────────────────
 const STROKE_WIDTH = sf(2);
@@ -26,6 +26,15 @@ const onCircle = (angleDeg: number, radius: number, size: number) => ({
 
 const OnboardingScreen1 = ({ navigation }: any) => {
   const { width } = useWindowDimensions();
+  const ringRotation = useRef(new Animated.Value(0)).current;
+  const centerEntrance = useRef(new Animated.Value(0)).current;
+  const centerPulse = useRef(new Animated.Value(0)).current;
+  const avatarEntrance = useRef(
+    Array.from({ length: 5 }, () => new Animated.Value(0)),
+  ).current;
+  const pinEntrance = useRef(
+    Array.from({ length: 3 }, () => new Animated.Value(0)),
+  ).current;
 
   const { ORBIT_D, ORBIT_R, RINGS, CENTER_SIZE, AVATARS, PINS } = useMemo(() => {
     const orbitD = width * 0.78;
@@ -55,8 +64,100 @@ const OnboardingScreen1 = ({ navigation }: any) => {
     };
   }, [width]);
 
+  useEffect(() => {
+    const ringLoop = Animated.loop(
+      Animated.timing(ringRotation, {
+        toValue: 1,
+        duration: 12000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    );
+
+    ringRotation.setValue(0);
+    ringLoop.start();
+
+    centerEntrance.setValue(0);
+    Animated.timing(centerEntrance, {
+      toValue: 1,
+      duration: 650,
+      delay: 220,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+
+    avatarEntrance.forEach((anim, i) => {
+      anim.setValue(0);
+      Animated.timing(anim, {
+        toValue: 1,
+        duration: 720,
+        delay: 110 + i * 140,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start();
+    });
+
+    pinEntrance.forEach((anim, i) => {
+      anim.setValue(0);
+      Animated.timing(anim, {
+        toValue: 1,
+        duration: 620,
+        delay: 150 + i * 170,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }).start();
+    });
+
+    const pulseLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(centerPulse, {
+          toValue: 1,
+          duration: 900,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(centerPulse, {
+          toValue: 0,
+          duration: 900,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    pulseLoop.start();
+
+    return () => {
+      ringLoop.stop();
+      pulseLoop.stop();
+    };
+  }, [
+    avatarEntrance,
+    centerEntrance,
+    centerPulse,
+    pinEntrance,
+    ringRotation,
+    width,
+  ]);
+
+  const ringRotate = ringRotation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
+  const centerScaleEntrance = centerEntrance.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.92, 1],
+  });
+
+  const centerScalePulse = centerPulse.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.04],
+  });
+
+  const centerScale = Animated.multiply(centerScaleEntrance, centerScalePulse);
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
+    <View style={{ flex: 1, backgroundColor: '#ffffff', paddingBottom: sh(20) }}>
       <View
         style={{
           flex: 1,
@@ -65,46 +166,54 @@ const OnboardingScreen1 = ({ navigation }: any) => {
         }}
       >
         <View style={{ width: ORBIT_D, height: ORBIT_D }}>
-
-          {/* Single outer dashed ring */}
-          <Svg
-            width={ORBIT_D}
-            height={ORBIT_D}
-            style={{ position: 'absolute', top: 0, left: 0 }}
+          <Animated.View
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: ORBIT_D,
+              height: ORBIT_D,
+              transform: [{ rotate: ringRotate }],
+              zIndex: 1,
+            }}
           >
-            <Circle
-              cx={ORBIT_R}
-              cy={ORBIT_R}
-              r={ORBIT_R - STROKE_WIDTH / 2}
-              stroke="#7D858E"
-              strokeWidth={STROKE_WIDTH}
-              strokeDasharray={`${DASH_LENGTH}, ${GAP_LENGTH}`}
-              fill="none"
-            />
-          </Svg>
-
-          {/* 3 solid filled rings */}
-          {RINGS.map((ring, i) => {
-            const size = Math.max(ring.d, 4);
-            return (
-              <View
-                key={i}
-                style={{
-                  position: 'absolute',
-                  width: size,
-                  height: size,
-                  borderRadius: size / 2,
-                  backgroundColor: ring.color,
-                  top: ORBIT_R - size / 2,
-                  left: ORBIT_R - size / 2,
-                }}
+            {/* Single outer dashed ring */}
+            <Svg width={ORBIT_D} height={ORBIT_D}>
+              <Circle
+                cx={ORBIT_R}
+                cy={ORBIT_R}
+                r={ORBIT_R - STROKE_WIDTH / 2}
+                stroke="#7D858E"
+                strokeWidth={STROKE_WIDTH}
+                strokeDasharray={`${DASH_LENGTH}, ${GAP_LENGTH}`}
+                fill="none"
               />
-            );
-          })}
+            </Svg>
+
+            {/* 3 solid filled rings */}
+            {RINGS.map((ring, i) => {
+              const size = Math.max(ring.d, 4);
+              return (
+                <View
+                  key={i}
+                  style={{
+                    position: 'absolute',
+                    width: size,
+                    height: size,
+                    borderRadius: size / 2,
+                    backgroundColor: ring.color,
+                    top: ORBIT_R - size / 2,
+                    left: ORBIT_R - size / 2,
+                  }}
+                />
+              );
+            })}
+          </Animated.View>
 
           {/* Center avatar */}
-          <View
-            style={{
+          <Animated.View
+            style={[
+              {
               position: 'absolute',
               width: CENTER_SIZE,
               height: CENTER_SIZE,
@@ -113,18 +222,35 @@ const OnboardingScreen1 = ({ navigation }: any) => {
               left: ORBIT_R - CENTER_SIZE / 2,
               overflow: 'hidden',
               zIndex: 10,
-            }}
+              },
+              {
+                opacity: centerEntrance.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 1],
+                }),
+                transform: [
+                  {
+                    scale: centerEntrance.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.92, 1],
+                    }),
+                  },
+                ],
+              },
+            ]}
           >
             <CenterProfile width={CENTER_SIZE} height={CENTER_SIZE} />
-          </View>
+          </Animated.View>
 
           {/* 5 orbit avatars */}
           {AVATARS.map(({ Component, angle, size }, i) => {
             const pos = onCircle(angle, ORBIT_R, size);
+            const anim = avatarEntrance[i];
             return (
-              <View
+              <Animated.View
                 key={i}
-                style={{
+                style={[
+                  {
                   position: 'absolute',
                   width: size,
                   height: size,
@@ -140,29 +266,63 @@ const OnboardingScreen1 = ({ navigation }: any) => {
                   shadowOpacity: 0.15,
                   shadowRadius: sr(4),
                   zIndex: 5,
-                }}
+                  },
+                  {
+                    opacity: anim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, 1],
+                    }),
+                    transform: [
+                      {
+                        translateY: anim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [14, 0],
+                        }),
+                      },
+                      {
+                        scale: anim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [0.86, 1],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
               >
                 <Component width={size} height={size} />
-              </View>
+              </Animated.View>
             );
           })}
 
           {/* 3 location pins */}
           {PINS.map((pin, i) => {
             const pos = onCircle(pin.angle, ORBIT_R, pin.size);
+            const anim = pinEntrance[i];
             return (
-              <LocationIcon
+              <Animated.View
                 key={i}
-                width={pin.size}
-                height={pin.size}
                 style={{
                   position: 'absolute',
-                  top: pos.top - sh(12),
-                  left: pos.left,
+                  top: pos.top - sh(14),
+                  left: pos.left + 4,
                   zIndex: 8,
-                  transform: [{ rotate: `${pin.tilt ?? 0}deg` }],
+                  opacity: anim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 1],
+                  }),
+                  transform: [
+                    { rotate: `${pin.tilt ?? 0}deg` },
+                    {
+                      scale: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.88, 1],
+                      }),
+                    },
+                  ],
                 }}
-              />
+              >
+                <LocationIcon width={pin.size} height={pin.size} />
+              </Animated.View>
             );
           })}
 
@@ -176,7 +336,7 @@ const OnboardingScreen1 = ({ navigation }: any) => {
         buttonLabel="Next"
         onPress={() => navigation.navigate('Onboarding2')}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

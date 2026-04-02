@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sh } from '@/utils/responsive';
+import { sf, sh } from '@/utils/sizeMatters';
 
 export default function SignInBottomActions({
   onLogin,

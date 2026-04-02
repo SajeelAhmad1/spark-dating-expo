@@ -1,18 +1,18 @@
 import React, { useMemo, useState } from 'react';
-import { View, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, TouchableOpacity, Image, Alert, useWindowDimensions } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { ChevronLeft, Plus, X } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { FieldError } from '@/components/common/FieldError';
-import { sf, sw, sh, sr, useResponsive } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { uploadPhotosFilledSchema } from '@/schemas/onboarding';
 
 type PhotoSlot = { uri: string; isLocal: boolean } | null;
 
 const UploadPhotosScreen = ({ navigation }: any) => {
-  const { width } = useResponsive();
+  const { width } = useWindowDimensions();
   const { hPad, gap, slotWidth, slotHeight } = useMemo(() => {
     const hp = sw(24);
     const g = sw(12);
@@ -187,8 +187,8 @@ const UploadPhotosScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-      <View style={{ flex: 1, paddingHorizontal: hPad, paddingTop: sh(16) }}>
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <View style={{ flex: 1, paddingHorizontal: hPad, paddingTop: sh(16), marginTop: sh(60) }}>
         <TouchableOpacity onPress={() => navigation?.goBack()}>
           <ChevronLeft size={sf(24)} color="#000000" />
         </TouchableOpacity>
@@ -217,12 +217,12 @@ const UploadPhotosScreen = ({ navigation }: any) => {
 
       <View
         style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
+          // position: 'absolute',
+          // bottom: 0,
+          // left: 0,
+          // right: 0,
           paddingHorizontal: hPad,
-          paddingBottom: sh(32),
+          paddingBottom: sh(20),
           backgroundColor: '#fff',
         }}
       >
@@ -241,10 +241,10 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           colors={['#1E78F5', '#FBB202']}
           variant="gradient"
           style={{ alignSelf: 'stretch' }}
-          textStyle={{ fontSize: sf(20), fontWeight: '500' }}
+          textStyle={{ fontSize: sf(20), fontWeight: '500', lineHeight: sh(56) }}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

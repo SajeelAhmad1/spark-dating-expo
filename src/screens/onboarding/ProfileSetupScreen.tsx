@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from "react";
 import {
   View,
   TextInput,
@@ -7,25 +7,38 @@ import {
   Modal,
   FlatList,
   StyleSheet,
-} from 'react-native';
-import { Text } from '@/components/common/Text';
-import { FieldError } from '@/components/common/FieldError';
-import { ChevronLeft, ChevronDown } from 'lucide-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sw, sh, sr } from '@/utils/responsive';
-import { useZodForm } from '@/utils/form';
-import { createProfileSetupSchema } from '@/schemas/onboarding';
+} from "react-native";
+import { Text } from "@/components/common/Text";
+import { FieldError } from "@/components/common/FieldError";
+import { ChevronLeft, ChevronDown } from "lucide-react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import PrimaryButton from "@/components/common/PrimaryButton";
+import { sf, sw, sh, sr } from "@/utils/sizeMatters";
+import { useZodForm } from "@/utils/form";
+import { createProfileSetupSchema } from "@/schemas/onboarding";
 
-const GENDERS = ['Male', 'Female', 'Other'];
+const GENDERS = ["Male", "Female", "Other"];
 
 const DAYS = Array.from({ length: 31 }, (_, i) => String(i + 1));
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 const YEARS = Array.from({ length: 100 }, (_, i) => String(2024 - i));
 
-type DropdownField = 'day' | 'month' | 'year' | null;
+type DropdownField = "day" | "month" | "year" | null;
 
-const ProfileSetupScreen = ({navigation}: any) => {
+const ProfileSetupScreen = ({ navigation }: any) => {
   const [openDropdown, setOpenDropdown] = useState<DropdownField>(null);
 
   const profileSchema = useMemo(
@@ -39,25 +52,28 @@ const ProfileSetupScreen = ({navigation}: any) => {
     [],
   );
 
-  const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(profileSchema, {
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      gender: 'Male',
-      day: '24',
-      month: 'May',
-      year: '1999',
-      bio: '',
+  const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(
+    profileSchema,
+    {
+      defaultValues: {
+        firstName: "",
+        lastName: "",
+        gender: "Male",
+        day: "24",
+        month: "May",
+        year: "1999",
+        bio: "",
+      },
     },
-  });
+  );
 
-  const firstName = watch('firstName');
-  const lastName = watch('lastName');
-  const gender = watch('gender');
-  const day = watch('day');
-  const month = watch('month');
-  const year = watch('year');
-  const bio = watch('bio');
+  const firstName = watch("firstName");
+  const lastName = watch("lastName");
+  const gender = watch("gender");
+  const day = watch("day");
+  const month = watch("month");
+  const year = watch("year");
+  const bio = watch("bio");
   const { errors } = formState;
   const dobError =
     errors.day?.message || errors.month?.message || errors.year?.message;
@@ -81,16 +97,16 @@ const ProfileSetupScreen = ({navigation}: any) => {
 
   const inputStyle = {
     borderWidth: 1,
-    borderColor: '#B6B9C9',
+    borderColor: "#B6B9C9",
     borderRadius: sr(15),
     height: sh(56),
-    paddingHorizontal: sw(16),
+    paddingHorizontal: sw(10),
     fontSize: sf(15),
-    color: '#000000',
+    color: "#000000",
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: sh(120) }}
@@ -105,13 +121,13 @@ const ProfileSetupScreen = ({navigation}: any) => {
         {/* ── Header ── */}
         <View style={styles.headerBlock}>
           <Text
-            style={[styles.screenTitle, { fontSize: sf(28), lineHeight: sf(28), letterSpacing: 0 }]}
+            style={[styles.screenTitle, { fontSize: sf(28) }]}
             weight="semibold"
           >
             Tell Us About You
           </Text>
           <Text
-            style={[styles.screenSubtitle, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            style={[styles.screenSubtitle, { fontSize: sf(15) }]}
             weight="regular"
           >
             Complete your profile to get started
@@ -122,36 +138,44 @@ const ProfileSetupScreen = ({navigation}: any) => {
         <View style={styles.nameRow}>
           <View style={styles.flex1}>
             <Text
-              style={[styles.labelSemibold, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+              style={[styles.labelSemibold, { fontSize: sf(15) }]}
               weight="semibold"
-            >First Name</Text>
+            >
+              First Name
+            </Text>
             <TextInput
               placeholder="JJ"
               placeholderTextColor="#7D858E"
               value={firstName}
-              onChangeText={v => setValue('firstName', v, { shouldValidate: true })}
-              onBlur={() => trigger('firstName')}
+              onChangeText={(v) =>
+                setValue("firstName", v, { shouldValidate: true })
+              }
+              onBlur={() => trigger("firstName")}
               style={[
                 inputStyle,
-                errors.firstName ? { borderColor: '#DC2626' } : null,
+                errors.firstName ? { borderColor: "#DC2626" } : null,
               ]}
             />
             <FieldError message={errors.firstName?.message} />
           </View>
           <View style={styles.flex1}>
             <Text
-              style={[styles.labelSemibold, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+              style={[styles.labelSemibold, { fontSize: sf(15) }]}
               weight="semibold"
-            >Last Name</Text>
+            >
+              Last Name
+            </Text>
             <TextInput
               placeholder="Smith"
               placeholderTextColor="#7D858E"
               value={lastName}
-              onChangeText={v => setValue('lastName', v, { shouldValidate: true })}
-              onBlur={() => trigger('lastName')}
+              onChangeText={(v) =>
+                setValue("lastName", v, { shouldValidate: true })
+              }
+              onBlur={() => trigger("lastName")}
               style={[
                 inputStyle,
-                errors.lastName ? { borderColor: '#DC2626' } : null,
+                errors.lastName ? { borderColor: "#DC2626" } : null,
               ]}
             />
             <FieldError message={errors.lastName?.message} />
@@ -161,32 +185,37 @@ const ProfileSetupScreen = ({navigation}: any) => {
         {/* ── Gender ── */}
         <View style={styles.section}>
           <Text
-            style={[styles.labelSemibold, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            style={[styles.labelSemibold, { fontSize: sf(15) }]}
             weight="semibold"
-          >Gender</Text>
+          >
+            Gender
+          </Text>
           <View style={styles.rowGap}>
             {GENDERS.map((g) => {
               const selected = gender === g;
               return (
                 <TouchableOpacity
                   key={g}
-                  onPress={() => setValue('gender', g, { shouldValidate: true })}
+                  onPress={() =>
+                    setValue("gender", g, { shouldValidate: true })
+                  }
                   style={{
                     flex: 1,
                     height: sh(56),
                     borderRadius: sr(15),
                     borderWidth: selected ? 0 : 1,
-                    borderColor: '#B6B9C9',
-                    backgroundColor: selected ? '#FBB202' : 'transparent',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    borderColor: "#B6B9C9",
+                    backgroundColor: selected ? "#FBB202" : "transparent",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
                   <Text
                     style={{
                       fontSize: sf(15),
-                      color: '#000000',
-                      fontWeight: '400',
+                      color: "#000000",
+                      fontWeight: "400",
+                      lineHeight: sh(46),
                     }}
                   >
                     {g}
@@ -201,32 +230,36 @@ const ProfileSetupScreen = ({navigation}: any) => {
         {/* ── Date of Birth ── */}
         <View style={styles.section}>
           <Text
-            style={[styles.labelSemibold, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            style={[styles.labelSemibold, { fontSize: sf(15) }]}
             weight="semibold"
-          >Date of birth</Text>
+          >
+            Date of birth
+          </Text>
           <View style={styles.rowGap}>
-            {(['day', 'month', 'year'] as NonNullable<DropdownField>[]).map((field) => (
-              <TouchableOpacity
-                key={field}
-                onPress={() => setOpenDropdown(field)}
-                style={{
-                  flex: 1,
-                  height: sh(56),
-                  borderRadius: sr(15),
-                  borderWidth: 1,
-                  borderColor: '#B6B9C9',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  paddingHorizontal: sw(12),
-                }}
-              >
-                <Text style={{ fontSize: sf(15), color: '#000000' }}>
-                  {dropdownValues[field]}
-                </Text>
-                <ChevronDown size={sf(16)} color="#000000" />
-              </TouchableOpacity>
-            ))}
+            {(["day", "month", "year"] as NonNullable<DropdownField>[]).map(
+              (field) => (
+                <TouchableOpacity
+                  key={field}
+                  onPress={() => setOpenDropdown(field)}
+                  style={{
+                    flex: 1,
+                    height: sh(56),
+                    borderRadius: sr(15),
+                    borderWidth: 1,
+                    borderColor: "#B6B9C9",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    paddingHorizontal: sw(12),
+                  }}
+                >
+                  <Text style={{ fontSize: sf(15), color: "#000000", lineHeight: sh(40) }}>
+                    {dropdownValues[field]}
+                  </Text>
+                  <ChevronDown size={sf(16)} color="#000000" />
+                </TouchableOpacity>
+              ),
+            )}
           </View>
           <FieldError message={dobError} />
         </View>
@@ -234,26 +267,28 @@ const ProfileSetupScreen = ({navigation}: any) => {
         {/* ── Bio ── */}
         <View style={styles.section}>
           <Text
-            style={[styles.labelRegular, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            style={[styles.labelRegular, { fontSize: sf(15) }]}
             weight="regular"
-          >Add a Bio</Text>
+          >
+            Add a Bio
+          </Text>
           <TextInput
             placeholder="Write something interesting..."
             placeholderTextColor="#7D858E"
             value={bio}
-            onChangeText={v => setValue('bio', v, { shouldValidate: true })}
-            onBlur={() => trigger('bio')}
+            onChangeText={(v) => setValue("bio", v, { shouldValidate: true })}
+            onBlur={() => trigger("bio")}
             multiline
             textAlignVertical="top"
             style={{
               borderWidth: 1,
-              borderColor: errors.bio ? '#DC2626' : '#B6B9C9',
+              borderColor: errors.bio ? "#DC2626" : "#B6B9C9",
               borderRadius: sr(15),
               height: sh(120),
               paddingHorizontal: sw(16),
               paddingTop: sh(14),
               fontSize: sf(15),
-              color: '#000000',
+              color: "#000000",
             }}
           />
           <FieldError message={errors.bio?.message} />
@@ -265,12 +300,12 @@ const ProfileSetupScreen = ({navigation}: any) => {
         <PrimaryButton
           title="Continue"
           onPress={handleSubmit(() => {
-            navigation.navigate('PhysicalAttributesScreen');
+            navigation.navigate("PhysicalAttributesScreen");
           })}
-          colors={['#1E78F5', '#FBB202']}
+          colors={["#1E78F5", "#FBB202"]}
           variant="gradient"
-          style={{ alignSelf: 'stretch' }}
-          textStyle={{fontSize: sf(20), fontWeight: '500', lineHeight: sf(20), letterSpacing: 0}}
+          style={{ alignSelf: "stretch" }}
+          textStyle={{ fontSize: sf(20), fontWeight: "500", lineHeight: sh(56) }}
         />
       </View>
 
@@ -293,15 +328,19 @@ const ProfileSetupScreen = ({navigation}: any) => {
               keyExtractor={(item) => item}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => {
-                const isSelected = openDropdown ? dropdownValues[openDropdown] === item : false;
+                const isSelected = openDropdown
+                  ? dropdownValues[openDropdown] === item
+                  : false;
                 return (
                   <TouchableOpacity
-                    onPress={() => openDropdown && handleSelect(openDropdown, item)}
+                    onPress={() =>
+                      openDropdown && handleSelect(openDropdown, item)
+                    }
                     style={{
                       paddingVertical: sh(14),
                       borderBottomWidth: 1,
-                      borderBottomColor: '#F0F0F0',
-                      backgroundColor: isSelected ? '#FFF8E7' : 'transparent',
+                      borderBottomColor: "#F0F0F0",
+                      backgroundColor: isSelected ? "#FFF8E7" : "transparent",
                       paddingHorizontal: sw(8),
                       borderRadius: sr(8),
                     }}
@@ -309,8 +348,8 @@ const ProfileSetupScreen = ({navigation}: any) => {
                     <Text
                       style={{
                         fontSize: sf(15),
-                        color: isSelected ? '#FBB202' : '#000000',
-                        fontWeight: isSelected ? '600' : '400',
+                        color: isSelected ? "#FBB202" : "#000000",
+                        fontWeight: isSelected ? "600" : "400",
                       }}
                     >
                       {item}
@@ -322,39 +361,38 @@ const ProfileSetupScreen = ({navigation}: any) => {
           </View>
         </TouchableOpacity>
       </Modal>
-
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  scroll: { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16) },
+  safeArea: { flex: 1, backgroundColor: "#FFFFFF", paddingBottom: sh(20) },
+  scroll: { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16), marginTop: sh(60) },
   headerBlock: { marginTop: sh(12), rowGap: sh(8) },
-  screenTitle: { color: '#000000' },
-  screenSubtitle: { color: '#7D858E' },
-  nameRow: { marginTop: sh(24), flexDirection: 'row', columnGap: sw(12) },
+  screenTitle: { color: "#000000" },
+  screenSubtitle: { color: "#7D858E" },
+  nameRow: { marginTop: sh(24), flexDirection: "row", columnGap: sw(12) },
   flex1: { flex: 1 },
-  labelSemibold: { color: '#000000', marginBottom: sh(8) },
-  labelRegular: { color: '#000000', marginBottom: sh(8) },
+  labelSemibold: { color: "#000000", marginBottom: sh(8) },
+  labelRegular: { color: "#000000", marginBottom: sh(8) },
   section: { marginTop: sh(24) },
-  rowGap: { flexDirection: 'row', columnGap: sw(12) },
+  rowGap: { flexDirection: "row", columnGap: sw(12) },
   footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    // position: "absolute",
+    // bottom: 0,
+    // left: 0,
+    // right: 0,
     paddingHorizontal: sw(20),
-    paddingBottom: sh(32),
-    backgroundColor: '#FFFFFF',
+    // paddingBottom: sh(32),
+    backgroundColor: "#FFFFFF",
   },
   modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'flex-end',
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "flex-end",
   },
   modalSheet: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderTopLeftRadius: sr(24),
     borderTopRightRadius: sr(24),
     paddingHorizontal: sw(20),
@@ -364,9 +402,9 @@ const styles = StyleSheet.create({
   modalHandle: {
     width: sw(40),
     height: sh(4),
-    backgroundColor: '#E8EAED',
+    backgroundColor: "#E8EAED",
     borderRadius: 999,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: sh(16),
   },
 });

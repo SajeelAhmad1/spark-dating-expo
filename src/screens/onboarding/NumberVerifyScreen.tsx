@@ -4,7 +4,7 @@ import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sw, sh, sr } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { otpFormSchema } from '@/schemas/onboarding';
 import { showToast } from '@/utils/toast';
@@ -78,7 +78,7 @@ const NumberVerifyScreen = ({ navigation }: any) => {
     clearTimer(); // ✅ clear any leftover interval before starting fresh
 
     setSecondsLeft(RESEND_COOLDOWN_SEC);
-    showToast('A new code has been sent');
+    showToast({ text1: 'A new code has been sent' });
 
     // ✅ Start interval — ticks every second, stops itself at 0
     intervalRef.current = setInterval(() => {
@@ -95,7 +95,7 @@ const NumberVerifyScreen = ({ navigation }: any) => {
   const canResend = secondsLeft <= 0;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <View style={styles.page}>
         <View style={styles.headerBlock}>
           <Text style={[styles.title, { fontSize: sf(28) }]} weight="semibold">
@@ -121,8 +121,7 @@ const NumberVerifyScreen = ({ navigation }: any) => {
                 styles.otpCell,
                 otpErrors[key]?.message ? styles.otpCellError : null,
                 {
-                  fontSize: sf(20),
-                  lineHeight: sf(24),
+                  fontSize: sf(20), 
                   width: sf(56),
                   height: sf(56),
                 },
@@ -161,7 +160,7 @@ const NumberVerifyScreen = ({ navigation }: any) => {
           </Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

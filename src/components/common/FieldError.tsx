@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
-import { sf } from '@/utils/responsive';
+import { sf } from '@/utils/sizeMatters';
 
 export function FieldError({ message }: { message?: string }) {
   if (!message) return null;
@@ -10,8 +10,7 @@ export function FieldError({ message }: { message?: string }) {
 const styles = StyleSheet.create({
   text: {
     marginTop: 6,
-    fontSize: sf(12),
-    lineHeight: sf(16),
+    fontSize: sf(12), 
     color: '#DC2626',
     fontFamily: 'Poppins-Regular',
   },

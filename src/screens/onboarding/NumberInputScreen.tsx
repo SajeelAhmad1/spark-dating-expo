@@ -14,7 +14,7 @@ import { ChevronDown } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CountryPicker } from 'react-native-country-codes-picker';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sh, sw, sr } from '@/utils/responsive';
+import { sf, sh, sw, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { onboardingPhoneFormSchema } from '@/schemas/onboarding';
 import { showToast } from '@/utils/toast';
@@ -73,7 +73,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
   };
 
   const onValid = () => {
-    showToast('Verification code sent');
+    showToast({ text1: 'Verification code sent' });
     navigation.navigate('NumberVerifyScreen');
   };
 
@@ -82,7 +82,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
     : winH * 0.88;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <View style={styles.page}>
         <View style={styles.headerBlock}>
           <Text style={[styles.title, { fontSize: sf(28) }]} weight="semibold">
@@ -105,7 +105,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
 
           <TextInput
             placeholder="300 1234567"
-            placeholderTextColor="black"
+            placeholderTextColor="#7D858E"
             keyboardType="phone-pad"
             value={phoneNumber}
             style={[styles.phoneInput, { fontSize: sf(16) }]}
@@ -198,12 +198,12 @@ const NumberEnterScreen = ({ navigation }: any) => {
           },
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
   page: {
     flex: 1,
     paddingHorizontal: sw(20),

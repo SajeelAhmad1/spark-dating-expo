@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import { Animated, TouchableOpacity, View } from 'react-native';
-import { sw, sh } from '@/utils/responsive';
+import { sw, sh } from '@/utils/sizeMatters';
 
 export default function CustomToggle({
   value,
@@ -40,7 +40,7 @@ export default function CustomToggle({
           width: trackW,
           height: trackH,
           borderRadius: trackH / 2,
-          backgroundColor: value ? '#1E78F533' : '#E5E5E5',
+          backgroundColor: value ? '#1E78F5' : '#1E78F533',
           justifyContent: 'center',
         }}
       >

@@ -1,52 +1,86 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from '@/components/common/Text';
-import { Zap, Heart, Camera, Flame, MessageCircle } from 'lucide-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Zap } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sw, sh, sr } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
+import Camera from '@/assets/images/camera.svg';
+import Fire from '@/assets/images/fire.svg';
+import Like from '@/assets/images/like.svg';
+import Message from '@/assets/images/message.svg';
 
 // ─── Constants ────────────────────────────────────────────
 const FEATURES = [
   {
     id: 'matches',
     label: 'Like Matches',
-    icon: <Heart size={sf(24)} color="#E53935" fill="#E53935" />,
+    icon: (
+      <Like
+        width={sf(24)}
+        height={sf(24)}
+      />
+    ),
   },
   {
     id: 'snaps',
     label: 'Send Snaps',
-    icon: <Camera size={sf(24)} color="#212121" />,
+    icon: (
+      <Camera
+        width={sf(24)}
+        height={sf(24)}
+      />
+    ),
   },
   {
     id: 'streaks',
     label: 'Build Streaks',
-    icon: <Flame size={sf(24)} color="#FF6D00" />,
+    icon: (
+      <Fire
+        width={sf(24)}
+        height={sf(24)}
+      />
+    ),
   },
   {
     id: 'connect',
     label: 'Stay Connected',
-    icon: <MessageCircle size={sf(24)} color="#1E78F5" fill="#1E78F5" />,
+    icon: (
+      <Message
+        width={sf(24)}
+        height={sf(24)}
+      />
+    ),
   },
 ];
 
 // ─── Screen ───────────────────────────────────────────────
 const LaunchScreen = ({ navigation }: any) => {
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <View style={styles.page}>
         <View style={styles.main}>
           <View style={styles.iconCircle}>
-            <Zap width={sf(35)} height={sf(56)} color="#ffffff" fill="#ffffff" />
+            <Zap
+              width={sf(35)}
+              height={sf(56)}
+              color='#ffffff'
+              fill='#ffffff'
+            />
           </View>
 
-          <Text style={[styles.title, { fontSize: sf(24) }]} weight="semibold">
+          <Text
+            style={[styles.title, { fontSize: sf(24) }]}
+            weight='semibold'
+          >
             We're Live!
           </Text>
 
           <Text
-            style={[styles.subtitle, { fontFamily: 'Poppins-Regular', fontSize: sf(16) }]}
+            style={[
+              styles.subtitle,
+              { fontFamily: 'Poppins-Regular', fontSize: sf(16) },
+            ]}
           >
             SparkLink is officially live with{' '}
             <Text style={{ fontFamily: 'Poppins-Medium', color: '#1E78F5' }}>
@@ -57,20 +91,29 @@ const LaunchScreen = ({ navigation }: any) => {
 
           <LinearGradient
             colors={['#1E78F51A', '#FBB2021A']}
-            style={{ borderRadius: sf(16), width: '100%', padding: sf(16) }}
+            style={{ borderRadius: sf(16), width: '100%', padding: sf(16), minHeight: sh(398) }}
           >
             <Text
-              style={[styles.cardLine, { fontFamily: 'Poppins-Regular', fontSize: sf(16) }]}
+              style={[
+                styles.cardLine,
+                { fontFamily: 'Poppins-Regular', fontSize: sf(16) },
+              ]}
             >
               Every Day You'll See
             </Text>
             <Text
-              style={[styles.cardHighlight, { fontFamily: 'Poppins-SemiBold', fontSize: sf(20) }]}
+              style={[
+                styles.cardHighlight,
+                { fontFamily: 'Poppins-SemiBold', fontSize: sf(20) },
+              ]}
             >
               20 People
             </Text>
             <Text
-              style={[styles.cardMuted, { fontFamily: 'Poppins-Regular', fontSize: sf(16) }]}
+              style={[
+                styles.cardMuted,
+                { fontFamily: 'Poppins-Regular', fontSize: sf(16) },
+              ]}
             >
               Fresh matches to connect with
             </Text>
@@ -78,7 +121,10 @@ const LaunchScreen = ({ navigation }: any) => {
             <View style={styles.featureGrid}>
               <View style={styles.featureRow}>
                 {FEATURES.slice(0, 2).map(({ id, label, icon }) => (
-                  <View key={id} style={styles.featureTile}>
+                  <View
+                    key={id}
+                    style={styles.featureTile}
+                  >
                     {icon}
                     <Text
                       style={[
@@ -86,7 +132,6 @@ const LaunchScreen = ({ navigation }: any) => {
                         {
                           fontFamily: 'Poppins-Regular',
                           fontSize: sf(16),
-                          lineHeight: sf(16),
                           letterSpacing: 0,
                         },
                       ]}
@@ -98,7 +143,10 @@ const LaunchScreen = ({ navigation }: any) => {
               </View>
               <View style={styles.featureRow}>
                 {FEATURES.slice(2, 4).map(({ id, label, icon }) => (
-                  <View key={id} style={styles.featureTile}>
+                  <View
+                    key={id}
+                    style={styles.featureTile}
+                  >
                     {icon}
                     <Text
                       style={[
@@ -115,7 +163,10 @@ const LaunchScreen = ({ navigation }: any) => {
 
             <View style={styles.premiumBanner}>
               <Text
-                style={[styles.premiumText, { fontFamily: 'Poppins-SemiBold', fontSize: sf(16) }]}
+                style={[
+                  styles.premiumText,
+                  { fontFamily: 'Poppins-SemiBold', fontSize: sf(16) },
+                ]}
               >
                 Invite 2 friends to unlock premium features
               </Text>
@@ -127,17 +178,17 @@ const LaunchScreen = ({ navigation }: any) => {
           title="Let's Find your Spark!"
           onPress={() => navigation.navigate('EnableLocationScreen')}
           colors={['#1E78F5', '#FBB202']}
-          variant="gradient"
-          textStyle={{fontSize: sf(18), fontWeight: '500', lineHeight: sf(18), letterSpacing: 0}}
+          variant='gradient'
+          textStyle={{ fontSize: sf(18), fontWeight: '500', lineHeight: sh(56) }}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  page: { flex: 1, paddingHorizontal: sw(20), paddingVertical: sh(24) },
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
+  page: { flex: 1, paddingHorizontal: sw(20) },
   main: {
     flex: 1,
     alignItems: 'center',
@@ -166,8 +217,8 @@ const styles = StyleSheet.create({
     borderRadius: sr(16),
     alignItems: 'center',
     justifyContent: 'center',
-    rowGap: sh(12),
-    height: sh(88),
+    rowGap: sh(8),
+    height: sh(92),
   },
   featureLabel: { color: '#7D858E' },
   premiumBanner: { alignItems: 'center', marginTop: sh(12) },

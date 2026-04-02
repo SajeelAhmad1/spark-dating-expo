@@ -1,9 +1,9 @@
-import React from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import { EyeOff } from 'lucide-react-native';
-import { sf, sh, sw } from '@/utils/responsive';
-import { Text } from '../common/Text';
-import { FieldError } from '@/components/common/FieldError';
+import React from "react";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { Eye, EyeOff } from "lucide-react-native";
+import { sf, sh, sw } from "@/utils/sizeMatters";
+import { Text } from "../common/Text";
+import { FieldError } from "@/components/common/FieldError";
 
 export default function PasswordField({
   password,
@@ -22,10 +22,7 @@ export default function PasswordField({
 }) {
   return (
     <View style={styles.wrap}>
-      <Text
-        style={[styles.label, { fontSize: sf(18), lineHeight: sf(18), letterSpacing: 0 }]}
-        weight="semibold"
-      >
+      <Text style={[styles.label, { fontSize: sf(18) }]} weight="semibold">
         Password
       </Text>
       <View style={styles.fieldRow}>
@@ -42,7 +39,11 @@ export default function PasswordField({
           onPress={onToggleShowPassword}
           style={{ paddingLeft: sw(8) }}
         >
-          <EyeOff size={sf(20)} color="#7D858E" />
+          {showPassword ? (
+            <Eye size={sf(20)} color="#7D858E" />
+          ) : (
+            <EyeOff size={sf(20)} color="#7D858E" />
+          )}
         </TouchableOpacity>
       </View>
       <FieldError message={errorMessage} />
@@ -52,15 +53,15 @@ export default function PasswordField({
 
 const styles = StyleSheet.create({
   wrap: { rowGap: 8, paddingTop: 16 },
-  label: { color: '#000000' },
+  label: { color: "#000000" },
   fieldRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: '#B6B9C9',
+    borderBottomColor: "#B6B9C9",
   },
   input: {
     flex: 1,
-    color: '#7D858E',
+    color: "#7D858E",
   },
 });

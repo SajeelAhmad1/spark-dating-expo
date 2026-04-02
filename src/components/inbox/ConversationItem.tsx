@@ -9,7 +9,7 @@ import {
 import CameraButton from '@/components/inbox/CameraButton';
 import InboxAvatar from '@/components/inbox/InboxAvatar';
 import StreakBadge from '@/components/inbox/StreakBadge';
-import { sf, sw, sh, sr } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 
 export default function ConversationItem({
   item,

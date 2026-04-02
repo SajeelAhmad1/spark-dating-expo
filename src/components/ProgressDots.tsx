@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { sw, sh } from '@/utils/responsive';
+import { sw, sh } from '@/utils/sizeMatters';
 
 export const ProgressDots = ({
   total,

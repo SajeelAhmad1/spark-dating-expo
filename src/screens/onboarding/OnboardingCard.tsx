@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Shadow } from "react-native-shadow-2";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import { Colors } from "@/theme";
-import { sf, sw, sh, sr } from "@/utils/responsive";
+import { sf, sw, sh, sr } from "@/utils/sizeMatters";
 import { Text } from "@/components/common/Text";
 
 interface Props {
@@ -36,8 +36,7 @@ const OnboardingCard: React.FC<Props> = ({
           borderTopLeftRadius: sr(32),
           borderTopRightRadius: sr(32),
           paddingTop: sh(40),
-          paddingBottom: sh(32),
-          minHeight: sh(300),
+          minHeight: sh(362),
         }}
       >
         <View style={{ width: "100%" }}>
@@ -49,9 +48,7 @@ const OnboardingCard: React.FC<Props> = ({
               color: "#000000",
               paddingHorizontal: sw(24),
               marginBottom: sh(8),
-              fontSize: sf(24),
-              lineHeight: sf(32),
-              letterSpacing: 0,
+              fontSize: sf(24),  
             }}
           >
             {title}
@@ -64,9 +61,7 @@ const OnboardingCard: React.FC<Props> = ({
               color: "#7D858E",
               textAlign: "center",
               paddingHorizontal: sw(40),
-              fontSize: sf(16),
-              lineHeight: sf(20),
-              letterSpacing: 0,
+              fontSize: sf(16), 
               height: sf(80),
             }}
           >
@@ -111,9 +106,7 @@ const OnboardingCard: React.FC<Props> = ({
               onPress={onPress}
               colors={[Colors.gradientStart, Colors.gradientEnd]}
               textStyle={{
-                fontSize: sf(18),
-                lineHeight: sf(18),
-                letterSpacing: 0,
+                fontSize: sf(18), 
               }}
             />
           </View>

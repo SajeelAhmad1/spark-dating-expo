@@ -4,14 +4,14 @@ import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomToggle from '@/components/location/CustomToggle';
 import LocationIcon from '@/components/location/LocationIcon';
-import { sf, sw, sh, sr } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 
 // ── Screen ─────────────────────────────────────────────────
 const EnableLocationScreen = ({ navigation }: any) => {
   const [isEnabled, setIsEnabled] = useState(false);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <View style={styles.centerBlock}>
         <LocationIcon />
 
@@ -20,9 +20,7 @@ const EnableLocationScreen = ({ navigation }: any) => {
             styles.heading,
             {
               fontFamily: 'Poppins-SemiBold',
-              fontSize: sf(24),
-              lineHeight: sf(24),
-              letterSpacing: 0,
+              fontSize: sf(24), 
             },
           ]}
         >
@@ -48,8 +46,7 @@ const EnableLocationScreen = ({ navigation }: any) => {
           <Text
             style={{
               fontFamily: 'Poppins-SemiBold',
-              fontSize: sf(16),
-              lineHeight: sf(16),
+              fontSize: sf(16), 
               color: '#000000',
             }}
           >
@@ -77,7 +74,7 @@ const EnableLocationScreen = ({ navigation }: any) => {
           }}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -86,7 +83,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
     justifyContent: 'space-between',
-    paddingBottom: sh(32),
+    paddingBottom: sh(20),
   },
   centerBlock: {
     flex: 1,

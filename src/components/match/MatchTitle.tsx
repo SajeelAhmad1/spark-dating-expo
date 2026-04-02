@@ -2,13 +2,13 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { MATCH_CIRCLE_SIZE } from '@/constants/match';
-import { sf } from '@/utils/responsive';
+import { sf } from '@/utils/sizeMatters';
 
 export default function MatchTitle() {
   return (
     <View style={styles.row}>
       <Text
-        style={[styles.titleDark, { fontSize: sf(44), lineHeight: sf(46), letterSpacing: 0 }]}
+        style={[styles.titleDark, { fontSize: sf(44), }]}
         weight="bold"
       >
         {"It's a"}
@@ -16,7 +16,7 @@ export default function MatchTitle() {
 
       <View style={styles.circle}>
         <Text
-          style={[styles.titleLight, { fontSize: sf(44), lineHeight: sf(46) }]}
+          style={[styles.titleLight, { fontSize: sf(44), }]}
           weight="bold"
         >
           {'match!'}
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  titleDark: { color: '#1C1C1E' },
+  titleDark: { color: '#1C1C1E', marginRight: sf(4) },
   circle: {
     width: MATCH_CIRCLE_SIZE,
     height: MATCH_CIRCLE_SIZE,

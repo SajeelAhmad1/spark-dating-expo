@@ -15,7 +15,7 @@ import PrimaryButton from '@/components/common/PrimaryButton';
 import BODY_TYPES from '@/constants/bodyTypes';
 import ETHNICITIES from '@/constants/ethnicities';
 import HEIGHTS from '@/constants/heights';
-import { sf, sw, sh, sr } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { physicalAttributesSchema } from '@/schemas/onboarding';
 
@@ -47,9 +47,9 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
   };
 
   const dropdownValues: Record<NonNullable<DropdownField>, string> = {
-    height,
-    bodyType,
-    ethnicity,
+    height: height || '',
+    bodyType: bodyType || '',
+    ethnicity: ethnicity || '',
   };
 
   const handleSelect = (field: NonNullable<DropdownField>, value: string) => {
@@ -68,7 +68,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
   ];
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: sh(120) }}
@@ -82,13 +82,13 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
         {/* ── Header ── */}
         <View style={styles.headerBlock}>
           <Text
-            style={[styles.screenTitle, { fontSize: sf(28), lineHeight: sf(28), letterSpacing: 0 }]}
+            style={[styles.screenTitle, { fontSize: sf(28), }]}
             weight="semibold"
           >
             Physical Attributes
           </Text>
           <Text
-            style={[styles.screenSubtitle, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+            style={[styles.screenSubtitle, { fontSize: sf(15),  }]}
             weight="regular"
           >
             Help others learn more about you
@@ -100,7 +100,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
           {fields.map(({ key, label, placeholder }) => (
             <View key={key}>
               <Text
-                style={[styles.fieldLabel, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+                style={[styles.fieldLabel, { fontSize: sf(15)}]}
                 weight="semibold"
               >
                 {label}
@@ -122,6 +122,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
                   style={{
                     fontSize: sf(15),
                     color: dropdownValues[key] ? '#000000' : '#7D858E',
+                    lineHeight: sh(56)
                   }}
                 >
                   {dropdownValues[key] || placeholder}
@@ -135,7 +136,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
 
         {/* ── Skip Note ── */}
         <Text
-          style={[styles.skipNote, { fontSize: sf(15), lineHeight: sf(15), letterSpacing: 0 }]}
+          style={[styles.skipNote, { fontSize: sf(15)  }]}
           weight="regular"
         >
           You can always skip this step and edit later
@@ -150,7 +151,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
           colors={['#1E78F5', '#FBB202']}
           variant="gradient"
           style={{ alignSelf: 'stretch' }}
-          textStyle={{fontSize: sf(20), fontWeight: '500', lineHeight: sf(20), letterSpacing: 0}}
+          textStyle={{fontSize: sf(20), fontWeight: '500', lineHeight: sh(56) }}
         />
       </View>
 
@@ -207,13 +208,13 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
           </View>
         </TouchableOpacity>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  scroll: { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16) },
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
+  scroll: { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16), marginTop: sh(60) },
   headerBlock: { marginTop: sh(12), rowGap: sh(8) },
   screenTitle: { color: '#000000' },
   screenSubtitle: { color: '#7D858E' },
@@ -221,12 +222,12 @@ const styles = StyleSheet.create({
   fieldLabel: { color: '#000000', marginBottom: sh(8) },
   skipNote: { color: '#FBB202', marginTop: sh(20) },
   footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    // position: 'absolute',
+    // bottom: 0,
+    // left: 0,
+    // right: 0,
     paddingHorizontal: sw(20),
-    paddingBottom: sh(32),
+    // paddingBottom: sh(32),
   },
   modalBackdrop: {
     flex: 1,

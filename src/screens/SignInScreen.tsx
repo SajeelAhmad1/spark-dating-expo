@@ -11,7 +11,7 @@ import RememberMeToggle from '@/components/auth/RememberMeToggle';
 import SignInBottomActions from '@/components/auth/SignInBottomActions';
 import { useZodForm } from '@/utils/form';
 import { createSignInSchema } from '@/schemas/auth';
-import { sf, sw, sh } from '@/utils/responsive';
+import { sf, sw, sh } from '@/utils/sizeMatters';
 
 function SignInFormBody({
   tab,
@@ -117,13 +117,12 @@ export default function SignInScreen({
   const [activeTab, setActiveTab] = useState<AuthSigninTab>(initialTab);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
+    <View style={{ flex: 1, backgroundColor: '#ffffff', paddingBottom: sh(20) }}>
       <View
         style={{
           flex: 1,
           paddingHorizontal: sw(20),
-          paddingTop: sh(24),
-          paddingBottom: sh(16),
+          paddingTop: sh(72),
         }}
       >
         <TouchableOpacity style={{ width: sw(32), height: sw(32) }} onPress={() => {}}>
@@ -135,9 +134,7 @@ export default function SignInScreen({
             style={{
               color: '#000000',
               fontWeight: '600',
-              fontSize: sf(28),
-              lineHeight: sf(28),
-              letterSpacing: 0,
+              fontSize: sf(28), 
             }}
           >
             Welcome Back!
@@ -145,9 +142,7 @@ export default function SignInScreen({
           <Text
             style={{
               color: '#7D858E',
-              fontSize: sf(15),
-              lineHeight: sf(15),
-              letterSpacing: 0,
+              fontSize: sf(15), 
             }}
           >
             Please enter your number & password to signin
@@ -158,6 +153,6 @@ export default function SignInScreen({
 
         <SignInFormBody key={activeTab} tab={activeTab} navigation={navigation} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
