@@ -11,7 +11,7 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.yourcompany.sparkdating",
+      "bundleIdentifier": "com.sparkdating.app",
       "infoPlist": {
         "NSCameraUsageDescription": "We need camera access to take photos.",
         "NSLocationWhenInUseUsageDescription": "We need your location.",
@@ -20,7 +20,7 @@
       }
     },
     "android": {
-      "package": "com.yourcompany.sparkdating",
+      "package": "com.sparkdating.app",
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.INTERNET",
