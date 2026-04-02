@@ -1,13 +1,5 @@
-import React, { useState, useRef } from "react";
-import {
-  View,
-  TouchableOpacity,
-  Dimensions,
-  FlatList,
-  Alert,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-} from "react-native";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Animated, Dimensions, Easing, View, TouchableOpacity } from "react-native";
 import { Text } from "@/components/common/Text";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
@@ -19,6 +11,7 @@ import DiscoveryMatchCard from "@/components/discovery/DiscoveryMatchCard";
 import DiscoveryActions from "@/components/discovery/DiscoveryActions";
 import { sf, sr, sw, sh } from "@/utils/sizeMatters";
 import { showToast } from "@/utils/toast";
+import { PanGestureHandler } from "react-native-gesture-handler";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const CARD_H_PADDING = sw(12);
@@ -29,19 +22,35 @@ const BTN_OVERLAP = sf(32);
 // ── Discovery Screen ───────────────────────────────────────
 const DiscoveryScreen = ({ navigation }: any) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const flatListRef = useRef<FlatList>(null);
+  const [photoIndex, setPhotoIndex] = useState(0);
 
-  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const index = Math.round(e.nativeEvent.contentOffset.x / (CARD_WIDTH + 12));
-    setCurrentIndex(Math.max(0, Math.min(index, MATCHES.length - 1)));
-  };
+  const photoTotal = 7;
+  const cardLeftX = useRef(0);
+  const photoFade = useRef(new Animated.Value(1)).current;
 
   const activeMatch =
     MATCHES[Math.max(0, Math.min(currentIndex, MATCHES.length - 1))];
 
+  const translateX = useRef(new Animated.Value(0)).current;
+  const isSwipingRef = useRef(false);
+
+  const rotate = translateX.interpolate({
+    inputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
+    outputRange: ["-8deg", "0deg", "8deg"],
+    extrapolate: "clamp",
+  });
+
   const goToNextUser = () => {
-    const nextIndex = Math.min(currentIndex + 1, MATCHES.length - 1);
-    flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+    setCurrentIndex((prev) => Math.min(prev + 1, MATCHES.length - 1));
+    setPhotoIndex(0);
+  };
+
+  const goToPrevPhoto = () => {
+    setPhotoIndex((prev) => (prev - 1 + photoTotal) % photoTotal);
+  };
+
+  const goToNextPhoto = () => {
+    setPhotoIndex((prev) => (prev + 1) % photoTotal);
   };
 
   const openChatForActiveMatch = () => {
@@ -52,6 +61,34 @@ const DiscoveryScreen = ({ navigation }: any) => {
       initialLocked: false,
     });
   };
+
+  const onLikePress = () => {
+    navigation.navigate("MatchScreen", { match: activeMatch });
+  };
+
+  const onCrossPress = () => {
+    if (currentIndex >= MATCHES.length - 1) return;
+    goToNextUser();
+  };
+
+  const swipeThreshold = CARD_WIDTH * 0.25;
+  const velocityThreshold = 900;
+
+  const gestureEvent = useMemo(() => {
+    return Animated.event([{ nativeEvent: { translationX: translateX } }], {
+      useNativeDriver: true,
+    });
+  }, [translateX]);
+
+  useEffect(() => {
+    photoFade.setValue(0);
+    Animated.timing(photoFade, {
+      toValue: 1,
+      duration: 180,
+      useNativeDriver: true,
+      easing: Easing.out(Easing.cubic),
+    }).start();
+  }, [currentIndex, photoIndex, photoFade]);
 
   return (
     <View style={{ flex: 1, paddingBottom: sh(20) }}>
@@ -175,39 +212,131 @@ const DiscoveryScreen = ({ navigation }: any) => {
           position: "relative",
         }}
       >
-        <FlatList
-          ref={flatListRef}
-          data={MATCHES}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onScroll={onScroll}
-          scrollEventThrottle={16}
-          snapToInterval={CARD_WIDTH + 12}
-          decelerationRate="fast"
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <DiscoveryMatchCard
-              item={item}
-              cardWidth={CARD_WIDTH}
-              cardHeight={CARD_HEIGHT}
-              btnOverlap={BTN_OVERLAP}
-              total={MATCHES.length}
-              currentIndex={currentIndex}
-              rightChatOnPress={openChatForActiveMatch}
-            />
-          )}
-        />
+        <View
+          style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
+          onLayout={(e) => {
+            cardLeftX.current = e.nativeEvent.layout.x;
+          }}
+        >
+          <PanGestureHandler
+            onGestureEvent={gestureEvent}
+            activeOffsetX={[-25, 25]}
+            failOffsetY={[-15, 15]}
+            onEnded={(e: any) => {
+              if (isSwipingRef.current) return;
+
+              const { translationX, velocityX } = e?.nativeEvent ?? {};
+              const dx = Number(translationX ?? 0);
+              const vx = Number(velocityX ?? 0);
+
+              const isRightSwipe = dx > swipeThreshold || vx > velocityThreshold;
+              const isLeftSwipe = dx < -swipeThreshold || vx < -velocityThreshold;
+
+              if (!isRightSwipe && !isLeftSwipe) {
+                Animated.spring(translateX, {
+                  toValue: 0,
+                  useNativeDriver: true,
+                  speed: 20,
+                  bounciness: 10,
+                }).start();
+                return;
+              }
+
+              // Right swipe => new user
+              if (isRightSwipe) {
+                if (currentIndex >= MATCHES.length - 1) {
+                  Animated.spring(translateX, {
+                    toValue: 0,
+                    useNativeDriver: true,
+                    speed: 20,
+                    bounciness: 10,
+                  }).start();
+                  return;
+                }
+
+                isSwipingRef.current = true;
+                Animated.timing(translateX, {
+                  toValue: SCREEN_WIDTH,
+                  duration: 220,
+                  useNativeDriver: true,
+                  easing: Easing.out(Easing.cubic),
+                }).start(() => {
+                  isSwipingRef.current = false;
+                  translateX.setValue(0);
+                  onCrossPress();
+                });
+                return;
+              }
+
+              // Left swipe => like it
+              if (isLeftSwipe) {
+                isSwipingRef.current = true;
+                Animated.timing(translateX, {
+                  toValue: -SCREEN_WIDTH,
+                  duration: 220,
+                  useNativeDriver: true,
+                  easing: Easing.out(Easing.cubic),
+                }).start(() => {
+                  isSwipingRef.current = false;
+                  translateX.setValue(0);
+                  onLikePress();
+                });
+              }
+            }}
+          >
+            <Animated.View
+              style={{
+                width: "100%",
+                height: "100%",
+                opacity: photoFade,
+                transform: [{ translateX }, { rotate }],
+              }}
+            >
+              {/* Left/right tap targets for switching photos */}
+              <View
+                pointerEvents="box-none"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  flexDirection: "row",
+                  zIndex: 20,
+                }}
+              >
+                <TouchableOpacity
+                  activeOpacity={1}
+                  style={{ flex: 1 }}
+                  onPress={goToPrevPhoto}
+                />
+                <TouchableOpacity
+                  activeOpacity={1}
+                  style={{ flex: 1 }}
+                  onPress={goToNextPhoto}
+                />
+              </View>
+
+              <DiscoveryMatchCard
+                item={activeMatch}
+                cardWidth={CARD_WIDTH}
+                cardHeight={CARD_HEIGHT}
+                btnOverlap={BTN_OVERLAP}
+                photoTotal={photoTotal}
+                photoIndex={photoIndex}
+                rightChatOnPress={openChatForActiveMatch}
+              />
+            </Animated.View>
+          </PanGestureHandler>
+        </View>
 
         {/* ── Action Buttons ── */}
         <DiscoveryActions
-          onLikePress={() =>
-            navigation.navigate("MatchScreen", { match: activeMatch })
-          }
+          onLikePress={onLikePress}
           onStarPress={() =>
             showToast({ text1: 'Starred', text2: `${activeMatch.name} added to starred users`, icon: Zap })
           }
-          onCrossPress={goToNextUser}
+          onCrossPress={onCrossPress}
         />
       </View>
 
