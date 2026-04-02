@@ -10,7 +10,7 @@ import Profile5 from '@/assets/images/avatar5.svg';
 import CenterProfile from '@/assets/images/avatar6.svg';
 import LocationIcon from '@/assets/images/locationIcon.svg';
 import Svg, { Circle } from 'react-native-svg';
-import { sf, sr, sh } from '@/utils/responsive';
+import { sf, sr, sh } from '@/utils/sizeMatters';
 
 // ─── Geometry ──────────────────────────────────────────────────────────────
 const STROKE_WIDTH = sf(2);

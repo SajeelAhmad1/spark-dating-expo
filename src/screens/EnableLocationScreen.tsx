@@ -4,7 +4,7 @@ import { Text } from '@/components/common/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomToggle from '@/components/location/CustomToggle';
 import LocationIcon from '@/components/location/LocationIcon';
-import { sf, sw, sh, sr } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 
 // ── Screen ─────────────────────────────────────────────────
 const EnableLocationScreen = ({ navigation }: any) => {

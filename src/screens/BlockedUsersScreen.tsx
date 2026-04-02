@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { ChevronLeft, Handshake, Search, SubscriptIcon } from 'lucide-react-native';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { BLOCKED_USERS, BlockedUser } from '@/constants/blockedUsers';
 import { useZodForm } from '@/utils/form';

@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NavigationProp } from "@react-navigation/native";
 import Svg, { Path } from "react-native-svg";
 import CameraIcon from "@/assets/images/cameraIcon.svg";
-import { sf, sr, sw, sh } from "@/utils/responsive";
+import { sf, sr, sw, sh } from "@/utils/sizeMatters";
 import { useTabStore } from "@/store/tabStore";
 import TabItem from "./TabItem";
 import type { BottomTab } from "@/types/bottomTabs";

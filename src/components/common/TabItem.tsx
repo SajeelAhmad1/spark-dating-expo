@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native";
 import { Text } from "@/components/common/Text";
 import { Users, MessageSquare } from "lucide-react-native";
 import ProfileAvatar from "@/assets/images/profileAvatar.svg";
-import { sf, sr, sw, sh } from "@/utils/responsive";
+import { sf, sr, sw, sh } from "@/utils/sizeMatters";
 import type { BottomTab } from "@/types/bottomTabs";
 
 const ACTIVE_COLOR = "#1E78F5";

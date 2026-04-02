@@ -5,7 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ProgressDots } from "@/components/ProgressDots";
 import ChatIcon from "@/assets/images/chatIcon.svg";
 import type { MATCHES } from "@/constants/matches";
-import { sf, sr, sw, sh } from "@/utils/responsive";
+import { sf, sr, sw, sh } from "@/utils/sizeMatters";
 
 type MatchItem = (typeof MATCHES)[number];
 

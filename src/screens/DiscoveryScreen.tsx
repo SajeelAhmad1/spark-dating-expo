@@ -17,7 +17,7 @@ import Logo from "@/assets/images/logo.svg";
 import { MATCHES } from "@/constants/matches";
 import DiscoveryMatchCard from "@/components/discovery/DiscoveryMatchCard";
 import DiscoveryActions from "@/components/discovery/DiscoveryActions";
-import { sf, sr, sw, sh } from "@/utils/responsive";
+import { sf, sr, sw, sh } from "@/utils/sizeMatters";
 import { showToast } from "@/utils/toast";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");

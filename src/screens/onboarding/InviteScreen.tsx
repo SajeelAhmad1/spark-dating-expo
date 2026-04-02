@@ -7,7 +7,7 @@ import { Share2, Copy } from 'lucide-react-native';
 import Gift from '@/assets/images/gift.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sw, sh, sr } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 
 // ─── Constants ────────────────────────────────────────────
 const REFERRAL_LINK = 'https://spark.app/invite/SPARK-QT53V4';

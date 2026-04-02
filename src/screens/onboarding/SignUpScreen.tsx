@@ -6,7 +6,7 @@ import GoogleIcon from '@/assets/images/google.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Phone } from 'lucide-react-native';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 
 export default function SignUpScreen({ navigation }: any) {
   return (

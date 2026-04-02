@@ -30,7 +30,7 @@ import ChatMenu, { type ChatMenuItem } from '@/screens/ChatMenu';
 import type { Message } from '@/types/chat';
 import { INITIAL_MESSAGES } from '@/constants/chat';
 import { generateId, getTimeString } from '@/utils/chat';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { chatMessageFormSchema } from '@/schemas/messaging';
 import { showToast } from '@/utils/toast';

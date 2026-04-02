@@ -1,18 +1,18 @@
 import React, { useMemo, useState } from 'react';
-import { View, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, TouchableOpacity, Image, Alert, useWindowDimensions } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { ChevronLeft, Plus, X } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { FieldError } from '@/components/common/FieldError';
-import { sf, sw, sh, sr, useResponsive } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { uploadPhotosFilledSchema } from '@/schemas/onboarding';
 
 type PhotoSlot = { uri: string; isLocal: boolean } | null;
 
 const UploadPhotosScreen = ({ navigation }: any) => {
-  const { width } = useResponsive();
+  const { width } = useWindowDimensions();
   const { hPad, gap, slotWidth, slotHeight } = useMemo(() => {
     const hp = sw(24);
     const g = sw(12);

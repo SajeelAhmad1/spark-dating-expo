@@ -1,4 +1,4 @@
-import { sf, sh, sw } from '@/utils/responsive';
+import { sf, sh, sw } from '@/utils/sizeMatters';
 import React from 'react';
 import {
   TouchableOpacity,

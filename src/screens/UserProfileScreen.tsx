@@ -21,7 +21,7 @@ import {
   Flag,
   UserRoundX,
 } from 'lucide-react-native';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import DiscoveryMatchCard from '@/components/discovery/DiscoveryMatchCard';
 import DiscoveryActions from '@/components/discovery/DiscoveryActions';
 import { ViewStyle } from 'react-native';

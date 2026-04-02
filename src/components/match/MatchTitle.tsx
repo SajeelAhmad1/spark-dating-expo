@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { MATCH_CIRCLE_SIZE } from '@/constants/match';
-import { sf } from '@/utils/responsive';
+import { sf } from '@/utils/sizeMatters';
 
 export default function MatchTitle() {
   return (

@@ -16,7 +16,7 @@ import {
   Trash2,
   Zap,
 } from "lucide-react-native";
-import { sf, sr, sw, sh } from "@/utils/responsive";
+import { sf, sr, sw, sh } from "@/utils/sizeMatters";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import CustomToggle from "@/components/location/CustomToggle";
 

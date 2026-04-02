@@ -15,7 +15,7 @@ import type { InboxFilterType } from '@/types/inbox';
 import { filterConversations } from '@/utils/inbox';
 import ConversationItem from '@/components/inbox/ConversationItem';
 import SectionHeader from '@/components/inbox/SectionHeader';
-import { sf, sr, sw, sh } from '@/utils/responsive';
+import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { MATCHES } from '@/constants/matches';
 import { useZodForm } from '@/utils/form';
 import { inboxSearchFormSchema } from '@/schemas/messaging';

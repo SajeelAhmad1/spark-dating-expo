@@ -3,7 +3,7 @@ import { Image, TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import ChatAvatar from '@/components/chat/ChatAvatar';
 import { Message } from '@/types/chat';
-import { sf, sw, sh, sr } from '@/utils/responsive';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 
 export default function MessageBubble({
   message,
