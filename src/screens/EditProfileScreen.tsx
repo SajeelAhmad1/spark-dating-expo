@@ -334,7 +334,7 @@ const EditProfileScreen = ({ navigation }: any) => {
             <View>
               <Text style={labelStyle}>Birthday</Text>
               <TouchableOpacity
-                onPress={() => setDatePickerOpen(true)}
+                // onPress={() => setDatePickerOpen(true)}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
