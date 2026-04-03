@@ -19,7 +19,6 @@ const CARD_WIDTH = SCREEN_WIDTH - CARD_H_PADDING * 2;
 const CARD_HEIGHT = Math.min(SCREEN_HEIGHT * 0.6, sh(560));
 const BTN_OVERLAP = sf(32);
 
-// ── Discovery Screen ───────────────────────────────────────
 const DiscoveryScreen = ({ navigation }: any) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -141,7 +140,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
           </View>
 
           <TouchableOpacity
-            onPress={() => { navigation.navigate("SettingsScreen") }}
+            onPress={() => { navigation.navigate("SettingsScreen"); }}
             style={{
               width: sf(36),
               height: sf(36),
@@ -198,9 +197,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
           </LinearGradient>
         </MaskedView>
         <View>
-          <Text
-          style={{ fontSize: sf(24) }}
-          >🔥</Text>
+          <Text style={{ fontSize: sf(24) }}>🔥</Text>
         </View>
       </View>
 
@@ -242,7 +239,6 @@ const DiscoveryScreen = ({ navigation }: any) => {
                 return;
               }
 
-              // Right swipe => new user
               if (isRightSwipe) {
                 if (currentIndex >= MATCHES.length - 1) {
                   Animated.spring(translateX, {
@@ -268,7 +264,6 @@ const DiscoveryScreen = ({ navigation }: any) => {
                 return;
               }
 
-              // Left swipe => like it
               if (isLeftSwipe) {
                 isSwipingRef.current = true;
                 Animated.timing(translateX, {
@@ -292,7 +287,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
                 transform: [{ translateX }, { rotate }],
               }}
             >
-              {/* Left/right tap targets for switching photos */}
+              {/* Left/right tap targets — stop above the info box so chat button is tappable */}
               <View
                 pointerEvents="box-none"
                 style={{
@@ -300,14 +295,14 @@ const DiscoveryScreen = ({ navigation }: any) => {
                   top: 0,
                   left: 0,
                   right: 0,
-                  bottom: 0,
+                  bottom: sh(110),
                   flexDirection: "row",
-                  zIndex: 20,
+                  zIndex: 20, 
                 }}
               >
                 <TouchableOpacity
                   activeOpacity={1}
-                  style={{ flex: 1 }}
+                  style={{ flex: 1. }}
                   onPress={goToPrevPhoto}
                 />
                 <TouchableOpacity

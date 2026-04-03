@@ -12,14 +12,14 @@ import { FieldError } from '@/components/common/FieldError';
 import { ChevronLeft, ChevronDown } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import BODY_TYPES from '@/constants/bodyTypes';
+// import BODY_TYPES from '@/constants/bodyTypes';
 import ETHNICITIES from '@/constants/ethnicities';
 import HEIGHTS from '@/constants/heights';
 import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { physicalAttributesSchema } from '@/schemas/onboarding';
 
-type DropdownField = 'height' | 'bodyType' | 'ethnicity' | null;
+type DropdownField = 'height' | 'ethnicity' | null;
 
 const PhysicalAttributesScreen = ({ navigation }: any) => {
   const [openDropdown, setOpenDropdown] = useState<DropdownField>(null);
@@ -29,26 +29,26 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
     {
       defaultValues: {
         height: '',
-        bodyType: '',
+        // bodyType: '',
         ethnicity: '',
       },
     },
   );
 
   const height = watch('height');
-  const bodyType = watch('bodyType');
+  // const bodyType = watch('bodyType');
   const ethnicity = watch('ethnicity');
   const { errors } = formState;
 
   const dropdownOptions: Record<NonNullable<DropdownField>, string[]> = {
     height: Object.values(HEIGHTS),
-    bodyType: Object.values(BODY_TYPES),
+    // bodyType: Object.values(BODY_TYPES),
     ethnicity: Object.values(ETHNICITIES),
   };
 
   const dropdownValues: Record<NonNullable<DropdownField>, string> = {
     height: height || '',
-    bodyType: bodyType || '',
+    // bodyType: bodyType || '',
     ethnicity: ethnicity || '',
   };
 
@@ -62,8 +62,8 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
     label: string;
     placeholder: string;
   }[] = [
-    { key: 'height', label: 'Height', placeholder: 'Select height' },
-    { key: 'bodyType', label: 'Body Type', placeholder: 'Select bodytype' },
+    { key: 'height', label: 'Height (cm)', placeholder: 'Select height' },
+    // { key: 'bodyType', label: 'Body Type', placeholder: 'Select bodytype' },
     { key: 'ethnicity', label: 'Ethnicity', placeholder: 'Select ethnicity' },
   ];
 
@@ -159,8 +159,8 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
       <Modal
         visible={openDropdown !== null}
         transparent
-        animationType="fade"
-        onRequestClose={() => setOpenDropdown(null)}
+        animationType="fade" 
+        onRequestClose={() => setOpenDropdown(null)} 
       >
         <TouchableOpacity
           style={styles.modalBackdrop}
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: sr(24),
     paddingHorizontal: sw(20),
     paddingTop: sh(16),
-    paddingBottom: sh(40),
+    paddingBottom: sh(30),
   },
   modalHandle: {
     width: sw(40),

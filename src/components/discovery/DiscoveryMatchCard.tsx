@@ -1,11 +1,12 @@
 import React from "react";
-import { Image, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { Text } from "@/components/common/Text";
 import { LinearGradient } from "expo-linear-gradient";
 import { ProgressDots } from "@/components/ProgressDots";
 import ChatIcon from "@/assets/images/chatIcon.svg";
 import type { MATCHES } from "@/constants/matches";
 import { sf, sr, sw, sh } from "@/utils/sizeMatters";
+import { Image } from "react-native";
 
 type MatchItem = (typeof MATCHES)[number];
 
@@ -70,7 +71,6 @@ export default function DiscoveryMatchCard({
               borderColor: "rgba(251,178,2,0.5)",
               borderRadius: sr(12),
               paddingHorizontal: sw(12),
-              // paddingVertical: sh(10),
               height: 60,
               justifyContent: "center",
             }}
@@ -89,6 +89,7 @@ export default function DiscoveryMatchCard({
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
+                zIndex: 30,
               }}
             >
               <Text
@@ -102,7 +103,10 @@ export default function DiscoveryMatchCard({
               >
                 {item.bio}
               </Text>
-              <TouchableOpacity onPress={rightChatOnPress}>
+              <TouchableOpacity
+                onPress={(e) => { e.stopPropagation(); rightChatOnPress?.(); }}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
                 <View
                   style={{
                     width: 24,

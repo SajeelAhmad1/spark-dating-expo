@@ -20,6 +20,7 @@ import {
   AlertTriangle,
   Flag,
   UserRoundX,
+  Zap,
 } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import DiscoveryMatchCard from '@/components/discovery/DiscoveryMatchCard';
@@ -82,6 +83,10 @@ const UserProfileScreen = ({ navigation, route }: any) => {
     height: number;
   } | null>(null);
   const menuAnchorRef = useRef<View>(null);
+
+    const onLikePress = () => {
+    navigation.navigate("MatchScreen");
+  };
 
   const openMenu = () => {
     menuAnchorRef.current?.measureInWindow((x, y, width, height) => {
@@ -196,10 +201,13 @@ const UserProfileScreen = ({ navigation, route }: any) => {
             photoTotal={user.images.length}
             photoIndex={0}
             showProgressDots={false}
+            rightChatOnPress={() => navigation?.navigate('ChatScreen', { user })}
           />
           <DiscoveryActions
-            onLikePress={() => {}}
-            onStarPress={() => {}}
+            onLikePress={onLikePress}
+              onStarPress={() =>
+                        showToast({ text1: 'Starred', text2: `${user.name} added to starred users`, icon: Zap })
+                      }
             onCrossPress={() => {}}
           />
         </View>
