@@ -39,7 +39,6 @@ import SnapViewScreen from '@/screens/SnapViewScreen';
 const Stack = createStackNavigator();
 
 export default function App() {
-
   const [loaded, error] = useFonts({
     'Poppins-Thin':       require('./src/assets/fonts/Poppins-Thin.ttf'),
     'Poppins-ExtraLight': require('./src/assets/fonts/Poppins-ExtraLight.ttf'),
