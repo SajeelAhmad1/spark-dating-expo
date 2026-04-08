@@ -1,7 +1,8 @@
 // src/features/auth/hooks.ts
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { authApi } from './api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   LoginDto,
   SetPasswordDto,
@@ -39,14 +40,17 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (dto: LoginDto) => authApi.login(dto),
 
-    onSuccess: async ({ accessToken, refreshToken }) => {
+    onSuccess: async (data) => {
       await Promise.all([
-        tokenStore.setAccess(accessToken),
-        tokenStore.setRefresh(refreshToken),
-      ]);
+        tokenStore.setAccess(data.accessToken),
+        tokenStore.setRefresh(data.refreshToken),
+        tokenStore.setUser(data.user),
+      ]);  
+
       // Invalidate everything — user just authenticated
       queryClient.invalidateQueries();
     },
+    
   });
 };
 

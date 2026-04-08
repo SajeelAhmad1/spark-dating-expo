@@ -22,6 +22,7 @@ import {
   selectGetPayload,
 } from '@/store/signupStore';
 import { useCompleteProfile } from '@/features/profile/hooks';
+import { showToast } from '@/utils/toast';
 
 // ─── Cloudinary config ────────────────────────────────────────────────────────
 const CLOUDINARY_CLOUD_NAME = 'du9dfydj4';
@@ -86,6 +87,7 @@ const uploadToCloudinary = async (localUri: string): Promise<string> => {
 const UploadPhotosScreen = ({ navigation }: any) => {
   const { mutate: completeProfile, isPending: isCompleting } =
     useCompleteProfile();
+    const resetStore = useSignupStore((state) => state.reset);
   const { width } = useWindowDimensions();
   const { hPad, gap, slotWidth, slotHeight } = useMemo(() => {
     const hp = sw(24);
@@ -210,15 +212,17 @@ const UploadPhotosScreen = ({ navigation }: any) => {
 
     const payload = getPayload();
     setPhotosError(undefined);
-
+    console.log(payload, 'console payload profile');
     // ✅ Call API
     completeProfile(payload, {
-      onSuccess: () => {
-        console.log('[Profile Complete] Success!');
+      onSuccess: (data) => {
+        console.log(data, 'console data profile');
+        showToast({ text1: 'Profile completed successfully' });
+        resetStore();
         navigation.navigate('InviteScreen'); // next onboarding step
       },
       onError: (err: any) => {
-        Alert.alert('Error', err?.message || 'Failed to complete profile');
+        showToast({ text1: 'Failed to complete profile', text2: err.message });
       },
     });
   };
@@ -435,7 +439,10 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           disabled={isAnyUploading || isCompleting}
           colors={['#1E78F5', '#FBB202']}
           variant='gradient'
-          style={{ alignSelf: 'stretch', opacity: (isAnyUploading || isCompleting) ? 0.6 : 1 }}
+          style={{
+            alignSelf: 'stretch',
+            opacity: isAnyUploading || isCompleting ? 0.6 : 1,
+          }}
           textStyle={{
             fontSize: sf(20),
             fontWeight: '500',

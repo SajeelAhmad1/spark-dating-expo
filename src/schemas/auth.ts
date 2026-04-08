@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ErrorMessages as ERR } from '@/constants/ErrorMessages';
-import type { AuthSigninTab } from '@/types/auth';
+// import type { AuthSigninTab } from '@/types/auth';
 
 export const passwordSchema = z
   .string()
@@ -30,7 +30,7 @@ export const phoneNumberSchema = z
 export const rememberMeSchema = z.boolean();
 
 /** Sign-in: validates phone OR email based on active tab. */
-export function createSignInSchema(tab: AuthSigninTab) {
+export function createSignInSchema(tab: any) {
   return z
     .object({
       phoneNumber: z.string(),

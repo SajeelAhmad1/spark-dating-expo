@@ -59,7 +59,8 @@ interface SignupStore {
    * Call this inside your react-query useMutation.
    * Only photos that are fully uploaded (no errors, not in progress) are included.
    */
-  getPayload: () => Omit<SignupFormData, 'photos'> & { photoUrls: string[] };
+  // getPayload: () => Omit<SignupFormData, 'photos'> & { photoUrls: string[] };
+    getPayload: () => CompleteProfileDto;
 }
 
 // ─── Initial state ──────────────────────────────────────────────────────────────
@@ -116,27 +117,13 @@ export const useSignupStore = create<SignupStore>()(
           'signup/patchPhoto',
         ),
 
-      reset: () => set({ form: initialForm }, false, 'signup/reset'),
-
-      // getPayload: () => {
-      //   const { photos, ...rest } = get().form;
-      //   const photoUrls = photos
-      //     .filter(
-      //       (s): s is PhotoSlot =>
-      //         s !== null &&
-      //         !!s.cloudinaryUrl &&
-      //         !s.isUploading &&
-      //         !s.uploadError,
-      //     )
-      //     .map((s) => s.cloudinaryUrl);
-
-      //   return { ...rest, photoUrls };
-      // },
+      reset: () => set({ form: initialForm }, false, 'signup/reset'), 
 
       getPayload: (): CompleteProfileDto => {
-        const { photos, day, month, year, height, gender, ...rest } = get().form;
+        const { photos, day, month, year, height, gender, ...rest } =
+          get().form;
 
-        // only include successfully uploaded photos
+        // Only include successfully uploaded photos
         const photoUrls = photos
           .filter(
             (s): s is PhotoSlot =>
@@ -147,7 +134,7 @@ export const useSignupStore = create<SignupStore>()(
           )
           .map((s) => s.cloudinaryUrl);
 
-        // format DOB as YYYY-MM-DD string
+        // Format DOB as YYYY-MM-DD string
         const dob = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 
         return {
@@ -155,7 +142,7 @@ export const useSignupStore = create<SignupStore>()(
           dob,
           height: Number(height),
           photos: photoUrls,
-          gender: gender.toLowerCase() as "male" | "female" | "other",
+          gender: gender.toLowerCase() as 'male' | 'female' | 'other',
         };
       },
     }),

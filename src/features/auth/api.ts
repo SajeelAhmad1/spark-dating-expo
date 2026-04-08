@@ -3,15 +3,15 @@ import { apiPost } from '@/api/client';
 import { ENDPOINTS } from '@/api/endpoints';
 import {
   LoginDto,
-  AuthResponse,
+  LoginResponse,
   LoginDtoSchema,
-  AuthResponseSchema,
+  LoginResponseSchema,
   SetPasswordDto,
   SetPasswordDtoSchema,
   SignupStartPhoneDto,
   SignupStartResponse,
   VerifyOtpPhoneDto,
-  VerifyOtpPhoneDtoSchema,
+  VerifyOtpDtoSchema,
   SignupStartEmailDto,
 } from '@/features/auth/schema';
 
@@ -23,21 +23,27 @@ export const authApi = {
   },
 
   // sign-up start with phone — returns signupStartSchemaResponse so callers can read signupSessionId
-  signupStartPhone: async (payload: SignupStartPhoneDto | SignupStartEmailDto): Promise<SignupStartResponse> => {
-    return await apiPost<SignupStartResponse>(ENDPOINTS.AUTH.REGISTER_START_PHONE, payload);
+  signupStartPhone: async (
+    payload: SignupStartPhoneDto | SignupStartEmailDto,
+  ): Promise<SignupStartResponse> => {
+    return await apiPost<SignupStartResponse>(
+      ENDPOINTS.AUTH.SIGNUP_START,
+      payload,
+    );
   },
 
   // verify otp phone
   verifyOtpPhone: async (dto: VerifyOtpPhoneDto) => {
-    VerifyOtpPhoneDtoSchema.parse(dto);
-    return await apiPost(ENDPOINTS.AUTH.VERIFY_OTP_PHONE, dto);
+    VerifyOtpDtoSchema.parse(dto);
+    return await apiPost(ENDPOINTS.AUTH.SIGNUP_VERIFY_OTP, dto);
   },
 
   // login
-  login: async (dto: LoginDto): Promise<AuthResponse> => {
+
+  login: async (dto: LoginDto): Promise<LoginResponse> => {
     LoginDtoSchema.parse(dto);
     const raw = await apiPost(ENDPOINTS.AUTH.LOGIN, dto);
-    return AuthResponseSchema.parse(raw);
+    return LoginResponseSchema.parse(raw);
   },
 
   // logout

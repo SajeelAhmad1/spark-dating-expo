@@ -10,7 +10,14 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
-import { Check, Lock, Eye, EyeOff, CheckCircle2, XCircle } from 'lucide-react-native';
+import {
+  Check,
+  Lock,
+  Eye,
+  EyeOff,
+  CheckCircle2,
+  XCircle,
+} from 'lucide-react-native';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
@@ -46,7 +53,10 @@ const PASSWORD_RULES = [
   { label: 'One uppercase letter', test: (v: string) => /[A-Z]/.test(v) },
   { label: 'One lowercase letter', test: (v: string) => /[a-z]/.test(v) },
   { label: 'One number', test: (v: string) => /[0-9]/.test(v) },
-  { label: 'One special character', test: (v: string) => /[^A-Za-z0-9]/.test(v) },
+  {
+    label: 'One special character',
+    test: (v: string) => /[^A-Za-z0-9]/.test(v),
+  },
 ];
 
 function getStrength(password: string) {
@@ -81,24 +91,38 @@ function PasswordField({
   return (
     <View style={{ marginBottom: sh(8) }}>
       <Text style={styles.fieldLabel}>{label}</Text>
-      <View style={[styles.inputRow, errorMessage ? styles.inputRowError : null]}>
-        <Lock size={sf(18)} color="#9CA3AF" />
+      <View
+        style={[styles.inputRow, errorMessage ? styles.inputRowError : null]}
+      >
+        <Lock
+          size={sf(18)}
+          color='#9CA3AF'
+        />
         <TextInput
           value={value}
           onChangeText={onChangeText}
           onBlur={onBlur}
           placeholder={placeholder}
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor='#9CA3AF'
           secureTextEntry={!show}
-          autoCapitalize="none"
+          autoCapitalize='none'
           autoCorrect={false}
           style={styles.textInput}
         />
-        <TouchableOpacity onPress={onToggle} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity
+          onPress={onToggle}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
           {show ? (
-            <EyeOff size={sf(18)} color="#9CA3AF" />
+            <EyeOff
+              size={sf(18)}
+              color='#9CA3AF'
+            />
           ) : (
-            <Eye size={sf(18)} color="#9CA3AF" />
+            <Eye
+              size={sf(18)}
+              color='#9CA3AF'
+            />
           )}
         </TouchableOpacity>
       </View>
@@ -113,7 +137,14 @@ function StrengthMeter({ password }: { password: string }) {
 
   return (
     <View style={{ marginBottom: sh(16) }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: sw(8), marginBottom: sh(8) }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: sw(8),
+          marginBottom: sh(8),
+        }}
+      >
         <View style={{ flex: 1, flexDirection: 'row', gap: sw(4) }}>
           {Array.from({ length: PASSWORD_RULES.length }).map((_, i) => (
             <View
@@ -127,7 +158,15 @@ function StrengthMeter({ password }: { password: string }) {
             />
           ))}
         </View>
-        <Text style={{ fontSize: sf(12), fontWeight: '600', color, minWidth: sw(44), textAlign: 'right' }}>
+        <Text
+          style={{
+            fontSize: sf(12),
+            fontWeight: '600',
+            color,
+            minWidth: sw(44),
+            textAlign: 'right',
+          }}
+        >
           {label}
         </Text>
       </View>
@@ -135,13 +174,27 @@ function StrengthMeter({ password }: { password: string }) {
         {PASSWORD_RULES.map((rule) => {
           const passed = rule.test(password);
           return (
-            <View key={rule.label} style={{ flexDirection: 'row', alignItems: 'center', gap: sw(6) }}>
+            <View
+              key={rule.label}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: sw(6) }}
+            >
               {passed ? (
-                <CheckCircle2 size={sf(13)} color="#10B981" />
+                <CheckCircle2
+                  size={sf(13)}
+                  color='#10B981'
+                />
               ) : (
-                <XCircle size={sf(13)} color="#D1D5DB" />
+                <XCircle
+                  size={sf(13)}
+                  color='#D1D5DB'
+                />
               )}
-              <Text style={{ fontSize: sf(12), color: passed ? '#10B981' : '#9CA3AF' }}>
+              <Text
+                style={{
+                  fontSize: sf(12),
+                  color: passed ? '#10B981' : '#9CA3AF',
+                }}
+              >
                 {rule.label}
               </Text>
             </View>
@@ -167,7 +220,9 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
   const [signupSessionId, setSignupSessionId] = useState('');
 
   useEffect(() => {
-    SecureStore.getItemAsync('signupSessionId').then((v) => setSignupSessionId(v ?? ''));
+    SecureStore.getItemAsync('signupSessionId').then((v) =>
+      setSignupSessionId(v ?? ''),
+    );
   }, []);
 
   const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(
@@ -181,7 +236,10 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
 
   const onValid = (data: SetPasswordForm) => {
     if (!signupSessionId) {
-      showToast({ text1: 'Session expired', text2: 'Please restart the sign-up flow.' });
+      showToast({
+        text1: 'Session expired',
+        text2: 'Please restart the sign-up flow.',
+      });
       return;
     }
 
@@ -193,13 +251,16 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
     };
 
     setPassword(dto, {
-      onSuccess: async () => {
-        await SecureStore.deleteItemAsync('signupSessionId');
-        showToast({ text1: 'Account created successfully 🎉' });
+      onSuccess: async (data) => {
+        console.log(data, "console data set password");
+        // await SecureStore.deleteItemAsync('signupSessionId'); 
         navigation.navigate('ProfileSetupScreen');
       },
       onError: (err: any) => {
-        showToast({ text1: 'Failed to set password', text2: err?.message ?? 'Please try again.' });
+        showToast({
+          text1: 'Failed to set password',
+          text2: err?.message ?? 'Please try again.',
+        });
       },
     });
   };
@@ -207,25 +268,45 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <View style={styles.safeArea}>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="handled"
+          keyboardShouldPersistTaps='handled'
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.page}>
             {/* ── Success badge ── */}
             <View style={styles.badgeWrap}>
-              <View style={[styles.iconWrap, { width: sf(80), height: sf(80) }]}>
-                <Check size={sf(36)} color="#FFFFFF" strokeWidth={3} />
+              <View
+                style={[styles.iconWrap, { width: sf(80), height: sf(80) }]}
+              >
+                <Check
+                  size={sf(36)}
+                  color='#FFFFFF'
+                  strokeWidth={3}
+                />
               </View>
-              <Text style={[styles.badge, { fontSize: sf(20) }]} weight="semibold">
+              <Text
+                style={[styles.badge, { fontSize: sf(20) }]}
+                weight='semibold'
+              >
                 {isEmail ? 'Email Verified ✓' : 'Number Verified ✓'}
               </Text>
-              <Text style={[styles.badgeSub, { fontSize: sf(14) }]} weight="regular">
+              <Text
+                style={[
+                  styles.badgeSub,
+                  { fontSize: sf(14), textAlign: 'center' },
+                ]}
+                weight='regular'
+              >
                 Now create a password for{'\n'}
-                <Text style={{ color: '#1E78F5', fontWeight: '600' }}>{identifier}</Text>
+                <Text style={{ color: '#1E78F5', fontWeight: '600' }}>
+                  {identifier}
+                </Text>
               </Text>
             </View>
 
@@ -233,13 +314,17 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
             <View style={styles.divider} />
 
             {/* ── Password fields ── */}
-            <View style={{ width: '100%', flexDirection: 'column', gap: sh(16) }}>
+            <View
+              style={{ width: '100%', flexDirection: 'column', gap: sh(16) }}
+            >
               <PasswordField
-                label="Password"
+                label='Password'
                 value={password}
-                onChangeText={(v) => setValue('password', v, { shouldValidate: true })}
+                onChangeText={(v) =>
+                  setValue('password', v, { shouldValidate: true })
+                }
                 onBlur={() => trigger('password')}
-                placeholder="Min. 8 characters"
+                placeholder='Min. 8 characters'
                 errorMessage={errors.password?.message}
                 show={showPassword}
                 onToggle={() => setShowPassword((p) => !p)}
@@ -248,11 +333,13 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
               <StrengthMeter password={password} />
 
               <PasswordField
-                label="Confirm Password"
+                label='Confirm Password'
                 value={confirmPassword}
-                onChangeText={(v) => setValue('confirmPassword', v, { shouldValidate: true })}
+                onChangeText={(v) =>
+                  setValue('confirmPassword', v, { shouldValidate: true })
+                }
                 onBlur={() => trigger('confirmPassword')}
-                placeholder="Re-enter your password"
+                placeholder='Re-enter your password'
                 errorMessage={errors.confirmPassword?.message}
                 show={showConfirm}
                 onToggle={() => setShowConfirm((p) => !p)}
@@ -260,17 +347,37 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
 
               {/* Match indicator */}
               {confirmPassword.length > 0 && (
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: sw(6), marginBottom: sh(24), marginLeft: sw(4) }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: sw(6),
+                    marginBottom: sh(24),
+                    marginLeft: sw(4),
+                  }}
+                >
                   {password === confirmPassword ? (
                     <>
-                      <CheckCircle2 size={sf(13)} color="#10B981" />
-                      <Text style={{ fontSize: sf(12), color: '#10B981', fontWeight: '500' }}>
+                      <CheckCircle2
+                        size={sf(13)}
+                        color='#10B981'
+                      />
+                      <Text
+                        style={{
+                          fontSize: sf(12),
+                          color: '#10B981',
+                          fontWeight: '500',
+                        }}
+                      >
                         Passwords match
                       </Text>
                     </>
                   ) : (
                     <>
-                      <XCircle size={sf(13)} color="#EF4444" />
+                      <XCircle
+                        size={sf(13)}
+                        color='#EF4444'
+                      />
                       <Text style={{ fontSize: sf(12), color: '#EF4444' }}>
                         Passwords don't match
                       </Text>
@@ -283,20 +390,40 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
                 title={isPending ? 'Creating account…' : 'Create Account'}
                 onPress={handleSubmit(onValid)}
                 colors={['#1E78F5', '#FBB202']}
-                variant="gradient"
+                variant='gradient'
                 style={{ alignSelf: 'stretch' }}
                 disabled={isPending}
-                icon={isPending ? <ActivityIndicator size="small" color="#ffffff" /> : undefined}
-                iconPosition="end"
-                textStyle={{ fontSize: sf(18), fontWeight: '600', color: '#ffffff' }}
+                icon={
+                  isPending ? (
+                    <ActivityIndicator
+                      size='small'
+                      color='#ffffff'
+                    />
+                  ) : undefined
+                }
+                iconPosition='end'
+                textStyle={{
+                  fontSize: sf(18),
+                  fontWeight: '600',
+                  color: '#ffffff',
+                }}
               />
             </View>
 
             {/* ── Terms ── */}
-            <TouchableOpacity style={styles.termsWrap} onPress={() => {}}>
-              <Text style={[styles.terms, { fontSize: sf(14) }]} weight="regular">
+            <TouchableOpacity
+              style={styles.termsWrap}
+              onPress={() => {}}
+            >
+              <Text
+                style={[styles.terms, { fontSize: sf(14) }]}
+                weight='regular'
+              >
                 By continuing you agree to our{' '}
-                <Text style={styles.termsLink} weight="medium">
+                <Text
+                  style={styles.termsLink}
+                  weight='medium'
+                >
                   Terms & Conditions
                 </Text>
               </Text>
@@ -319,11 +446,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   badgeWrap: { alignItems: 'center', gap: sh(12), marginBottom: sh(32) },
-  iconWrap: { alignItems: 'center', justifyContent: 'center', borderRadius: 999, backgroundColor: '#4CD964' },
+  iconWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 999,
+    backgroundColor: '#4CD964',
+  },
   badge: { color: '#111827' },
   badgeSub: { color: '#6B7280', textAlign: 'center', lineHeight: sh(22) },
-  divider: { width: '100%', height: 1, backgroundColor: '#F3F4F6', marginBottom: sh(28) },
-  fieldLabel: { fontSize: sf(13), fontWeight: '500', color: '#374151', marginBottom: sh(6), letterSpacing: 0.2 },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#F3F4F6',
+    marginBottom: sh(28),
+  },
+  fieldLabel: {
+    fontSize: sf(15),
+    fontWeight: '600',
+    color: '#000000',
+    marginBottom: sh(6),
+  },
+  inputStyle: {
+    borderWidth: 1,
+    borderColor: '#B6B9C9',
+    borderRadius: sr(15),
+    height: sh(56),
+    paddingHorizontal: sw(10),
+    fontSize: sf(15),
+    color: '#000000',
+  },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -332,13 +483,19 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     borderRadius: sr(12),
     paddingHorizontal: sw(14),
-    height: sh(52),
+    height: sh(56),
     gap: sw(10),
     marginBottom: sh(0),
   },
   inputRowError: { borderColor: '#EF4444' },
   textInput: { flex: 1, fontSize: sf(15), color: '#111827', padding: 0 },
-  fieldError: { fontSize: sf(12), color: '#EF4444', marginTop: sh(4), marginLeft: sw(4), marginBottom: sh(8) },
+  fieldError: {
+    fontSize: sf(12),
+    color: '#EF4444',
+    marginTop: sh(4),
+    marginLeft: sw(4),
+    marginBottom: sh(8),
+  },
   termsWrap: { marginTop: sh(20) },
   terms: { color: '#9CA3AF', textAlign: 'center' },
   termsLink: { textDecorationLine: 'underline', color: '#6B7280' },

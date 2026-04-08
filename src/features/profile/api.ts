@@ -1,11 +1,10 @@
 // src/features/profile/api.ts
-import { apiPost } from '@/api/client'
-import { ENDPOINTS } from '@/api/endpoints'
-import { CompleteProfileDto, CompleteProfileDtoSchema } from './schema'
+import { ENDPOINTS } from '@/api/endpoints';
+import { CompleteProfileDto, CompleteProfileDtoResponse } from './schema'
+import { apiPost } from '@/api/client';
 
-export const profileApi = {  
-   completeProfile: async (payload: CompleteProfileDto) => {
-    // POST to /api/profile/complete
-    return apiPost(ENDPOINTS.USER.UPDATE('me'), payload)
+export const profileApi = {
+  completeProfile: async (payload: CompleteProfileDto): Promise<CompleteProfileDtoResponse> => {
+    return apiPost<CompleteProfileDtoResponse>(ENDPOINTS.USER.PROFILE_COMPLETE, payload);
   },
-}
+};

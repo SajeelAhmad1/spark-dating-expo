@@ -7,7 +7,10 @@ import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { otpFormSchema } from '@/schemas/onboarding';
 import { showToast } from '@/utils/toast';
-import { useVerifyOtpPhone } from '@/features/auth/hooks';
+import {
+  useSignupStartWithPhone,
+  useVerifyOtpPhone,
+} from '@/features/auth/hooks';
 import * as SecureStore from 'expo-secure-store';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -20,6 +23,8 @@ const RESEND_COOLDOWN_SEC = 30;
 const NumberVerifyScreen = ({ navigation, route }: any) => {
   // ✅ Accept either `phone` (from NumberEnterScreen) or `email` (from EmailInputScreen)
   const { phone, email } = route.params as { phone?: string; email?: string };
+  const { mutate: signupStart, isPending: isResending } =
+    useSignupStartWithPhone();
 
   // Whichever identifier was passed, use it throughout this screen
   const identifier = phone ?? email ?? '';
@@ -89,24 +94,53 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
   };
 
   const handleResend = () => {
-    if (secondsLeft > 0) return;
+    if (secondsLeft > 0 || isResending) return;
 
-    clearTimer();
-    setSecondsLeft(RESEND_COOLDOWN_SEC);
-    showToast({ text1: 'A new code has been sent' });
+    const payload = isEmail ? { email: identifier } : { phone: identifier };
 
-    intervalRef.current = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          clearTimer();
-          return 0;
+    signupStart(payload as any, {
+      onSuccess: async (data: any) => {
+        // 🔥 Update sessionId again (important)
+        if (data?.signupSessionId) {
+          await SecureStore.setItemAsync(
+            'signupSessionId',
+            data.signupSessionId,
+          );
+          setSignupSessionId(data.signupSessionId);
         }
-        return prev - 1;
-      });
-    }, 1000);
+
+        showToast({ text1: 'A new code has been sent' });
+
+        // ⏱ Start timer
+        clearTimer();
+        setSecondsLeft(RESEND_COOLDOWN_SEC);
+
+        intervalRef.current = setInterval(() => {
+          setSecondsLeft((prev) => {
+            if (prev <= 1) {
+              clearTimer();
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      },
+
+      onError: (err: any) => {
+        showToast({
+          text1: 'Failed to resend code',
+          text2: err?.message,
+        });
+      },
+    });
   };
 
-  const onValid = (data: { d0: string; d1: string; d2: string; d3: string }) => {
+  const onValid = (data: {
+    d0: string;
+    d1: string;
+    d2: string;
+    d3: string;
+  }) => {
     const code = `${data.d0}${data.d1}${data.d2}${data.d3}`;
 
     // ✅ Build the DTO with whichever identifier we have
@@ -114,6 +148,7 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
       ? { email: identifier, code, signupSessionId }
       : { phone: identifier, code, signupSessionId };
 
+       console.log( identifier, code, signupSessionId)
     verifyOtp(dto as any, {
       onSuccess: () => {
         showToast({ text1: 'Verified successfully' });
@@ -134,12 +169,20 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
     <View style={styles.safeArea}>
       <View style={styles.page}>
         <View style={styles.headerBlock}>
-          <Text style={[styles.title, { fontSize: sf(28) }]} weight="semibold">
+          <Text
+            style={[styles.title, { fontSize: sf(28) }]}
+            weight='semibold'
+          >
             Verify Your {isEmail ? 'Email' : 'Number'}
           </Text>
-          <Text style={[styles.subtitle, { fontSize: sf(15) }]} weight="regular">
+          <Text
+            style={[styles.subtitle, { fontSize: sf(15), textAlign: 'center' }]}
+            weight='regular'
+          >
             Enter the 4-digit code sent to{'\n'}
-            <Text style={{ color: '#1E78F5', fontWeight: '600' }}>{identifier}</Text>
+            <Text style={{ color: '#1E78F5', fontWeight: '600' }}>
+              {identifier}
+            </Text>
           </Text>
         </View>
 
@@ -147,12 +190,14 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
           {DIGIT_KEYS.map((key, index) => (
             <TextInput
               key={key}
-              ref={(r) => { inputs.current[index] = r; }}
+              ref={(r) => {
+                inputs.current[index] = r;
+              }}
               value={digits[index]}
               onChangeText={(text) => handleChange(text, index)}
               onKeyPress={(e) => handleKeyPress(e, index)}
               onBlur={() => trigger(key)}
-              keyboardType="number-pad"
+              keyboardType='number-pad'
               maxLength={1}
               style={[
                 styles.otpCell,
@@ -170,9 +215,13 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
             title={isVerifying ? 'Verifying...' : 'Verify'}
             onPress={handleSubmit(onValid)}
             colors={['#1E78F5', '#FBB202']}
-            variant="gradient"
+            variant='gradient'
             style={{ alignSelf: 'stretch' }}
-            textStyle={{ fontWeight: '500', fontSize: sf(20), color: '#ffffff' }}
+            textStyle={{
+              fontWeight: '500',
+              fontSize: sf(20),
+              color: '#ffffff',
+            }}
             disabled={isVerifying}
           />
         </View>
@@ -180,7 +229,7 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
         <TouchableOpacity
           style={styles.resendWrap}
           onPress={handleResend}
-          disabled={secondsLeft > 0}
+          disabled={secondsLeft > 0 || isResending}
           activeOpacity={secondsLeft > 0 ? 1 : 0.7}
         >
           <Text
@@ -189,7 +238,7 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
               { fontSize: sf(16) },
               secondsLeft > 0 && styles.resendDisabled,
             ]}
-            weight="medium"
+            weight='medium'
           >
             {secondsLeft > 0 ? `Resend code in ${secondsLeft}s` : 'Resend Code'}
           </Text>
@@ -210,7 +259,7 @@ const styles = StyleSheet.create({
     paddingBottom: sh(24),
     marginTop: sh(80),
   },
-  headerBlock: { marginTop: sh(64), rowGap: sh(8) },
+  headerBlock: { marginTop: sh(64), rowGap: sh(8), alignItems: 'center' },
   title: { color: '#000000' },
   subtitle: { color: '#7D858E' },
   otpRow: {
