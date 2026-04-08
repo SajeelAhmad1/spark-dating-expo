@@ -2,22 +2,71 @@ import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { otpFormSchema } from '@/schemas/onboarding';
 import { showToast } from '@/utils/toast';
+import { useVerifyOtpPhone } from '@/features/auth/hooks';
+import * as SecureStore from 'expo-secure-store';
+
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const DIGIT_KEYS = ['d0', 'd1', 'd2', 'd3'] as const;
 const RESEND_COOLDOWN_SEC = 30;
 
-const NumberVerifyScreen = ({ navigation }: any) => {
-  const inputs = useRef<(TextInput | null)[]>([]);
-  const [secondsLeft, setSecondsLeft] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null); // ✅ hold interval ref
+// ─── Screen ───────────────────────────────────────────────────────────────────
 
-  // ✅ Clear interval helper — reusable
+const NumberVerifyScreen = ({ navigation, route }: any) => {
+  // ✅ Accept either `phone` (from NumberEnterScreen) or `email` (from EmailInputScreen)
+  const { phone, email } = route.params as { phone?: string; email?: string };
+
+  // Whichever identifier was passed, use it throughout this screen
+  const identifier = phone ?? email ?? '';
+  const isEmail = !phone && !!email;
+
+  const { mutate: verifyOtp, isPending: isVerifying } = useVerifyOtpPhone();
+  const inputs = useRef<(TextInput | null)[]>([]);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [signupSessionId, setSignupSessionId] = useState<string>('');
+
+  useEffect(() => {
+    SecureStore.getItemAsync('signupSessionId').then((value: string | null) =>
+      setSignupSessionId(value || ''),
+    );
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('blur', () => {
+      clearTimer();
+      setSecondsLeft(0);
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
+    return () => clearTimer();
+  }, []);
+
+  // ─── Form ──────────────────────────────────────────────────────────────────
+
+  const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(
+    otpFormSchema,
+    { defaultValues: { d0: '', d1: '', d2: '', d3: '' } },
+  );
+
+  const digits = DIGIT_KEYS.map((k) => watch(k));
+  const { errors: otpErrors } = formState;
+  const otpError =
+    otpErrors.d0?.message ||
+    otpErrors.d1?.message ||
+    otpErrors.d2?.message ||
+    otpErrors.d3?.message;
+
+  // ─── Handlers ─────────────────────────────────────────────────────────────
+
   const clearTimer = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -25,36 +74,9 @@ const NumberVerifyScreen = ({ navigation }: any) => {
     }
   };
 
-  // ✅ Stop timer when screen is left (back, navigate away, swipe)
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('blur', () => {
-      clearTimer();
-      setSecondsLeft(0);
-    });
-    return unsubscribe; // ✅ cleanup listener on unmount
-  }, [navigation]);
-
-  // ✅ Cleanup interval on unmount as a safety net
-  useEffect(() => {
-    return () => clearTimer();
-  }, []);
-
-  const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(otpFormSchema, {
-    defaultValues: { d0: '', d1: '', d2: '', d3: '' },
-  });
-
-  const digits = DIGIT_KEYS.map(k => watch(k));
-  const otpErrors = formState.errors;
-  const otpError =
-    otpErrors.d0?.message ||
-    otpErrors.d1?.message ||
-    otpErrors.d2?.message ||
-    otpErrors.d3?.message;
-
   const handleChange = (text: string, index: number) => {
     const nextDigit = text.slice(-1);
-    const key = DIGIT_KEYS[index];
-    setValue(key, nextDigit, { shouldValidate: true });
+    setValue(DIGIT_KEYS[index], nextDigit, { shouldValidate: true });
     if (nextDigit && index < 3) {
       inputs.current[index + 1]?.focus();
     }
@@ -66,25 +88,17 @@ const NumberVerifyScreen = ({ navigation }: any) => {
     }
   };
 
-  const onValid = () => {
-    clearTimer();       // ✅ stop timer on verify
-    setSecondsLeft(0);
-    navigation.navigate('VerificationSuccessScreen');
-  };
-
   const handleResend = () => {
-    if (secondsLeft > 0) return; // guard — button should be disabled anyway
+    if (secondsLeft > 0) return;
 
-    clearTimer(); // ✅ clear any leftover interval before starting fresh
-
+    clearTimer();
     setSecondsLeft(RESEND_COOLDOWN_SEC);
     showToast({ text1: 'A new code has been sent' });
 
-    // ✅ Start interval — ticks every second, stops itself at 0
     intervalRef.current = setInterval(() => {
-      setSecondsLeft(prev => {
+      setSecondsLeft((prev) => {
         if (prev <= 1) {
-          clearTimer(); // ✅ auto-stop when countdown reaches 0
+          clearTimer();
           return 0;
         }
         return prev - 1;
@@ -92,17 +106,40 @@ const NumberVerifyScreen = ({ navigation }: any) => {
     }, 1000);
   };
 
-  const canResend = secondsLeft <= 0;
+  const onValid = (data: { d0: string; d1: string; d2: string; d3: string }) => {
+    const code = `${data.d0}${data.d1}${data.d2}${data.d3}`;
+
+    // ✅ Build the DTO with whichever identifier we have
+    const dto = isEmail
+      ? { email: identifier, code, signupSessionId }
+      : { phone: identifier, code, signupSessionId };
+
+    verifyOtp(dto as any, {
+      onSuccess: () => {
+        showToast({ text1: 'Verified successfully' });
+        // ✅ Forward the correct identifier to VerificationSuccessScreen
+        navigation.navigate('VerificationSuccessScreen', {
+          ...(isEmail ? { email: identifier } : { phone: identifier }),
+        });
+      },
+      onError: (err: any) => {
+        showToast({ text1: 'Verification failed', text2: err.message });
+      },
+    });
+  };
+
+  // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
     <View style={styles.safeArea}>
       <View style={styles.page}>
         <View style={styles.headerBlock}>
           <Text style={[styles.title, { fontSize: sf(28) }]} weight="semibold">
-            Verify Your Number
+            Verify Your {isEmail ? 'Email' : 'Number'}
           </Text>
           <Text style={[styles.subtitle, { fontSize: sf(15) }]} weight="regular">
-            Enter the 4 digit code
+            Enter the 4-digit code sent to{'\n'}
+            <Text style={{ color: '#1E78F5', fontWeight: '600' }}>{identifier}</Text>
           </Text>
         </View>
 
@@ -110,49 +147,47 @@ const NumberVerifyScreen = ({ navigation }: any) => {
           {DIGIT_KEYS.map((key, index) => (
             <TextInput
               key={key}
-              ref={r => { inputs.current[index] = r; }}
+              ref={(r) => { inputs.current[index] = r; }}
               value={digits[index]}
-              onChangeText={text => handleChange(text, index)}
-              onKeyPress={e => handleKeyPress(e, index)}
+              onChangeText={(text) => handleChange(text, index)}
+              onKeyPress={(e) => handleKeyPress(e, index)}
               onBlur={() => trigger(key)}
               keyboardType="number-pad"
               maxLength={1}
               style={[
                 styles.otpCell,
                 otpErrors[key]?.message ? styles.otpCellError : null,
-                {
-                  fontSize: sf(20), 
-                  width: sf(56),
-                  height: sf(56),
-                },
+                { fontSize: sf(20), width: sf(56), height: sf(56) },
               ]}
             />
           ))}
         </View>
+
         <FieldError message={otpError} />
 
         <View style={styles.btnWrap}>
           <PrimaryButton
-            title="Verify"
+            title={isVerifying ? 'Verifying...' : 'Verify'}
             onPress={handleSubmit(onValid)}
             colors={['#1E78F5', '#FBB202']}
             variant="gradient"
             style={{ alignSelf: 'stretch' }}
             textStyle={{ fontWeight: '500', fontSize: sf(20), color: '#ffffff' }}
+            disabled={isVerifying}
           />
         </View>
 
         <TouchableOpacity
           style={styles.resendWrap}
           onPress={handleResend}
-          disabled={!canResend}
-          activeOpacity={canResend ? 0.7 : 1}
+          disabled={secondsLeft > 0}
+          activeOpacity={secondsLeft > 0 ? 1 : 0.7}
         >
           <Text
             style={[
               styles.resend,
               { fontSize: sf(16) },
-              !canResend && styles.resendDisabled,
+              secondsLeft > 0 && styles.resendDisabled,
             ]}
             weight="medium"
           >
@@ -163,6 +198,8 @@ const NumberVerifyScreen = ({ navigation }: any) => {
     </View>
   );
 };
+
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
@@ -186,7 +223,6 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontWeight: '600',
     textAlign: 'center',
-    letterSpacing: 0,
     borderRadius: sr(15),
     borderWidth: 1,
     borderColor: '#B6B9C9',

@@ -13,6 +13,7 @@ import WaitingScreen from '@/screens/onboarding/WaitingScreen';
 import LaunchScreen from '@/screens/onboarding/LaunchScreen';
 import SignInScreen from '@/screens/SignInScreen';
 import ProfileScreen from '@/screens/ProfileScreen';
+import EmailInputScreen from '@/screens/onboarding/EmailInputScreen';
 import NumberInputScreen from '@/screens/onboarding/NumberInputScreen';
 import NumberVerifyScreen from '@/screens/onboarding/NumberVerifyScreen';
 import VerificationSuccessScreen from '@/screens/onboarding/VerificationSuccessScreen';
@@ -35,6 +36,7 @@ import Toast from 'react-native-toast-message';
 import UserProfileScreen from '@/screens/UserProfileScreen';
 import { toastConfig } from '@/utils/toastConfig';
 import SnapViewScreen from '@/screens/SnapViewScreen';
+import { QueryProvider } from '@/providers/QueryProvider';
 
 const Stack = createStackNavigator();
 
@@ -60,6 +62,7 @@ export default function App() {
       {/* ✅ WRAP EVERYTHING */}
       <SafeAreaProvider>
         <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
+          <QueryProvider>
           <NavigationContainer>
             <Stack.Navigator
               initialRouteName="Onboarding1"
@@ -73,6 +76,7 @@ export default function App() {
               <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
               <Stack.Screen name="SignInScreen" component={SignInScreen} />
 
+              <Stack.Screen name="EmailInputScreen" component={EmailInputScreen} />
               <Stack.Screen name="NumberInputScreen" component={NumberInputScreen} />
               <Stack.Screen name="NumberVerifyScreen" component={NumberVerifyScreen} />
               <Stack.Screen name="VerificationSuccessScreen" component={VerificationSuccessScreen} />
@@ -103,6 +107,7 @@ export default function App() {
               <Stack.Screen name="UserProfileScreen" component={UserProfileScreen} />
             </Stack.Navigator>
           </NavigationContainer>
+          </QueryProvider>
 
           <Toast config={toastConfig} />
         </SafeAreaView>

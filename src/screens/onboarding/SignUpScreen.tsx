@@ -5,7 +5,7 @@ import Logo from '@/assets/images/logo.svg';
 import GoogleIcon from '@/assets/images/google.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Phone } from 'lucide-react-native';
+import { Phone, Mail } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 
 export default function SignUpScreen({ navigation }: any) {
@@ -95,6 +95,17 @@ export default function SignUpScreen({ navigation }: any) {
               <Text style={{ color: '#1E78F5' }}>Cookies Policy</Text>
             </Text>
 
+            <PrimaryButton
+              title="Continue with Emial"
+              onPress={() => navigation.navigate('EmailInputScreen')} 
+              colors={['#ffffff']}
+              iconBackground="#EDEDED"
+              variant="outline"  
+              icon={<Mail width={sf(28)} height={sf(28)} color="#1E78F5" />}
+              iconPosition="start"
+              style={{ backgroundColor: 'white' }}
+              textStyle={{ fontSize: sf(16), fontWeight: '500', color: '#1E78F5' }}
+            />
             <PrimaryButton
               title="Continue with mobile"
               onPress={() => navigation.navigate('NumberInputScreen')}

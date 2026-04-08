@@ -1,3 +1,4 @@
+// screens/onboarding/PhysicalAttributesScreen.tsx
 import React, { useState } from 'react';
 import {
   View,
@@ -10,62 +11,57 @@ import {
 import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
 import { ChevronLeft, ChevronDown } from 'lucide-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '@/components/common/PrimaryButton';
-// import BODY_TYPES from '@/constants/bodyTypes';
 import ETHNICITIES from '@/constants/ethnicities';
 import HEIGHTS from '@/constants/heights';
 import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { physicalAttributesSchema } from '@/schemas/onboarding';
+import { useSignupStore, selectForm, selectPatch } from '@/store/signupStore';
 
 type DropdownField = 'height' | 'ethnicity' | null;
 
 const PhysicalAttributesScreen = ({ navigation }: any) => {
   const [openDropdown, setOpenDropdown] = useState<DropdownField>(null);
 
-  const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(
-    physicalAttributesSchema,
-    {
-      defaultValues: {
-        height: '',
-        // bodyType: '',
-        ethnicity: '',
-      },
-    },
-  );
+  const form  = useSignupStore(selectForm);
+  const patch = useSignupStore(selectPatch);
 
-  const height = watch('height');
-  // const bodyType = watch('bodyType');
+  const { watch, setValue, handleSubmit, formState } = useZodForm(physicalAttributesSchema, {
+    defaultValues: {
+      height:    form.height,
+      ethnicity: form.ethnicity,
+    },
+  });
+
+  const height    = watch('height');
   const ethnicity = watch('ethnicity');
   const { errors } = formState;
 
   const dropdownOptions: Record<NonNullable<DropdownField>, string[]> = {
-    height: Object.values(HEIGHTS),
-    // bodyType: Object.values(BODY_TYPES),
+    height:    Object.values(HEIGHTS),
     ethnicity: Object.values(ETHNICITIES),
   };
 
   const dropdownValues: Record<NonNullable<DropdownField>, string> = {
-    height: height || '',
-    // bodyType: bodyType || '',
+    height:    height    || '',
     ethnicity: ethnicity || '',
   };
 
-  const handleSelect = (field: NonNullable<DropdownField>, value: string) => {
+  const handleDropdownSelect = (field: NonNullable<DropdownField>, value: string) => {
     setValue(field, value, { shouldValidate: true });
     setOpenDropdown(null);
   };
 
-  const fields: {
-    key: NonNullable<DropdownField>;
-    label: string;
-    placeholder: string;
-  }[] = [
-    { key: 'height', label: 'Height (cm)', placeholder: 'Select height' },
-    // { key: 'bodyType', label: 'Body Type', placeholder: 'Select bodytype' },
-    { key: 'ethnicity', label: 'Ethnicity', placeholder: 'Select ethnicity' },
+  const fields: { key: NonNullable<DropdownField>; label: string; placeholder: string }[] = [
+    { key: 'height',    label: 'Height (cm)', placeholder: 'Select height'    },
+    { key: 'ethnicity', label: 'Ethnicity',   placeholder: 'Select ethnicity' },
   ];
+
+  const onContinue = (data: any) => {
+    patch({ height: data.height, ethnicity: data.ethnicity });
+    navigation?.navigate('InterestsScreen');
+  };
 
   return (
     <View style={styles.safeArea}>
@@ -74,35 +70,23 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
         contentContainerStyle={{ paddingBottom: sh(120) }}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── Back Button ── */}
         <TouchableOpacity onPress={() => navigation?.goBack()}>
           <ChevronLeft size={sf(24)} color="#000000" />
         </TouchableOpacity>
 
-        {/* ── Header ── */}
         <View style={styles.headerBlock}>
-          <Text
-            style={[styles.screenTitle, { fontSize: sf(28), }]}
-            weight="semibold"
-          >
+          <Text style={[styles.screenTitle, { fontSize: sf(28) }]} weight="semibold">
             Physical Attributes
           </Text>
-          <Text
-            style={[styles.screenSubtitle, { fontSize: sf(15),  }]}
-            weight="regular"
-          >
+          <Text style={[styles.screenSubtitle, { fontSize: sf(15) }]} weight="regular">
             Help others learn more about you
           </Text>
         </View>
 
-        {/* ── Dropdowns ── */}
         <View style={styles.fieldsCol}>
           {fields.map(({ key, label, placeholder }) => (
             <View key={key}>
-              <Text
-                style={[styles.fieldLabel, { fontSize: sf(15)}]}
-                weight="semibold"
-              >
+              <Text style={[styles.fieldLabel, { fontSize: sf(15) }]} weight="semibold">
                 {label}
               </Text>
               <TouchableOpacity
@@ -118,13 +102,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
                   paddingHorizontal: sw(16),
                 }}
               >
-                <Text
-                  style={{
-                    fontSize: sf(15),
-                    color: dropdownValues[key] ? '#000000' : '#7D858E',
-                    lineHeight: sh(56)
-                  }}
-                >
+                <Text style={{ fontSize: sf(15), color: dropdownValues[key] ? '#000000' : '#7D858E', lineHeight: sh(56) }}>
                   {dropdownValues[key] || placeholder}
                 </Text>
                 <ChevronDown size={sf(18)} color="#000000" />
@@ -134,33 +112,28 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
           ))}
         </View>
 
-        {/* ── Skip Note ── */}
-        <Text
-          style={[styles.skipNote, { fontSize: sf(15)  }]}
-          weight="regular"
-        >
+        <Text style={[styles.skipNote, { fontSize: sf(15) }]} weight="regular">
           You can always skip this step and edit later
         </Text>
       </ScrollView>
 
-      {/* ── Continue Button ── */}
       <View style={styles.footer}>
         <PrimaryButton
           title="Continue"
-          onPress={handleSubmit(() => navigation?.navigate('InterestsScreen'))}
+          onPress={handleSubmit(onContinue)}
           colors={['#1E78F5', '#FBB202']}
           variant="gradient"
           style={{ alignSelf: 'stretch' }}
-          textStyle={{fontSize: sf(20), fontWeight: '500', lineHeight: sh(56) }}
+          textStyle={{ fontSize: sf(20), fontWeight: '500', lineHeight: sh(56) }}
         />
       </View>
 
-      {/* ── Dropdown Modal ── */}
+      {/* Dropdown Modal */}
       <Modal
         visible={openDropdown !== null}
         transparent
-        animationType="fade" 
-        onRequestClose={() => setOpenDropdown(null)} 
+        animationType="fade"
+        onRequestClose={() => setOpenDropdown(null)}
       >
         <TouchableOpacity
           style={styles.modalBackdrop}
@@ -169,20 +142,15 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
         >
           <View style={[styles.modalSheet, { maxHeight: sh(360) }]}>
             <View style={styles.modalHandle} />
-
             <FlatList
               data={openDropdown ? dropdownOptions[openDropdown] : []}
-              keyExtractor={item => item}
+              keyExtractor={(item) => item}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => {
-                const isSelected = openDropdown
-                  ? dropdownValues[openDropdown] === item
-                  : false;
+                const isSelected = openDropdown ? dropdownValues[openDropdown] === item : false;
                 return (
                   <TouchableOpacity
-                    onPress={() =>
-                      openDropdown && handleSelect(openDropdown, item)
-                    }
+                    onPress={() => openDropdown && handleDropdownSelect(openDropdown, item)}
                     style={{
                       paddingVertical: sh(14),
                       borderBottomWidth: 1,
@@ -192,13 +160,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
                       borderRadius: sr(8),
                     }}
                   >
-                    <Text
-                      style={{
-                        fontSize: sf(15),
-                        color: isSelected ? '#FBB202' : '#000000',
-                        fontWeight: isSelected ? '600' : '400',
-                      }}
-                    >
+                    <Text style={{ fontSize: sf(15), color: isSelected ? '#FBB202' : '#000000', fontWeight: isSelected ? '600' : '400' }}>
                       {item}
                     </Text>
                   </TouchableOpacity>
@@ -213,27 +175,16 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
-  scroll: { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16), marginTop: sh(60) },
-  headerBlock: { marginTop: sh(12), rowGap: sh(8) },
-  screenTitle: { color: '#000000' },
+  safeArea:       { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
+  scroll:         { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16), marginTop: sh(60) },
+  headerBlock:    { marginTop: sh(12), rowGap: sh(8) },
+  screenTitle:    { color: '#000000' },
   screenSubtitle: { color: '#7D858E' },
-  fieldsCol: { marginTop: sh(12), rowGap: sh(20) },
-  fieldLabel: { color: '#000000', marginBottom: sh(8) },
-  skipNote: { color: '#FBB202', marginTop: sh(20) },
-  footer: {
-    // position: 'absolute',
-    // bottom: 0,
-    // left: 0,
-    // right: 0,
-    paddingHorizontal: sw(20),
-    // paddingBottom: sh(32),
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'flex-end',
-  },
+  fieldsCol:      { marginTop: sh(12), rowGap: sh(20) },
+  fieldLabel:     { color: '#000000', marginBottom: sh(8) },
+  skipNote:       { color: '#FBB202', marginTop: sh(20) },
+  footer:         { paddingHorizontal: sw(20) },
+  modalBackdrop:  { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
   modalSheet: {
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: sr(24),

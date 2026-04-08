@@ -16,6 +16,7 @@ import {
   FlashlightOffIcon,
   GalleryVerticalIcon,
   FlipHorizontal,
+  X,
 } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import PhotoPreviewScreen from './PhotoPreviewScreen';
@@ -232,7 +233,7 @@ export default function CameraScreen({
 
               <View style={styles.topControls}>
                 <TouchableOpacity style={styles.controlButton} onPress={onClose}>
-                  <Cross size={24} color="#FFFFFF" />
+                  <X size={24} color="#FFFFFF" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.controlButton} onPress={toggleFlash}>
                   {flashEnabled

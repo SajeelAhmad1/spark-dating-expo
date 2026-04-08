@@ -11,20 +11,24 @@ import {
 import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
 import { ChevronDown } from 'lucide-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { CountryPicker } from 'react-native-country-codes-picker';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sh, sw, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { onboardingPhoneFormSchema } from '@/schemas/onboarding';
 import { showToast } from '@/utils/toast';
+import { useSignupStartWithPhone } from '@/features/auth/hooks';
+import { SignupStartResponse } from '@/features/auth/schema';
+import * as SecureStore from 'expo-secure-store';
 
 const { height: winH } = Dimensions.get('window');
 
 const NumberEnterScreen = ({ navigation }: any) => {
+  const { mutate: signupStart, isPending: isSendingCode } = useSignupStartWithPhone();
+
   const [show, setShow] = useState(false);
   const [pickerKeyboardHeight, setPickerKeyboardHeight] = useState(0);
-  const lastKnownKeyboardHeight = useRef(300); // ✅ persist last known height across renders
+  const lastKnownKeyboardHeight = useRef(300);
 
   const [country, setCountry] = useState({
     flag: '🇳🇱',
@@ -34,16 +38,13 @@ const NumberEnterScreen = ({ navigation }: any) => {
 
   const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(
     onboardingPhoneFormSchema,
-    {
-      defaultValues: {
-        phoneNumber: '',
-        countryCode: 'NL',
-      },
-    },
+    { defaultValues: { phoneNumber: '', countryCode: 'NL' } },
   );
 
   const phoneNumber = watch('phoneNumber');
   const phoneError = formState.errors.phoneNumber?.message;
+
+  // ─── Keyboard height tracking for country picker modal ────────────────────
 
   useEffect(() => {
     const showSub = Keyboard.addListener(
@@ -55,9 +56,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
     );
     const hideSub = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => {
-        setPickerKeyboardHeight(0);
-      },
+      () => setPickerKeyboardHeight(0),
     );
     return () => {
       showSub.remove();
@@ -65,21 +64,44 @@ const NumberEnterScreen = ({ navigation }: any) => {
     };
   }, []);
 
+  // ─── Handlers ─────────────────────────────────────────────────────────────
+
   const handleOpenPicker = () => {
-    // ✅ Pre-apply last known keyboard height BEFORE modal opens
-    // so layout is already correct when search bar is tapped
+    // Pre-apply last known keyboard height so layout is correct when modal opens
     setPickerKeyboardHeight(lastKnownKeyboardHeight.current);
     setShow(true);
   };
 
-  const onValid = () => {
-    showToast({ text1: 'Verification code sent' });
-    navigation.navigate('NumberVerifyScreen');
+  const handleClosePicker = () => {
+    setShow(false);
+    setPickerKeyboardHeight(0);
   };
 
-  const modalMaxHeight = pickerKeyboardHeight > 0
-    ? winH - pickerKeyboardHeight - sh(24)
-    : winH * 0.88;
+  const onValid = (data: { phoneNumber: string; countryCode: string }) => {
+    const payload = { phone: `${country.dial_code}${data.phoneNumber}` };
+
+    signupStart(payload, {
+      onSuccess: async (data: SignupStartResponse) => { 
+        await SecureStore.setItemAsync('signupSessionId', data?.signupSessionId);
+
+        showToast({ text1: 'Verification code sent' });
+        navigation.navigate('NumberVerifyScreen', { phone: payload.phone });
+      },
+      onError: (err: any) => {
+        showToast({
+          text1: 'Failed to send verification code',
+          text2: err.message,
+        });
+      },
+    });
+  };
+
+  const modalMaxHeight =
+    pickerKeyboardHeight > 0
+      ? winH - pickerKeyboardHeight - sh(24)
+      : winH * 0.88;
+
+  // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
     <View style={styles.safeArea}>
@@ -94,7 +116,6 @@ const NumberEnterScreen = ({ navigation }: any) => {
         </View>
 
         <View style={[styles.phoneRow, phoneError ? styles.phoneRowError : null]}>
-          {/* ✅ Use handleOpenPicker instead of directly setShow(true) */}
           <TouchableOpacity style={styles.countryBtn} onPress={handleOpenPicker}>
             <Text style={{ fontSize: sf(20) }}>{country.flag}</Text>
             <Text style={[styles.dialCode, { fontSize: sf(16) }]}>{country.dial_code}</Text>
@@ -109,7 +130,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
             keyboardType="phone-pad"
             value={phoneNumber}
             style={[styles.phoneInput, { fontSize: sf(16) }]}
-            onChangeText={v => setValue('phoneNumber', v, { shouldValidate: true })}
+            onChangeText={(v) => setValue('phoneNumber', v, { shouldValidate: true })}
             onBlur={() => trigger('phoneNumber')}
           />
         </View>
@@ -124,25 +145,24 @@ const NumberEnterScreen = ({ navigation }: any) => {
 
         <View style={styles.btnWrap}>
           <PrimaryButton
-            title="Send verification Code"
+            title={isSendingCode ? 'Sending...' : 'Send verification Code'}
             onPress={handleSubmit(onValid)}
             colors={['#1E78F5', '#FBB202']}
             variant="gradient"
             style={{ alignSelf: 'stretch' }}
-            textStyle={{
-              color: '#ffffff',
-              fontSize: sf(20),
-              fontWeight: '500',
-            }}
+            textStyle={{ color: '#ffffff', fontSize: sf(20), fontWeight: '500' }}
+            disabled={isSendingCode}
           />
         </View>
 
         <View style={styles.footerRow}>
           <Text style={[styles.footerText, { fontSize: sf(16) }]} weight="regular">
             Already have an account?{' '}
-            <Text 
-            onPress={() => navigation.navigate('SignInScreen')}
-            style={styles.loginLink} weight="medium">
+            <Text
+              onPress={() => navigation.navigate('SignInScreen')}
+              style={styles.loginLink}
+              weight="medium"
+            >
               Login
             </Text>
           </Text>
@@ -154,26 +174,15 @@ const NumberEnterScreen = ({ navigation }: any) => {
         show={show}
         enableModalAvoiding={false}
         androidWindowSoftInputMode="adjustNothing"
-        onBackdropPress={() => {
-          setShow(false);
-          setPickerKeyboardHeight(0); // ✅ reset on close
-        }}
-        onRequestClose={() => {
-          setShow(false);
-          setPickerKeyboardHeight(0); // ✅ reset on close
-        }}
+        onBackdropPress={handleClosePicker}
+        onRequestClose={handleClosePicker}
         inputPlaceholder="Search country"
         inputPlaceholderTextColor="#7D858E"
         searchMessage="No countries match your search"
-        pickerButtonOnPress={item => {
-          setCountry({
-            flag: item.flag,
-            dial_code: item.dial_code,
-            code: item.code,
-          });
+        pickerButtonOnPress={(item) => {
+          setCountry({ flag: item.flag, dial_code: item.dial_code, code: item.code });
           setValue('countryCode', item.code, { shouldValidate: true });
-          setShow(false);
-          setPickerKeyboardHeight(0); // ✅ reset on close
+          handleClosePicker();
         }}
         style={{
           modal: {
@@ -202,6 +211,8 @@ const NumberEnterScreen = ({ navigation }: any) => {
   );
 };
 
+// ─── Styles ───────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
   page: {
@@ -229,11 +240,7 @@ const styles = StyleSheet.create({
   countryBtn: { flexDirection: 'row', alignItems: 'center', columnGap: sw(4) },
   dialCode: { color: '#000000' },
   divider: { width: 1, height: sh(20), backgroundColor: '#E8EAED' },
-  phoneInput: {
-    flex: 1,
-    color: '#000000',
-    fontWeight: '500',
-  },
+  phoneInput: { flex: 1, color: '#000000', fontWeight: '500' },
   helper: { color: '#7D858E', marginTop: sh(16) },
   helperMuted: { color: '#7D858E' },
   btnWrap: { marginTop: sh(24) },
