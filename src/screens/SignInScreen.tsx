@@ -1,4 +1,3 @@
-// screens/auth/SignInScreen.tsx
 import React, { useState } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { Text } from '@/components/common/Text';
@@ -18,6 +17,7 @@ import {
   loginPhoneSchema,
 } from '@/features/auth/schema';
 import { FieldErrors } from 'react-hook-form';
+import { tokenStore } from '@/api/client';
 
 // ─── Form body ────────────────────────────────────────────────────────────────
 
@@ -37,37 +37,44 @@ function SignInFormBody({
     useZodForm(schema, {
       defaultValues: {
         phoneNumber: '',
-        email: '',
-        password: '',
-        rememberMe: false,
+        email:       '',
+        password:    '',
+        rememberMe:  false,
       },
     });
 
-  const { errors } = formState;
+  const { errors }  = formState;
   const phoneNumber = watch('phoneNumber');
   const email       = watch('email');
   const password    = watch('password');
   const rememberMe  = watch('rememberMe');
 
   const onValid = (dto: any) => {
-    // loginPhoneSchema .transform() strips spaces/dashes before this runs,
-    // so dto.phoneNumber is already a clean string like "+923443841964".
     const identifier = tab === 'phone' ? dto.phoneNumber : dto.email;
-    console.log(identifier, " ", dto.password , "console signin")
+
     login(
       { identifier, password: dto.password },
       {
-        onSuccess: (data: any) => {
-          console.log(data , "console signin data")
+        onSuccess: async (data: any) => {
           showToast({ text1: 'Logged in successfully' });
-          navigation.navigate('ProfileSetupScreen');
+
+          // Route based on what the backend says is next
+          if (data.next === 'complete_profile') {
+            navigation.replace('ProfileSetupScreen');
+          } else {
+            // 'home' or anything else → go to location screen
+            const user = await tokenStore.getUser();
+            if(user) {
+              navigation.replace('DiscoveryScreen');
+            }
+            navigation.replace('EnableLocationScreen');
+          }
         },
         onError: (err: any) => {
           showToast({
             text1: 'Login failed',
             text2: err?.message ?? 'Please check your credentials and try again.',
           });
-          console.log(err?.message , "console signin error")
         },
       },
     );
@@ -76,10 +83,18 @@ function SignInFormBody({
   // Narrow error type per tab so TS is happy
   let fieldError: string | undefined;
   if (tab === 'phone') {
-    const e = errors as FieldErrors<{ phoneNumber: string; password: string; rememberMe: boolean }>;
+    const e = errors as FieldErrors<{
+      phoneNumber: string;
+      password:    string;
+      rememberMe:  boolean;
+    }>;
     fieldError = e.phoneNumber?.message;
   } else {
-    const e = errors as FieldErrors<{ email: string; password: string; rememberMe: boolean }>;
+    const e = errors as FieldErrors<{
+      email:      string;
+      password:   string;
+      rememberMe: boolean;
+    }>;
     fieldError = e.email?.message;
   }
 
@@ -109,10 +124,10 @@ function SignInFormBody({
 
       <View
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
+          flexDirection:  'row',
+          alignItems:     'center',
           justifyContent: 'space-between',
-          marginTop: sh(20),
+          marginTop:      sh(20),
         }}
       >
         <RememberMeToggle
@@ -148,8 +163,12 @@ export default function SignInScreen({
   const [activeTab, setActiveTab] = useState<AuthSigninTab>(initialTab);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff', paddingBottom: sh(20) }}>
-      <View style={{ flex: 1, paddingHorizontal: sw(20), paddingTop: sh(72) }}>
+    <View
+      style={{ flex: 1, backgroundColor: '#ffffff', paddingBottom: sh(20) }}
+    >
+      <View
+        style={{ flex: 1, paddingHorizontal: sw(20), paddingTop: sh(72) }}
+      >
         <TouchableOpacity
           style={{ width: sw(32), height: sw(32) }}
           onPress={() => navigation.goBack()}
@@ -158,7 +177,9 @@ export default function SignInScreen({
         </TouchableOpacity>
 
         <View style={{ marginTop: sh(48), gap: sh(8) }}>
-          <Text style={{ color: '#000000', fontWeight: '600', fontSize: sf(28) }}>
+          <Text
+            style={{ color: '#000000', fontWeight: '600', fontSize: sf(28) }}
+          >
             Welcome Back!
           </Text>
           <Text style={{ color: '#7D858E', fontSize: sf(15) }}>
@@ -168,7 +189,11 @@ export default function SignInScreen({
 
         <SignInTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-        <SignInFormBody key={activeTab} tab={activeTab} navigation={navigation} />
+        <SignInFormBody
+          key={activeTab}
+          tab={activeTab}
+          navigation={navigation}
+        />
       </View>
     </View>
   );

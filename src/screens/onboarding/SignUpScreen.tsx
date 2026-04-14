@@ -1,27 +1,48 @@
+// screens/auth/SignUpScreen.tsx
 import { View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import Logo from '@/assets/images/logo.svg';
 import GoogleIcon from '@/assets/images/google.svg';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Phone, Mail } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
+import { useGoogleSignIn } from '@/features/auth/useGoogleSignIn';
+import { showToast } from '@/utils/toast';
 
 export default function SignUpScreen({ navigation }: any) {
+  const { signIn: googleSignIn, isPending: isGooglePending, isReady } = useGoogleSignIn();
+
+  const handleGoogleSignIn = () => {
+    googleSignIn(
+      (data) => {
+        // Backend returns `profile` with the user's Google info.
+        // If they need onboarding, pre-fill the signup store with whatever
+        // Google gave us so the user doesn't have to retype their name.
+        if (data.next === 'complete_profile') {
+          navigation.navigate('ProfileSetupScreen', {
+            prefill: {
+              firstName: data.profile.givenName  ?? '',
+              lastName:  data.profile.familyName ?? '',
+            },
+          });
+        } else {
+          navigation.replace('MainTabs');
+        }
+      },
+      (errorMessage) => {
+        showToast({ text1: 'Google sign-in failed', text2: errorMessage });
+      },
+    );
+  };
+
   return (
     <View style={{ flex: 1, paddingBottom: sh(20) }}>
       <LinearGradient
         colors={['#1E78F5', '#FBB202']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-        }}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       />
 
       <View style={{ flex: 1 }}>
@@ -34,7 +55,6 @@ export default function SignUpScreen({ navigation }: any) {
             paddingHorizontal: sw(0),
           }}
         >
-
           <Text
             style={{
               fontSize: sf(32),
@@ -72,13 +92,7 @@ export default function SignUpScreen({ navigation }: any) {
             </Text>
           </View>
 
-          <View
-            style={{
-              paddingHorizontal: sw(20),
-              // paddingBottom: sh(24),
-              gap: sh(12),
-            }}
-          >
+          <View style={{ paddingHorizontal: sw(20), gap: sh(12) }}>
             <Text
               style={{
                 fontSize: sf(16),
@@ -88,24 +102,25 @@ export default function SignUpScreen({ navigation }: any) {
                 textAlign: 'center',
               }}
             >
-              By tapping "Sign In" you agree to or{' '}
-              <Text style={{ color: '#1E78F5' }}>Terms</Text>. Learn how we process
-              your data in our{' '}
+              By tapping "Sign In" you agree to our{' '}
+              <Text style={{ color: '#1E78F5' }}>Terms</Text>. Learn how we
+              process your data in our{' '}
               <Text style={{ color: '#1E78F5' }}>Privacy Policy</Text> and{' '}
               <Text style={{ color: '#1E78F5' }}>Cookies Policy</Text>
             </Text>
 
             <PrimaryButton
-              title="Continue with Emial"
-              onPress={() => navigation.navigate('EmailInputScreen')} 
+              title="Continue with Email"
+              onPress={() => navigation.navigate('EmailInputScreen')}
               colors={['#ffffff']}
               iconBackground="#EDEDED"
-              variant="outline"  
+              variant="outline"
               icon={<Mail width={sf(28)} height={sf(28)} color="#1E78F5" />}
               iconPosition="start"
               style={{ backgroundColor: 'white' }}
               textStyle={{ fontSize: sf(16), fontWeight: '500', color: '#1E78F5' }}
             />
+
             <PrimaryButton
               title="Continue with mobile"
               onPress={() => navigation.navigate('NumberInputScreen')}
@@ -117,29 +132,32 @@ export default function SignUpScreen({ navigation }: any) {
               textStyle={{ fontSize: sf(16), fontWeight: '500' }}
             />
 
+            {/* ── Google sign-in ───────────────────────────────────────────── */}
             <PrimaryButton
-              title="Continue with Google"
-              onPress={() => navigation.navigate('ProfileSetupScreen')}
+              title={isGooglePending ? 'Signing in…' : 'Continue with Google'}
+              onPress={handleGoogleSignIn}
+              disabled={isGooglePending || !isReady}
               colors={['#ffffff']}
               iconBackground="#EDEDED"
               variant="outline"
               icon={<GoogleIcon width={sf(28)} height={sf(28)} />}
               iconPosition="start"
-              style={{ backgroundColor: 'white' }}
+              style={{
+                backgroundColor: 'white',
+                opacity: isGooglePending || !isReady ? 0.6 : 1,
+              }}
               textStyle={{ fontSize: sf(16), fontWeight: '500', color: '#1E78F5' }}
             />
 
             <View style={{ marginTop: sh(8), alignItems: 'center' }}>
-              <Text
-                style={{
-                  fontSize: sf(16),
-                  color: '#ffffff',
-                  fontWeight: '400',
-                }}
-              >
+              <Text style={{ fontSize: sf(16), color: '#ffffff', fontWeight: '400' }}>
                 Already have an account?{' '}
                 <Text
-                  style={{ color: '#1E78F5', fontWeight: '500', textDecorationLine: 'underline' }}
+                  style={{
+                    color: '#1E78F5',
+                    fontWeight: '500',
+                    textDecorationLine: 'underline',
+                  }}
                   onPress={() => navigation.navigate('SignInScreen')}
                 >
                   Login
@@ -147,7 +165,6 @@ export default function SignUpScreen({ navigation }: any) {
               </Text>
             </View>
           </View>
-
         </View>
       </View>
     </View>

@@ -1,3 +1,4 @@
+// src/schemas/editProfile.ts
 import { z } from 'zod';
 import { ErrorMessages as ERR } from '@/constants/ErrorMessages';
 import BODY_TYPES from '@/constants/bodyTypes';

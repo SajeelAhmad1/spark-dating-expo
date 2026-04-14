@@ -39,6 +39,7 @@ export default function EmailInputScreen({ navigation }: any) {
       { email: dto.email },
       {
         onSuccess: async (data: SignupStartResponse) => {
+          console.log(data, "signup email data")
           await SecureStore.setItemAsync(
             'signupSessionId',
             data.signupSessionId,

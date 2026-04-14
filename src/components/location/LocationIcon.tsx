@@ -1,3 +1,4 @@
+// components/location/LocationIcon.tsx
 import React from 'react';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 import { sw, sh } from '@/utils/sizeMatters';

@@ -8,7 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 import { HttpError } from './errors';
 import { ApiResponse } from './types';
-import { UserProfileSchema } from '@/features/auth/schema';
+import { User } from '@/features/profile/schema';
 
 const TOKEN_KEYS = {
   ACCESS: 'access_token',
@@ -26,11 +26,11 @@ export const tokenStore = {
   setRefresh: (token: string): Promise<void> =>
     SecureStore.setItemAsync(TOKEN_KEYS.REFRESH, token),
 
-  getUser: async (): Promise<UserProfileSchema | null> => {
+  getUser: async (): Promise<User | null> => {
     const data = await SecureStore.getItemAsync(TOKEN_KEYS.USER);
     return data ? JSON.parse(data) : null;
   },
-  setUser: (user: UserProfileSchema): Promise<void> =>
+  setUser: (user: User): Promise<void> =>
     SecureStore.setItemAsync(TOKEN_KEYS.USER, JSON.stringify(user)),
 
   clearAll: (): Promise<[void, void, void]> =>
@@ -54,6 +54,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const token = await tokenStore.getAccess();
+    console.log('🔐 Sending Bearer Token:', token);
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
@@ -102,6 +103,7 @@ async function attemptSilentRefresh(): Promise<boolean> {
   _refreshPromise = (async () => {
     try {
       const refreshToken = await tokenStore.getRefresh();
+      console.log("🔄 Refresh Token:", refreshToken);
       if (!refreshToken) return false;
 
       const { data } = await axios.post<
@@ -111,7 +113,8 @@ async function attemptSilentRefresh(): Promise<boolean> {
       await tokenStore.setAccess(data.data.accessToken);
       await tokenStore.setRefresh(data.data.refreshToken);
       return true;
-    } catch {
+    } catch(err: any) {
+      console.log("❌ REFRESH ERROR:", err.response?.data || err.message);
       return false;
     } finally {
       _refreshPromise = null;
@@ -133,5 +136,8 @@ export const apiPost = <T>(url: string, body?: unknown): Promise<T> =>
 
 export const apiPut = <T>(url: string, body?: unknown): Promise<T> =>
   apiClient.put(url, body);
+
+export const apiPatch = <T>(url: string, body?: unknown): Promise<T> =>
+  apiClient.patch(url, body);
 
 export const apiDel = <T>(url: string): Promise<T> => apiClient.delete(url);

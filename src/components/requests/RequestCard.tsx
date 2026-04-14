@@ -1,3 +1,4 @@
+// components/requests/RequestCard.tsx
 import React from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "@/components/common/Text";

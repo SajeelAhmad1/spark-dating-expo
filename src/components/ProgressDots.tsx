@@ -1,3 +1,4 @@
+// components/ProgressDots.tsx
 import { View } from 'react-native';
 import { sw, sh } from '@/utils/sizeMatters';
 

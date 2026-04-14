@@ -1,3 +1,4 @@
+// components/chat/ChatAvatar.tsx
 import { sf } from '@/utils/sizeMatters';
 import React from 'react';
 import { Image, View } from 'react-native';

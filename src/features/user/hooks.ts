@@ -1,7 +1,7 @@
 // src/features/user/hooks.ts 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { getProfile, updateProfile } from "./api";
-import { queryClient } from "../../lib/queryClient";
+import { getProfile, updateProfile } from "./api"; 
+import { queryClient } from "@/utils/queryClient";
 
 export const useUserProfileQuery = () => {
   return useQuery({

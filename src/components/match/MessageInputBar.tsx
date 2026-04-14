@@ -1,3 +1,4 @@
+// components/match/MessageInputBar.tsx
 import React from 'react';
 import { TextInput, TouchableOpacity, View } from 'react-native';
 import CameraIcon from '@/assets/images/cameraIcon.svg';

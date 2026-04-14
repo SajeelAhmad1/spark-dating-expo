@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "SparkDating",
+    "scheme": "sparkdating",
     "slug": "sparkdating",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -11,7 +12,7 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.sparkdating.app",
+      "bundleIdentifier": "com.sparkdating.app", 
       "infoPlist": {
         "NSCameraUsageDescription": "We need camera access to take photos.",
         "NSLocationWhenInUseUsageDescription": "We need your location.",
@@ -20,7 +21,7 @@
       }
     },
     "android": {
-      "package": "com.sparkdating.app",
+      "package": "com.sparkdating.app", 
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.INTERNET",
@@ -54,10 +55,11 @@
         }
       ],
       "expo-video",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-web-browser"
     ],
     "extra": {
-      "apiBaseUrl": "http://192.168.1.132:5000",
+      "apiBaseUrl": "http://192.168.1.113:5000",
       "eas": {
         "projectId": "5964fbfc-515b-4d82-b4f8-1a3ad7bb0eb1"
       }

@@ -401,7 +401,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
                     />
                   ) : undefined
                 }
-                iconPosition='end'
+                iconPosition='middle'
                 textStyle={{
                   fontSize: sf(18),
                   fontWeight: '600',

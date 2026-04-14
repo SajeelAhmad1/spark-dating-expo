@@ -1,3 +1,4 @@
+// components/inbox/CameraButton.tsx
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import CameraIcon from '@/assets/images/cameraIcon.svg';

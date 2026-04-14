@@ -209,7 +209,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
       setPhotosError(parsed.error.issues[0]?.message);
       return;
     }
-
+// navigation.navigate('InviteScreen');
     const payload = getPayload();
     setPhotosError(undefined);
     console.log(payload, 'console payload profile');

@@ -1,3 +1,4 @@
+// screens/profile/EditProfileScreen.tsx
 import React, { useMemo, useState } from 'react';
 import {
   View,
@@ -7,9 +8,9 @@ import {
   TextInput,
   FlatList,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import DatePicker from 'react-native-date-picker';
 import {
   Settings,
@@ -26,66 +27,100 @@ import ETHNICITIES from '@/constants/ethnicities';
 import HEIGHTS from '@/constants/heights';
 import GENDER from '@/constants/gender';
 import { useZodForm } from '@/utils/form';
-import { createEditProfileSchema, type EditProfileFormValues } from '@/schemas/editProfile';
+import {
+  createEditProfileSchema,
+  type EditProfileFormValues,
+} from '@/schemas/editProfile';
 import { FieldError } from '@/components/common/FieldError';
 import { showToast } from '@/utils/toast';
+import { useEditProfile, useMe } from '@/features/profile/hooks';
+import type { EditProfileDto } from '@/features/profile/schema';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type DropdownField = 'gender' | 'height' | 'bodyType' | 'ethnicity' | null;
 
-const DUMMY_URI =
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80';
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const formatDate = (date: Date): string =>
+  `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+
+/**
+ * Converts the local form values into the EditProfileDto shape expected
+ * by PATCH /api/profile/edit. Only sends fields that are non-empty.
+ */
+function buildEditDto(
+  values: EditProfileFormValues,
+  photos: string[],
+): EditProfileDto {
+  const dto: EditProfileDto = {};
+
+  if (values.firstName) dto.firstName = values.firstName;
+  if (values.lastName) dto.lastName = values.lastName;
+  if (values.bio) dto.bio = values.bio;
+  if (values.gender)
+    dto.gender = values.gender.toLowerCase() as EditProfileDto['gender'];
+  if (values.height)
+    dto.height = Number(values.height.replace(/[^\d]/g, '')) || undefined;
+  if (values.ethnicity) dto.ethnicity = values.ethnicity;
+  if (photos.length) dto.photos = photos;
+
+  if (values.birthday) {
+    const d = values.birthday;
+    dto.dob = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  return dto;
+}
+
+// ─── Screen ───────────────────────────────────────────────────────────────────
 
 const EditProfileScreen = ({ navigation }: any) => {
-  const [images, setImages] = useState([
-    DUMMY_URI,
-    DUMMY_URI,
-    DUMMY_URI,
-    DUMMY_URI,
-  ]);
+  // ── Remote data ────────────────────────────────────────────────────────────
+  const { data: user, isLoading: isMeLoading } = useMe();
+  const { mutate: editProfile, isPending: isSaving } = useEditProfile();
+  console.log(user, "console user me")
+  // ── Local UI state ─────────────────────────────────────────────────────────
+  const [images, setImages] = useState<string[]>(
+    () => user?.profile?.photos ?? [],
+  );
   const [openDropdown, setOpenDropdown] = useState<DropdownField>(null);
-  const [interests] = useState([
-    '✈️ Travel',
-    '🎵 Music',
-    '☕ Coffee',
-    '📷 Photography',
-  ]);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
 
-  const formatDate = (date: Date) =>
-    `${String(date.getDate()).padStart(2, '0')}/${String(
-      date.getMonth() + 1,
-    ).padStart(2, '0')}/${date.getFullYear()}`;
+  // Keep images in sync if user data loads after mount
+  React.useEffect(() => {
+    if (user?.profile?.photos?.length) setImages(user.profile.photos);
+  }, [user]);
 
+  // ── Form ───────────────────────────────────────────────────────────────────
   const editProfileSchema = useMemo(() => createEditProfileSchema(), []);
 
   const { watch, setValue, handleSubmit, trigger, formState } = useZodForm(
     editProfileSchema,
     {
-    defaultValues: {
-      firstName: 'Paul',
-      lastName: 'W',
-      bio: "Adventure lover & coffee enthusiast. Always looking for the next trip. Let's explore together! ✈️",
-      gender: 'Male',
-      height: '5\'4"',
-      bodyType: 'Slim',
-      ethnicity: 'Asian',
-      birthday: new Date('1998-11-24'),
+      defaultValues: {
+        firstName: user?.profile?.firstName ?? '',
+        lastName: user?.profile?.lastName ?? '',
+        bio: user?.profile?.bio ?? '',
+        gender: user?.profile?.gender
+          ? user.profile.gender.charAt(0).toUpperCase() +
+            user.profile.gender.slice(1)
+          : 'Male',
+        height: '', // string from HEIGHTS constant e.g. "5'10\""
+        bodyType: '',
+        ethnicity: user?.profile?.ethnicity ?? '',
+        birthday: user?.profile?.dob
+          ? new Date(user.profile.dob)
+          : new Date('1999-05-24'),
+      },
     },
-  });
+  );
 
   const profile = watch() as EditProfileFormValues;
   const birthDate = profile.birthday;
   const { errors } = formState;
 
-  type ProfileKey = Exclude<keyof EditProfileFormValues, 'birthday'>;
-
-  const handleSave = handleSubmit(values => {
-    showToast({text1: "Profile saved successfully.", type: 'success', icon: Check})
-  });
-  const updateProfile = (key: ProfileKey, value: string) => {
-    setValue(key, value, { shouldValidate: true });
-  };
-
+  // ── Dropdown options ───────────────────────────────────────────────────────
   const dropdownOptions: Record<NonNullable<DropdownField>, string[]> = {
     gender: Object.values(GENDER),
     height: Object.values(HEIGHTS),
@@ -93,32 +128,59 @@ const EditProfileScreen = ({ navigation }: any) => {
     ethnicity: Object.values(ETHNICITIES),
   };
 
-  const handleSelect = (field: NonNullable<DropdownField>, value: string) => {
-    updateProfile(field, value);
+  const handleDropdownSelect = (
+    field: NonNullable<DropdownField>,
+    value: string,
+  ) => {
+    setValue(field, value, { shouldValidate: true });
     setOpenDropdown(null);
   };
 
-  const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
-  };
+  // ── Photo helpers ──────────────────────────────────────────────────────────
+  const removeImage = (index: number) =>
+    setImages((prev) => prev.filter((_, i) => i !== index));
 
+  // ── Submit ─────────────────────────────────────────────────────────────────
+  const onSave = handleSubmit((values) => {
+    const dto = buildEditDto(values, images);
+
+    if (!Object.keys(dto).length) {
+      showToast({ text1: 'No changes to save.' });
+      return;
+    }
+
+    editProfile(dto, {
+      onSuccess: () => {
+        showToast({
+          text1: 'Profile saved successfully.',
+          type: 'success',
+          icon: Check,
+        });
+        navigation.goBack();
+      },
+      onError: (err: any) => {
+        showToast({ text1: 'Failed to save profile', text2: err?.message });
+      },
+    });
+  });
+
+  // ── Shared styles ──────────────────────────────────────────────────────────
   const labelStyle = {
     fontSize: sf(16),
     fontWeight: '500' as const,
-    color: '#1E1E1E', 
+    color: '#1E1E1E',
   };
-
   const inputStyle = {
     fontFamily: 'Poppins-Regular',
     fontSize: sf(16),
     fontWeight: '400' as const,
-    color: '#1C1C1E', 
+    color: '#1C1C1E',
     borderWidth: 1,
     borderColor: '#7D858E',
     borderRadius: sr(8),
-    paddingHorizontal: sw(12), 
+    paddingHorizontal: sw(12),
     height: sh(48),
-    flex: 1,  
+    flex: 1,
   };
 
   const renderDropdownTrigger = (field: NonNullable<DropdownField>) => (
@@ -145,16 +207,43 @@ const EditProfileScreen = ({ navigation }: any) => {
         >
           {profile[field] || `Select ${field}`}
         </Text>
-        <ChevronDown size={sf(16)} color="#7D858E" />
+        <ChevronDown
+          size={sf(16)}
+          color='#7D858E'
+        />
       </TouchableOpacity>
       <FieldError message={errors[field]?.message} />
     </View>
   );
 
+  // ── Loading skeleton ───────────────────────────────────────────────────────
+  if (isMeLoading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#FFFFFF',
+        }}
+      >
+        <ActivityIndicator color='#1E78F5' />
+      </View>
+    );
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: sh(40), paddingBottom: sh(20) }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+        paddingTop: sh(40),
+        paddingBottom: sh(20),
+      }}
+    >
       <View style={{ flex: 1 }}>
-        {/* ── Header ── */}
+        {/* ── Header ──────────────────────────────────────────────────────── */}
         <View
           style={{
             flexDirection: 'row',
@@ -167,17 +256,12 @@ const EditProfileScreen = ({ navigation }: any) => {
         >
           <View style={{ width: sf(36) }} />
           <Text
-            style={{
-              fontFamily: 'Poppins-SemiBold',
-              fontWeight: '600',
-              fontSize: sf(20), 
-              color: '#000000', 
-            }}
+            style={{ fontWeight: '600', fontSize: sf(20), color: '#000000' }}
           >
             Edit Profile
           </Text>
           <TouchableOpacity
-            onPress={()=>navigation.navigate("SettingsScreen")}
+            onPress={() => navigation.navigate('SettingsScreen')}
             style={{
               width: sf(36),
               height: sf(36),
@@ -187,16 +271,19 @@ const EditProfileScreen = ({ navigation }: any) => {
               justifyContent: 'center',
             }}
           >
-            <Settings size={sf(20)} color="#000000" />
+            <Settings
+              size={sf(20)}
+              color='#000000'
+            />
           </TouchableOpacity>
         </View>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+          keyboardShouldPersistTaps='handled'
           contentContainerStyle={{ paddingBottom: sh(10) }}
         >
-          {/* ── Image Grid ── */}
+          {/* ── Photo grid ──────────────────────────────────────────────── */}
           <View
             style={{
               flexDirection: 'row',
@@ -228,7 +315,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                           height: '100%',
                           borderRadius: sr(12),
                         }}
-                        resizeMode="cover"
+                        resizeMode='cover'
                       />
                       {i === 0 && (
                         <View
@@ -236,19 +323,12 @@ const EditProfileScreen = ({ navigation }: any) => {
                             position: 'absolute',
                             bottom: sh(8),
                             left: sw(8),
-                            // backgroundColor: '#00000066',
                             borderRadius: sr(6),
                             paddingHorizontal: sw(8),
                             paddingVertical: sh(4),
                           }}
                         >
-                          <Text
-                            style={{
-                              color: '#FFFFFF',
-                              fontSize: sf(12),
-                              fontFamily: 'Poppins-Regular',
-                            }}
-                          >
+                          <Text style={{ color: '#FFFFFF', fontSize: sf(12) }}>
                             Main
                           </Text>
                         </View>
@@ -268,7 +348,11 @@ const EditProfileScreen = ({ navigation }: any) => {
                           zIndex: 10,
                         }}
                       >
-                        <X size={sf(12)} color="#FFFFFF" strokeWidth={2.5} />
+                        <X
+                          size={sf(12)}
+                          color='#FFFFFF'
+                          strokeWidth={2.5}
+                        />
                       </TouchableOpacity>
                     </View>
                   ) : (
@@ -282,7 +366,11 @@ const EditProfileScreen = ({ navigation }: any) => {
                         justifyContent: 'center',
                       }}
                     >
-                      <Plus size={sf(18)} color="#FF3366" strokeWidth={2.5} />
+                      <Plus
+                        size={sf(18)}
+                        color='#FF3366'
+                        strokeWidth={2.5}
+                      />
                     </TouchableOpacity>
                   )}
                 </View>
@@ -290,7 +378,7 @@ const EditProfileScreen = ({ navigation }: any) => {
             })}
           </View>
 
-          {/* ── Form Fields ── */}
+          {/* ── Form fields ─────────────────────────────────────────────── */}
           <View style={{ paddingHorizontal: sw(20), gap: sh(16) }}>
             {/* First & Last Name */}
             <View style={{ flexDirection: 'row', gap: sw(12) }}>
@@ -298,11 +386,13 @@ const EditProfileScreen = ({ navigation }: any) => {
                 <Text style={labelStyle}>First name</Text>
                 <TextInput
                   value={profile.firstName}
-                  onChangeText={v => updateProfile('firstName', v)}
+                  onChangeText={(v) =>
+                    setValue('firstName', v, { shouldValidate: true })
+                  }
                   onBlur={() => trigger('firstName')}
                   style={[
                     inputStyle,
-                    errors.firstName ? { borderColor: '#DC2626' } : null,
+                    errors.firstName && { borderColor: '#DC2626' },
                     { lineHeight: sh(20) },
                   ]}
                 />
@@ -312,11 +402,13 @@ const EditProfileScreen = ({ navigation }: any) => {
                 <Text style={labelStyle}>Last name</Text>
                 <TextInput
                   value={profile.lastName}
-                  onChangeText={v => updateProfile('lastName', v)}
+                  onChangeText={(v) =>
+                    setValue('lastName', v, { shouldValidate: true })
+                  }
                   onBlur={() => trigger('lastName')}
                   style={[
                     inputStyle,
-                    errors.lastName ? { borderColor: '#DC2626' } : null,
+                    errors.lastName && { borderColor: '#DC2626' },
                     { lineHeight: sh(20) },
                   ]}
                 />
@@ -334,7 +426,7 @@ const EditProfileScreen = ({ navigation }: any) => {
             <View>
               <Text style={labelStyle}>Birthday</Text>
               <TouchableOpacity
-                // onPress={() => setDatePickerOpen(true)}
+                onPress={() => setDatePickerOpen(true)}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -342,7 +434,6 @@ const EditProfileScreen = ({ navigation }: any) => {
                   borderColor: errors.birthday?.message ? '#DC2626' : '#7D858E',
                   borderRadius: sr(8),
                   paddingHorizontal: sw(8),
-                  // paddingVertical: sh(12),
                   height: sh(48),
                 }}
               >
@@ -356,7 +447,10 @@ const EditProfileScreen = ({ navigation }: any) => {
                 >
                   {formatDate(birthDate)}
                 </Text>
-                <Calendar size={sf(16)} color="#7D858E" />
+                <Calendar
+                  size={sf(16)}
+                  color='#7D858E'
+                />
               </TouchableOpacity>
               <FieldError message={errors.birthday?.message} />
             </View>
@@ -384,7 +478,9 @@ const EditProfileScreen = ({ navigation }: any) => {
               <Text style={labelStyle}>Bio</Text>
               <TextInput
                 value={profile.bio}
-                onChangeText={v => updateProfile('bio', v)}
+                onChangeText={(v) =>
+                  setValue('bio', v, { shouldValidate: true })
+                }
                 onBlur={() => trigger('bio')}
                 multiline
                 numberOfLines={4}
@@ -400,56 +496,62 @@ const EditProfileScreen = ({ navigation }: any) => {
               <FieldError message={errors.bio?.message} />
             </View>
 
-            {/* Interests */}
-            <View style={{ 
-              borderWidth: 1,
-              borderColor: '#7D858E',
-              borderRadius: sr(8),
-              minHeight: sh(164),
-              marginTop: sh(70),
-              marginBottom: sh(12),
-                    paddingHorizontal: sw(12),
-                  paddingVertical: sh(12),
-                  gap: sh(12),
-              }}>
+            {/* Interests (navigate to InterestsScreen to edit) */}
+            <View
+              style={{
+                borderWidth: 1,
+                borderColor: '#7D858E',
+                borderRadius: sr(8),
+                minHeight: sh(164),
+                marginTop: sh(70),
+                marginBottom: sh(12),
+                paddingHorizontal: sw(12),
+                paddingVertical: sh(12),
+                gap: sh(12),
+              }}
+            >
               <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
-              > 
-                           <Text style={labelStyle}>Interests</Text>
-              
+              >
+                <Text style={labelStyle}>Interests</Text>
                 <TouchableOpacity
                   onPress={() => navigation.navigate('InterestsScreen')}
                 >
-                  <ChevronRight size={sf(20)} color="#7D858E" />
+                  <ChevronRight
+                    size={sf(20)}
+                    color='#7D858E'
+                  />
                 </TouchableOpacity>
               </View>
-                <View style={{height: 1, width: '100%', backgroundColor: '#7D858E', marginBottom: sh(8)}}></View>
+              <View
+                style={{
+                  height: 1,
+                  width: '100%',
+                  backgroundColor: '#7D858E',
+                  marginBottom: sh(8),
+                }}
+              />
               <View
                 style={{
                   flexDirection: 'row',
                   flexWrap: 'wrap',
                   gap: sw(10),
-                 
-                  borderRadius: sr(8),
-            
                   alignItems: 'center',
                 }}
               >
-                {interests.map((interest, i) => (
+                {(user?.interests ?? []).map((entry, i) => (
                   <View
                     key={i}
                     style={{
-                      // backgroundColor: '#FBB20220',
                       borderRadius: sr(20),
-                      height: sh(36), 
+                      height: sh(36),
                       alignItems: 'center',
                       justifyContent: 'center',
                       paddingHorizontal: sw(12),
-                      // paddingVertical: sh(6),
                       borderWidth: 1,
                       borderColor: '#7D858E',
                     }}
@@ -458,11 +560,10 @@ const EditProfileScreen = ({ navigation }: any) => {
                       style={{
                         fontFamily: 'Poppins-Regular',
                         fontSize: sf(16),
-                        fontWeight: '400', 
                         color: '#000000',
                       }}
                     >
-                      {interest}
+                      {entry.interest.name}
                     </Text>
                   </View>
                 ))}
@@ -490,7 +591,7 @@ const EditProfileScreen = ({ navigation }: any) => {
           </View>
         </ScrollView>
 
-        {/* ── Bottom Buttons ── */}
+        {/* ── Bottom buttons ───────────────────────────────────────────────── */}
         <View
           style={{
             flexDirection: 'row',
@@ -514,19 +615,15 @@ const EditProfileScreen = ({ navigation }: any) => {
             }}
           >
             <Text
-              style={{
-                fontFamily: 'Poppins-Medium',
-                fontWeight: '500',
-                fontSize: sf(20), 
-                color: '#1C1C1E', 
-              }}
+              style={{ fontWeight: '500', fontSize: sf(20), color: '#1C1C1E' }}
             >
               Cancel
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={handleSave}
+            onPress={onSave}
+            disabled={isSaving}
             style={{
               width: sw(184),
               height: sh(56),
@@ -534,109 +631,110 @@ const EditProfileScreen = ({ navigation }: any) => {
               backgroundColor: '#FF3366',
               alignItems: 'center',
               justifyContent: 'center',
+              opacity: isSaving ? 0.6 : 1,
             }}
           >
-            <Text
-              style={{
-                fontFamily: 'Poppins-Medium',
-                fontWeight: '500',
-                fontSize: sf(20), 
-                color: '#FFFFFF', 
-              }}
-            >
-              Save
-            </Text>
+            {isSaving ? (
+              <ActivityIndicator color='#FFFFFF' />
+            ) : (
+              <Text
+                style={{
+                  fontWeight: '500',
+                  fontSize: sf(20),
+                  color: '#FFFFFF',
+                }}
+              >
+                Save
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
+      </View>
 
-        {/* ── Dropdown Modal ── */}
-        <Modal
-          visible={openDropdown !== null}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setOpenDropdown(null)}
+      {/* ── Dropdown modal ───────────────────────────────────────────────────── */}
+      <Modal
+        visible={openDropdown !== null}
+        transparent
+        animationType='fade'
+        onRequestClose={() => setOpenDropdown(null)}
+      >
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            justifyContent: 'flex-end',
+          }}
+          activeOpacity={1}
+          onPress={() => setOpenDropdown(null)}
         >
-          <TouchableOpacity
+          <View
             style={{
-              flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.4)',
-              justifyContent: 'flex-end',
+              backgroundColor: '#FFFFFF',
+              borderTopLeftRadius: sr(24),
+              borderTopRightRadius: sr(24),
+              paddingHorizontal: sw(20),
+              paddingTop: sh(16),
+              paddingBottom: sh(40),
+              maxHeight: sh(360),
             }}
-            activeOpacity={1}
-            onPress={() => setOpenDropdown(null)}
           >
             <View
               style={{
-                backgroundColor: '#FFFFFF',
-                borderTopLeftRadius: sr(24),
-                borderTopRightRadius: sr(24),
-                paddingHorizontal: sw(20),
-                paddingTop: sh(16),
-                paddingBottom: sh(40),
-                maxHeight: sh(360),
+                width: sw(40),
+                height: sh(4),
+                backgroundColor: '#E8EAED',
+                borderRadius: sr(99),
+                alignSelf: 'center',
+                marginBottom: sh(16),
               }}
-            >
-              {/* Handle */}
-              <View
-                style={{
-                  width: sw(40),
-                  height: sh(4),
-                  backgroundColor: '#E8EAED',
-                  borderRadius: sr(99),
-                  alignSelf: 'center',
-                  marginBottom: sh(16),
-                }}
-              />
-
-              <FlatList
-                data={openDropdown ? dropdownOptions[openDropdown] : []}
-                keyExtractor={item => item}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => {
-                  const isSelected = openDropdown
-                    ? profile[openDropdown] === item
-                    : false;
-                  return (
-                    <TouchableOpacity
-                      onPress={() =>
-                        openDropdown && handleSelect(openDropdown, item)
-                      }
+            />
+            <FlatList
+              data={openDropdown ? dropdownOptions[openDropdown] : []}
+              keyExtractor={(item) => item}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => {
+                const isSelected = openDropdown
+                  ? profile[openDropdown] === item
+                  : false;
+                return (
+                  <TouchableOpacity
+                    onPress={() =>
+                      openDropdown && handleDropdownSelect(openDropdown, item)
+                    }
+                    style={{
+                      paddingVertical: sh(14),
+                      borderBottomWidth: 1,
+                      borderBottomColor: '#F0F0F0',
+                      backgroundColor: isSelected ? '#FFF8E7' : 'transparent',
+                      paddingHorizontal: sw(8),
+                      borderRadius: sr(8),
+                    }}
+                  >
+                    <Text
                       style={{
-                        paddingVertical: sh(14),
-                        borderBottomWidth: 1,
-                        borderBottomColor: '#F0F0F0',
-                        backgroundColor: isSelected ? '#FFF8E7' : 'transparent',
-                        paddingHorizontal: sw(8),
-                        borderRadius: sr(8),
+                        fontSize: sf(15),
+                        color: isSelected ? '#FBB202' : '#000000',
+                        fontWeight: isSelected ? '600' : '400',
                       }}
                     >
-                      <Text
-                        style={{
-                          fontSize: sf(15),
-                          color: isSelected ? '#FBB202' : '#000000',
-                          fontWeight: isSelected ? '600' : '400',
-                          fontFamily: isSelected
-                            ? 'Poppins-SemiBold'
-                            : 'Poppins-Regular',
-                        }}
-                      >
-                        {item}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                }}
-              />
-            </View>
-          </TouchableOpacity>
-        </Modal>
-      </View>
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }}
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* ── Date picker ──────────────────────────────────────────────────────── */}
       <DatePicker
         modal
         open={datePickerOpen}
         date={birthDate}
-        mode="date"
+        mode='date'
         maximumDate={new Date()}
-        onConfirm={date => {
+        onConfirm={(date) => {
           setDatePickerOpen(false);
           setValue('birthday', date, { shouldValidate: true });
         }}

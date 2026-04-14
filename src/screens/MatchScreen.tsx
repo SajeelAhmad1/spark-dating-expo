@@ -1,3 +1,4 @@
+// screens/MatchScreen.tsx
 import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, useWindowDimensions, StyleSheet } from 'react-native';
 import { Text } from '@/components/common/Text';
