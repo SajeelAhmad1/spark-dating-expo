@@ -24,10 +24,18 @@ export const ENDPOINTS = {
   },
 
   DISCOVERY: {
-    AVAILABILITY: '/api/discovery/availability',
-    LOCATION:     '/api/discovery/location',
-    PROFILES:     '/api/discovery/profiles',
-    SWIPE:        '/api/discovery/swipe',
+    AVAILABILITY:  '/api/discovery/availability',
+    LOCATION:      '/api/discovery/location',
+    PROFILES:      '/api/discovery/profiles',
+    SWIPE:         '/api/discovery/swipe',
+    PREFERENCES:   '/api/discovery/preferences',
+  },
+
+  SOCIAL: {
+    BLOCKS:                     '/api/blocks',
+    CONNECTION_REQUESTS:        '/api/connection-requests',
+    CONNECTION_REQUEST_ACCEPT:  (id: string) => `/api/connection-requests/${id}/accept`,
+    CONNECTION_REQUEST_REJECT:  (id: string) => `/api/connection-requests/${id}/reject`,
   },
 } as const
 
@@ -49,5 +57,12 @@ export const queryKeys = {
     all:          () => ['discovery']                 as const,
     availability: () => ['discovery', 'availability'] as const,
     profiles:     () => ['discovery', 'profiles']     as const,
+    preferences:  () => ['discovery', 'preferences']  as const,
+  },
+  social: {
+    all:                () => ['social']                         as const,
+    blocks:             () => ['social', 'blocks']               as const,
+    connectionRequests: (dir: 'received' | 'sent') =>
+                          ['social', 'connection-requests', dir] as const,
   },
 } as const

@@ -1,5 +1,5 @@
 // screens/onboarding/PhysicalAttributesScreen.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -18,44 +18,67 @@ import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { physicalAttributesSchema } from '@/schemas/onboarding';
 import { useSignupStore, selectForm, selectPatch } from '@/store/signupStore';
+import { useInterestStore } from '@/store/interestStore';
+import { useInterestsCatalog } from '@/features/interests/hooks';
 
 type DropdownField = 'height' | 'ethnicity' | null;
 
 const PhysicalAttributesScreen = ({ navigation }: any) => {
   const [openDropdown, setOpenDropdown] = useState<DropdownField>(null);
 
-  const form  = useSignupStore(selectForm);
+  const form = useSignupStore(selectForm);
   const patch = useSignupStore(selectPatch);
 
-  const { watch, setValue, handleSubmit, formState } = useZodForm(physicalAttributesSchema, {
-    defaultValues: {
-      height:    form.height,
-      ethnicity: form.ethnicity,
-    },
-  });
+  const { data: interests } = useInterestsCatalog();
 
-  const height    = watch('height');
+  const { interests: storeInterests, setInterests } = useInterestStore();
+
+  useEffect(() => {
+    // Sirf tabhi save karo jab store empty ho
+    if (interests && interests.length > 0 && storeInterests.length === 0) {
+      setInterests(interests);
+    }
+  }, [interests, storeInterests.length, setInterests]);
+
+  const { watch, setValue, handleSubmit, formState } = useZodForm(
+    physicalAttributesSchema,
+    {
+      defaultValues: {
+        height: form.height,
+        ethnicity: form.ethnicity,
+      },
+    },
+  );
+
+  const height = watch('height');
   const ethnicity = watch('ethnicity');
   const { errors } = formState;
 
   const dropdownOptions: Record<NonNullable<DropdownField>, string[]> = {
-    height:    Object.values(HEIGHTS),
+    height: Object.values(HEIGHTS),
     ethnicity: Object.values(ETHNICITIES),
   };
 
   const dropdownValues: Record<NonNullable<DropdownField>, string> = {
-    height:    height    || '',
+    height: height || '',
     ethnicity: ethnicity || '',
   };
 
-  const handleDropdownSelect = (field: NonNullable<DropdownField>, value: string) => {
+  const handleDropdownSelect = (
+    field: NonNullable<DropdownField>,
+    value: string,
+  ) => {
     setValue(field, value, { shouldValidate: true });
     setOpenDropdown(null);
   };
 
-  const fields: { key: NonNullable<DropdownField>; label: string; placeholder: string }[] = [
-    { key: 'height',    label: 'Height (cm)', placeholder: 'Select height'    },
-    { key: 'ethnicity', label: 'Ethnicity',   placeholder: 'Select ethnicity' },
+  const fields: {
+    key: NonNullable<DropdownField>;
+    label: string;
+    placeholder: string;
+  }[] = [
+    { key: 'height', label: 'Height (cm)', placeholder: 'Select height' },
+    { key: 'ethnicity', label: 'Ethnicity', placeholder: 'Select ethnicity' },
   ];
 
   const onContinue = (data: any) => {
@@ -71,14 +94,23 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
         showsVerticalScrollIndicator={false}
       >
         <TouchableOpacity onPress={() => navigation?.goBack()}>
-          <ChevronLeft size={sf(24)} color="#000000" />
+          <ChevronLeft
+            size={sf(24)}
+            color='#000000'
+          />
         </TouchableOpacity>
 
         <View style={styles.headerBlock}>
-          <Text style={[styles.screenTitle, { fontSize: sf(28) }]} weight="semibold">
+          <Text
+            style={[styles.screenTitle, { fontSize: sf(28) }]}
+            weight='semibold'
+          >
             Physical Attributes
           </Text>
-          <Text style={[styles.screenSubtitle, { fontSize: sf(15) }]} weight="regular">
+          <Text
+            style={[styles.screenSubtitle, { fontSize: sf(15) }]}
+            weight='regular'
+          >
             Help others learn more about you
           </Text>
         </View>
@@ -86,7 +118,10 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
         <View style={styles.fieldsCol}>
           {fields.map(({ key, label, placeholder }) => (
             <View key={key}>
-              <Text style={[styles.fieldLabel, { fontSize: sf(15) }]} weight="semibold">
+              <Text
+                style={[styles.fieldLabel, { fontSize: sf(15) }]}
+                weight='semibold'
+              >
                 {label}
               </Text>
               <TouchableOpacity
@@ -102,29 +137,45 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
                   paddingHorizontal: sw(16),
                 }}
               >
-                <Text style={{ fontSize: sf(15), color: dropdownValues[key] ? '#000000' : '#7D858E', lineHeight: sh(56) }}>
+                <Text
+                  style={{
+                    fontSize: sf(15),
+                    color: dropdownValues[key] ? '#000000' : '#7D858E',
+                    lineHeight: sh(56),
+                  }}
+                >
                   {dropdownValues[key] || placeholder}
                 </Text>
-                <ChevronDown size={sf(18)} color="#000000" />
+                <ChevronDown
+                  size={sf(18)}
+                  color='#000000'
+                />
               </TouchableOpacity>
               <FieldError message={errors[key]?.message} />
             </View>
           ))}
         </View>
 
-        <Text style={[styles.skipNote, { fontSize: sf(15) }]} weight="regular">
+        <Text
+          style={[styles.skipNote, { fontSize: sf(15) }]}
+          weight='regular'
+        >
           You can always skip this step and edit later
         </Text>
       </ScrollView>
 
       <View style={styles.footer}>
         <PrimaryButton
-          title="Continue"
+          title='Continue'
           onPress={handleSubmit(onContinue)}
           colors={['#1E78F5', '#FBB202']}
-          variant="gradient"
+          variant='gradient'
           style={{ alignSelf: 'stretch' }}
-          textStyle={{ fontSize: sf(20), fontWeight: '500', lineHeight: sh(56) }}
+          textStyle={{
+            fontSize: sf(20),
+            fontWeight: '500',
+            lineHeight: sh(56),
+          }}
         />
       </View>
 
@@ -132,7 +183,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
       <Modal
         visible={openDropdown !== null}
         transparent
-        animationType="fade"
+        animationType='fade'
         onRequestClose={() => setOpenDropdown(null)}
       >
         <TouchableOpacity
@@ -147,10 +198,14 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
               keyExtractor={(item) => item}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => {
-                const isSelected = openDropdown ? dropdownValues[openDropdown] === item : false;
+                const isSelected = openDropdown
+                  ? dropdownValues[openDropdown] === item
+                  : false;
                 return (
                   <TouchableOpacity
-                    onPress={() => openDropdown && handleDropdownSelect(openDropdown, item)}
+                    onPress={() =>
+                      openDropdown && handleDropdownSelect(openDropdown, item)
+                    }
                     style={{
                       paddingVertical: sh(14),
                       borderBottomWidth: 1,
@@ -160,7 +215,13 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
                       borderRadius: sr(8),
                     }}
                   >
-                    <Text style={{ fontSize: sf(15), color: isSelected ? '#FBB202' : '#000000', fontWeight: isSelected ? '600' : '400' }}>
+                    <Text
+                      style={{
+                        fontSize: sf(15),
+                        color: isSelected ? '#FBB202' : '#000000',
+                        fontWeight: isSelected ? '600' : '400',
+                      }}
+                    >
                       {item}
                     </Text>
                   </TouchableOpacity>
@@ -175,16 +236,25 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea:       { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
-  scroll:         { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16), marginTop: sh(60) },
-  headerBlock:    { marginTop: sh(12), rowGap: sh(8) },
-  screenTitle:    { color: '#000000' },
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
+  scroll: {
+    flex: 1,
+    paddingHorizontal: sw(20),
+    paddingTop: sh(16),
+    marginTop: sh(60),
+  },
+  headerBlock: { marginTop: sh(12), rowGap: sh(8) },
+  screenTitle: { color: '#000000' },
   screenSubtitle: { color: '#7D858E' },
-  fieldsCol:      { marginTop: sh(12), rowGap: sh(20) },
-  fieldLabel:     { color: '#000000', marginBottom: sh(8) },
-  skipNote:       { color: '#FBB202', marginTop: sh(20) },
-  footer:         { paddingHorizontal: sw(20) },
-  modalBackdrop:  { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
+  fieldsCol: { marginTop: sh(12), rowGap: sh(20) },
+  fieldLabel: { color: '#000000', marginBottom: sh(8) },
+  skipNote: { color: '#FBB202', marginTop: sh(20) },
+  footer: { paddingHorizontal: sw(20) },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'flex-end',
+  },
   modalSheet: {
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: sr(24),

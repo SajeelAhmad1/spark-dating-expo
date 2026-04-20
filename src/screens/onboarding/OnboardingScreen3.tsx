@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Image, View, useWindowDimensions } from 'react-native';
-import { sf, sw, sh } from '@/utils/sizeMatters';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { sf, sw, sh } from '@/utils/sizeMatters'; 
 import OnboardingCard from './OnboardingCard';
 import CameraIcon from '@/assets/images/cameraIcon.svg';
 

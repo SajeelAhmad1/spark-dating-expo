@@ -18,8 +18,9 @@ import {
   selectInterests,
   selectPatch,
 } from '@/store/signupStore';
-import { useInterestsCatalog } from '@/features/interests/hooks';
+// import { useInterestsCatalog } from '@/features/interests/hooks';
 import type { Interest } from '@/features/interests/schema';
+import { useInterestStore } from '@/store/interestStore';
 
 const MAX = 5;
 const MIN = 3;
@@ -49,28 +50,29 @@ function groupByCategory(
 const InterestsScreen = ({ navigation }: any) => {
   const storedInterests = useSignupStore(selectInterests);
   const patch = useSignupStore(selectPatch);
+const { interests } = useInterestStore();
 
-  const { data: rawData, isPending, isError, refetch } = useInterestsCatalog();
-  console.log(rawData, "interest data")
+  // const { data: rawData, isPending, isError, refetch } = useInterestsCatalog();
+  // console.log(rawData, "interest data")
 
   // Safely extract the array regardless of how the interceptor unwraps the envelope.
   // Backend shape: { status: 'success', data: { interests: [...] } }
   // After interceptor unwraps .data once:  { interests: [...] }
   // This handles both cases so it won't break if the interceptor is updated.
-  const catalogItems: Interest[] = useMemo(() => {
-    if (!rawData) return [];
-    if (Array.isArray(rawData)) return rawData; // already unwrapped to array
-    const asObj = rawData as any;
-    if (Array.isArray(asObj.interests)) return asObj.interests; // { interests: [...] }
-    if (asObj.data && Array.isArray(asObj.data.interests))
-      return asObj.data.interests; // { data: { interests: [...] } }
-    if (asObj.data && Array.isArray(asObj.data)) return asObj.data; // { data: [...] }
-    return [];
-  }, [rawData]);
+  // const catalogItems: Interest[] = useMemo(() => {
+  //   if (!rawData) return [];
+  //   if (Array.isArray(rawData)) return rawData; // already unwrapped to array
+  //   const asObj = rawData as any;
+  //   if (Array.isArray(asObj.interests)) return asObj.interests; // { interests: [...] }
+  //   if (asObj.data && Array.isArray(asObj.data.interests))
+  //     return asObj.data.interests; // { data: { interests: [...] } }
+  //   if (asObj.data && Array.isArray(asObj.data)) return asObj.data; // { data: [...] }
+  //   return [];
+  // }, [rawData]);
 
   const categories = useMemo(
-    () => groupByCategory(catalogItems),
-    [catalogItems],
+    () => groupByCategory(interests),
+    [interests],
   );
 
   const [selected, setSelected] = useState<string[]>(
@@ -127,7 +129,7 @@ const InterestsScreen = ({ navigation }: any) => {
         </View>
 
         {/* ── Loading ────────────────────────────────────────────────────────── */}
-        {isPending && (
+       {/* {isPending && (
           <View style={{ marginTop: sh(40), alignItems: 'center' }}>
             <ActivityIndicator color='#FBB202' />
             <Text
@@ -136,10 +138,10 @@ const InterestsScreen = ({ navigation }: any) => {
               Loading interests…
             </Text>
           </View>
-        )}
+        )} */}
 
         {/* ── Error ─────────────────────────────────────────────────────────── */}
-        {isError && !isPending && (
+        {/* {isError && !isPending && (
           <View
             style={{ marginTop: sh(40), alignItems: 'center', gap: sh(12) }}
           >
@@ -164,10 +166,10 @@ const InterestsScreen = ({ navigation }: any) => {
               </Text>
             </TouchableOpacity>
           </View>
-        )}
+        )} */}
 
         {/* ── Interest chips ─────────────────────────────────────────────────── */}
-        {!isPending && !isError && (
+        { categories && (
           <View style={{ marginTop: sh(24), gap: sh(24) }}>
             {categories.map(({ category, items }) => (
               <View key={category}>

@@ -59,7 +59,7 @@
       "expo-web-browser"
     ],
     "extra": {
-      "apiBaseUrl": "http://192.168.1.113:5000",
+      "apiBaseUrl": "http://192.168.1.104:5000",
       "eas": {
         "projectId": "5964fbfc-515b-4d82-b4f8-1a3ad7bb0eb1"
       }

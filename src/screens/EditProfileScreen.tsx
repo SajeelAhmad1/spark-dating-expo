@@ -635,7 +635,11 @@ const EditProfileScreen = ({ navigation }: any) => {
             }}
           >
             {isSaving ? (
-              <ActivityIndicator color='#FFFFFF' />
+              <Text style={{
+                  fontWeight: '500',
+                  fontSize: sf(20),
+                  color: '#FFFFFF',
+                }}><ActivityIndicator color='#FFFFFF' /> Save</Text>
             ) : (
               <Text
                 style={{

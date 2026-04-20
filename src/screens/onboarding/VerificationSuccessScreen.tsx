@@ -252,9 +252,10 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
 
     setPassword(dto, {
       onSuccess: async (data) => {
-        console.log(data, "console data set password");
-        // await SecureStore.deleteItemAsync('signupSessionId'); 
-        navigation.navigate('ProfileSetupScreen');
+        console.log(data, 'console data set password');
+        // await SecureStore.deleteItemAsync('signupSessionId');
+        // navigation.navigate('ProfileSetupScreen');
+        navigation.navigate('SignInScreen');
       },
       onError: (err: any) => {
         showToast({

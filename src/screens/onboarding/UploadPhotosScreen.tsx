@@ -439,6 +439,8 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           disabled={isAnyUploading || isCompleting}
           colors={['#1E78F5', '#FBB202']}
           variant='gradient'
+          icon={isAnyUploading || isCompleting ? <ActivityIndicator /> : null}
+          iconPosition='middle'
           style={{
             alignSelf: 'stretch',
             opacity: isAnyUploading || isCompleting ? 0.6 : 1,

@@ -27,9 +27,9 @@ import { showToast } from '@/utils/toast';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { useDiscoverProfiles, useSwipe } from '@/features/discovery/hooks';
 import type { DiscoveryProfile } from '@/features/discovery/schema';
-import * as Location from 'expo-location'; 
+import * as Location from 'expo-location';
 import OrbitRing from '@/components/common/OrbitRing';
-import ProfileAvatar from '@/assets/images/profileAvatar.svg'
+import ProfileAvatar from '@/assets/images/profileAvatar.svg';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CARD_H_PADDING = sw(12);
@@ -56,11 +56,10 @@ const DiscoveryScreen = ({ navigation }: any) => {
   // ── Location + profiles ────────────────────────────────────────────────────
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
     null,
-  ); 
+  );
 
-
-    const orbitContainerSize = sf(300)
-    const avatarSize         = sf(94)
+  const orbitContainerSize = sf(300);
+  const avatarSize = sf(94);
   useEffect(() => {
     Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced })
       .then((pos) =>
@@ -180,8 +179,6 @@ const DiscoveryScreen = ({ navigation }: any) => {
     });
   }, [activeMatch, navigation]);
 
- 
-
   // ── Gesture ────────────────────────────────────────────────────────────────
   const swipeThreshold = CARD_WIDTH * 0.25;
   const velocityThreshold = 900;
@@ -207,257 +204,6 @@ const DiscoveryScreen = ({ navigation }: any) => {
       onDone();
     });
   };
-
-  // ── Loading / error states ─────────────────────────────────────────────────
-  if (!coords || isPending) {
-    return (
-     <View style={styles.safeArea}>
-      <View
-        style={[
-          styles.orbitWrap,
-          { width: orbitContainerSize, height: orbitContainerSize },
-        ]}
-      >
-        <OrbitRing size={orbitContainerSize} duration={7000} color1="#1E78F540" color2="#FBB20240" strokeWidth={1.5} />
-        <OrbitRing size={sf(245)} duration={6000} color1="#FBB20240" color2="#1E78F540" color3="#FBB20240" strokeWidth={4} delay={150} reverse />
-        <OrbitRing size={sf(190)} duration={5000} color1="#1E78F540" color2="#FBB20240" color3="#1E78F540" strokeWidth={4} delay={300} />
-        <OrbitRing size={sf(110)} duration={4500} color1="#1E78F540" color2="#FBB20240" color3="#1E78F540" strokeWidth={4} delay={300} reverse />
-
-        <View style={[styles.avatarRing, { width: avatarSize, height: avatarSize }]}>
-          <ProfileAvatar width={avatarSize} height={avatarSize} />
-        </View>
-      </View>
-
-      <Text
-        style={[
-          styles.caption,
-          { fontFamily: 'Poppins-Regular', fontSize: sf(16) },
-        ]}
-      >
-        Finding people near you
-      </Text>
-    </View>
-    );
-  }
-
-  if (isError) {
-    return (
-      <View style={styles.centerFill}>
-        <LinearGradient
-          colors={['#1E78F5', '#FBB202']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-        <Text
-          style={{
-            color: '#FFFFFF',
-            fontSize: sf(16),
-            fontFamily: 'Poppins-SemiBold',
-            marginBottom: sh(16),
-          }}
-        >
-          Could not load profiles
-        </Text>
-        <TouchableOpacity
-          onPress={() => refetch()}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: sw(8),
-            backgroundColor: 'rgba(255,255,255,0.2)',
-            paddingHorizontal: sw(20),
-            paddingVertical: sh(12),
-            borderRadius: sr(99),
-          }}
-        >
-          <RefreshCw
-            size={sf(18)}
-            color='#FFFFFF'
-          />
-          <Text
-            style={{
-              color: '#FFFFFF',
-              fontFamily: 'Poppins-SemiBold',
-              fontSize: sf(15),
-            }}
-          >
-            Retry
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  if (profiles.length === 0) {
-    return (
-      <View style={styles.centerFill}>
-        <LinearGradient
-          colors={['#1E78F5', '#FBB202']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-        <Text style={{ fontSize: sf(40), marginBottom: sh(16) }}>✨</Text>
-        <Text
-          style={{
-            color: '#FFFFFF',
-            fontSize: sf(20),
-            fontFamily: 'Poppins-SemiBold',
-            textAlign: 'center',
-            marginBottom: sh(8),
-          }}
-        >
-          You're all caught up!
-        </Text>
-        <Text
-          style={{
-            color: 'rgba(255,255,255,0.8)',
-            fontSize: sf(16),
-            fontFamily: 'Poppins-Regular',
-            textAlign: 'center',
-            marginBottom: sh(24),
-            paddingHorizontal: sw(32),
-          }}
-        >
-          No more profiles nearby. Check back soon.
-        </Text>
-        {appliedFilter && (
-          <View
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.15)',
-              borderRadius: sr(12),
-              paddingHorizontal: sw(20),
-              paddingVertical: sh(12),
-              marginBottom: sh(20),
-            }}
-          >
-            <Text
-              style={{
-                color: '#FFFFFF',
-                fontFamily: 'Poppins-Regular',
-                fontSize: sf(13),
-                textAlign: 'center',
-              }}
-            >
-              Filter: {appliedFilter.minAge}–{appliedFilter.maxAge} yrs ·{' '}
-              {appliedFilter.maxDistanceKm} km
-            </Text>
-          </View>
-        )}
-        <TouchableOpacity
-          onPress={() => refetch()}
-          disabled={isFetching}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: sw(8),
-            backgroundColor: 'rgba(255,255,255,0.2)',
-            paddingHorizontal: sw(20),
-            paddingVertical: sh(12),
-            borderRadius: sr(99),
-            opacity: isFetching ? 0.6 : 1,
-          }}
-        >
-          {isFetching ? (
-            <ActivityIndicator
-              size='small'
-              color='#FFFFFF'
-            />
-          ) : (
-            <RefreshCw
-              size={sf(18)}
-              color='#FFFFFF'
-            />
-          )}
-          <Text
-            style={{
-              color: '#FFFFFF',
-              fontFamily: 'Poppins-SemiBold',
-              fontSize: sf(15),
-            }}
-          >
-            Refresh
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  if (currentIndex >= profiles.length) {
-    return (
-      <View style={styles.centerFill}>
-        <LinearGradient
-          colors={['#1E78F5', '#FBB202']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-        <Text style={{ fontSize: sf(40), marginBottom: sh(16) }}>🎉</Text>
-        <Text
-          style={{
-            color: '#FFFFFF',
-            fontSize: sf(20),
-            fontFamily: 'Poppins-SemiBold',
-            textAlign: 'center',
-            marginBottom: sh(8),
-          }}
-        >
-          You've seen everyone!
-        </Text>
-        <Text
-          style={{
-            color: 'rgba(255,255,255,0.8)',
-            fontSize: sf(16),
-            fontFamily: 'Poppins-Regular',
-            textAlign: 'center',
-            marginBottom: sh(24),
-            paddingHorizontal: sw(32),
-          }}
-        >
-          Come back later for new people nearby.
-        </Text>
-        <TouchableOpacity
-          onPress={() => {
-            setCurrentIndex(0);
-            refetch();
-          }}
-          disabled={isFetching}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: sw(8),
-            backgroundColor: 'rgba(255,255,255,0.2)',
-            paddingHorizontal: sw(20),
-            paddingVertical: sh(12),
-            borderRadius: sr(99),
-            opacity: isFetching ? 0.6 : 1,
-          }}
-        >
-          {isFetching ? (
-            <ActivityIndicator
-              size='small'
-              color='#FFFFFF'
-            />
-          ) : (
-            <RefreshCw
-              size={sf(18)}
-              color='#FFFFFF'
-            />
-          )}
-          <Text
-            style={{
-              color: '#FFFFFF',
-              fontFamily: 'Poppins-SemiBold',
-              fontSize: sf(15),
-            }}
-          >
-            Load Fresh Profiles
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
 
   // ── Main render ────────────────────────────────────────────────────────────
   return (
@@ -569,7 +315,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
         </View>
 
         {/* Applied filter pill */}
-        {appliedFilter && (
+        {/* {appliedFilter && (
           <View
             style={{ flexDirection: 'row', alignItems: 'center', gap: sw(6) }}
           >
@@ -599,7 +345,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
               />
             )}
           </View>
-        )}
+        )} */}
       </View>
 
       {/* ── Card + actions ───────────────────────────────────────────────────── */}
@@ -707,7 +453,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
- safeArea: {
+  safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',

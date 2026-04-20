@@ -37,17 +37,17 @@ function SignInFormBody({
     useZodForm(schema, {
       defaultValues: {
         phoneNumber: '',
-        email:       '',
-        password:    '',
-        rememberMe:  false,
+        email: '',
+        password: '',
+        rememberMe: false,
       },
     });
 
-  const { errors }  = formState;
+  const { errors } = formState;
   const phoneNumber = watch('phoneNumber');
-  const email       = watch('email');
-  const password    = watch('password');
-  const rememberMe  = watch('rememberMe');
+  const email = watch('email');
+  const password = watch('password');
+  const rememberMe = watch('rememberMe');
 
   const onValid = (dto: any) => {
     const identifier = tab === 'phone' ? dto.phoneNumber : dto.email;
@@ -64,16 +64,18 @@ function SignInFormBody({
           } else {
             // 'home' or anything else → go to location screen
             const user = await tokenStore.getUser();
-            if(user) {
+            if (user?.location?.lat && user?.location?.lng) {
               navigation.replace('DiscoveryScreen');
+            } else {
+              navigation.replace('EnableLocationScreen');
             }
-            navigation.replace('EnableLocationScreen');
           }
         },
         onError: (err: any) => {
           showToast({
             text1: 'Login failed',
-            text2: err?.message ?? 'Please check your credentials and try again.',
+            text2:
+              err?.message ?? 'Please check your credentials and try again.',
           });
         },
       },
@@ -85,14 +87,14 @@ function SignInFormBody({
   if (tab === 'phone') {
     const e = errors as FieldErrors<{
       phoneNumber: string;
-      password:    string;
-      rememberMe:  boolean;
+      password: string;
+      rememberMe: boolean;
     }>;
     fieldError = e.phoneNumber?.message;
   } else {
     const e = errors as FieldErrors<{
-      email:      string;
-      password:   string;
+      email: string;
+      password: string;
       rememberMe: boolean;
     }>;
     fieldError = e.email?.message;
@@ -114,7 +116,9 @@ function SignInFormBody({
         />
         <PasswordField
           password={password}
-          onChangeText={(v) => setValue('password', v, { shouldValidate: true })}
+          onChangeText={(v) =>
+            setValue('password', v, { shouldValidate: true })
+          }
           onBlur={() => trigger('password')}
           showPassword={showPassword}
           onToggleShowPassword={() => setShowPassword((p) => !p)}
@@ -124,10 +128,10 @@ function SignInFormBody({
 
       <View
         style={{
-          flexDirection:  'row',
-          alignItems:     'center',
+          flexDirection: 'row',
+          alignItems: 'center',
           justifyContent: 'space-between',
-          marginTop:      sh(20),
+          marginTop: sh(20),
         }}
       >
         <RememberMeToggle
@@ -135,7 +139,9 @@ function SignInFormBody({
           onToggle={() => setValue('rememberMe', !getValues().rememberMe)}
         />
         <TouchableOpacity onPress={() => {}}>
-          <Text style={{ color: '#1E78F5', fontWeight: '500', fontSize: sf(14) }}>
+          <Text
+            style={{ color: '#1E78F5', fontWeight: '500', fontSize: sf(14) }}
+          >
             Forgot password!
           </Text>
         </TouchableOpacity>
@@ -166,14 +172,15 @@ export default function SignInScreen({
     <View
       style={{ flex: 1, backgroundColor: '#ffffff', paddingBottom: sh(20) }}
     >
-      <View
-        style={{ flex: 1, paddingHorizontal: sw(20), paddingTop: sh(72) }}
-      >
+      <View style={{ flex: 1, paddingHorizontal: sw(20), paddingTop: sh(72) }}>
         <TouchableOpacity
           style={{ width: sw(32), height: sw(32) }}
           onPress={() => navigation.goBack()}
         >
-          <ChevronLeft size={sf(24)} color="#000000" />
+          <ChevronLeft
+            size={sf(24)}
+            color='#000000'
+          />
         </TouchableOpacity>
 
         <View style={{ marginTop: sh(48), gap: sh(8) }}>
@@ -187,7 +194,10 @@ export default function SignInScreen({
           </Text>
         </View>
 
-        <SignInTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        <SignInTabs
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
         <SignInFormBody
           key={activeTab}

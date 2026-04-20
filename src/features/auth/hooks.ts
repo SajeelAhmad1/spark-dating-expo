@@ -10,6 +10,8 @@ import {
 import { tokenStore } from '@/api/client';
 import { queryClient } from '@/utils/queryClient';
 import { profileApi } from '@/features/profile/api';
+import { useInterestStore } from '@/store/interestStore';
+import { interestsApi } from '../interests/api';
 
 // ── Sign-up ────────────────────────────────────────────────────────────────────
 
@@ -35,6 +37,7 @@ export const useVerifyOtpPhone = () => {
 // ── Login ──────────────────────────────────────────────────────────────────────
 
 export const useLogin = () => {
+  const setInterests = useInterestStore((state) => state.setInterests);
   return useMutation({
     mutationFn: (dto: LoginDto) => authApi.login(dto),
     onSuccess: async (data) => {
@@ -47,13 +50,23 @@ export const useLogin = () => {
       // 2. Fetch full /me profile with the new token and store the user
       try {
         const meResult = await profileApi.getMe();
-        console.log(meResult, "meResult")
+        console.log(meResult, 'meResult');
         await tokenStore.setUser(meResult.user);
         // Seed the React Query cache so any useMe() call is instant
         queryClient.setQueryData(['user', 'me'], meResult);
       } catch (err) {
         console.warn('[useLogin] /me fetch failed after login:', err);
         // Non-fatal — tokens are saved, user can still proceed
+      }
+
+      // 3. ✅ Fetch interests and store in Zustand
+      try {
+        const interests = await interestsApi.getCatalog();
+        console.log(interests, "interests after login")
+        setInterests(interests);
+        console.log(`✅ Fetched ${interests.length} interests after login`);
+      } catch (err) {
+        console.warn('[useLogin] Interests fetch failed:', err);
       }
 
       queryClient.invalidateQueries();
