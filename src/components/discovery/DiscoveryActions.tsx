@@ -1,3 +1,4 @@
+// src/components/discovery/DiscoveryActions.tsx
 import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { Heart, Star, X } from 'lucide-react-native';

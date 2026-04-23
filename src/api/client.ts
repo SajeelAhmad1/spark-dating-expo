@@ -14,6 +14,7 @@ const TOKEN_KEYS = {
   ACCESS: 'access_token',
   REFRESH: 'refresh_token',
   USER: 'user_data',
+  FCM: 'fcm_token',
 } as const;
 
 export const tokenStore = {
@@ -33,11 +34,18 @@ export const tokenStore = {
   setUser: (user: User): Promise<void> =>
     SecureStore.setItemAsync(TOKEN_KEYS.USER, JSON.stringify(user)),
 
-  clearAll: (): Promise<[void, void, void]> =>
+  getFcmToken: (): Promise<string | null> =>
+    SecureStore.getItemAsync(TOKEN_KEYS.FCM),
+
+  setFcmToken: (token: string): Promise<void> =>
+    SecureStore.setItemAsync(TOKEN_KEYS.FCM, token),
+
+  clearAll: (): Promise<[void, void, void, void]> =>
     Promise.all([
       SecureStore.deleteItemAsync(TOKEN_KEYS.ACCESS),
       SecureStore.deleteItemAsync(TOKEN_KEYS.REFRESH),
       SecureStore.deleteItemAsync(TOKEN_KEYS.USER),
+      SecureStore.deleteItemAsync(TOKEN_KEYS.FCM),
     ]),
 };
 
@@ -54,7 +62,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const token = await tokenStore.getAccess();
-    console.log('🔐 Sending Bearer Token:', token);
+    // console.log('🔐 Sending Bearer Token:', token);
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
@@ -103,7 +111,7 @@ async function attemptSilentRefresh(): Promise<boolean> {
   _refreshPromise = (async () => {
     try {
       const refreshToken = await tokenStore.getRefresh();
-      console.log("🔄 Refresh Token:", refreshToken);
+      console.log('🔄 Refresh Token:', refreshToken);
       if (!refreshToken) return false;
 
       const { data } = await axios.post<
@@ -113,8 +121,8 @@ async function attemptSilentRefresh(): Promise<boolean> {
       await tokenStore.setAccess(data.data.accessToken);
       await tokenStore.setRefresh(data.data.refreshToken);
       return true;
-    } catch(err: any) {
-      console.log("❌ REFRESH ERROR:", err.response?.data || err.message);
+    } catch (err: any) {
+      console.log('❌ REFRESH ERROR:', err.response?.data || err.message);
       return false;
     } finally {
       _refreshPromise = null;
@@ -140,4 +148,5 @@ export const apiPut = <T>(url: string, body?: unknown): Promise<T> =>
 export const apiPatch = <T>(url: string, body?: unknown): Promise<T> =>
   apiClient.patch(url, body);
 
-export const apiDel = <T>(url: string): Promise<T> => apiClient.delete(url);
+export const apiDel = <T>(url: string, body?: unknown): Promise<T> =>
+  apiClient.delete(url, { data: body });

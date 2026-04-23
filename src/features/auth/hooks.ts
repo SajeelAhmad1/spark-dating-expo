@@ -9,105 +9,123 @@ import {
 } from './schema';
 import { tokenStore } from '@/api/client';
 import { queryClient } from '@/utils/queryClient';
-import { profileApi } from '@/features/profile/api';
-import { useInterestStore } from '@/store/interestStore';
-import { interestsApi } from '../interests/api';
+import { notificationsApi } from '@/features/notifications/api';
+import * as Device from 'expo-device';
+// import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 
-// ── Sign-up ────────────────────────────────────────────────────────────────────
+// ── FCM token helper — call after login ────────────────────────────────────────
+// async function tryRegisterFcmToken() {
+//   try {
+//     if (!Device.isDevice) return;
 
-export const useSetPassword = () => {
-  return useMutation({
+//     const projectId = Constants?.expoConfig?.extra?.eas?.projectId;
+//     if (!projectId) {
+//       console.warn('Project ID missing for push notifications');
+//       return;
+//     }
+
+//     const { status } = await Notifications.requestPermissionsAsync();
+//     if (status !== 'granted') return;
+
+//     const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
+//     const token = tokenData?.data;
+
+//     if (!token) return;
+
+//     // ✅ STEP 1: check existing token (avoid duplicate API call)
+//     const existingToken = await tokenStore.getFcmToken();
+
+//     if (existingToken === token) {
+//       // already registered → skip
+//       return;
+//     }
+
+//     // ✅ STEP 2: send to backend
+//     await notificationsApi.registerFcmToken({ token });
+//     await notificationsApi.updatePreferences({ fcmEnabled: true });
+
+//     // ✅ STEP 3: SAVE LOCALLY (IMPORTANT)
+//     await tokenStore.setFcmToken(token);
+//   } catch (error) {
+//     console.log('Push notification registration failed:', error);
+//   }
+// }
+
+// ── Sign-up ───────────────────────────────────────────────────────────────────
+
+export const useSetPassword = () =>
+  useMutation({
     mutationFn: (dto: SetPasswordDto) => authApi.setPassword(dto),
   });
-};
 
-export const useSignupStartWithPhone = () => {
-  return useMutation({
+export const useSignupStartWithPhone = () =>
+  useMutation({
     mutationFn: (payload: SignupStartPhoneDto | SignupStartEmailDto) =>
       authApi.signupStartPhone(payload),
   });
-};
 
-export const useVerifyOtpPhone = () => {
-  return useMutation({
+export const useVerifyOtpPhone = () =>
+  useMutation({
     mutationFn: (dto: VerifyOtpPhoneDto) => authApi.verifyOtpPhone(dto),
   });
-};
 
-// ── Login ──────────────────────────────────────────────────────────────────────
+// ── Login ─────────────────────────────────────────────────────────────────────
 
-export const useLogin = () => {
-  const setInterests = useInterestStore((state) => state.setInterests);
-  return useMutation({
+export const useLogin = () =>
+  useMutation({
     mutationFn: (dto: LoginDto) => authApi.login(dto),
     onSuccess: async (data) => {
-      // 1. Persist tokens immediately
       await Promise.all([
         tokenStore.setAccess(data.accessToken),
         tokenStore.setRefresh(data.refreshToken),
+        tokenStore.setUser(data.user),
       ]);
-
-      // 2. Fetch full /me profile with the new token and store the user
-      try {
-        const meResult = await profileApi.getMe();
-        console.log(meResult, 'meResult');
-        await tokenStore.setUser(meResult.user);
-        // Seed the React Query cache so any useMe() call is instant
-        queryClient.setQueryData(['user', 'me'], meResult);
-      } catch (err) {
-        console.warn('[useLogin] /me fetch failed after login:', err);
-        // Non-fatal — tokens are saved, user can still proceed
-      }
-
-      // 3. ✅ Fetch interests and store in Zustand
-      try {
-        const interests = await interestsApi.getCatalog();
-        console.log(interests, "interests after login")
-        setInterests(interests);
-        console.log(`✅ Fetched ${interests.length} interests after login`);
-      } catch (err) {
-        console.warn('[useLogin] Interests fetch failed:', err);
-      }
-
       queryClient.invalidateQueries();
+      // Register FCM token after successful login
+      // await tryRegisterFcmToken();
     },
   });
-};
 
-// ── Google Auth ────────────────────────────────────────────────────────────────
+// ── Google ────────────────────────────────────────────────────────────────────
 
-export const useGoogleAuth = () => {
-  return useMutation({
+export const useGoogleAuth = () =>
+  useMutation({
     mutationFn: (idToken: string) => authApi.googleVerify(idToken),
     onSuccess: async (data) => {
-      // 1. Persist tokens
       await Promise.all([
         tokenStore.setAccess(data.accessToken),
         tokenStore.setRefresh(data.refreshToken),
+        tokenStore.setUser(data.user),
       ]);
-
-      // 2. Fetch /me and store user
-      try {
-        const meResult = await profileApi.getMe();
-        await tokenStore.setUser(meResult.user);
-        queryClient.setQueryData(['user', 'me'], meResult);
-      } catch (err) {
-        console.warn('[useGoogleAuth] /me fetch failed after login:', err);
-      }
-
       queryClient.invalidateQueries();
+      // await tryRegisterFcmToken();
     },
   });
-};
 
-// ── Logout ─────────────────────────────────────────────────────────────────────
+// ── Logout ────────────────────────────────────────────────────────────────────
 
-export const useLogout = () => {
-  return useMutation({
+ 
+
+ export const useLogout = () =>
+  useMutation({
     mutationFn: authApi.logout,
     onSettled: async () => {
-      await tokenStore.clearAll();
-      queryClient.clear();
+      try {
+        const fcmToken = await tokenStore.getFcmToken();
+
+        if (fcmToken) {
+          try {
+            await notificationsApi.removeFcmToken({ token: fcmToken });
+          } catch (err) {
+            console.error('FCM remove failed:', err);
+          }
+        }
+
+        await tokenStore.clearAll();
+        queryClient.clear();
+      } catch (error) {
+        console.error('Logout cleanup failed:', error);
+      }
     },
   });
-};

@@ -1,3 +1,4 @@
+// utils/chat.ts
 export const getTimeString = () =>
   new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 

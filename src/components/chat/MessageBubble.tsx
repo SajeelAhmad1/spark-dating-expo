@@ -1,3 +1,4 @@
+// components/chat/MessageBubble.tsx
 import React from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/common/Text';

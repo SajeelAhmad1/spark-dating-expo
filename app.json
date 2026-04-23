@@ -12,7 +12,7 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.sparkdating.app", 
+      "bundleIdentifier": "com.sparkdating.app",
       "infoPlist": {
         "NSCameraUsageDescription": "We need camera access to take photos.",
         "NSLocationWhenInUseUsageDescription": "We need your location.",
@@ -21,7 +21,7 @@
       }
     },
     "android": {
-      "package": "com.sparkdating.app", 
+      "package": "com.sparkdating.app",
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.INTERNET",
@@ -56,10 +56,11 @@
       ],
       "expo-video",
       "expo-secure-store",
-      "expo-web-browser"
+      "expo-web-browser",
+      "@react-native-community/datetimepicker"
     ],
     "extra": {
-      "apiBaseUrl": "http://192.168.1.104:5000",
+      "apiBaseUrl": "http://192.168.1.109:5000",
       "eas": {
         "projectId": "5964fbfc-515b-4d82-b4f8-1a3ad7bb0eb1"
       }

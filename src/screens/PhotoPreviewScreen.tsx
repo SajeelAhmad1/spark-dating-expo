@@ -1,3 +1,4 @@
+// screens/PhotoPreviewScreen.tsx
 import React, { useRef } from 'react';
 import {
   View,
