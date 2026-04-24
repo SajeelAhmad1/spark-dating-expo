@@ -6,7 +6,7 @@ import {
 } from 'react-native'
 import { Text }        from '@/components/common/Text'
 import {
-  ChevronLeft, MoreVertical, Clock,
+  ChevronLeft, MoreVertical,
   Image as ImageIcon, Send, UserCircle,
   AlertTriangle, UserRoundX,
 } from 'lucide-react-native'
@@ -26,6 +26,8 @@ import {
   useMarkRead,
   useCreateDirectConversation,
   useConversationSocket,
+  usePresence,
+  useTypingIndicator,
 } from '@/features/chat/hooks'
 import { useBlockUser }    from '@/features/social/hooks'
 import { useMe }           from '@/features/profile/hooks'
@@ -191,6 +193,28 @@ export default function ChatScreen({ navigation, route }: any) {
   const { mutate: sendMsg,  isPending: isSending } = useSendMessage(conversationId ?? '')
   const { mutate: markRead }  = useMarkRead(conversationId ?? '')
   const { mutate: blockUser } = useBlockUser()
+
+  // ── Presence + typing ─────────────────────────────────────────────────────
+  const { isOnline, lastSeen }                      = usePresence(chatUserId)
+  const { isPeerTyping, onTyping, onStopTyping }    = useTypingIndicator(conversationId, chatUserId)
+
+  const presenceLabel = (() => {
+    if (isPeerTyping) return 'typing...'
+    if (isOnline)     return 'Online'
+    if (lastSeen) {
+      const diff = Date.now() - new Date(lastSeen).getTime()
+      const mins = Math.floor(diff / 60_000)
+      const hrs  = Math.floor(diff / 3_600_000)
+      const days = Math.floor(diff / 86_400_000)
+      if (mins < 1)  return 'Just now'
+      if (mins < 60) return `${mins}m ago`
+      if (hrs  < 24) return `${hrs}h ago`
+      return `${days}d ago`
+    }
+    return 'Offline'
+  })()
+
+  const presenceColor = isPeerTyping ? '#FBB202' : isOnline ? '#22C55E' : '#B6B9C9'
 
   // ── Socket real-time ──────────────────────────────────────────────────────
   useConversationSocket(conversationId)
@@ -361,15 +385,17 @@ export default function ChatScreen({ navigation, route }: any) {
             <ChatAvatar size={sf(40)} variant="friend" imageUri={chatUserImageUri} />
 
             <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', marginLeft: sw(10) }}>
-              <Text style={{ fontWeight: '400', fontSize: sf(20), lineHeight: sf(20), color: '#000000' }}>
+              <Text style={{ fontWeight: '400', fontSize: sf(20), lineHeight: sf(22), color: '#000000' }}>
                 {chatUserName}
               </Text>
-              <Text style={{ fontWeight: '400', fontSize: sf(12), color: '#1E78F5' }}>Online</Text>
-            </View>
-
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginRight: sw(12) }}>
-              <Clock size={sf(14)} color="#7D858E" strokeWidth={2} />
-              <Text style={{ fontFamily: 'Poppins-Medium', fontWeight: '500', fontSize: sf(13), color: '#7D858E' }}>23h</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: sw(4) }}>
+                {isOnline && !isPeerTyping && (
+                  <View style={{ width: sf(7), height: sf(7), borderRadius: 99, backgroundColor: '#22C55E' }} />
+                )}
+                <Text style={{ fontWeight: '400', fontSize: sf(12), color: presenceColor }}>
+                  {presenceLabel}
+                </Text>
+              </View>
             </View>
 
             <TouchableOpacity ref={menuAnchorRef} onPress={openMenu}>
@@ -465,8 +491,8 @@ export default function ChatScreen({ navigation, route }: any) {
                   placeholder="Type a message…"
                   placeholderTextColor="#B6B9C9"
                   value={messageText}
-                  onChangeText={(v) => setValue('messageText', v, { shouldValidate: true })}
-                  onBlur={() => trigger('messageText')}
+                  onChangeText={(v) => { setValue('messageText', v, { shouldValidate: true }); onTyping() }}
+                  onBlur={() => { trigger('messageText'); onStopTyping() }}
                   onSubmitEditing={handleSendText}
                   returnKeyType="send"
                   blurOnSubmit={false}

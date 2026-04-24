@@ -4,7 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useRef, useState } from 'react'
 import { chatApi }   from './api'
 import { queryKeys } from '@/api/endpoints'
 import { showToast } from '@/utils/toast'
@@ -13,6 +13,8 @@ import {
   joinConversation,
   leaveConversation,
   sendSocketMessage,
+  emitTyping,
+  emitStopTyping,
   getSocket,
   type SocketMessagePayload,
 } from '@/services/socket'
@@ -55,10 +57,13 @@ export const useMessages = (conversationId: string | null) =>
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     enabled:         !!conversationId,
     staleTime:       1000 * 15,
-    select: (data) => ({
-      pages:    data.pages,
-      messages: data.pages.flatMap((p) => p.items),
-    }),
+    select: (data) => {
+      const all = data.pages.flatMap((p) => p.items)
+      // Deduplicate by id — keeps last occurrence (real msg over optimistic)
+      const seen = new Map<string, ChatMessage>()
+      for (const m of all) seen.set(m.id, m)
+      return { pages: data.pages, messages: Array.from(seen.values()) }
+    },
   })
 
 // ── Real-time socket for a conversation ───────────────────────────────────────
@@ -78,13 +83,16 @@ export function useConversationSocket(conversationId: string | null) {
       (old: any) => {
         if (!old) return old
         const pages = old.pages as any[]
-        // Deduplicate — remove optimistic with same temp id pattern if present
         const allIds = new Set(pages.flatMap((p: any) => p.items.map((m: any) => m.id)))
-        if (allIds.has(msg.id)) return old // already present
+        if (allIds.has(msg.id)) return old // already present — skip
 
+        // Also remove any optimistic placeholder that matches by content/time proximity
         const newPages = [...pages]
         const last     = { ...newPages[newPages.length - 1] }
-        last.items     = [...last.items, msg]
+        last.items     = [
+          ...last.items.filter((m: any) => !m.id.startsWith('optimistic-') || m.senderId !== msg.senderId),
+          msg,
+        ]
         newPages[newPages.length - 1] = last
         return { ...old, pages: newPages }
       },
@@ -248,6 +256,129 @@ export const useSendMessage = (conversationId: string) => {
       showToast({ text1: 'Failed to send message' })
     },
   })
+}
+
+// ── Presence: online status + last seen ─────────────────────────────────────
+
+export function usePresence(peerId: string | undefined) {
+  const [isOnline, setIsOnline] = useState(false)
+  const [lastSeen, setLastSeen] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!peerId) return
+    let cancelled = false
+
+    const setup = async () => {
+      const sock = await connectSocket()
+      if (cancelled) return
+
+      const onOnline  = (data: { userId: string }) => {
+        if (data.userId === peerId) { setIsOnline(true); setLastSeen(null) }
+      }
+      const onOffline = (data: { userId: string; lastSeen?: string }) => {
+        if (data.userId === peerId) { setIsOnline(false); setLastSeen(data.lastSeen ?? null) }
+      }
+      const onStatus  = (data: { userId: string; online: boolean; lastSeen?: string }) => {
+        if (data.userId !== peerId) return
+        setIsOnline(data.online)
+        setLastSeen(data.online ? null : (data.lastSeen ?? null))
+      }
+
+      sock.on('user:online',  onOnline)
+      sock.on('user:offline', onOffline)
+      sock.on('user:status',  onStatus)
+
+      // Ask server to push current status — server should emit user:status back
+      sock.emit('presence:subscribe', { userId: peerId })
+    }
+
+    setup()
+    return () => {
+      cancelled = true
+      const sock = getSocket()
+      if (sock) {
+        sock.off('user:online')
+        sock.off('user:offline')
+        sock.off('user:status')
+        sock.emit('presence:unsubscribe', { userId: peerId })
+      }
+    }
+  }, [peerId])
+
+  return { isOnline, lastSeen }
+}
+
+// ── Typing indicator ───────────────────────────────────────────────────────────────────
+
+const TYPING_DEBOUNCE_MS = 1500
+
+export function useTypingIndicator(
+  conversationId: string | null,
+  peerId: string | undefined,
+) {
+  const [isPeerTyping, setIsPeerTyping] = useState(false)
+  const stopTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isTypingRef   = useRef(false)
+
+  // Listen for peer typing events
+  useEffect(() => {
+    if (!conversationId || !peerId) return
+    let cancelled = false
+
+    const setup = async () => {
+      const sock = await connectSocket()
+      if (cancelled) return
+
+      sock.on('typing:start', (data: { conversationId: string; userId: string }) => {
+        if (data.conversationId === conversationId && data.userId === peerId) {
+          setIsPeerTyping(true)
+          // Auto-clear after 3s in case stop event is missed
+          if (stopTimerRef.current) clearTimeout(stopTimerRef.current)
+          stopTimerRef.current = setTimeout(() => setIsPeerTyping(false), 3000)
+        }
+      })
+      sock.on('typing:stop', (data: { conversationId: string; userId: string }) => {
+        if (data.conversationId === conversationId && data.userId === peerId) {
+          setIsPeerTyping(false)
+          if (stopTimerRef.current) clearTimeout(stopTimerRef.current)
+        }
+      })
+    }
+
+    setup()
+    return () => {
+      cancelled = true
+      const sock = getSocket()
+      if (sock) { sock.off('typing:start'); sock.off('typing:stop') }
+      if (stopTimerRef.current) clearTimeout(stopTimerRef.current)
+    }
+  }, [conversationId, peerId])
+
+  // Emit typing events with debounce
+  const onTyping = useCallback(() => {
+    if (!conversationId) return
+    if (!isTypingRef.current) {
+      isTypingRef.current = true
+      emitTyping(conversationId)
+    }
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current)
+    typingTimerRef.current = setTimeout(() => {
+      isTypingRef.current = false
+      emitStopTyping(conversationId)
+    }, TYPING_DEBOUNCE_MS)
+  }, [conversationId])
+
+  const onStopTyping = useCallback(() => {
+    if (!conversationId) return
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current)
+    if (isTypingRef.current) {
+      isTypingRef.current = false
+      emitStopTyping(conversationId)
+    }
+  }, [conversationId])
+
+  return { isPeerTyping, onTyping, onStopTyping }
 }
 
 // ── Mark read ─────────────────────────────────────────────────────────────────

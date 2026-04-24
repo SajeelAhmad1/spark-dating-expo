@@ -53,6 +53,16 @@ export function leaveConversation(conversationId: string) {
   socket?.emit('conversation:leave', { conversationId })
 }
 
+// ── Presence & typing helpers ───────────────────────────────────────────────
+
+export function emitTyping(conversationId: string) {
+  socket?.emit('typing:start', { conversationId })
+}
+
+export function emitStopTyping(conversationId: string) {
+  socket?.emit('typing:stop', { conversationId })
+}
+
 // ── Send via socket (persisted + emitted + FCM) ───────────────────────────────
 
 export type SocketMessagePayload =

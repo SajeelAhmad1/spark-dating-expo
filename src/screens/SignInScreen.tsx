@@ -64,6 +64,8 @@ function SignInFormBody({
           } else {
             // 'home' or anything else → go to location screen
             const user = await tokenStore.getUser();
+      console.log(data?.user, "loginscreen coords")
+
             if (user?.location?.lat && user?.location?.lng) {
               navigation.replace('DiscoveryScreen');
             } else {

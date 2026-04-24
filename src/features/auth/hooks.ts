@@ -13,6 +13,7 @@ import { notificationsApi } from '@/features/notifications/api';
 import * as Device from 'expo-device';
 // import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import { showToast } from '@/utils/toast';
 
 // ── FCM token helper — call after login ────────────────────────────────────────
 // async function tryRegisterFcmToken() {
@@ -112,20 +113,21 @@ export const useGoogleAuth = () =>
     mutationFn: authApi.logout,
     onSettled: async () => {
       try {
-        const fcmToken = await tokenStore.getFcmToken();
+        // const fcmToken = await tokenStore.getFcmToken();
 
-        if (fcmToken) {
-          try {
-            await notificationsApi.removeFcmToken({ token: fcmToken });
-          } catch (err) {
-            console.error('FCM remove failed:', err);
-          }
-        }
+        // if (fcmToken) {
+        //   try {
+        //     await notificationsApi.removeFcmToken({ token: fcmToken });
+        //   } catch (err) {
+        //     console.error('FCM remove failed:', err);
+        //   }
+        // }
 
         await tokenStore.clearAll();
         queryClient.clear();
       } catch (error) {
         console.error('Logout cleanup failed:', error);
+        showToast({ text1: error ? `${error}`  : 'Logout Failed' })
       }
     },
   });

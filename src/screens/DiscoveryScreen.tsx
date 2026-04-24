@@ -19,6 +19,7 @@ import { PanGestureHandler } from 'react-native-gesture-handler'
 import { useDiscoverProfiles, useSwipe } from '@/features/discovery/hooks'
 import type { DiscoveryProfile } from '@/features/discovery/schema'
 import * as Location   from 'expo-location'
+import { useLocationStore } from '@/store/locationStore'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 const CARD_H_PADDING = sw(12)
@@ -96,19 +97,15 @@ function profileToCardItem(p: DiscoveryProfile) {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 const DiscoveryScreen = ({ navigation }: any) => {
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null)
-
-  useEffect(() => {
-    Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced })
-      .then((pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }))
-      .catch(() => setCoords(null))
-  }, [])
-
-  const discoverPayload = coords ? { lat: coords.lat, lng: coords.lng, limit: 20 } : null
-  const { data, isPending, isError, refetch, isFetching } = useDiscoverProfiles(discoverPayload)
-console.log(data, "data discovery")
-  const profiles      = data?.profiles ?? []
-  const appliedFilter = data?.appliedFilter ?? null
+   const { coords } = useLocationStore(); // ✅ Sirf read karo
+console.log('📍 DiscoveryScreen coords:', coords);
+ const { data, isPending, isError, refetch, isFetching } = useDiscoverProfiles(
+    coords ? { lat: coords.lat, lng: coords.lng, limit: 10 } : null
+  ) 
+// console.log(data, "data discovery")
+const profiles      = data?.profiles ?? []
+const appliedFilter = data?.appliedFilter ?? null
+console.log(profiles, "discoveryscreen profile")
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [photoIndex,   setPhotoIndex]   = useState(0)
@@ -223,7 +220,7 @@ console.log(data, "data discovery")
   )
 
   // ── Loading / skeleton ────────────────────────────────────────────────────
-  if (!coords || isPending || isFetching) {
+  if (isPending || isFetching) {
     return (
       <View style={{ flex: 1, paddingBottom: sh(20) }}>
         <LinearGradient colors={['#1E78F5', '#FBB202']} start={{ x: 0, y: -0.1 }} end={{ x: 2, y: 0.7 }} style={StyleSheet.absoluteFill} />
