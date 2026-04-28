@@ -130,19 +130,18 @@ export function useConversationSocket(conversationId: string | null) {
 
     let cancelled = false
 
+    const onMessageNew = (payload: { conversationId: string; message: ChatMessage }) => {
+      if (payload.conversationId === conversationId) {
+        injectMessage(payload.message)
+      }
+    }
+
     const setup = async () => {
       const sock = await connectSocket()
       if (cancelled) return
 
-      // Join room
       await joinConversation(conversationId)
-
-      // Listen for new messages
-      sock.on('message:new', (payload: { conversationId: string; message: ChatMessage }) => {
-        if (payload.conversationId === conversationId) {
-          injectMessage(payload.message)
-        }
-      })
+      sock.on('message:new', onMessageNew)
     }
 
     setup()
@@ -150,10 +149,8 @@ export function useConversationSocket(conversationId: string | null) {
     return () => {
       cancelled = true
       leaveConversation(conversationId)
-
-      // Remove listener
       const sock = getSocket()
-      if (sock) sock.off('message:new')
+      if (sock) sock.off('message:new', onMessageNew)
     }
   }, [conversationId, injectMessage])
 }
@@ -268,40 +265,23 @@ export function usePresence(peerId: string | undefined) {
     if (!peerId) return
     let cancelled = false
 
+    const onPresence = (data: { userId: string; status: 'online' | 'offline' }) => {
+      if (data.userId !== peerId) return
+      setIsOnline(data.status === 'online')
+      if (data.status === 'online') setLastSeen(null)
+    }
+
     const setup = async () => {
       const sock = await connectSocket()
       if (cancelled) return
-
-      const onOnline  = (data: { userId: string }) => {
-        if (data.userId === peerId) { setIsOnline(true); setLastSeen(null) }
-      }
-      const onOffline = (data: { userId: string; lastSeen?: string }) => {
-        if (data.userId === peerId) { setIsOnline(false); setLastSeen(data.lastSeen ?? null) }
-      }
-      const onStatus  = (data: { userId: string; online: boolean; lastSeen?: string }) => {
-        if (data.userId !== peerId) return
-        setIsOnline(data.online)
-        setLastSeen(data.online ? null : (data.lastSeen ?? null))
-      }
-
-      sock.on('user:online',  onOnline)
-      sock.on('user:offline', onOffline)
-      sock.on('user:status',  onStatus)
-
-      // Ask server to push current status — server should emit user:status back
-      sock.emit('presence:subscribe', { userId: peerId })
+      sock.on('presence:update', onPresence)
     }
 
     setup()
     return () => {
       cancelled = true
       const sock = getSocket()
-      if (sock) {
-        sock.off('user:online')
-        sock.off('user:offline')
-        sock.off('user:status')
-        sock.emit('presence:unsubscribe', { userId: peerId })
-      }
+      if (sock) sock.off('presence:update', onPresence)
     }
   }, [peerId])
 
@@ -326,31 +306,28 @@ export function useTypingIndicator(
     if (!conversationId || !peerId) return
     let cancelled = false
 
+    const onTypingUpdate = (data: { conversationId: string; userId: string; isTyping: boolean }) => {
+      if (data.conversationId !== conversationId || data.userId !== peerId) return
+      setIsPeerTyping(data.isTyping)
+      if (stopTimerRef.current) clearTimeout(stopTimerRef.current)
+      if (data.isTyping) {
+        stopTimerRef.current = setTimeout(() => setIsPeerTyping(false), 3000)
+      }
+    }
+
     const setup = async () => {
       const sock = await connectSocket()
       if (cancelled) return
-
-      sock.on('typing:start', (data: { conversationId: string; userId: string }) => {
-        if (data.conversationId === conversationId && data.userId === peerId) {
-          setIsPeerTyping(true)
-          // Auto-clear after 3s in case stop event is missed
-          if (stopTimerRef.current) clearTimeout(stopTimerRef.current)
-          stopTimerRef.current = setTimeout(() => setIsPeerTyping(false), 3000)
-        }
-      })
-      sock.on('typing:stop', (data: { conversationId: string; userId: string }) => {
-        if (data.conversationId === conversationId && data.userId === peerId) {
-          setIsPeerTyping(false)
-          if (stopTimerRef.current) clearTimeout(stopTimerRef.current)
-        }
-      })
+      // Must be in the conversation room to receive typing:update from server
+      await joinConversation(conversationId)
+      sock.on('typing:update', onTypingUpdate)
     }
 
     setup()
     return () => {
       cancelled = true
       const sock = getSocket()
-      if (sock) { sock.off('typing:start'); sock.off('typing:stop') }
+      if (sock) sock.off('typing:update', onTypingUpdate)
       if (stopTimerRef.current) clearTimeout(stopTimerRef.current)
     }
   }, [conversationId, peerId])

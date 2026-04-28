@@ -27,6 +27,8 @@ export const ConversationItemSchema = z.object({
   type:           z.string(),
   otherUser:      ChatPeerSchema.nullable(),
   unreadCount:    z.number(),
+  streakCount:    z.number().optional().default(0),
+  chatStatus:     z.enum(['active', 'lockingSoon', 'locked']).optional().default('active'),
   lastMessage:    LastMessageSchema.nullable(),
   lastMessageAt:  z.string().nullable().optional(),
 })

@@ -114,6 +114,9 @@ export const UserSchema = z.object({
   updatedAt: z.string(),
   profile: z.any().nullable(),
   interests: z.array(z.any()),
+  location: z.any().nullable(),
+  matchesCount: z.number().optional().nullable(),
+  streakCount: z.number().optional().nullable(),
 });
 
 export const LoginResponseSchema = z.object({

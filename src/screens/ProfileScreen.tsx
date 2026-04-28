@@ -21,7 +21,7 @@ import {
 import BottomTabBar from '@/components/common/BottomTabBar';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { useMe } from '@/features/profile/hooks';
-import * as Location from 'expo-location';
+import { getCityFromCoords } from '@/utils/location';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -47,26 +47,9 @@ const ProfileScreen = ({ navigation }: any) => {
 
   // ✅ Reverse geocoding: Convert lat/lng to city name
   useEffect(() => {
-    const getCityFromCoords = async () => {
-      if (user?.location?.lat && user?.location?.lng) {
-        try {
-          const [address] = await Location.reverseGeocodeAsync({
-            latitude: user.location.lat,
-            longitude: user.location.lng,
-          });
-
-          // Get city name (priority: city → subregion → region)
-          const city =
-            address.city || address.subregion || address.region || 'Unknown';
-          setCityName(city);
-        } catch (error) {
-          console.error('Reverse geocoding failed:', error);
-          setCityName('Location unavailable');
-        }
-      }
-    };
-
-    getCityFromCoords();
+    if (user?.location?.lat && user?.location?.lng) {
+      getCityFromCoords(user.location.lat, user.location.lng).then(setCityName)
+    }
   }, [user?.location]);
 
   // ── Loading ───────────────────────────────────────────────────────────────
@@ -472,10 +455,10 @@ const ProfileScreen = ({ navigation }: any) => {
               ]}
             >
               {[
-                { value: '50', label: 'Matches' },
+                { value: user?.matchesCount ?? 0, label: 'Matches' },
                 { value: '200', label: 'Photos Sent' },
-                { value: '17', label: 'Day Streak' },
-              ].map((stat, i) => (
+                { value: user?.streakCount ?? 0, label: 'Day Streak' },
+              ].map((stat: any, i: number) => (
                 <View
                   key={i}
                   style={{ flex: 1, alignItems: 'center' }}

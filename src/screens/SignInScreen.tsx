@@ -67,7 +67,7 @@ function SignInFormBody({
       console.log(data?.user, "loginscreen coords")
 
             if (user?.location?.lat && user?.location?.lng) {
-              navigation.replace('DiscoveryScreen');
+              navigation.replace('SearchScreen');
             } else {
               navigation.replace('EnableLocationScreen');
             }
@@ -79,6 +79,7 @@ function SignInFormBody({
             text2:
               err?.message ?? 'Please check your credentials and try again.',
           });
+          console.log(err, "login error")
         },
       },
     );

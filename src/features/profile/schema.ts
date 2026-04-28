@@ -65,13 +65,9 @@ export const UserSchema = z.object({
   updatedAt: z.string(),
   profile: ProfileDataSchema.nullable(),
   interests: z.array(InterestItemSchema),
-  location: z
-    .object({
-      lat: z.number(),
-      lng: z.number(),
-    })
-    .nullable()
-    .optional(),
+  location: z.any().nullable(),
+  matchesCount: z.number().optional().nullable(),
+  streakCount: z.number().optional().nullable(),
 });
 
 export type User = z.infer<typeof UserSchema>;
