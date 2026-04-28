@@ -76,7 +76,8 @@ function ConversationRow({
   const avatar = item.otherUser?.photos[0]
   const isUnread = item.unreadCount > 0
   const isStreak = item.lastMessage?.type === 'streak'
-  const isLocked = false // extend when you have locking logic
+  const isLocked = item.chatStatus === 'locked'
+  const isLockingSoon = item.chatStatus === 'lockingSoon'
 
   return (
     <TouchableOpacity
@@ -109,7 +110,8 @@ function ConversationRow({
             {name}
           </Text>
           {isStreak && <Text style={{ fontSize: sf(13) }}>🔥</Text>}
-          {isLocked && <Lock size={sf(12)} color="#7D858E" />}
+          {isLocked && <Lock size={sf(12)} color="#FF3B30" />}
+          {isLockingSoon && <Lock size={sf(12)} color="#FBB202" />}
         </View>
         <Text
           style={{ fontSize: sf(13), color: isUnread ? '#000000' : '#7D858E', fontWeight: isUnread ? '500' : '400' }}

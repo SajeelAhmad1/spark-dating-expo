@@ -13,14 +13,14 @@ const LogoScreen = ({ navigation }: any) => {
     const bootstrap = async () => {
       const token = await tokenStore.getAccess();
       const user = await tokenStore.getUser();
-
+  console.log(user, "user logo")
       if (cancelled) return;
 
       if (token) {
         if (!user?.profile) {
           navigation.replace('ProfileSetupScreen');
         } else if (user?.location?.lat && user?.location?.lng) {
-          navigation.replace('DiscoveryScreen');
+          navigation.replace('SearchScreen');
         } else {
           navigation.replace('EnableLocationScreen');
         }

@@ -1,5 +1,5 @@
 // screens/UserProfileScreen.tsx
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   ScrollView,
@@ -28,8 +28,8 @@ import DiscoveryMatchCard from '@/components/discovery/DiscoveryMatchCard';
 import DiscoveryActions from '@/components/discovery/DiscoveryActions';
 import { ViewStyle } from 'react-native';
 import { showToast } from '@/utils/toast';
-// 1️⃣ Import ChatMenu
 import ChatMenu, { type ChatMenuItem } from '@/screens/ChatMenu';
+import { getCityFromCoords } from '@/utils/location';
 
 type UserProfile = {
   id: string;
@@ -40,27 +40,9 @@ type UserProfile = {
   bio2: string;
   height: string;
   gender: string;
-  location: string;
+  location: { lat: number; lng: number }; 
   attributes: string[];
   interests: string[];
-};
-
-const MOCK_USER: UserProfile = {
-  id: '1',
-  name: 'Emma',
-  age: 25,
-  bio: 'Coffee lover ☕ | Travel enthusiast ✈️',
-  images: [
-    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800',
-    'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800',
-    'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800',
-  ],
-  bio2: "Adventure lover & coffee enthusiast. Always looking for the next trip. Let's explore together! ✈️",
-  height: `5' 10"`,
-  gender: 'Women',
-  location: 'Live in New York City',
-  attributes: ['Native American', 'Toned'],
-  interests: ['✈️ Travel', '🎵 Music', '☕ Coffee', '📷 Photography'],
 };
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -72,10 +54,9 @@ const BTN_OVERLAP = sf(32);
 const UserProfileScreen = ({ navigation, route }: any) => {
   const scrollRef = useRef<ScrollView>(null);
   const user: UserProfile = useMemo(() => {
-    return route?.params?.user ?? MOCK_USER;
+    return route?.params?.user;
   }, [route?.params?.user]);
-
-  // 2️⃣ Menu state
+console.log(user, "useruserrrrrrr")
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuAnchorPos, setMenuAnchorPos] = useState<{
     x: number;
@@ -84,6 +65,13 @@ const UserProfileScreen = ({ navigation, route }: any) => {
     height: number;
   } | null>(null);
   const menuAnchorRef = useRef<View>(null);
+  const [cityName, setCityName] = useState<string>('');
+
+  useEffect(() => {
+    if (user?.location?.lat && user?.location?.lng) {
+      getCityFromCoords(user.location.lat, user.location.lng).then(setCityName)
+    }
+  }, [user?.location?.lat, user?.location?.lng])
 
     const onLikePress = () => {
     navigation.navigate("MatchScreen");
@@ -96,7 +84,6 @@ const UserProfileScreen = ({ navigation, route }: any) => {
     });
   };
 
-  // 3️⃣ Menu items
   const menuItems: ChatMenuItem[] = [
     {
       key: 'block',
@@ -141,7 +128,6 @@ const UserProfileScreen = ({ navigation, route }: any) => {
         paddingBottom: sh(20),
       }}
     >
-      {/* 4️⃣ Pass ref + openMenu into Header */}
       <Header
         navigation={navigation}
         menuAnchorRef={menuAnchorRef}
@@ -224,7 +210,7 @@ const UserProfileScreen = ({ navigation, route }: any) => {
           />
           <InfoRow
             icon={<MapPin size={sf(16)} />}
-            text={user.location}
+            text={cityName || '—'}
           />
         </Card>
 
@@ -297,7 +283,6 @@ const UserProfileScreen = ({ navigation, route }: any) => {
         />
       </ScrollView>
 
-      {/* 5️⃣ Render ChatMenu at root level */}
       <ChatMenu
         visible={menuVisible}
         onClose={() => setMenuVisible(false)}
@@ -314,7 +299,6 @@ export default UserProfileScreen;
 // 🔹 Sub Components
 // ─────────────────────────────────────────────
 
-// 6️⃣ Header now accepts menuAnchorRef + onMenuPress
 const Header = ({
   navigation,
   menuAnchorRef,

@@ -60,7 +60,7 @@
       "@react-native-community/datetimepicker"
     ],
     "extra": {
-      "apiBaseUrl": "http://192.168.1.109:5000",
+      "apiBaseUrl": "http://192.168.1.107:5000",
       "eas": {
         "projectId": "5964fbfc-515b-4d82-b4f8-1a3ad7bb0eb1"
       }

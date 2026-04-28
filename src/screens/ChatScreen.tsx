@@ -174,7 +174,7 @@ export default function ChatScreen({ navigation, route }: any) {
 
   // ── Peer profile (for View Profile) ──────────────────────────────────────
   const { data: peerUser } = useGetUserById(chatUserId)
-  // console.log(peerUser, "peerUser")
+  console.log(peerUser, "peerUser")
 
   // ── State ─────────────────────────────────────────────────────────────────
   const [conversationId, setConversationId] = useState<string | null>(passedConversationId ?? null)
@@ -318,6 +318,7 @@ export default function ChatScreen({ navigation, route }: any) {
         // Build UserProfile shape from peerUser API response
         const profile = peerUser?.profile
         const interests = (peerUser?.interests ?? []).map((ui: any) => ui.interest.name)
+        const location = peerUser?.location ?? '';
 
         navigation?.navigate('UserProfileScreen', {
           user: {
@@ -333,7 +334,7 @@ export default function ChatScreen({ navigation, route }: any) {
             gender:     profile?.gender
               ? profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1)
               : '',
-            location:   '',
+            location:   location,
             attributes: profile?.ethnicity ? [profile.ethnicity] : [],
             interests,
           },
