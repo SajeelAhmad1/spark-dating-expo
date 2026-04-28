@@ -67,12 +67,14 @@ export const DiscoverProfilesRequestSchema = z.object({
   lat: z.number(),
   lng: z.number(),
   limit: z.number().int().min(1).max(50).optional(),
+  cursor: z.string().optional(),
 });
 
 export const DiscoverProfilesResponseSchema = z.object({
   area: AvailabilityPayloadSchema,
   appliedFilter: AppliedFilterSchema.optional(),
   profiles: z.array(DiscoveryProfileSchema),
+  nextCursor: z.string().nullable().optional(),
 });
 
 export type DiscoveryProfile = z.infer<typeof DiscoveryProfileSchema>;

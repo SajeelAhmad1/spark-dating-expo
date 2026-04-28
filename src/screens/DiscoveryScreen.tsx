@@ -26,6 +26,8 @@ const CARD_H_PADDING = sw(12)
 const CARD_WIDTH  = SCREEN_WIDTH - CARD_H_PADDING * 2
 const CARD_HEIGHT = Math.min(SCREEN_HEIGHT * 0.6, sh(560))
 const BTN_OVERLAP = sf(32)
+const DISCOVERY_PAGE_LIMIT = 10
+const PREFETCH_THRESHOLD = Math.ceil(DISCOVERY_PAGE_LIMIT / 2)
 
 // ── Skeleton card ─────────────────────────────────────────────────────────────
 
@@ -97,22 +99,22 @@ function profileToCardItem(p: DiscoveryProfile) {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 const DiscoveryScreen = ({ navigation }: any) => {
-   const { coords } = useLocationStore(); // ✅ Sirf read karo
-console.log('📍 DiscoveryScreen coords:', coords);
- const { data, isPending, isError, refetch, isFetching } = useDiscoverProfiles(
-    coords ? { lat: coords.lat, lng: coords.lng, limit: 10 } : null
-  ) 
-// console.log(data, "data discovery")
-const profiles      = data?.profiles ?? []
-const appliedFilter = data?.appliedFilter ?? null
-console.log(profiles, "discoveryscreen profile")
+  const { coords } = useLocationStore()
+  const {
+    data,
+    isPending,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useDiscoverProfiles(
+    coords ? { lat: coords.lat, lng: coords.lng, limit: DISCOVERY_PAGE_LIMIT } : null
+  )
+  const profiles = data?.profiles ?? []
 
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [photoIndex,   setPhotoIndex]   = useState(0)
-
-  useEffect(() => { setCurrentIndex(0); setPhotoIndex(0) }, [profiles.length])
-
-  const activeProfile = profiles[Math.min(currentIndex, profiles.length - 1)]
+  const [photoIndex, setPhotoIndex] = useState(0)
+  const activeProfile = profiles[0]
   const activeMatch   = activeProfile ? profileToCardItem(activeProfile) : null
   const photoTotal    = activeProfile?.photos.length ?? 1
 
@@ -131,12 +133,20 @@ console.log(profiles, "discoveryscreen profile")
   useEffect(() => {
     photoFade.setValue(0)
     Animated.timing(photoFade, { toValue: 1, duration: 180, useNativeDriver: true, easing: Easing.out(Easing.cubic) }).start()
-  }, [currentIndex, photoIndex])
+  }, [activeProfile?.id, photoIndex, photoFade])
 
-  const goToNextUser = useCallback(() => {
-    setCurrentIndex((prev) => Math.min(prev + 1, profiles.length - 1))
+  useEffect(() => {
     setPhotoIndex(0)
-  }, [profiles.length])
+  }, [activeProfile?.id])
+
+  useEffect(() => {
+    if (!hasNextPage || isFetchingNextPage) return
+    if (profiles.length > PREFETCH_THRESHOLD) return
+
+    fetchNextPage().catch(() => {
+      // Keep swiping uninterrupted if a background prefetch fails.
+    })
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, profiles.length])
 
   const goToPrevPhoto = () => setPhotoIndex((p) => (p - 1 + photoTotal) % photoTotal)
   const goToNextPhoto = () => setPhotoIndex((p) => (p + 1) % photoTotal)
@@ -148,17 +158,16 @@ console.log(profiles, "discoveryscreen profile")
       {
         onSuccess: (res) => {
           if (res.matched) navigation.navigate('MatchScreen', { match: activeMatch })
-          else goToNextUser()
         },
-        onError: () => { showToast({ text1: 'Something went wrong' }); goToNextUser() },
+        onError: () => {},
       },
     )
-  }, [activeProfile, activeMatch, swipe, goToNextUser, navigation])
+  }, [activeProfile, activeMatch, swipe, navigation])
 
   const handlePass = useCallback(() => {
     if (!activeProfile) return
-    swipe({ toUserId: activeProfile.id, action: 'swipe' }, { onSuccess: goToNextUser, onError: goToNextUser })
-  }, [activeProfile, swipe, goToNextUser])
+    swipe({ toUserId: activeProfile.id, action: 'swipe' }, { onError: () => {} })
+  }, [activeProfile, swipe])
 
   const openChat = useCallback(() => {
     if (!activeMatch) return
@@ -220,7 +229,7 @@ console.log(profiles, "discoveryscreen profile")
   )
 
   // ── Loading / skeleton ────────────────────────────────────────────────────
-  if (isPending || isFetching) {
+  if (isPending && profiles.length === 0) {
     return (
       <View style={{ flex: 1, paddingBottom: sh(20) }}>
         <LinearGradient colors={['#1E78F5', '#FBB202']} start={{ x: 0, y: -0.1 }} end={{ x: 2, y: 0.7 }} style={StyleSheet.absoluteFill} />
@@ -234,7 +243,8 @@ console.log(profiles, "discoveryscreen profile")
   }
 
   // ── Empty / exhausted ────────────────────────────────────────────────────
-  if (!isError && (profiles.length === 0 || currentIndex >= profiles.length)) {
+  if (profiles.length === 0 && !isFetchingNextPage) {
+    const isRetryState = isError
     return (
       <View style={{ flex: 1, paddingBottom: sh(20) }}>
         <LinearGradient colors={['#1E78F5', '#FBB202']} start={{ x: 0, y: -0.1 }} end={{ x: 2, y: 0.7 }} style={StyleSheet.absoluteFill} />
@@ -242,16 +252,18 @@ console.log(profiles, "discoveryscreen profile")
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: sh(12) }}>
           <Text style={{ fontSize: sf(40) }}>✨</Text>
           <Text style={{ color: '#FFFFFF', fontSize: sf(20), fontFamily: 'Poppins-SemiBold', textAlign: 'center' }}>
-            You've seen everyone!
+            {isRetryState ? 'Unable to load profiles' : "You've seen everyone!"}
           </Text>
           <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: sf(14), textAlign: 'center', paddingHorizontal: sw(32) }}>
-            Come back later for new people nearby.
+            {isRetryState ? 'Please try again in a moment.' : 'Come back later for new people nearby.'}
           </Text>
           <TouchableOpacity
-            onPress={() => { setCurrentIndex(0); refetch() }}
+            onPress={() => { refetch() }}
             style={{ flexDirection: 'row', alignItems: 'center', gap: sw(8), backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: sw(20), paddingVertical: sh(12), borderRadius: sr(99) }}
           >
-            <Text style={{ color: '#FFFFFF', fontFamily: 'Poppins-SemiBold', fontSize: sf(15) }}>Load Fresh Profiles</Text>
+            <Text style={{ color: '#FFFFFF', fontFamily: 'Poppins-SemiBold', fontSize: sf(15) }}>
+              {isRetryState ? 'Try Again' : 'Load Fresh Profiles'}
+            </Text>
           </TouchableOpacity>
         </View>
         <BottomTabBar />
