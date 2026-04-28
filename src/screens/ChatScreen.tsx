@@ -253,7 +253,7 @@ export default function ChatScreen({ navigation, route }: any) {
     if (!conversationId || messages.length === 0) return
     const last = messages[messages.length - 1]
     if (last && !last.id.startsWith('optimistic-') && last.senderId !== myId) {
-      markRead({ lastReadMessageId: last.id })
+      markRead(last.id)
     }
   }, [conversationId, messages.length])
 

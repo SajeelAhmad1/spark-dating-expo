@@ -19,7 +19,9 @@ const SearchScreen = ({ navigation }: any) => {
   const { data, isPending, isError, refetch, isFetching } = useDiscoverProfiles(
     coords ? { lat: coords.lat, lng: coords.lng, limit: 10 } : null,
   );
-
+  console.log(data?.profiles?.length, "profiles length discoveryscreen")
+console.log(data, "data Searchscreen")
+console.log(isError, "isError Searchscreen")
   useEffect(() => {
     if (!coords && !isLoading) {
       navigation.replace('EnableLocationScreen');

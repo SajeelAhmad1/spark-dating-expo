@@ -112,6 +112,9 @@ const DiscoveryScreen = ({ navigation }: any) => {
     coords ? { lat: coords.lat, lng: coords.lng, limit: DISCOVERY_PAGE_LIMIT } : null
   )
   const profiles = data?.profiles ?? []
+  console.log(profiles.length, "profiles length discoveryscreen")
+  console.log(data, "data discoveryscreen")
+  console.log(data, "profiles discoveryscreen")
 
   const [photoIndex, setPhotoIndex] = useState(0)
   const activeProfile = profiles[0]

@@ -1,23 +1,16 @@
 import { apiGet, apiPost } from '@/api/client'
 import { ENDPOINTS } from '@/api/endpoints'
 import {
-  ChatMessage,
-  ChatMessageSchema,
   CreateDirectConversationResponse,
   CreateDirectConversationResponseSchema,
   ListConversationsResponse,
   ListConversationsResponseSchema,
   ListMessagesResponse,
   ListMessagesResponseSchema,
-  MarkReadRequest,
-  SendMessageRequest,
-  SendMessageResponse,
-  SendMessageResponseSchema,
 } from './schema'
 
 export const chatApi = {
-  // ── Conversations ─────────────────────────────────────────────────────────
-
+  // REST: create conversation
   createDirectConversation: async (
     userId: string,
   ): Promise<CreateDirectConversationResponse> => {
@@ -25,13 +18,13 @@ export const chatApi = {
     return CreateDirectConversationResponseSchema.parse(raw)
   },
 
+  // REST: conversations list
   listConversations: async (limit = 20): Promise<ListConversationsResponse> => {
     const raw = await apiGet(ENDPOINTS.CHAT.CONVERSATIONS, { limit })
     return ListConversationsResponseSchema.parse(raw)
   },
 
-  // ── Messages ──────────────────────────────────────────────────────────────
-
+  // REST: message history (paginated)
   listMessages: async (
     conversationId: string,
     cursor?: string,
@@ -43,18 +36,6 @@ export const chatApi = {
     return ListMessagesResponseSchema.parse(raw)
   },
 
-  sendMessage: async (
-    conversationId: string,
-    payload: SendMessageRequest,
-  ): Promise<SendMessageResponse> => {
-    const raw = await apiPost(ENDPOINTS.CHAT.MESSAGES(conversationId), payload)
-    return SendMessageResponseSchema.parse(raw)
-  },
-
-  markConversationRead: async (
-    conversationId: string,
-    payload: MarkReadRequest,
-  ): Promise<void> => {
-    await apiPost(ENDPOINTS.CHAT.MARK_READ(conversationId), payload)
-  },
+  // NOTE: sendMessage and markConversationRead removed.
+  // Both handled exclusively via Socket.IO (message:send and message:read events).
 }
