@@ -1,75 +1,35 @@
-import { useMutation } from '@tanstack/react-query';
-import { authApi } from './api';
-import {
+import { useMutation } from '@tanstack/react-query'
+import { authApi } from './api'
+import type {
   LoginDto,
   SetPasswordDto,
   SignupStartEmailDto,
   SignupStartPhoneDto,
   VerifyOtpPhoneDto,
-} from './schema';
-import { tokenStore } from '@/api/client';
-import { queryClient } from '@/utils/queryClient';
-import { notificationsApi } from '@/features/notifications/api';
-import * as Device from 'expo-device';
-// import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
-import { showToast } from '@/utils/toast';
-
-// ── FCM token helper — call after login ────────────────────────────────────────
-// async function tryRegisterFcmToken() {
-//   try {
-//     if (!Device.isDevice) return;
-
-//     const projectId = Constants?.expoConfig?.extra?.eas?.projectId;
-//     if (!projectId) {
-//       console.warn('Project ID missing for push notifications');
-//       return;
-//     }
-
-//     const { status } = await Notifications.requestPermissionsAsync();
-//     if (status !== 'granted') return;
-
-//     const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
-//     const token = tokenData?.data;
-
-//     if (!token) return;
-
-//     // ✅ STEP 1: check existing token (avoid duplicate API call)
-//     const existingToken = await tokenStore.getFcmToken();
-
-//     if (existingToken === token) {
-//       // already registered → skip
-//       return;
-//     }
-
-//     // ✅ STEP 2: send to backend
-//     await notificationsApi.registerFcmToken({ token });
-//     await notificationsApi.updatePreferences({ fcmEnabled: true });
-
-//     // ✅ STEP 3: SAVE LOCALLY (IMPORTANT)
-//     await tokenStore.setFcmToken(token);
-//   } catch (error) {
-//     console.log('Push notification registration failed:', error);
-//   }
-// }
+} from './schema'
+import { tokenStore } from '@/api/client'
+import { queryClient } from '@/utils/queryClient'
+import { showToast } from '@/utils/toast'
+import { registerFcmToken, unregisterFcmToken } from '@/services/fcm'
+import { disconnectSocket } from '@/services/socket'
 
 // ── Sign-up ───────────────────────────────────────────────────────────────────
 
 export const useSetPassword = () =>
   useMutation({
     mutationFn: (dto: SetPasswordDto) => authApi.setPassword(dto),
-  });
+  })
 
 export const useSignupStartWithPhone = () =>
   useMutation({
     mutationFn: (payload: SignupStartPhoneDto | SignupStartEmailDto) =>
       authApi.signupStartPhone(payload),
-  });
+  })
 
 export const useVerifyOtpPhone = () =>
   useMutation({
     mutationFn: (dto: VerifyOtpPhoneDto) => authApi.verifyOtpPhone(dto),
-  });
+  })
 
 // ── Login ─────────────────────────────────────────────────────────────────────
 
@@ -81,12 +41,12 @@ export const useLogin = () =>
         tokenStore.setAccess(data.accessToken),
         tokenStore.setRefresh(data.refreshToken),
         tokenStore.setUser(data.user),
-      ]);
-      queryClient.invalidateQueries();
-      // Register FCM token after successful login
-      // await tryRegisterFcmToken();
+      ])
+      queryClient.invalidateQueries()
+      // Register FCM token after credentials are stored so API calls are authenticated
+      await registerFcmToken()
     },
-  });
+  })
 
 // ── Google ────────────────────────────────────────────────────────────────────
 
@@ -98,36 +58,33 @@ export const useGoogleAuth = () =>
         tokenStore.setAccess(data.accessToken),
         tokenStore.setRefresh(data.refreshToken),
         tokenStore.setUser(data.user),
-      ]);
-      queryClient.invalidateQueries();
-      // await tryRegisterFcmToken();
+      ])
+      queryClient.invalidateQueries()
+      await registerFcmToken()
     },
-  });
+  })
 
 // ── Logout ────────────────────────────────────────────────────────────────────
 
- 
-
- export const useLogout = () =>
+export const useLogout = () =>
   useMutation({
     mutationFn: authApi.logout,
     onSettled: async () => {
       try {
-        // const fcmToken = await tokenStore.getFcmToken();
+        // 1. Remove FCM token from backend + clear local cache
+        await unregisterFcmToken()
 
-        // if (fcmToken) {
-        //   try {
-        //     await notificationsApi.removeFcmToken({ token: fcmToken });
-        //   } catch (err) {
-        //     console.error('FCM remove failed:', err);
-        //   }
-        // }
+        // 2. Disconnect socket
+        disconnectSocket()
 
-        await tokenStore.clearAll();
-        queryClient.clear();
+        // 3. Clear all stored tokens + user data
+        await tokenStore.clearAll()
+
+        // 4. Clear React Query cache
+        queryClient.clear()
       } catch (error) {
-        console.error('Logout cleanup failed:', error);
-        showToast({ text1: error ? `${error}`  : 'Logout Failed' })
+        console.error('Logout cleanup failed:', error)
+        showToast({ text1: error ? `${error}` : 'Logout Failed' })
       }
     },
-  });
+  })

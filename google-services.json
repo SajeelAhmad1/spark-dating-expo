@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "455021014657",
+    "project_id": "spark-dating-ae92f",
+    "storage_bucket": "spark-dating-ae92f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:455021014657:android:40642c20b99b332bb6e780",
+        "android_client_info": {
+          "package_name": "com.sparkdating.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADWpFAutiMsu4C0MgA_upBfvts0-5nlzI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

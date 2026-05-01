@@ -349,7 +349,7 @@ export function useTypingIndicator(
     const setup = async () => {
       const sock = await connectSocket()
       if (cancelled) return
-      await joinConversation(conversationId)
+      // conversation room already joined by useConversationSocket — no duplicate join needed
       sock.on('typing:update', onTypingUpdate)
     }
 
