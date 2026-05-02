@@ -388,7 +388,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
               )}
 
               <PrimaryButton
-                title={isPending ? 'Creating account…' : 'Create Account'}
+                title={isPending ? 'Creating account…' : 'Create account'}
                 onPress={handleSubmit(onValid)}
                 colors={['#1E78F5', '#FBB202']}
                 variant='gradient'
@@ -412,7 +412,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
             </View>
 
             {/* ── Terms ── */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.termsWrap}
               onPress={() => {}}
             >
@@ -428,7 +428,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
                   Terms & Conditions
                 </Text>
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </ScrollView>
       </View>

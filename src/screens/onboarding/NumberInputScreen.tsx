@@ -24,7 +24,8 @@ import * as SecureStore from 'expo-secure-store';
 const { height: winH } = Dimensions.get('window');
 
 const NumberEnterScreen = ({ navigation }: any) => {
-  const { mutate: signupStart, isPending: isSendingCode } = useSignupStartWithPhone();
+  const { mutate: signupStart, isPending: isSendingCode } =
+    useSignupStartWithPhone();
 
   const [show, setShow] = useState(false);
   const [pickerKeyboardHeight, setPickerKeyboardHeight] = useState(0);
@@ -81,8 +82,11 @@ const NumberEnterScreen = ({ navigation }: any) => {
     const payload = { phone: `${country.dial_code}${data.phoneNumber}` };
 
     signupStart(payload, {
-      onSuccess: async (data: SignupStartResponse) => { 
-        await SecureStore.setItemAsync('signupSessionId', data?.signupSessionId);
+      onSuccess: async (data: SignupStartResponse) => {
+        await SecureStore.setItemAsync(
+          'signupSessionId',
+          data?.signupSessionId,
+        );
 
         showToast({ text1: 'Verification code sent' });
         navigation.navigate('NumberVerifyScreen', { phone: payload.phone });
@@ -107,61 +111,93 @@ const NumberEnterScreen = ({ navigation }: any) => {
     <View style={styles.safeArea}>
       <View style={styles.page}>
         <View style={styles.headerBlock}>
-          <Text style={[styles.title, { fontSize: sf(28) }]} weight="semibold">
-            My mobile number
+          <Text
+            style={[styles.title, { fontSize: sf(28) }]}
+            weight='semibold'
+          >
+            Your Mobile Number
           </Text>
-          <Text style={[styles.subtitle, { fontSize: sf(15) }]} weight="regular">
-            Your streak is waiting 🔥
+          <Text
+            style={[styles.subtitle, { fontSize: sf(15) }]}
+            weight='regular'
+          >
+            Your moment is waiting 🔥
           </Text>
         </View>
 
-        <View style={[styles.phoneRow, phoneError ? styles.phoneRowError : null]}>
-          <TouchableOpacity style={styles.countryBtn} onPress={handleOpenPicker}>
+        <View
+          style={[styles.phoneRow, phoneError ? styles.phoneRowError : null]}
+        >
+          <TouchableOpacity
+            style={styles.countryBtn}
+            onPress={handleOpenPicker}
+          >
             <Text style={{ fontSize: sf(20) }}>{country.flag}</Text>
-            <Text style={[styles.dialCode, { fontSize: sf(16) }]}>{country.dial_code}</Text>
-            <ChevronDown size={sf(16)} color="#000000" />
+            <Text style={[styles.dialCode, { fontSize: sf(16) }]}>
+              {country.dial_code}
+            </Text>
+            <ChevronDown
+              size={sf(16)}
+              color='#000000'
+            />
           </TouchableOpacity>
 
           <View style={styles.divider} />
 
           <TextInput
-            placeholder="300 1234567"
-            placeholderTextColor="#7D858E"
-            keyboardType="phone-pad"
+            placeholder='300 1234567'
+            placeholderTextColor='#7D858E'
+            keyboardType='phone-pad'
             value={phoneNumber}
             style={[styles.phoneInput, { fontSize: sf(16) }]}
-            onChangeText={(v) => setValue('phoneNumber', v, { shouldValidate: true })}
+            onChangeText={(v) =>
+              setValue('phoneNumber', v, { shouldValidate: true })
+            }
             onBlur={() => trigger('phoneNumber')}
           />
         </View>
         <FieldError message={phoneError} />
 
-        <Text style={[styles.helper, { fontSize: sf(15) }]} weight="regular">
-          We'll text you a code to verify you're really you. Message and data rates may apply.{' '}
-          <Text style={styles.helperMuted} weight="regular">
+        <Text
+          style={[styles.helper, { fontSize: sf(15) }]}
+          weight='regular'
+        >
+          We’ll send you a code to confirm it’s you. We will never share your
+          number
+          {/* <Text
+            style={styles.helperMuted}
+            weight='regular'
+          >
             What happens if your number changes?
-          </Text>
+          </Text> */}
         </Text>
 
         <View style={styles.btnWrap}>
           <PrimaryButton
-            title={isSendingCode ? 'Sending...' : 'Send verification Code'}
+            title={isSendingCode ? 'Sending...' : 'Send verification code'}
             onPress={handleSubmit(onValid)}
             colors={['#1E78F5', '#FBB202']}
-            variant="gradient"
+            variant='gradient'
             style={{ alignSelf: 'stretch' }}
-            textStyle={{ color: '#ffffff', fontSize: sf(20), fontWeight: '500' }}
+            textStyle={{
+              color: '#ffffff',
+              fontSize: sf(20),
+              fontWeight: '500',
+            }}
             disabled={isSendingCode}
           />
         </View>
 
         <View style={styles.footerRow}>
-          <Text style={[styles.footerText, { fontSize: sf(16) }]} weight="regular">
+          <Text
+            style={[styles.footerText, { fontSize: sf(16) }]}
+            weight='regular'
+          >
             Already have an account?{' '}
             <Text
               onPress={() => navigation.navigate('SignInScreen')}
               style={styles.loginLink}
-              weight="medium"
+              weight='medium'
             >
               Login
             </Text>
@@ -170,17 +206,21 @@ const NumberEnterScreen = ({ navigation }: any) => {
       </View>
 
       <CountryPicker
-        lang="en"
+        lang='en'
         show={show}
         enableModalAvoiding={false}
-        androidWindowSoftInputMode="adjustNothing"
+        androidWindowSoftInputMode='adjustNothing'
         onBackdropPress={handleClosePicker}
         onRequestClose={handleClosePicker}
-        inputPlaceholder="Search country"
-        inputPlaceholderTextColor="#7D858E"
-        searchMessage="No countries match your search"
+        inputPlaceholder='Search country'
+        inputPlaceholderTextColor='#7D858E'
+        searchMessage='No countries match your search'
         pickerButtonOnPress={(item) => {
-          setCountry({ flag: item.flag, dial_code: item.dial_code, code: item.code });
+          setCountry({
+            flag: item.flag,
+            dial_code: item.dial_code,
+            code: item.code,
+          });
           setValue('countryCode', item.code, { shouldValidate: true });
           handleClosePicker();
         }}

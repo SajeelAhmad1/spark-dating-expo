@@ -5,7 +5,7 @@ import { showToast } from '@/utils/toast';
 import { Text } from '@/components/common/Text';
 import { Share2, Copy } from 'lucide-react-native';
 import Gift from '@/assets/images/gift.svg';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 
@@ -15,7 +15,7 @@ const REFERRAL_LINK = 'https://spark.app/invite/SPARK-QT53V4';
 const STATS = [
   {
     id: 'invites',
-    label: 'Invites Sent',
+    label: 'Invites sent',
     value: 0,
     color: '#DC9B00',
     bg: '#FBB2021A',
@@ -23,7 +23,7 @@ const STATS = [
   },
   {
     id: 'signups',
-    label: 'Signed Up',
+    label: 'Signed up',
     value: 0,
     color: '#1E78F5',
     bg: '#1E78F51A',
@@ -34,9 +34,14 @@ const STATS = [
 // ─── Sub Components ───────────────────────────────────────
 
 const GiftIcon = () => (
-  <View style={styles.giftCircle}>
+  <LinearGradient
+    colors={['#1E78F5', '#DC9B00']}
+    start={{ x: 0, y: 0 }}
+    end={{ x: 1, y: 1 }}
+    style={styles.giftCircle}
+  >
     <Gift width={sf(56)} height={sf(56)} color="#ffffff" />
-  </View>
+  </LinearGradient>
 );
 
 const Title = () => (
@@ -50,7 +55,7 @@ const Title = () => (
       marginBottom: sh(8),
     }}
   >
-    Get Premium Free! 🎉
+    Get Premium Free!
   </Text>
 );
 
@@ -84,7 +89,7 @@ const ReferralLinkBox = ({ onCopy }: { onCopy: () => void }) => (
         marginBottom: sh(10),
       }}
     >
-      Your Referral Link
+      Your referral link
     </Text>
 
     <View style={styles.linkRow}>
@@ -186,7 +191,7 @@ const InviteScreen = ({ navigation }: any) => {
 
         <View style={styles.bottomActions}>
           <PrimaryButton
-            title="Share Invite Link"
+            title="Share invite link"
             onPress={handleShare}
             colors={['#1E78F5', '#DC9B00']}
             variant="gradient"
@@ -205,7 +210,7 @@ const InviteScreen = ({ navigation }: any) => {
                 textAlign: 'center',
               }}
             >
-              Skip for Now
+              Skip for now
             </Text>
           </TouchableOpacity>
         </View>
@@ -228,7 +233,6 @@ const styles = StyleSheet.create({
     width: sw(104),
     height: sw(104),
     borderRadius: 9999,
-    backgroundColor: '#1E78F5',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: sh(32),

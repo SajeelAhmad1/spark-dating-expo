@@ -14,7 +14,7 @@ import Message from '@/assets/images/message.svg';
 const FEATURES = [
   {
     id: 'matches',
-    label: 'Like Matches',
+    label: 'Find matches',
     icon: (
       <Like
         width={sf(24)}
@@ -24,7 +24,7 @@ const FEATURES = [
   },
   {
     id: 'snaps',
-    label: 'Send Snaps',
+    label: 'Send moments',
     icon: (
       <Camera
         width={sf(24)}
@@ -34,7 +34,7 @@ const FEATURES = [
   },
   {
     id: 'streaks',
-    label: 'Build Streaks',
+    label: 'Build streaks',
     icon: (
       <Fire
         width={sf(24)}
@@ -44,11 +44,13 @@ const FEATURES = [
   },
   {
     id: 'connect',
-    label: 'Stay Connected',
+    label: 'Stay connected',
     icon: (
-      <Message
+      <Zap
         width={sf(24)}
         height={sf(24)}
+        color='#FBB202'
+        fill='#FBB202'
       />
     ),
   },
@@ -60,14 +62,19 @@ const LaunchScreen = ({ navigation }: any) => {
     <View style={styles.safeArea}>
       <View style={styles.page}>
         <View style={styles.main}>
-          <View style={styles.iconCircle}>
+          <LinearGradient
+            colors={['#1E78F5', '#DC9B00']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.iconCircle}
+          >
             <Zap
               width={sf(35)}
               height={sf(56)}
               color='#ffffff'
               fill='#ffffff'
             />
-          </View>
+          </LinearGradient>
 
           <Text
             style={[styles.title, { fontSize: sf(24) }]}
@@ -86,7 +93,7 @@ const LaunchScreen = ({ navigation }: any) => {
             <Text style={{ fontFamily: 'Poppins-Medium', color: '#1E78F5' }}>
               1000+ users
             </Text>
-            🎉
+            
           </Text>
 
           <LinearGradient
@@ -175,7 +182,7 @@ const LaunchScreen = ({ navigation }: any) => {
         </View>
 
         <PrimaryButton
-          title="Let's Find your Spark!"
+          title="Let's find your spark!"
           onPress={() => navigation.navigate('EnableLocationScreen')}
           colors={['#1E78F5', '#FBB202']}
           variant='gradient'
@@ -199,7 +206,6 @@ const styles = StyleSheet.create({
     width: sw(104),
     height: sw(104),
     borderRadius: 9999,
-    backgroundColor: '#1E78F5',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: sh(16),

@@ -16,6 +16,7 @@ export type ChatPeer = z.infer<typeof ChatPeerSchema>
 export const LastMessageSchema = z.object({
   id:              z.string(),
   type:            z.enum(['text', 'image', 'streak']),
+  senderId:        z.string().optional(),
   text:            z.string().nullable().optional(),
   media:           z.any().nullable().optional(),
   streakExpiresAt: z.string().nullable().optional(),

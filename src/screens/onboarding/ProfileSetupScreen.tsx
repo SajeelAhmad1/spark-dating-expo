@@ -13,6 +13,8 @@ import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
 import { ChevronLeft, ChevronDown } from 'lucide-react-native';
 import PrimaryButton from '@/components/common/PrimaryButton';
+import ETHNICITIES from '@/constants/ethnicities';
+import HEIGHTS from '@/constants/heights';
 import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { createProfileSetupSchema } from '@/schemas/onboarding';
@@ -23,7 +25,7 @@ const DAYS    = Array.from({ length: 31 }, (_, i) => String(i + 1));
 const MONTHS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const YEARS   = Array.from({ length: 100 }, (_, i) => String(2024 - i));
 
-type DropdownField = 'day' | 'month' | 'year' | null;
+type DropdownField = 'day' | 'month' | 'year' | 'height' | 'ethnicity' | null;
 
 const ProfileSetupScreen = ({ navigation }: any) => {
   const [openDropdown, setOpenDropdown] = useState<DropdownField>(null);
@@ -44,6 +46,8 @@ const ProfileSetupScreen = ({ navigation }: any) => {
       day:       form.day,
       month:     form.month,
       year:      form.year,
+      height:    form.height,
+      ethnicity: form.ethnicity,
       bio:       form.bio,
     },
   });
@@ -54,13 +58,27 @@ const ProfileSetupScreen = ({ navigation }: any) => {
   const day       = watch('day');
   const month     = watch('month');
   const year      = watch('year');
+  const height    = watch('height');
+  const ethnicity = watch('ethnicity');
   const bio       = watch('bio');
 
   const { errors } = formState;
   const dobError   = errors.day?.message || errors.month?.message || errors.year?.message;
 
-  const dropdownOptions: Record<NonNullable<DropdownField>, string[]> = { day: DAYS, month: MONTHS, year: YEARS };
-  const dropdownValues:  Record<NonNullable<DropdownField>, string>   = { day, month, year };
+  const dropdownOptions: Record<NonNullable<DropdownField>, string[]> = {
+    day: DAYS,
+    month: MONTHS,
+    year: YEARS,
+    height: Object.values(HEIGHTS),
+    ethnicity: Object.values(ETHNICITIES),
+  };
+  const dropdownValues: Record<NonNullable<DropdownField>, string> = {
+    day,
+    month,
+    year,
+    height: height || '',
+    ethnicity: ethnicity || '',
+  };
 
   const handleDropdownSelect = (field: NonNullable<DropdownField>, value: string) => {
     setValue(field, value, { shouldValidate: true });
@@ -75,9 +93,12 @@ const ProfileSetupScreen = ({ navigation }: any) => {
       day:       data.day,
       month:     data.month,
       year:      data.year,
+      height:    data.height,
+      ethnicity: data.ethnicity,
       bio:       data.bio,
     });
-    navigation.navigate('PhysicalAttributesScreen');
+    // navigation.navigate('PhysicalAttributesScreen');
+    navigation.navigate('InterestsScreen');
   };
 
   const inputStyle = {
@@ -200,9 +221,36 @@ const ProfileSetupScreen = ({ navigation }: any) => {
           <FieldError message={dobError} />
         </View>
 
+        {/* Height & Ethnicity */}
+        {(['height', 'ethnicity'] as const).map((key) => (
+          <View key={key} style={styles.section}>
+            <Text style={[styles.label, { fontSize: sf(15) }]} weight="semibold">
+              {key === 'height' ? 'Height (cm)' : 'Ethnicity'}
+            </Text>
+            <TouchableOpacity
+              onPress={() => setOpenDropdown(key)}
+              style={{
+                height: sh(56),
+                borderRadius: sr(15),
+                borderWidth: 1,
+                borderColor: '#B6B9C9',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingHorizontal: sw(16),
+              }}
+            >
+              <Text style={{ fontSize: sf(15), color: dropdownValues[key] ? '#000000' : '#7D858E', lineHeight: sh(56) }}>
+                {dropdownValues[key] || (key === 'height' ? 'Select height' : 'Select ethnicity')}
+              </Text>
+              <ChevronDown size={sf(18)} color="#000000" />
+            </TouchableOpacity>
+          </View>
+        ))}
+
         {/* Bio */}
         <View style={styles.section}>
-          <Text style={[styles.label, { fontSize: sf(15) }]} weight="regular">Add a Bio</Text>
+          <Text style={[styles.label, { fontSize: sf(15) }]} weight="regular">Add Bio</Text>
           <TextInput
             placeholder="Write something interesting..."
             placeholderTextColor="#7D858E"

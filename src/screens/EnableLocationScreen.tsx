@@ -107,7 +107,7 @@ const EnableLocationScreen = ({ navigation }: any) => {
             { fontFamily: 'Poppins-SemiBold', fontSize: sf(24) },
           ]}
         >
-          Enable Location
+          Connect with people nearby
         </Text>
 
         <Text
@@ -120,7 +120,7 @@ const EnableLocationScreen = ({ navigation }: any) => {
             },
           ]}
         >
-          You need to enable location to be able to use the Spark app
+          You need to enable your location to use the Spark app
         </Text>
       </View>
 
@@ -146,7 +146,7 @@ const EnableLocationScreen = ({ navigation }: any) => {
               },
             ]}
           >
-            Find people near you and get better matches
+            Your location is only used to find people nearby
           </Text>
         </View>
 

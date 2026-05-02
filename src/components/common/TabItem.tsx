@@ -62,7 +62,7 @@ const TabIcon = ({ tab, isActive }: { tab: BottomTab; isActive: boolean }) => {
         </View>
       );
 
-    case "Chat":
+    case "Chats":
       return (
         <View>
           <MessageSquare

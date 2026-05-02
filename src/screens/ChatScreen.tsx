@@ -476,7 +476,7 @@ export default function ChatScreen({ navigation, route }: any) {
             >
               <CameraIcon width={40} height={40} />
               <Text style={{ fontWeight: '500', fontSize: sf(16), color: '#000000' }}>
-                Send Image to Unlock the chat
+                Send moment to Unlock the chat
               </Text>
             </TouchableOpacity>
           ) : (
@@ -489,7 +489,7 @@ export default function ChatScreen({ navigation, route }: any) {
 
               <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', height: sh(56), borderRadius: sr(15), borderWidth: 1, borderColor: '#B6B9C9', paddingHorizontal: sw(16), gap: 8, backgroundColor: '#FFFFFF', shadowColor: '#000000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.04, shadowRadius: 24, elevation: 1 }}>
                 <TextInput
-                  placeholder="Type a message…"
+                  placeholder="Respond with a message"
                   placeholderTextColor="#B6B9C9"
                   value={messageText}
                   onChangeText={(v) => { setValue('messageText', v, { shouldValidate: true }); onTyping() }}

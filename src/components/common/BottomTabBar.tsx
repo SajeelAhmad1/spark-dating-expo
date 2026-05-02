@@ -62,7 +62,7 @@ const BottomTabBar = () => {
         case "Camera":
           navigation.navigate("InboxScreen", { cameraSelectMode: true });
           break;
-        case "Chat":
+        case "Chats":
           navigation.navigate("InboxScreen");
           break;
         case "Profile":
@@ -158,8 +158,8 @@ const BottomTabBar = () => {
           <View pointerEvents="none" style={{ flex: 1 }} />
 
           <TabItem
-            tab="Chat"
-            label="Chat"
+            tab="Chats"
+            label="Chats"
             activeTab={activeTab}
             onTabPress={handleTabPress}
           />

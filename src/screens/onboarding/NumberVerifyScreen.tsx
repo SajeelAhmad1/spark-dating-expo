@@ -240,7 +240,7 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
             ]}
             weight='medium'
           >
-            {secondsLeft > 0 ? `Resend code in ${secondsLeft}s` : 'Resend Code'}
+            {secondsLeft > 0 ? `Resend code in ${secondsLeft}s` : 'Resend code'}
           </Text>
         </TouchableOpacity>
       </View>

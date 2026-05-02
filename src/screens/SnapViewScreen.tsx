@@ -346,7 +346,7 @@ export default function SnapViewScreen({ navigation, route }: any) {
           </TouchableOpacity>
 
           <TextInput
-            placeholder="Type a message..."
+            placeholder="Respond with a message"
             placeholderTextColor="#B6B9C9"
             style={{
               flex: 1,

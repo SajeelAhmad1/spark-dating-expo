@@ -178,7 +178,7 @@ export default function EmailInputScreen({ navigation }: any) {
 
             {/* CTA */}
             <PrimaryButton
-              title={isSendingCode ? 'Sending...' : 'Continue with Email'}
+              title={isSendingCode ? 'Sending...' : 'Continue with email'}
               onPress={handleSubmit(onValid)}
               colors={['#1E78F5', '#FBB202']}
               variant='gradient'

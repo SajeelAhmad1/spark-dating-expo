@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { Share2, Bell, Users2 } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 
@@ -21,16 +22,21 @@ const WaitingScreen = ({ navigation }: any) => (
       <View style={styles.main}>
 
         {/* Icon */}
-        <View style={styles.iconCircle}>
+        <LinearGradient
+          colors={['#1E78F5', '#DC9B00']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.iconCircle}
+        >
           <Users2 width={sf(56)} height={sf(56)} color="#ffffff" />
-        </View>
+        </LinearGradient>
 
         {/* Title */}
         <Text
           style={[styles.title, { fontSize: sf(24) }]}
           weight="semibold"
         >
-          We're Almost There! 🚀
+          We're Almost There!
         </Text>
 
         {/* Subtitle */}
@@ -85,7 +91,7 @@ const WaitingScreen = ({ navigation }: any) => (
 
       {/* ── Bottom: Action ── */}
       <PrimaryButton
-        title="Invite Friends to Speed Up"
+        title="Invite friends to speed up"
         onPress={() => navigation.navigate("LaunchScreen")}
         colors={['#1E78F5', '#DC9B00']}
         variant="gradient"
@@ -110,7 +116,6 @@ const styles = StyleSheet.create({
     width: sw(104),
     height: sw(104),
     borderRadius: 9999,
-    backgroundColor: '#1E78F5',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: sh(16),

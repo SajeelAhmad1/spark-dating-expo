@@ -88,7 +88,7 @@ export default function SignUpScreen({ navigation }: any) {
                 textAlign: 'center',
               }}
             >
-              Match. Snap. Keep the{'\n'}Spark Alive.
+             Keep the Spark alive.
             </Text>
           </View>
 
@@ -102,7 +102,7 @@ export default function SignUpScreen({ navigation }: any) {
                 textAlign: 'center',
               }}
             >
-              By tapping "Sign In" you agree to our{' '}
+              By continuing "Sign In" you agree to our{' '}
               <Text style={{ color: '#1E78F5' }}>Terms</Text>. Learn how we
               process your data in our{' '}
               <Text style={{ color: '#1E78F5' }}>Privacy Policy</Text> and{' '}
@@ -110,7 +110,7 @@ export default function SignUpScreen({ navigation }: any) {
             </Text>
 
             <PrimaryButton
-              title="Continue with Email"
+              title="Continue with email"
               onPress={() => navigation.navigate('EmailInputScreen')}
               colors={['#ffffff']}
               iconBackground="#EDEDED"
@@ -134,7 +134,7 @@ export default function SignUpScreen({ navigation }: any) {
 
             {/* ── Google sign-in ───────────────────────────────────────────── */}
             <PrimaryButton
-              title={isGooglePending ? 'Signing in…' : 'Continue with Google'}
+              title={isGooglePending ? 'Signing in…' : 'Continue with google'}
               onPress={handleGoogleSignIn}
               disabled={isGooglePending || !isReady}
               colors={['#ffffff']}

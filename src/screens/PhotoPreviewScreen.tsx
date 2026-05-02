@@ -8,7 +8,7 @@ import {
   Modal,
   StyleSheet,
 } from 'react-native';
-import { X, Download } from 'lucide-react-native';
+import { X, SendHorizonal } from 'lucide-react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
@@ -114,7 +114,7 @@ export default function PhotoPreviewScreen({
             backgroundColor: 'rgba(251, 178, 2, 0.2)',
           }}
         >
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={onDownload}
             style={{
               width: sf(60),
@@ -127,7 +127,7 @@ export default function PhotoPreviewScreen({
             disabled={isSending}
           >
             <Download size={sf(28)} color="#000000" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <View style={{ flex: 1 }}>
             <PrimaryButton
@@ -136,8 +136,8 @@ export default function PhotoPreviewScreen({
               colors={['#1E78F5', '#FBB202']}
               variant="gradient"
               style={{ alignSelf: 'stretch' }}
-              iconPosition="end"
-              // icon={<Send size={sf(20)} color="#FFFFFF" />}
+              iconPosition="right"
+              icon={<SendHorizonal size={sf(20)} color="#FFFFFF" />}
               disabled={isSending}
             />
           </View>

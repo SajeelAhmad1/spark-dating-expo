@@ -1,1 +1,1 @@
-export type BottomTab = 'Home' | 'Request' | 'Camera' | 'Chat' | 'Profile';
+export type BottomTab = 'Home' | 'Request' | 'Camera' | 'Chats' | 'Profile';

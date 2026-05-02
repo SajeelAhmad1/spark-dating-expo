@@ -484,7 +484,7 @@ const SettingsScreen = ({ navigation }: any) => {
         <SectionTitle title="Account" />
         <SettingRow label="Email"         value={me?.email ?? 'Example@gmail.com'} />
         <SettingRow label="Password" />
-        <SettingRow label="Blocked Users" onPress={() => navigation.navigate('BlockedUsersScreen')} />
+        {/* <SettingRow label="Blocked Users" onPress={() => navigation.navigate('BlockedUsersScreen')} /> */}
 
         {/* ── Discovery ── skeleton while loading ─────────────────────── */}
         <SectionTitle title="Discovery" />

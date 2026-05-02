@@ -411,7 +411,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           <Text
             style={{ fontSize: sf(15), fontWeight: '400', color: '#7D858E' }}
           >
-            Add photos to start connecting (required before messaging).
+            Add photos to start connecting
           </Text>
         </View>
         <View style={{ marginTop: sh(28) }}>
@@ -439,7 +439,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           disabled={isAnyUploading || isCompleting}
           colors={['#1E78F5', '#FBB202']}
           variant='gradient'
-          icon={isAnyUploading || isCompleting ? <ActivityIndicator /> : null}
+          icon={isAnyUploading || isCompleting ? <ActivityIndicator color='#FFFFFF' /> : null}
           iconPosition='middle'
           style={{
             alignSelf: 'stretch',
