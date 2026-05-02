@@ -35,20 +35,33 @@ const formatDate = (date: Date): string =>
 
 function buildEditDto(values: EditProfileFormValues, photos: string[]): EditProfileDto {
   const dto: EditProfileDto = {}
-  if (values.firstName) dto.firstName = values.firstName
-  if (values.lastName)  dto.lastName  = values.lastName
-  if (values.bio)       dto.bio       = values.bio
-  if (values.gender)    dto.gender    = values.gender.toLowerCase() as EditProfileDto['gender']
+
+  // Always include name fields if non-empty
+  if (values.firstName?.trim()) dto.firstName = values.firstName.trim()
+  if (values.lastName?.trim())  dto.lastName  = values.lastName.trim()
+
+  // Bio: include even if empty string (user may have cleared it)
+  if (values.bio !== undefined) dto.bio = values.bio
+
+  // Gender: lowercase to match backend enum
+  if (values.gender) dto.gender = values.gender.toLowerCase() as EditProfileDto['gender']
+
+  // Height: extract numeric value from string like "170 cm"
   if (values.height) {
     const num = Number(String(values.height).replace(/[^\d]/g, ''))
     if (num > 0) dto.height = num
   }
+
   if (values.ethnicity) dto.ethnicity = values.ethnicity
-  if (photos.length)    dto.photos    = photos
+
+  if (photos.length) dto.photos = photos
+
+  // Birthday
   if (values.birthday) {
     const d = values.birthday
     dto.dob = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
   }
+
   return dto
 }
 
@@ -198,7 +211,7 @@ function InterestPickerModal({
               }}
             >
               {isSaving
-                ? <ActivityIndicator color="#FFFFFF" />
+                ?  <Text style={{ color: '#FFFFFF', fontFamily: 'Poppins-SemiBold', fontSize: sf(16), display: 'flex', alignItems: 'center'}}>Saving...</Text>
                 : <Text style={{ color: '#FFFFFF', fontFamily: 'Poppins-SemiBold', fontSize: sf(16) }}>
                     Save ({selected.length} selected)
                   </Text>
@@ -262,10 +275,7 @@ const EditProfileScreen = ({ navigation }: any) => {
         gender:    user?.profile?.gender
           ? user.profile.gender.charAt(0).toUpperCase() + user.profile.gender.slice(1)
           : 'Male',
-        // Pre-fill height: find the matching string from HEIGHTS constant
-        height:    user?.profile?.height
-          ? String(user.profile.height)
-          : '',
+        height:    user?.profile?.height ? `${user.profile.height} cm` : '',
         ethnicity: user?.profile?.ethnicity ?? '',
         birthday:  user?.profile?.dob ? new Date(user.profile.dob) : new Date('1999-05-24'),
       },
@@ -505,7 +515,7 @@ const EditProfileScreen = ({ navigation }: any) => {
             </View>
 
             {/* Interests box */}
-            <View style={{ borderWidth: 1, borderColor: '#7D858E', borderRadius: sr(8), minHeight: sh(90), marginBottom: sh(12), paddingHorizontal: sw(12), paddingVertical: sh(12), gap: sh(10) }}>
+            <View style={{ borderWidth: 1, borderColor: '#7D858E', borderRadius: sr(8), minHeight: sh(90), marginBottom: sh(12), marginTop: sh(80), paddingHorizontal: sw(12), paddingVertical: sh(12), gap: sh(10) }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Text style={labelStyle}>
                   Interests ({selectedInterestNames.length}/{MAX_INTERESTS})
@@ -553,7 +563,7 @@ const EditProfileScreen = ({ navigation }: any) => {
             style={{ width: sw(184), height: sh(56), borderRadius: sr(32), backgroundColor: '#FF3366', alignItems: 'center', justifyContent: 'center', opacity: isSaving ? 0.6 : 1 }}
           >
             {isSaving
-              ? <ActivityIndicator color="#FFFFFF" />
+              ? <Text style={{ fontWeight: '500', fontSize: sf(20), color: '#FFFFFF' }}>Saving...</Text>
               : <Text style={{ fontWeight: '500', fontSize: sf(20), color: '#FFFFFF' }}>Save</Text>
             }
           </TouchableOpacity>
