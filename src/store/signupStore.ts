@@ -6,8 +6,9 @@ import { CompleteProfileDto } from '@/features/profile/schema';
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
 export interface PhotoSlot {
-  uri: string; // local device URI — used for <Image> preview
-  cloudinaryUrl: string; // returned after Cloudinary upload — sent to backend
+  uri: string;
+  cloudinaryUrl: string;
+  publicId: string;
   isUploading: boolean;
   uploadError: string | null;
 }
@@ -120,19 +121,20 @@ export const useSignupStore = create<SignupStore>()(
       reset: () => set({ form: initialForm }, false, 'signup/reset'), 
 
       getPayload: (): CompleteProfileDto => {
-        const { photos, day, month, year, height, gender, ...rest } =
+        const { photos: photoSlots, day, month, year, height, gender, ...rest } =
           get().form;
 
-        // Only include successfully uploaded photos
-        const photoUrls = photos
+        // Only include successfully uploaded photos — send as {url, publicId} objects
+        const photos = photoSlots
           .filter(
             (s): s is PhotoSlot =>
               s !== null &&
               !!s.cloudinaryUrl &&
+              !!s.publicId &&
               !s.isUploading &&
               !s.uploadError,
           )
-          .map((s) => s.cloudinaryUrl);
+          .map((s) => ({ url: s.cloudinaryUrl, publicId: s.publicId }));
 
         // Format DOB as YYYY-MM-DD string
         const dob = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
@@ -141,7 +143,7 @@ export const useSignupStore = create<SignupStore>()(
           ...rest,
           dob,
           height: Number(height),
-          photos: photoUrls,
+          photos,
           gender: gender.toLowerCase() as 'male' | 'female' | 'other',
         };
       },

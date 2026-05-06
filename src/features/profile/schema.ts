@@ -1,6 +1,15 @@
 // src/features/profile/schema.ts
 import { z } from 'zod';
 
+// ─── Photo object ─────────────────────────────────────────────────────────────
+
+export const PhotoSchema = z.object({
+  url:      z.string(),
+  publicId: z.string(),
+});
+
+export type Photo = z.infer<typeof PhotoSchema>;
+
 // ─── Complete Profile ──────────────────────────────────────────────────────────
 
 export const CompleteProfileDtoSchema = z.object({
@@ -14,13 +23,12 @@ export const CompleteProfileDtoSchema = z.object({
   height: z.number().positive('Height must be positive').optional(),
   ethnicity: z.string().optional(),
   interests: z.array(z.string()).optional(),
-  photos: z.array(z.string().url()).optional(),
+  photos: z.array(PhotoSchema).optional(),
 });
 
 export type CompleteProfileDto = z.infer<typeof CompleteProfileDtoSchema>;
 
 // ─── Edit Profile ──────────────────────────────────────────────────────────────
-// All fields are optional — only send what changed (PATCH semantics).
 
 export const EditProfileDtoSchema = z.object({
   firstName: z.string().min(1).optional(),
@@ -31,7 +39,7 @@ export const EditProfileDtoSchema = z.object({
   height: z.number().positive().optional(),
   ethnicity: z.string().optional(),
   interests: z.array(z.string()).min(3).max(5).optional(),
-  photos: z.array(z.string().url()).optional(),
+  photos: z.array(PhotoSchema).optional(),
 });
 
 export type EditProfileDto = z.infer<typeof EditProfileDtoSchema>;
@@ -48,7 +56,8 @@ export const ProfileDataSchema = z.object({
   bio: z.string().nullable(),
   height: z.number().nullable(),
   ethnicity: z.string().nullable(),
-  photos: z.array(z.string()),
+  // photos stored as objects in DB; accept both for backward compat
+  photos: z.array(z.union([PhotoSchema, z.string()])),
 });
 
 export const InterestItemSchema = z.object({

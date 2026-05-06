@@ -36,7 +36,7 @@ export const useVerifyOtpPhone = () =>
 export const useLogin = () =>
   useMutation({
     mutationFn: (dto: LoginDto) => authApi.login(dto),
-    onSuccess: async (data) => {
+    onSuccess: async (data) => { 
       await Promise.all([
         tokenStore.setAccess(data.accessToken),
         tokenStore.setRefresh(data.refreshToken),

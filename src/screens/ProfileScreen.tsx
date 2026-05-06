@@ -44,7 +44,7 @@ const ProfileScreen = ({ navigation }: any) => {
   const profile = user?.profile;
   const interests = user?.interests ?? [];
   const photos = profile?.photos ?? [];
-
+console.log(photos, "photos profile")
   // ✅ Reverse geocoding: Convert lat/lng to city name
   useEffect(() => {
     if (user?.location?.lat && user?.location?.lng) {
@@ -162,7 +162,7 @@ const ProfileScreen = ({ navigation }: any) => {
             }}
           >
             <Image
-              source={{ uri: photos[0] ?? 'https://via.placeholder.com/600' }}
+              source={{ uri: photos[0].url ?? 'https://via.placeholder.com/600' }}
               style={{ width: '100%', height: '100%' }}
               resizeMode='cover'
             />
@@ -271,7 +271,7 @@ const ProfileScreen = ({ navigation }: any) => {
                   }}
                 >
                   <Image
-                    source={{ uri }}
+                    source={{ uri.url }}
                     style={{ width: '100%', height: '100%' }}
                     resizeMode='cover'
                   />

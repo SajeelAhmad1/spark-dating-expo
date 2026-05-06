@@ -20,7 +20,7 @@ const LogoScreen = ({ navigation }: any) => {
 
       // Honour minimum splash visibility
       await new Promise<void>((r) => setTimeout(r, SPLASH_DELAY_MS));
-
+      console.log(user, "user logoscreen");
       if (cancelled) return;
 
       if (token) {

@@ -57,6 +57,7 @@ function SignInFormBody({
       {
         onSuccess: async (data: any) => {
           showToast({ text1: 'Logged in successfully' });
+             console.log(data?.user, "loginscreen response user")
 
           // Route based on what the backend says is next
           if (data.next === 'complete_profile') {
@@ -64,7 +65,7 @@ function SignInFormBody({
           } else {
             // 'home' or anything else → go to location screen
             const user = await tokenStore.getUser();
-      console.log(data?.user, "loginscreen coords")
+      console.log(data?.user, "loginscreen tokenStore user")
 
             if (user?.location?.lat && user?.location?.lng) {
               navigation.replace('SearchScreen');
@@ -73,6 +74,7 @@ function SignInFormBody({
             }
           }
         },
+
         onError: (err: any) => {
           showToast({
             text1: 'Login failed',

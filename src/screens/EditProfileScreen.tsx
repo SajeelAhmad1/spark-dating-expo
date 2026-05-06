@@ -19,7 +19,7 @@ import { FieldError }  from '@/components/common/FieldError'
 import { showToast }   from '@/utils/toast'
 import { useEditProfile, useMe } from '@/features/profile/hooks'
 import { useInterestsCatalog }   from '@/features/interests/hooks'
-import { uploadToCloudinary }    from '@/utils/cloudinary'
+import { uploadToCloudinary, deleteFromCloudinary } from '@/utils/cloudinary'
 import type { EditProfileDto }   from '@/features/profile/schema'
 
 const MAX_INTERESTS = 5
@@ -28,12 +28,14 @@ const MAX_INTERESTS = 5
 
 type DropdownField = 'gender' | 'height' | 'ethnicity' | null
 
+interface PhotoItem { url: string; publicId: string }
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const formatDate = (date: Date): string =>
   `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`
 
-function buildEditDto(values: EditProfileFormValues, photos: string[]): EditProfileDto {
+function buildEditDto(values: EditProfileFormValues, photos: PhotoItem[]): EditProfileDto {
   const dto: EditProfileDto = {}
 
   // Always include name fields if non-empty
@@ -55,8 +57,6 @@ function buildEditDto(values: EditProfileFormValues, photos: string[]): EditProf
   if (values.ethnicity) dto.ethnicity = values.ethnicity
 
   if (photos.length) dto.photos = photos
-
-  // Birthday
   if (values.birthday) {
     const d = values.birthday
     dto.dob = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -213,7 +213,7 @@ function InterestPickerModal({
               {isSaving
                 ?  <Text style={{ color: '#FFFFFF', fontFamily: 'Poppins-SemiBold', fontSize: sf(16), display: 'flex', alignItems: 'center'}}>Saving...</Text>
                 : <Text style={{ color: '#FFFFFF', fontFamily: 'Poppins-SemiBold', fontSize: sf(16) }}>
-                    Save ({selected.length} selected)
+                    Add ({selected.length} selected)
                   </Text>
               }
             </TouchableOpacity>
@@ -236,19 +236,27 @@ const EditProfileScreen = ({ navigation }: any) => {
   const { mutate: editProfile, isPending: isSaving } = useEditProfile()
 
   // ── Photos ────────────────────────────────────────────────────────────────
-  const [images,    setImages]    = useState<string[]>(() => user?.profile?.photos ?? [])
+  const existingPhotos: PhotoItem[] = (user?.profile?.photos ?? []).map((p: any) =>
+    typeof p === 'string' ? { url: p, publicId: '' } : { url: p.url, publicId: p.publicId ?? '' }
+  )
+  const [images,    setImages]    = useState<PhotoItem[]>(() => existingPhotos)
   const [uploading, setUploading] = useState<number[]>([])
 
   React.useEffect(() => {
-    if (user?.profile?.photos?.length) setImages(user.profile.photos)
+    if (user?.profile?.photos?.length) {
+      setImages(
+        (user.profile.photos as any[]).map((p: any) =>
+          typeof p === 'string' ? { url: p, publicId: '' } : { url: p.url, publicId: p.publicId ?? '' }
+        )
+      )
+    }
   }, [user])
 
   // ── Interests — store NAMES, not IDs ──────────────────────────────────────
   const [selectedInterestNames, setSelectedInterestNames] = useState<string[]>(
     () => (user?.interests ?? []).map((ui: any) => ui.interest?.name ?? '').filter(Boolean),
   )
-  const [showInterests,     setShowInterests]     = useState(false)
-  const [isSavingInterests, setIsSavingInterests] = useState(false)
+  const [showInterests, setShowInterests] = useState(false)
 
   React.useEffect(() => {
     if (user?.interests) {
@@ -315,11 +323,12 @@ const EditProfileScreen = ({ navigation }: any) => {
     const uri = result.assets[0].uri
     setUploading((prev) => [...prev, index])
     try {
-      const cloudUrl = await uploadToCloudinary(uri)
+      const { secure_url, public_id } = await uploadToCloudinary(uri)
       setImages((prev) => {
         const next = [...prev]
-        if (index < next.length) next[index] = cloudUrl
-        else next.push(cloudUrl)
+        const newItem: PhotoItem = { url: secure_url, publicId: public_id }
+        if (index < next.length) next[index] = newItem
+        else next.push(newItem)
         return next
       })
     } catch (err: any) {
@@ -329,32 +338,25 @@ const EditProfileScreen = ({ navigation }: any) => {
     }
   }
 
-  const removeImage = (index: number) =>
+  const removeImage = (index: number) => {
+    const item = images[index]
+    console.log(item, "remove image urls")
+    if (item?.publicId) {
+      deleteFromCloudinary(item.publicId).catch(() => {})
+    }
     setImages((prev) => prev.filter((_, i) => i !== index))
+  }
 
-  // ── Save interests — send NAMES ───────────────────────────────────────────
+  // ── Save interests locally — API call happens on main Save button ──────────
   const handleSaveInterests = (names: string[]) => {
-    setIsSavingInterests(true)
-    editProfile(
-      { interests: names },        // backend expects string[] of names
-      {
-        onSuccess: () => {
-          setSelectedInterestNames(names)
-          setIsSavingInterests(false)
-          setShowInterests(false)
-          showToast({ text1: 'Interests saved' })
-        },
-        onError: (err: any) => {
-          setIsSavingInterests(false)
-          showToast({ text1: 'Failed to save interests', text2: err?.message })
-        },
-      },
-    )
+    setSelectedInterestNames(names)
+    setShowInterests(false)
   }
 
   // ── Submit main form ──────────────────────────────────────────────────────
   const onSave = handleSubmit((values) => {
     const dto = buildEditDto(values, images)
+    if (selectedInterestNames.length >= 3) dto.interests = selectedInterestNames
     if (!Object.keys(dto).length) { showToast({ text1: 'No changes to save.' }); return }
     editProfile(dto, {
       onSuccess: () => {
@@ -419,11 +421,12 @@ const EditProfileScreen = ({ navigation }: any) => {
             {[...Array(5)].map((_, i) => {
               const hasImage    = i < images.length
               const isUploading = uploading.includes(i)
+              const imageUri    = images[i]?.url
               return (
                 <View key={i} style={{ width: sw(119), height: sh(187), borderRadius: sr(12), overflow: 'visible' }}>
                   {hasImage ? (
                     <View style={{ width: '100%', height: '100%' }}>
-                      <Image source={{ uri: images[i] }} style={{ width: '100%', height: '100%', borderRadius: sr(12) }} resizeMode="cover" />
+                      <Image source={{ uri: imageUri }} style={{ width: '100%', height: '100%', borderRadius: sr(12) }} resizeMode="cover" />
                       {i === 0 && (
                         <View style={{ position: 'absolute', bottom: sh(8), left: sw(8), backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: sr(6), paddingHorizontal: sw(8), paddingVertical: sh(2) }}>
                           <Text style={{ color: '#FFFFFF', fontSize: sf(11) }}>Main</Text>
@@ -618,7 +621,7 @@ const EditProfileScreen = ({ navigation }: any) => {
         currentNames={selectedInterestNames}
         onConfirm={handleSaveInterests}
         onClose={() => setShowInterests(false)}
-        isSaving={isSavingInterests}
+        isSaving={false}
       />
     </View>
   )

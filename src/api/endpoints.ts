@@ -46,6 +46,9 @@ export const ENDPOINTS = {
     REGISTER_FCM: '/api/me/fcm-token',
     PREFERENCES:  '/api/me/notification-preferences',
   },
+  CLOUDINARY: {
+    DELETE_IMAGE: '/api/cloudinary/image',
+  },
 } as const
 
 export const queryKeys = {

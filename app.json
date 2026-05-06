@@ -67,7 +67,7 @@
       "expo-font"
     ],
     "extra": {
-      "apiBaseUrl": "http://192.168.1.107:5000",
+      "apiBaseUrl": "http://192.168.1.108:5000",
       "eas": {
         "projectId": "e4d904d7-e598-48cc-844b-e7281373ae61"
       }
