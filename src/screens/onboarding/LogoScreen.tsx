@@ -16,8 +16,10 @@ import { sf, sw, sh } from '@/utils/sizeMatters';
 import PrimaryButton from '@/components/common/PrimaryButton';
 
 const SPLASH_DELAY_MS = 1400;
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensio
-// ── 4 columns of images ───────────────────────────────────────────────────────
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+// ─── Placeholder images (replace with your actual assets) ───────────────────
+// Using high-quality portrait-style placeholder images
 const COLUMN_IMAGES: string[][] = [
   [
     'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&q=80',
@@ -40,81 +42,65 @@ const COLUMN_IMAGES: string[][] = [
     'https://images.unsplash.com/photo-1463453091185-61582044d556?w=300&q=80',
     'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=300&q=80',
   ],
-  [
-    'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?w=300&q=80',
-    'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&q=80',
-    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&q=80',
-    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80',
-    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80',
-  ],
 ];
 
-const CARD_WIDTH  = sw(105);
-const CARD_HEIGHT = sh(150);
-const CARD_GAP    = sh(10);
+// Card dimensions
+const CARD_WIDTH = sw(110);
+const CARD_HEIGHT = sh(155);
+const CARD_GAP = sh(12);
 const CARD_RADIUS = sf(16);
-const COLUMN_TILT = -12;
+const COLUMN_TILT = -12; // degrees – matches the screenshot diagonal
 
-// ── AnimatedColumn ────────────────────────────────────────────────────────────
-// Uses recursive .start() callback instead of Animated.loop to avoid
-// the jump/stuck glitch at loop boundary.
+// Total height of one full column of cards (used for seamless looping)
+const SINGLE_LOOP_HEIGHT = (CARD_HEIGHT + CARD_GAP) * COLUMN_IMAGES[0].length;
 
+// ─── AnimatedColumn ──────────────────────────────────────────────────────────
 interface AnimatedColumnProps {
   images: string[];
   direction: 'up' | 'down';
+  /** horizontal offset of this column */
   xOffset: number;
-  speed?: number;
 }
 
-const AnimatedColumn: React.FC<AnimatedColumnProps> = ({
-  images,
-  direction,
-  xOffset,
-  speed = 13000,
-}) => {
-  const ITEM_H  = CARD_HEIGHT + CARD_GAP;
-  const TOTAL_H = ITEM_H * images.length;
-
-  // down: translate from 0 → TOTAL_H then snap back to 0
-  // up:   translate from 0 → -TOTAL_H then snap back to 0
-  const translateY = useRef(new Animated.Value(0)).current;
+const AnimatedColumn: React.FC<AnimatedColumnProps> = ({ images, direction, xOffset }) => {
+  const translateY = useRef(new Animated.Value(direction === 'down' ? 0 : -SINGLE_LOOP_HEIGHT)).current;
 
   useEffect(() => {
-    let cancelled = false;
+    // Loop infinitely
+    const toValue = direction === 'down' ? SINGLE_LOOP_HEIGHT : 0;
+    const fromValue = direction === 'down' ? 0 : -SINGLE_LOOP_HEIGHT;
 
-    const toValue = direction === 'down' ? TOTAL_H : -TOTAL_H;
-
-    const run = () => {
-      if (cancelled) return;
-      translateY.setValue(0);
+    const loop = Animated.loop(
       Animated.timing(translateY, {
         toValue,
-        duration: speed,
+        duration: 12000,
         easing: Easing.linear,
         useNativeDriver: true,
-      }).start(({ finished }) => {
-        if (finished && !cancelled) run();
-      });
-    };
+      }),
+    );
 
-    run();
-    return () => {
-      cancelled = true;
-      translateY.stopAnimation();
-    };
+    translateY.setValue(fromValue);
+    loop.start();
+
+    return () => loop.stop();
   }, []);
 
-  // Triple so there is always content visible above and below during scroll
-  const tripled = [...images, ...images, ...images];
+  // Duplicate images for seamless loop
+  const doubled = [...images, ...images];
 
   return (
     <Animated.View
       style={[
         styles.column,
-        { transform: [{ translateY }, { translateX: xOffset }] },
+        {
+          transform: [
+            { translateY },
+            { translateX: xOffset },
+          ],
+        },
       ]}
     >
-      {tripled.map((uri, idx) => (
+      {doubled.map((uri, idx) => (
         <View key={idx} style={styles.card}>
           <Image source={{ uri }} style={styles.cardImage} resizeMode="cover" />
         </View>
@@ -123,7 +109,7 @@ const AnimatedColumn: React.FC<AnimatedColumnProps> = ({
   );
 };
 
-// ── LogoScreen ────────────────────────────────────────────────────────────────
+// ─── LogoScreen ──────────────────────────────────────────────────────────────
 const LogoScreen = ({ navigation }: any) => {
   useEffect(() => {
     let cancelled = false;
@@ -137,54 +123,69 @@ const LogoScreen = ({ navigation }: any) => {
       await new Promise<void>((r) => setTimeout(r, SPLASH_DELAY_MS));
       console.log(user, 'user logoscreen');
       if (cancelled) return;
+
+      if (token) {
+        if (!user?.profile) {
+          navigation.replace('ProfileSetupScreen');
+        } else if (user?.location?.lat && user?.location?.lng) {
+          navigation.replace('SearchScreen');
+        } else {
+          navigation.replace('EnableLocationScreen');
+        }
+      } else {
+        navigation.replace('SignInScreen');
+      }
     };
 
     bootstrap();
     return () => { cancelled = true; };
   }, [navigation]);
 
-  // 4 columns spread across screen width
-  const colSpacing = sw(112);
-  const col0X = -colSpacing * 1.5;
-  const col1X = -colSpacing * 0.5;
-  const col2X =  colSpacing * 0.5;
-  const col3X =  colSpacing * 1.5;
+  // Column horizontal spacing – three columns evenly spread across the screen
+  // and slightly overlapping, rotated as a group
+  const colSpacing = sw(118);
+  const col0X = -colSpacing;
+  const col1X = 0;
+  const col2X = colSpacing;
 
   return (
     <View style={styles.root}>
-      {/* ── Scrolling photo grid ── */}
+      {/* ── Dark background ── */}
+      <View style={StyleSheet.absoluteFill} />
+
+      {/* ── Scrolling photo grid (top ~60% of screen) ── */}
       <View style={styles.photoArea} pointerEvents="none">
+        {/* Rotate all columns together to achieve the diagonal look */}
         <View style={styles.columnsWrapper}>
-          {/* col 1: down */}
-          <AnimatedColumn images={COLUMN_IMAGES[0]} direction="down" xOffset={col0X} speed={13000} />
-          {/* col 2: up */}
-          <AnimatedColumn images={COLUMN_IMAGES[1]} direction="up"   xOffset={col1X} speed={15000} />
-          {/* col 3: down */}
-          <AnimatedColumn images={COLUMN_IMAGES[2]} direction="down" xOffset={col2X} speed={11000} />
-          {/* col 4: up */}
-          <AnimatedColumn images={COLUMN_IMAGES[3]} direction="up"   xOffset={col3X} speed={14000} />
+          <AnimatedColumn images={COLUMN_IMAGES[0]} direction="down"  xOffset={col0X} />
+          <AnimatedColumn images={COLUMN_IMAGES[1]} direction="up"    xOffset={col1X} />
+          <AnimatedColumn images={COLUMN_IMAGES[2]} direction="down"  xOffset={col2X} />
         </View>
       </View>
 
-      {/* ── Gradient fade into black ── */}
+      {/* ── Gradient fade from photo area into black ── */}
       <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.6)', '#000000']}
+        colors={['transparent', 'rgba(0,0,0,0.55)', '#000000']}
         style={styles.fadeOverlay}
         pointerEvents="none"
       />
 
       {/* ── Bottom content ── */}
       <View style={styles.bottomContent}>
+        {/* Logo icon */}
         <View style={styles.logoContainer}>
           <Logo width={sf(88)} height={sf(88)} />
         </View>
 
+        {/* App name */}
         <Text style={styles.appName}>Spark</Text>
 
+        {/* Tagline */}
         <Text style={styles.tagline}>
           The first move is not a message anymore,{'\n'}it's a moment
         </Text>
 
+        {/* CTA button */}
         <View style={styles.buttonWrapper}>
           <PrimaryButton
             title="Next"
@@ -193,6 +194,7 @@ const LogoScreen = ({ navigation }: any) => {
           />
         </View>
 
+        {/* Login link */}
         <View style={styles.loginRow}>
           <Text style={styles.alreadyLogin}>Already have an account? </Text>
           <TouchableOpacity
@@ -209,7 +211,7 @@ const LogoScreen = ({ navigation }: any) => {
 
 export default LogoScreen;
 
-// ── Styles ────────────────────────────────────────────────────────────────────
+// ─── Styles ──────────────────────────────────────────────────────────────────
 const PHOTO_AREA_HEIGHT = SCREEN_HEIGHT * 0.62;
 
 const styles = StyleSheet.create({
@@ -218,6 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
 
+  // ── Photo grid ──
   photoArea: {
     position: 'absolute',
     top: 0,
@@ -228,7 +231,7 @@ const styles = StyleSheet.create({
   },
   columnsWrapper: {
     position: 'absolute',
-    top: -SCREEN_HEIGHT * 0.1,
+    top: -SCREEN_HEIGHT * 0.08, // pull up slightly so cards fill the viewport edge-to-edge
     left: 0,
     right: 0,
     bottom: 0,
@@ -236,6 +239,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
     transform: [{ rotate: `${COLUMN_TILT}deg` }],
+    // Extra horizontal overflow is clipped by photoArea
   },
   column: {
     position: 'absolute',
@@ -255,14 +259,16 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 
+  // ── Gradient overlay ──
   fadeOverlay: {
     position: 'absolute',
-    top: PHOTO_AREA_HEIGHT * 0.4,
+    top: PHOTO_AREA_HEIGHT * 0.45,
     left: 0,
     right: 0,
-    height: PHOTO_AREA_HEIGHT * 0.7,
+    height: PHOTO_AREA_HEIGHT * 0.65,
   },
 
+  // ── Bottom content ──
   bottomContent: {
     position: 'absolute',
     bottom: 0,
@@ -297,35 +303,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  alreadyLogin: {
-    fontFamily: 'Poppins-Regular',
-    fontSize: sf(16),
-    color: '#FFFFFF',
-  },
-  alreadyLoginLink: {
-    fontFamily: 'Poppins-Regular',
-    fontWeight: '500',
-    fontSize: sf(16),
-    color: '#CEB98F',
-    textDecorationLine: 'underline',
-  },
-});
-  justifyContent: 'center',
-  },
-  alreadyLogin: {
-    fontFamily: 'Poppins-Regular',
-    fontSize: sf(16),
-    color: '#FFFFFF',
-  },
-  alreadyLoginLink: {
-    fontFamily: 'Poppins-Regular',
-    fontWeight: '500',
-    fontSize: sf(16),
-    color: '#CEB98F',
-    textDecorationLine: 'underline',
-  },
-});'center',
   },
   alreadyLogin: {
     fontFamily: 'Poppins-Regular',
