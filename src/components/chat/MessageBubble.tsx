@@ -32,14 +32,22 @@ export default function MessageBubble({
         }}
       >
         {isMe ? (
-          <ChatAvatar size={sf(40)} variant="me" imageUri={meAvatarUri} />
+          <ChatAvatar
+            size={sf(40)}
+            variant='me'
+            imageUri={meAvatarUri}
+          />
         ) : (
-          <ChatAvatar size={sf(40)} variant="friend" imageUri={friendAvatarUri} />
+          <ChatAvatar
+            size={sf(40)}
+            variant='friend'
+            imageUri={friendAvatarUri}
+          />
         )}
         <Image
           source={{ uri: message.imageUri }}
           style={{ width: sw(148), height: sh(208), borderRadius: sr(12) }}
-          resizeMode="cover"
+          resizeMode='cover'
         />
       </View>
     );
@@ -68,10 +76,10 @@ export default function MessageBubble({
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  backgroundColor: '#1E78F5',
-                 borderBottomLeftRadius: sr(8), 
-                borderTopRightRadius: sr(8),
-                borderTopLeftRadius: sr(8),
+                  backgroundColor: '#CEB98F',
+                  borderBottomLeftRadius: sr(8),
+                  borderTopRightRadius: sr(8),
+                  borderTopLeftRadius: sr(8),
                   paddingHorizontal: sw(16),
                   paddingVertical: sh(10),
                   gap: sw(6),
@@ -82,7 +90,7 @@ export default function MessageBubble({
                   style={{
                     fontFamily: 'Poppins-Medium',
                     fontWeight: '500',
-                    fontSize: sf(16), 
+                    fontSize: sf(16),
                     color: '#FFFFFF',
                   }}
                 >
@@ -101,7 +109,7 @@ export default function MessageBubble({
                   style={{
                     fontFamily: 'Poppins-Regular',
                     fontWeight: '400',
-                    fontSize: sf(10), 
+                    fontSize: sf(10),
                     color: '#7D858E',
                   }}
                 >
@@ -112,7 +120,11 @@ export default function MessageBubble({
                 )}
               </View>
             </View>
-              <ChatAvatar size={sf(40)} variant="me" imageUri={meAvatarUri} />
+            <ChatAvatar
+              size={sf(40)}
+              variant='me'
+              imageUri={meAvatarUri}
+            />
           </View>
         </View>
       );
@@ -126,8 +138,14 @@ export default function MessageBubble({
           paddingHorizontal: sw(16),
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: sw(8) }}>
-          <ChatAvatar size={sf(40)} variant="friend" imageUri={friendAvatarUri} />
+        <View
+          style={{ flexDirection: 'row', alignItems: 'flex-end', gap: sw(8) }}
+        >
+          <ChatAvatar
+            size={sf(40)}
+            variant='friend'
+            imageUri={friendAvatarUri}
+          />
           <View>
             <TouchableOpacity
               onPress={() => onSnapPress?.(message)}
@@ -135,7 +153,7 @@ export default function MessageBubble({
                 flexDirection: 'row',
                 alignItems: 'center',
                 backgroundColor: 'rgba(251,178,2,0.2)',
-                      borderBottomRightRadius: sr(8), 
+                borderBottomRightRadius: sr(8),
                 borderTopRightRadius: sr(8),
                 borderTopLeftRadius: sr(8),
                 paddingHorizontal: sw(14),
@@ -148,8 +166,8 @@ export default function MessageBubble({
                 style={{
                   fontFamily: 'Poppins-Medium',
                   fontWeight: '500',
-                  fontSize: sf(16), 
-                  color: '#DC9B00',
+                  fontSize: sf(16),
+                  color: '#CEB98F',
                 }}
               >
                 {message.text}
@@ -167,8 +185,8 @@ export default function MessageBubble({
                 style={{
                   fontFamily: 'Poppins-Regular',
                   fontWeight: '400',
-                  fontSize: sf(10), 
-                  color: '#DC9B00',
+                  fontSize: sf(10),
+                  color: '#CEB98F',
                 }}
               >
                 {message.time}
@@ -178,8 +196,8 @@ export default function MessageBubble({
                   style={{
                     fontFamily: 'Poppins-Regular',
                     fontWeight: '400',
-                    fontSize: sf(10), 
-                    color: '#DC9B00',
+                    fontSize: sf(10),
+                    color: '#CEB98F',
                   }}
                 >
                   {message.snapDuration}
@@ -203,12 +221,14 @@ export default function MessageBubble({
           paddingHorizontal: sw(16),
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: sw(8) }}>
+        <View
+          style={{ flexDirection: 'row', alignItems: 'flex-end', gap: sw(8) }}
+        >
           <View style={{ alignItems: 'flex-end' }}>
             <View
               style={{
-                backgroundColor: '#1E78F5', 
-                borderBottomLeftRadius: sr(8), 
+                backgroundColor: '#CEB98F',
+                borderBottomLeftRadius: sr(8),
                 borderTopRightRadius: sr(8),
                 borderTopLeftRadius: sr(8),
                 paddingHorizontal: sw(16),
@@ -220,7 +240,7 @@ export default function MessageBubble({
                 style={{
                   fontFamily: 'Poppins-Regular',
                   fontWeight: '400',
-                  fontSize: sf(16), 
+                  fontSize: sf(16),
                   color: '#FFFFFF',
                 }}
               >
@@ -239,18 +259,22 @@ export default function MessageBubble({
                 style={{
                   fontFamily: 'Poppins-Regular',
                   fontWeight: '400',
-                  fontSize: sf(10), 
+                  fontSize: sf(10),
                   color: '#7D858E',
                 }}
               >
                 {message.time}
               </Text>
               {message.seen && (
-                <Text style={{ fontSize: sf(10), color: '#1E78F5' }}>✓✓</Text>
+                <Text style={{ fontSize: sf(10), color: '#CEB98F' }}>✓✓</Text>
               )}
             </View>
           </View>
-          <ChatAvatar size={sf(40)} variant="me" imageUri={meAvatarUri} />
+          <ChatAvatar
+            size={sf(40)}
+            variant='me'
+            imageUri={meAvatarUri}
+          />
         </View>
       </View>
     );
@@ -264,15 +288,21 @@ export default function MessageBubble({
         paddingHorizontal: sw(16),
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: sw(8) }}>
-        <ChatAvatar size={sf(40)} variant="friend" imageUri={friendAvatarUri} />
+      <View
+        style={{ flexDirection: 'row', alignItems: 'flex-end', gap: sw(8) }}
+      >
+        <ChatAvatar
+          size={sf(40)}
+          variant='friend'
+          imageUri={friendAvatarUri}
+        />
         <View>
           <View
             style={{
               backgroundColor: 'rgba(251,178,2,0.2)',
-                       borderBottomRightRadius: sr(8), 
-                borderTopRightRadius: sr(8),
-                borderTopLeftRadius: sr(8),
+              borderBottomRightRadius: sr(8),
+              borderTopRightRadius: sr(8),
+              borderTopLeftRadius: sr(8),
               paddingHorizontal: sw(16),
               paddingVertical: sh(10),
               maxWidth: sw(260),
@@ -282,7 +312,7 @@ export default function MessageBubble({
               style={{
                 fontFamily: 'Poppins-Regular',
                 fontWeight: '400',
-                fontSize: sf(16), 
+                fontSize: sf(16),
                 color: '#000000',
               }}
             >
@@ -293,7 +323,7 @@ export default function MessageBubble({
             style={{
               fontFamily: 'Poppins-Regular',
               fontWeight: '400',
-              fontSize: sf(10), 
+              fontSize: sf(10),
               color: '#7D858E',
               marginTop: sh(4),
             }}
@@ -305,4 +335,3 @@ export default function MessageBubble({
     </View>
   );
 }
-

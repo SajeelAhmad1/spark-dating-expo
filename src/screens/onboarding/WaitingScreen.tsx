@@ -17,34 +17,42 @@ const PROGRESS = (CURRENT / TARGET) * 100;
 const WaitingScreen = ({ navigation }: any) => (
   <View style={styles.safeArea}>
     <View style={styles.page}>
-
       {/* ── Main Content ── */}
       <View style={styles.main}>
-
         {/* Icon */}
         <LinearGradient
-          colors={['#1E78F5', '#DC9B00']}
+          colors={['#EAD6A9', '#EAD6A9']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.iconCircle}
         >
-          <Users2 width={sf(56)} height={sf(56)} color="#ffffff" />
+          <Users2
+            width={sf(56)}
+            height={sf(56)}
+            color='#0B0B0B'
+          />
         </LinearGradient>
 
         {/* Title */}
         <Text
           style={[styles.title, { fontSize: sf(24) }]}
-          weight="semibold"
+          weight='semibold'
         >
           We're Almost There!
         </Text>
 
         {/* Subtitle */}
         <Text
-          style={[styles.subtitle, { fontFamily: 'Poppins-Regular', fontSize: sf(16) }]}
+          style={[
+            styles.subtitle,
+            { fontFamily: 'Poppins-Regular', fontSize: sf(16) },
+          ]}
         >
           Spark goes live when{' '}
-          <Text style={{ fontFamily: 'Poppins-Medium', color: '#1E78F5' }} weight="medium">
+          <Text
+            style={{ fontFamily: 'Poppins-Medium', color: '#CEB98F' }}
+            weight='medium'
+          >
             {TARGET.toLocaleString()} people
           </Text>{' '}
           join. Invite friends to speed it up!
@@ -53,10 +61,20 @@ const WaitingScreen = ({ navigation }: any) => (
         {/* Progress */}
         <View style={styles.progressBlock}>
           <View style={styles.progressRow}>
-            <Text style={[styles.progressLabel, { fontFamily: 'Poppins-Medium', fontSize: sf(16) }]}>
+            <Text
+              style={[
+                styles.progressLabel,
+                { fontFamily: 'Poppins-Medium', fontSize: sf(16) },
+              ]}
+            >
               Launch Progress
             </Text>
-            <Text style={[styles.progressValue, { fontFamily: 'Poppins-Medium', fontSize: sf(16) }]}>
+            <Text
+              style={[
+                styles.progressValue,
+                { fontFamily: 'Poppins-Medium', fontSize: sf(16) },
+              ]}
+            >
               {CURRENT}/{TARGET}
             </Text>
           </View>
@@ -66,7 +84,10 @@ const WaitingScreen = ({ navigation }: any) => (
           </View>
 
           <Text
-            style={[styles.progressHint, { fontFamily: 'Poppins-Medium', fontSize: sf(14) }]}
+            style={[
+              styles.progressHint,
+              { fontFamily: 'Poppins-Medium', fontSize: sf(14) },
+            ]}
           >
             {REMAINING} more to go!
           </Text>
@@ -75,30 +96,49 @@ const WaitingScreen = ({ navigation }: any) => (
         {/* Notification Card */}
         <View style={styles.notifyCard}>
           <View style={styles.notifyIconWrap}>
-            <Bell size={sf(24)} color="#DC9B00" />
+            <Bell
+              size={sf(24)}
+              color='#0B0B0B'
+            />
           </View>
           <View style={styles.notifyTextCol}>
-            <Text style={[styles.notifyTitle, { fontFamily: 'Poppins-SemiBold', fontSize: sf(16) }]}>
+            <Text
+              style={[
+                styles.notifyTitle,
+                { fontFamily: 'Poppins-SemiBold', fontSize: sf(16) },
+              ]}
+            >
               You'll be notified
             </Text>
-            <Text style={[styles.notifyBody, { fontFamily: 'Poppins-Regular', fontSize: sf(13) }]}>
+            <Text
+              style={[
+                styles.notifyBody,
+                { fontFamily: 'Poppins-Regular', fontSize: sf(13) },
+              ]}
+            >
               We will send you a notification when we reach {TARGET} users
             </Text>
           </View>
         </View>
-
       </View>
 
       {/* ── Bottom: Action ── */}
       <PrimaryButton
-        title="Invite friends to speed up"
-        onPress={() => navigation.navigate("LaunchScreen")}
-        colors={['#1E78F5', '#DC9B00']}
-        variant="gradient"
-        iconPosition="start"
-        textStyle={{fontSize: sf(18), fontWeight: '500', color: '#ffffff', lineHeight: sh(56)}}
+        title='Invite friends to speed up'
+        onPress={() => navigation.navigate('LaunchScreen')}
+        icon={
+          <Share2
+            size={sf(20)}
+            color='#0B0B0B'
+          />
+        }
+        iconPosition='middle'
+        textStyle={{
+          fontSize: sf(18),
+          fontWeight: '500',
+          lineHeight: sh(56),
+        }}
       />
-
     </View>
   </View>
 );
@@ -135,7 +175,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   progressLabel: { color: '#000000' },
-  progressValue: { color: '#1E78F5' },
+  progressValue: { color: '#CEB98F' },
   track: {
     width: '100%',
     height: sh(8),
@@ -143,8 +183,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#E8EAED',
     overflow: 'hidden',
   },
-  trackFill: { height: '100%', borderRadius: 9999, backgroundColor: '#1E78F5' },
-  progressHint: { color: '#DC9B00', textAlign: 'center' },
+  trackFill: { height: '100%', borderRadius: 9999, backgroundColor: '#CEB98F' },
+  progressHint: { color: '#CEB98F', textAlign: 'center' },
   notifyCard: {
     width: '100%',
     flexDirection: 'row',
@@ -163,7 +203,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     backgroundColor: '#FBB20233',
     borderWidth: 0.4,
-    borderColor: '#DC9B00',
+    borderColor: '#CEB98F',
   },
   notifyTextCol: { flex: 1, flexShrink: 1, marginLeft: sw(8) },
   notifyTitle: { color: '#000000' },

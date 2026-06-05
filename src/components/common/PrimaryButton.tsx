@@ -77,7 +77,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   // ── Inner content layout ──
   const renderContent = () => {
     if (loading) {
-      return <ActivityIndicator color="#fff" />;
+      return <ActivityIndicator color="#0B0B0B" />;
     }
 
     // Middle: icon + text side by side, both centered

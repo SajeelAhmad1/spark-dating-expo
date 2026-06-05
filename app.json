@@ -60,14 +60,14 @@
         "expo-notifications",
         {
           "icon": "./assets/images/PrimaryImage.png",
-          "color": "#1E78F5",
+          "color": "#CEB98F",
           "defaultChannel": "chat"
         }
       ],
       "expo-font"
     ],
     "extra": {
-      "apiBaseUrl": "http://192.168.1.108:5000",
+      "apiBaseUrl": "http://192.168.1.100:5000",
       "eas": {
         "projectId": "e4d904d7-e598-48cc-844b-e7281373ae61"
       }

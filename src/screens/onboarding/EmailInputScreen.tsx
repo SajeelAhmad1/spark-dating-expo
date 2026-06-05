@@ -39,7 +39,7 @@ export default function EmailInputScreen({ navigation }: any) {
       { email: dto.email },
       {
         onSuccess: async (data: SignupStartResponse) => {
-          console.log(data, "signup email data")
+          console.log(data, 'signup email data');
           await SecureStore.setItemAsync(
             'signupSessionId',
             data.signupSessionId,
@@ -64,18 +64,7 @@ export default function EmailInputScreen({ navigation }: any) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
     >
       <View style={{ flex: 1, backgroundColor: '#F7F3ED' }}>
-        <LinearGradient
-          colors={['#EBF3FE', '#ffffff']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: sh(220),
-          }}
-        />
+       
 
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, paddingBottom: sh(40) }}
@@ -179,13 +168,10 @@ export default function EmailInputScreen({ navigation }: any) {
             {/* CTA */}
             <PrimaryButton
               title={isSendingCode ? 'Sending...' : 'Continue with email'}
-              onPress={handleSubmit(onValid)}
-              colors={['#1E78F5', '#FBB202']}
-              variant='gradient'
+              onPress={handleSubmit(onValid)}  
               textStyle={{
                 fontSize: sf(16),
-                fontWeight: '600',
-                color: '#ffffff',
+                fontWeight: '600', 
               }}
               disabled={isSendingCode}
             />
@@ -194,7 +180,7 @@ export default function EmailInputScreen({ navigation }: any) {
               <Text style={{ fontSize: sf(14), color: '#6B7280' }}>
                 Already have an account?{' '}
                 <Text
-                  style={{ color: '#1E78F5', fontWeight: '600' }}
+                  style={{ color: '#CEB98F', fontWeight: '600' }}
                   onPress={() => navigation.navigate('SignInScreen')}
                 >
                   Sign In

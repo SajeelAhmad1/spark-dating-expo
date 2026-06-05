@@ -66,7 +66,13 @@ export default function ForgotPasswordScreen({ navigation }: any) {
           colors={['#EBF3FE', '#ffffff']}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: sh(260) }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: sh(260),
+          }}
         />
 
         <View
@@ -81,15 +87,24 @@ export default function ForgotPasswordScreen({ navigation }: any) {
           <View>
             {/* Back */}
             <TouchableOpacity
-              style={{ width: sw(36), height: sw(36), justifyContent: 'center' }}
+              style={{
+                width: sw(36),
+                height: sw(36),
+                justifyContent: 'center',
+              }}
               onPress={() => navigation.goBack()}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <ChevronLeft size={sf(24)} color="#000000" />
+              <ChevronLeft
+                size={sf(24)}
+                color='#000000'
+              />
             </TouchableOpacity>
 
             {/* Illustration */}
-            <View style={{ alignItems: 'center', marginTop: sh(60), gap: sh(20) }}>
+            <View
+              style={{ alignItems: 'center', marginTop: sh(60), gap: sh(20) }}
+            >
               <View
                 style={{
                   width: sf(80),
@@ -100,7 +115,10 @@ export default function ForgotPasswordScreen({ navigation }: any) {
                   justifyContent: 'center',
                 }}
               >
-                <Mail size={sf(36)} color="#1E78F5" />
+                <Mail
+                  size={sf(36)}
+                  color='#CEB98F'
+                />
               </View>
 
               <View style={{ gap: sh(8), alignItems: 'center' }}>
@@ -123,7 +141,7 @@ export default function ForgotPasswordScreen({ navigation }: any) {
                   }}
                 >
                   We've sent password reset instructions to{'\n'}
-                  <Text style={{ color: '#1E78F5', fontWeight: '600' }}>
+                  <Text style={{ color: '#CEB98F', fontWeight: '600' }}>
                     {submittedEmail}
                   </Text>
                 </Text>
@@ -136,12 +154,18 @@ export default function ForgotPasswordScreen({ navigation }: any) {
                   borderRadius: sf(12),
                   padding: sw(16),
                   borderLeftWidth: 3,
-                  borderLeftColor: '#1E78F5',
+                  borderLeftColor: '#CEB98F',
                   marginTop: sh(8),
                   width: '100%',
                 }}
               >
-                <Text style={{ fontSize: sf(13), color: '#374151', lineHeight: sf(20) }}>
+                <Text
+                  style={{
+                    fontSize: sf(13),
+                    color: '#374151',
+                    lineHeight: sf(20),
+                  }}
+                >
                   Didn't receive the email? Check your spam folder or make sure
                   you entered the correct email address.
                 </Text>
@@ -151,11 +175,13 @@ export default function ForgotPasswordScreen({ navigation }: any) {
 
           <View style={{ gap: sh(12) }}>
             <PrimaryButton
-              title="Back to Sign In"
-              onPress={() => navigation.navigate('SignInScreen')}
-              colors={['#1E78F5', '#1E78F5']}
-              variant="solid"
-              textStyle={{ fontSize: sf(16), fontWeight: '600', color: '#ffffff' }}
+              title='Back to Sign In'
+              onPress={() => navigation.navigate('SignInScreen')} 
+              textStyle={{
+                fontSize: sf(16),
+                fontWeight: '600',
+                color: '#0B0B0B',
+              }}
             />
             <TouchableOpacity
               onPress={() => setSubmitted(false)}
@@ -182,7 +208,13 @@ export default function ForgotPasswordScreen({ navigation }: any) {
           colors={['#EBF3FE', '#ffffff']}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: sh(220) }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: sh(220),
+          }}
         />
 
         <View
@@ -198,7 +230,10 @@ export default function ForgotPasswordScreen({ navigation }: any) {
             onPress={() => navigation.goBack()}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <ChevronLeft size={sf(24)} color="#000000" />
+            <ChevronLeft
+              size={sf(24)}
+              color='#000000'
+            />
           </TouchableOpacity>
 
           {/* Header */}
@@ -215,13 +250,21 @@ export default function ForgotPasswordScreen({ navigation }: any) {
                 marginBottom: sh(8),
               }}
             >
-              <Mail size={sf(22)} color="#1E78F5" />
+              <Mail
+                size={sf(22)}
+                color='#CEB98F'
+              />
             </View>
-            <Text style={{ fontSize: sf(28), fontWeight: '700', color: '#111827' }}>
+            <Text
+              style={{ fontSize: sf(28), fontWeight: '700', color: '#111827' }}
+            >
               Forgot Password?
             </Text>
-            <Text style={{ fontSize: sf(15), color: '#6B7280', lineHeight: sf(22) }}>
-              No worries! Enter your registered email and we'll send you reset instructions.
+            <Text
+              style={{ fontSize: sf(15), color: '#6B7280', lineHeight: sf(22) }}
+            >
+              No worries! Enter your registered email and we'll send you reset
+              instructions.
             </Text>
           </View>
 
@@ -251,29 +294,49 @@ export default function ForgotPasswordScreen({ navigation }: any) {
                 gap: sw(10),
               }}
             >
-              <Mail size={sf(18)} color="#9CA3AF" />
+              <Mail
+                size={sf(18)}
+                color='#9CA3AF'
+              />
               <TextInput
                 value={email}
-                onChangeText={(v) => setValue('email', v, { shouldValidate: true })}
+                onChangeText={(v) =>
+                  setValue('email', v, { shouldValidate: true })
+                }
                 onBlur={() => trigger('email')}
-                placeholder="you@example.com"
-                placeholderTextColor="#9CA3AF"
-                keyboardType="email-address"
-                autoCapitalize="none"
+                placeholder='you@example.com'
+                placeholderTextColor='#9CA3AF'
+                keyboardType='email-address'
+                autoCapitalize='none'
                 autoCorrect={false}
                 autoFocus
-                style={{ flex: 1, fontSize: sf(15), color: '#111827', padding: 0 }}
+                style={{
+                  flex: 1,
+                  fontSize: sf(15),
+                  color: '#111827',
+                  padding: 0,
+                }}
               />
             </View>
             {errors.email ? (
               <Text
-                style={{ fontSize: sf(12), color: '#EF4444', marginTop: sh(4), marginLeft: sw(4) }}
+                style={{
+                  fontSize: sf(12),
+                  color: '#EF4444',
+                  marginTop: sh(4),
+                  marginLeft: sw(4),
+                }}
               >
                 {errors.email.message}
               </Text>
             ) : (
               <Text
-                style={{ fontSize: sf(12), color: '#9CA3AF', marginTop: sh(4), marginLeft: sw(4) }}
+                style={{
+                  fontSize: sf(12),
+                  color: '#9CA3AF',
+                  marginTop: sh(4),
+                  marginLeft: sw(4),
+                }}
               >
                 We'll send a secure link to this address.
               </Text>
@@ -284,19 +347,26 @@ export default function ForgotPasswordScreen({ navigation }: any) {
           <View style={{ marginTop: sh(32), gap: sh(12) }}>
             <PrimaryButton
               title={isLoading ? 'Sending…' : 'Send Reset Link'}
-              onPress={handleSubmit(onValid)}
-              colors={['#1E78F5', '#1E78F5']}
-              variant="solid"
+              onPress={handleSubmit(onValid)} 
               disabled={isLoading}
               icon={
                 isLoading ? (
-                  <ActivityIndicator size="small" color="#ffffff" />
+                  <ActivityIndicator
+                    size='small'
+                    color='#0B0B0B'
+                  />
                 ) : (
-                  <ArrowRight size={sf(18)} color="#ffffff" />
+                  <ArrowRight
+                    size={sf(18)}
+                    color='#0B0B0B'
+                  />
                 )
               }
-              iconPosition="end"
-              textStyle={{ fontSize: sf(16), fontWeight: '600', color: '#ffffff' }}
+              iconPosition='end'
+              textStyle={{
+                fontSize: sf(16),
+                fontWeight: '600', 
+              }}
             />
 
             <TouchableOpacity
@@ -305,7 +375,9 @@ export default function ForgotPasswordScreen({ navigation }: any) {
             >
               <Text style={{ fontSize: sf(14), color: '#6B7280' }}>
                 Back to{' '}
-                <Text style={{ color: '#1E78F5', fontWeight: '600' }}>Sign In</Text>
+                <Text style={{ color: '#CEB98F', fontWeight: '600' }}>
+                  Sign In
+                </Text>
               </Text>
             </TouchableOpacity>
           </View>

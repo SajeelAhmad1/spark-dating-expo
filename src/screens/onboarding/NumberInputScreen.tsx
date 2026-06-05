@@ -175,12 +175,9 @@ const NumberEnterScreen = ({ navigation }: any) => {
         <View style={styles.btnWrap}>
           <PrimaryButton
             title={isSendingCode ? 'Sending...' : 'Send verification code'}
-            onPress={handleSubmit(onValid)}
-            colors={['#1E78F5', '#FBB202']}
-            variant='gradient'
+            onPress={handleSubmit(onValid)}  
             style={{ alignSelf: 'stretch' }}
-            textStyle={{
-              color: '#ffffff',
+            textStyle={{ 
               fontSize: sf(20),
               fontWeight: '500',
             }}
@@ -286,7 +283,7 @@ const styles = StyleSheet.create({
   btnWrap: { marginTop: sh(24) },
   footerRow: { marginTop: sh(16), alignItems: 'center' },
   footerText: { color: '#7D858E' },
-  loginLink: { color: '#1E78F5', textDecorationLine: 'underline' },
+  loginLink: { color: '#CEB98F', textDecorationLine: 'underline' },
 });
 
 export default NumberEnterScreen;

@@ -19,8 +19,7 @@ export default function SignInBottomActions({
       <View style={[styles.actions, { marginTop: sh(12) }]}>
         <PrimaryButton
           title='Login'
-          onPress={onLogin}
-          colors={['#1E78F5', '#FBB202']}
+          onPress={onLogin} 
           variant='gradient'
           style={{ alignSelf: 'stretch' }}
           textStyle={{ fontSize: sf(20), fontWeight: '500' }}
@@ -28,7 +27,7 @@ export default function SignInBottomActions({
           icon={
             disable ? (
               <ActivityIndicator
-                color='#ffffff'
+                color='#0B0B0B'
                 size='small'
               />
             ) : undefined
@@ -66,7 +65,7 @@ export default function SignInBottomActions({
 const styles = StyleSheet.create({
   actions: { rowGap: 16, alignItems: 'center' },
   accountLine: { color: '#000000' },
-  signUpLink: { color: '#1E78F5' },
+  signUpLink: { color: '#CEB98F',textDecorationLine: 'underline' },
   helpWrap: { flex: 1, justifyContent: 'flex-end', alignItems: 'center' },
   helpText: { color: '#7D858E' },
 });

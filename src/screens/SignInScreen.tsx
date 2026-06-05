@@ -57,7 +57,7 @@ function SignInFormBody({
       {
         onSuccess: async (data: any) => {
           showToast({ text1: 'Logged in successfully' });
-             console.log(data?.user, "loginscreen response user")
+          console.log(data?.user, 'loginscreen response user');
 
           // Route based on what the backend says is next
           if (data.next === 'complete_profile') {
@@ -65,7 +65,7 @@ function SignInFormBody({
           } else {
             // 'home' or anything else → go to location screen
             const user = await tokenStore.getUser();
-      console.log(data?.user, "loginscreen tokenStore user")
+            console.log(data?.user, 'loginscreen tokenStore user');
 
             if (user?.location?.lat && user?.location?.lng) {
               navigation.replace('SearchScreen');
@@ -81,7 +81,7 @@ function SignInFormBody({
             text2:
               err?.message ?? 'Please check your credentials and try again.',
           });
-          console.log(err, "login error")
+          console.log(err, 'login error');
         },
       },
     );
@@ -145,7 +145,7 @@ function SignInFormBody({
         />
         <TouchableOpacity onPress={() => {}}>
           <Text
-            style={{ color: '#1E78F5', fontWeight: '500', fontSize: sf(14) }}
+            style={{ color: '#CEB98F', fontWeight: '500', fontSize: sf(14) }}
           >
             Forgot password!
           </Text>

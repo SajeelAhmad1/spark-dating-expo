@@ -1,4 +1,4 @@
-// components/location/CustomToggle.tsx 
+// components/location/CustomToggle.tsx
 import React, { useMemo, useRef } from 'react';
 import { Animated, TouchableOpacity, View } from 'react-native';
 import { sw, sh } from '@/utils/sizeMatters';
@@ -35,13 +35,16 @@ export default function CustomToggle({
   };
 
   return (
-    <TouchableOpacity activeOpacity={0.85} onPress={toggle}>
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={toggle}
+    >
       <View
         style={{
           width: trackW,
           height: trackH,
           borderRadius: trackH / 2,
-          backgroundColor: value ? '#1E78F5' : '#1E78F533',
+          backgroundColor: value ? '#CEB98F' : '#CEB98F33',
           justifyContent: 'center',
         }}
       >

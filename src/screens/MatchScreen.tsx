@@ -29,39 +29,72 @@ import { useMe } from '@/features/profile/hooks';
 // ── Spark animation ───────────────────────────────────────────────────────────
 
 const SparkAnimation = () => {
-  const scale     = useRef(new Animated.Value(0)).current
-  const opacity   = useRef(new Animated.Value(0)).current
-  const ringScale = useRef(new Animated.Value(0.4)).current
-  const ringOpacity = useRef(new Animated.Value(0.8)).current
+  const scale = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const ringScale = useRef(new Animated.Value(0.4)).current;
+  const ringOpacity = useRef(new Animated.Value(0.8)).current;
 
   useEffect(() => {
     // Main zap: pop in then pulse
     Animated.sequence([
       Animated.parallel([
-        Animated.spring(scale,   { toValue: 1,    useNativeDriver: true, tension: 80, friction: 5 }),
-        Animated.timing(opacity, { toValue: 1,    useNativeDriver: true, duration: 200 }),
+        Animated.spring(scale, {
+          toValue: 1,
+          useNativeDriver: true,
+          tension: 80,
+          friction: 5,
+        }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          useNativeDriver: true,
+          duration: 200,
+        }),
       ]),
       Animated.loop(
         Animated.sequence([
-          Animated.timing(scale, { toValue: 1.15, useNativeDriver: true, duration: 400 }),
-          Animated.timing(scale, { toValue: 1.0,  useNativeDriver: true, duration: 400 }),
-        ])
+          Animated.timing(scale, {
+            toValue: 1.15,
+            useNativeDriver: true,
+            duration: 400,
+          }),
+          Animated.timing(scale, {
+            toValue: 1.0,
+            useNativeDriver: true,
+            duration: 400,
+          }),
+        ]),
       ),
-    ]).start()
+    ]).start();
 
     // Ripple ring: expand + fade, loop
     Animated.loop(
       Animated.parallel([
-        Animated.timing(ringScale,   { toValue: 2.2, useNativeDriver: true, duration: 1000 }),
-        Animated.timing(ringOpacity, { toValue: 0,   useNativeDriver: true, duration: 1000 }),
-      ])
-    ).start()
-  }, [])
+        Animated.timing(ringScale, {
+          toValue: 2.2,
+          useNativeDriver: true,
+          duration: 1000,
+        }),
+        Animated.timing(ringOpacity, {
+          toValue: 0,
+          useNativeDriver: true,
+          duration: 1000,
+        }),
+      ]),
+    ).start();
+  }, []);
 
-  const size = sw(104)
+  const size = sw(104);
 
   return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center', marginBottom: sh(8) }}>
+    <View
+      style={{
+        width: size,
+        height: size,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: sh(8),
+      }}
+    >
       {/* Ripple ring */}
       <Animated.View
         style={{
@@ -70,7 +103,7 @@ const SparkAnimation = () => {
           height: size,
           borderRadius: 9999,
           borderWidth: 2,
-          borderColor: '#1E78F5',
+          borderColor: '#CEB98F',
           transform: [{ scale: ringScale }],
           opacity: ringOpacity,
         }}
@@ -78,7 +111,7 @@ const SparkAnimation = () => {
       {/* Zap circle */}
       <Animated.View style={{ transform: [{ scale }], opacity }}>
         <LinearGradient
-          colors={['#1E78F5', '#DC9B00']}
+          colors={['#CEB98F', '#CEB98F']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{
@@ -89,12 +122,17 @@ const SparkAnimation = () => {
             justifyContent: 'center',
           }}
         >
-          <Zap width={sf(48)} height={sf(48)} color="#FBB202" fill="#FBB202" />
+          <Zap
+            width={sf(48)}
+            height={sf(48)}
+            color='#FBB202'
+            fill='#FBB202'
+          />
         </LinearGradient>
       </Animated.View>
     </View>
-  )
-}
+  );
+};
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 interface MatchItem {
@@ -277,7 +315,7 @@ const MatchScreen = ({ navigation, route }: any) => {
             {isSending ? (
               <ActivityIndicator
                 size='small'
-                color='#FFFFFF'
+                color='#0B0B0B'
               />
             ) : (
               <Send
@@ -329,7 +367,7 @@ const MatchScreen = ({ navigation, route }: any) => {
             paddingHorizontal: 8,
             paddingVertical: 3,
             // borderRadius: sr(20),
-            // backgroundColor: '#1E78F5',
+            // backgroundColor: '#CEB98F',
             alignItems: 'center',
             justifyContent: 'center',
             marginTop: sh(8),

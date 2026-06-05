@@ -100,7 +100,7 @@ function RequestCard({
             {isRejecting ? (
               <ActivityIndicator
                 size='small'
-                color='#4A4A4A'
+                color='#0B0B0B'
               />
             ) : (
               <X
@@ -123,7 +123,7 @@ function RequestCard({
             {isAccepting ? (
               <ActivityIndicator
                 size='small'
-                color='#FFFFFF'
+                color='#0B0B0B'
               />
             ) : (
               <Heart
@@ -230,7 +230,7 @@ export default function RequestsScreen({ navigation }: any) {
         {isFetching && (
           <ActivityIndicator
             size='small'
-            color='#1E78F5'
+            color='#0B0B0B'
           />
         )}
       </View>
@@ -240,7 +240,7 @@ export default function RequestsScreen({ navigation }: any) {
         <View
           style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
         >
-          <ActivityIndicator color='#1E78F5' />
+          <ActivityIndicator color='#0B0B0B' />
         </View>
       )}
 
@@ -263,7 +263,7 @@ export default function RequestsScreen({ navigation }: any) {
               flexDirection: 'row',
               alignItems: 'center',
               gap: sw(6),
-              backgroundColor: '#1E78F5',
+              backgroundColor: '#CEB98F',
               paddingHorizontal: sw(16),
               paddingVertical: sh(10),
               borderRadius: sr(99),

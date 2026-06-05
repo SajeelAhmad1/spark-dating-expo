@@ -151,7 +151,7 @@ const EnableLocationScreen = ({ navigation }: any) => {
         </View>
 
         {(locationLoading || isLoading) ? (
-          <ActivityIndicator color='#1E78F5' />
+          <ActivityIndicator color='#0B0B0B' />
         ) : (
           <CustomToggle
             value={isEnabled}

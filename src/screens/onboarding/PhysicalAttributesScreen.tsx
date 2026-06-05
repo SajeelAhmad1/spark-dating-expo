@@ -167,9 +167,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
       <View style={styles.footer}>
         <PrimaryButton
           title='Continue'
-          onPress={handleSubmit(onContinue)}
-          colors={['#1E78F5', '#FBB202']}
-          variant='gradient'
+          onPress={handleSubmit(onContinue)} 
           style={{ alignSelf: 'stretch' }}
           textStyle={{
             fontSize: sf(20),

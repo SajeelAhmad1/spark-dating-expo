@@ -51,7 +51,10 @@ const PASSWORD_RULES = [
   { label: 'One uppercase letter', test: (v: string) => /[A-Z]/.test(v) },
   { label: 'One lowercase letter', test: (v: string) => /[a-z]/.test(v) },
   { label: 'One number', test: (v: string) => /[0-9]/.test(v) },
-  { label: 'One special character', test: (v: string) => /[^A-Za-z0-9]/.test(v) },
+  {
+    label: 'One special character',
+    test: (v: string) => /[^A-Za-z0-9]/.test(v),
+  },
 ];
 
 function getStrength(password: string) {
@@ -109,15 +112,18 @@ function PasswordField({
           gap: sw(10),
         }}
       >
-        <Lock size={sf(18)} color="#9CA3AF" />
+        <Lock
+          size={sf(18)}
+          color='#9CA3AF'
+        />
         <TextInput
           value={value}
           onChangeText={onChangeText}
           onBlur={onBlur}
           placeholder={placeholder}
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor='#9CA3AF'
           secureTextEntry={!show}
-          autoCapitalize="none"
+          autoCapitalize='none'
           autoCorrect={false}
           style={{ flex: 1, fontSize: sf(15), color: '#111827', padding: 0 }}
         />
@@ -126,9 +132,15 @@ function PasswordField({
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           {show ? (
-            <EyeOff size={sf(18)} color="#9CA3AF" />
+            <EyeOff
+              size={sf(18)}
+              color='#9CA3AF'
+            />
           ) : (
-            <Eye size={sf(18)} color="#9CA3AF" />
+            <Eye
+              size={sf(18)}
+              color='#9CA3AF'
+            />
           )}
         </TouchableOpacity>
       </View>
@@ -207,9 +219,15 @@ function StrengthMeter({ password }: { password: string }) {
               style={{ flexDirection: 'row', alignItems: 'center', gap: sw(8) }}
             >
               {passed ? (
-                <CheckCircle2 size={sf(14)} color="#10B981" />
+                <CheckCircle2
+                  size={sf(14)}
+                  color='#10B981'
+                />
               ) : (
-                <XCircle size={sf(14)} color="#D1D5DB" />
+                <XCircle
+                  size={sf(14)}
+                  color='#D1D5DB'
+                />
               )}
               <Text
                 style={{
@@ -278,7 +296,13 @@ export default function ResetPasswordScreen({
           colors={['#EBF3FE', '#ffffff']}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: sh(260) }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: sh(260),
+          }}
         />
 
         <View
@@ -290,7 +314,9 @@ export default function ResetPasswordScreen({
             paddingBottom: sh(40),
           }}
         >
-          <View style={{ alignItems: 'center', marginTop: sh(80), gap: sh(20) }}>
+          <View
+            style={{ alignItems: 'center', marginTop: sh(80), gap: sh(20) }}
+          >
             {/* Success icon */}
             <View
               style={{
@@ -302,7 +328,10 @@ export default function ResetPasswordScreen({
                 justifyContent: 'center',
               }}
             >
-              <ShieldCheck size={sf(42)} color="#10B981" />
+              <ShieldCheck
+                size={sf(42)}
+                color='#10B981'
+              />
             </View>
 
             <View style={{ gap: sh(8), alignItems: 'center' }}>
@@ -331,11 +360,12 @@ export default function ResetPasswordScreen({
           </View>
 
           <PrimaryButton
-            title="Back to Sign In"
-            onPress={() => navigation.navigate('SignInScreen')}
-            colors={['#1E78F5', '#1E78F5']}
-            variant="solid"
-            textStyle={{ fontSize: sf(16), fontWeight: '600', color: '#ffffff' }}
+            title='Back to Sign In'
+            onPress={() => navigation.navigate('SignInScreen')} 
+            textStyle={{
+              fontSize: sf(16),
+              fontWeight: '600', 
+            }}
           />
         </View>
       </View>
@@ -353,26 +383,41 @@ export default function ResetPasswordScreen({
           colors={['#EBF3FE', '#ffffff']}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: sh(220) }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: sh(220),
+          }}
         />
 
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, paddingBottom: sh(40) }}
-          keyboardShouldPersistTaps="handled"
+          keyboardShouldPersistTaps='handled'
           showsVerticalScrollIndicator={false}
         >
           <View style={{ paddingHorizontal: sw(20), paddingTop: sh(72) }}>
             {/* Back */}
             <TouchableOpacity
-              style={{ width: sw(36), height: sw(36), justifyContent: 'center' }}
+              style={{
+                width: sw(36),
+                height: sw(36),
+                justifyContent: 'center',
+              }}
               onPress={() => navigation.goBack()}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <ChevronLeft size={sf(24)} color="#000000" />
+              <ChevronLeft
+                size={sf(24)}
+                color='#000000'
+              />
             </TouchableOpacity>
 
             {/* Header */}
-            <View style={{ marginTop: sh(32), marginBottom: sh(32), gap: sh(8) }}>
+            <View
+              style={{ marginTop: sh(32), marginBottom: sh(32), gap: sh(8) }}
+            >
               <View
                 style={{
                   width: sf(48),
@@ -384,23 +429,41 @@ export default function ResetPasswordScreen({
                   marginBottom: sh(8),
                 }}
               >
-                <Lock size={sf(22)} color="#1E78F5" />
+                <Lock
+                  size={sf(22)}
+                  color='#CEB98F'
+                />
               </View>
-              <Text style={{ fontSize: sf(28), fontWeight: '700', color: '#111827' }}>
+              <Text
+                style={{
+                  fontSize: sf(28),
+                  fontWeight: '700',
+                  color: '#111827',
+                }}
+              >
                 Reset Password
               </Text>
-              <Text style={{ fontSize: sf(15), color: '#6B7280', lineHeight: sf(22) }}>
-                Create a strong new password for your account. Do not reuse an old password.
+              <Text
+                style={{
+                  fontSize: sf(15),
+                  color: '#6B7280',
+                  lineHeight: sf(22),
+                }}
+              >
+                Create a strong new password for your account. Do not reuse an
+                old password.
               </Text>
             </View>
 
             {/* New Password */}
             <PasswordField
-              label="New Password"
+              label='New Password'
               value={newPassword}
-              onChangeText={(v) => setValue('newPassword', v, { shouldValidate: true })}
+              onChangeText={(v) =>
+                setValue('newPassword', v, { shouldValidate: true })
+              }
               onBlur={() => trigger('newPassword')}
-              placeholder="Min. 8 characters"
+              placeholder='Min. 8 characters'
               errorMessage={errors.newPassword?.message}
               show={showNew}
               onToggle={() => setShowNew((p) => !p)}
@@ -411,11 +474,13 @@ export default function ResetPasswordScreen({
 
             {/* Confirm Password */}
             <PasswordField
-              label="Confirm New Password"
+              label='Confirm New Password'
               value={confirmPassword}
-              onChangeText={(v) => setValue('confirmPassword', v, { shouldValidate: true })}
+              onChangeText={(v) =>
+                setValue('confirmPassword', v, { shouldValidate: true })
+              }
               onBlur={() => trigger('confirmPassword')}
-              placeholder="Re-enter your new password"
+              placeholder='Re-enter your new password'
               errorMessage={errors.confirmPassword?.message}
               show={showConfirm}
               onToggle={() => setShowConfirm((p) => !p)}
@@ -435,14 +500,26 @@ export default function ResetPasswordScreen({
               >
                 {newPassword === confirmPassword ? (
                   <>
-                    <CheckCircle2 size={sf(14)} color="#10B981" />
-                    <Text style={{ fontSize: sf(12), color: '#10B981', fontWeight: '500' }}>
+                    <CheckCircle2
+                      size={sf(14)}
+                      color='#10B981'
+                    />
+                    <Text
+                      style={{
+                        fontSize: sf(12),
+                        color: '#10B981',
+                        fontWeight: '500',
+                      }}
+                    >
                       Passwords match
                     </Text>
                   </>
                 ) : (
                   <>
-                    <XCircle size={sf(14)} color="#EF4444" />
+                    <XCircle
+                      size={sf(14)}
+                      color='#EF4444'
+                    />
                     <Text style={{ fontSize: sf(12), color: '#EF4444' }}>
                       Passwords don't match
                     </Text>
@@ -454,13 +531,21 @@ export default function ResetPasswordScreen({
             {/* CTA */}
             <PrimaryButton
               title={isLoading ? 'Updating…' : 'Update Password'}
-              onPress={handleSubmit(onValid)}
-              colors={['#1E78F5', '#1E78F5']}
-              variant="solid"
+              onPress={handleSubmit(onValid)} 
               disabled={isLoading}
-              icon={isLoading ? <ActivityIndicator size="small" color="#ffffff" /> : undefined}
-              iconPosition="end"
-              textStyle={{ fontSize: sf(16), fontWeight: '600', color: '#ffffff' }}
+              icon={
+                isLoading ? (
+                  <ActivityIndicator
+                    size='small'
+                    color='#0B0B0B'
+                  />
+                ) : undefined
+              }
+              iconPosition='end'
+              textStyle={{
+                fontSize: sf(16),
+                fontWeight: '600', 
+              }}
             />
 
             {/* Security note */}
@@ -477,9 +562,21 @@ export default function ResetPasswordScreen({
                 borderLeftColor: '#F59E0B',
               }}
             >
-              <ShieldCheck size={sf(16)} color="#F59E0B" style={{ marginTop: sh(1) }} />
-              <Text style={{ flex: 1, fontSize: sf(12), color: '#78350F', lineHeight: sf(18) }}>
-                After resetting, all other active sessions will be signed out automatically.
+              <ShieldCheck
+                size={sf(16)}
+                color='#F59E0B'
+                style={{ marginTop: sh(1) }}
+              />
+              <Text
+                style={{
+                  flex: 1,
+                  fontSize: sf(12),
+                  color: '#78350F',
+                  lineHeight: sf(18),
+                }}
+              >
+                After resetting, all other active sessions will be signed out
+                automatically.
               </Text>
             </View>
           </View>

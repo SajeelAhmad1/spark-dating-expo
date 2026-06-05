@@ -32,20 +32,22 @@ export default function PhotoPreviewScreen({
   onDownload,
   onSend,
 }: PhotoPreviewScreenProps) {
-  const player = useVideoPlayer(mediaType === 'video' && mediaUri ? mediaUri : null, p => {
-    p.loop = true;
-    p.play();
-  });
+  const player = useVideoPlayer(
+    mediaType === 'video' && mediaUri ? mediaUri : null,
+    (p) => {
+      p.loop = true;
+      p.play();
+    },
+  );
 
   return (
     <Modal
       visible={visible}
-      animationType="slide"
+      animationType='slide'
       statusBarTranslucent
       transparent={false}
     >
       <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
-
         {/* Fullscreen media background */}
         {mediaUri && mediaType === 'photo' && (
           <Image
@@ -55,7 +57,7 @@ export default function PhotoPreviewScreen({
               width: '100%',
               height: '100%',
             }}
-            resizeMode="cover"
+            resizeMode='cover'
           />
         )}
 
@@ -63,7 +65,7 @@ export default function PhotoPreviewScreen({
           <VideoView
             player={player}
             style={StyleSheet.absoluteFillObject}
-            contentFit="cover"
+            contentFit='cover'
             nativeControls={false}
           />
         )}
@@ -93,7 +95,10 @@ export default function PhotoPreviewScreen({
               justifyContent: 'center',
             }}
           >
-            <X size={sf(20)} color="#FFFFFF" />
+            <X
+              size={sf(20)}
+              color='#FFFFFF'
+            />
           </TouchableOpacity>
         </View>
 
@@ -132,17 +137,19 @@ export default function PhotoPreviewScreen({
           <View style={{ flex: 1 }}>
             <PrimaryButton
               title={isSending ? 'Sending...' : 'Send'}
-              onPress={onSend}
-              colors={['#1E78F5', '#FBB202']}
-              variant="gradient"
+              onPress={onSend} 
               style={{ alignSelf: 'stretch' }}
-              iconPosition="right"
-              icon={<SendHorizonal size={sf(20)} color="#FFFFFF" />}
+              iconPosition='right'
+              icon={
+                <SendHorizonal
+                  size={sf(20)}
+                  color='#0B0B0B'
+                />
+              }
               disabled={isSending}
             />
           </View>
         </View>
-
       </SafeAreaView>
     </Modal>
   );

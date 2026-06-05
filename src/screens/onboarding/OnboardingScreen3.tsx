@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Image, View, useWindowDimensions } from 'react-native';
 import { sf, sw, sh } from '@/utils/sizeMatters'; 
 import OnboardingCard from './OnboardingCard';
-import CameraIcon from '@/assets/images/cameraIcon.svg';
 
 export default function Onboarding3({ navigation }: any) {
   const { width, height } = useWindowDimensions();
@@ -123,7 +122,7 @@ export default function Onboarding3({ navigation }: any) {
             width: 72,
             height: 72,
             borderRadius: 36,
-            backgroundColor: '#E8F0FF',
+            backgroundColor: '#EAD6A9',
             alignItems: 'center',
             justifyContent: 'center',
             shadowColor: '#4A80F0',
@@ -135,7 +134,11 @@ export default function Onboarding3({ navigation }: any) {
             transform: [{ scale: cameraScaleEntrance }, { scale: cameraScalePulse }],
           }}
         >
-          <CameraIcon width={sf(56)} height={sf(56)} />
+          <Image
+            source={require('@/assets/images/chatLogAlert.png')}
+            style={{ width: sf(56), height: sf(56) }}
+            resizeMode="contain"
+          />
         </Animated.View>
 
         <Animated.View

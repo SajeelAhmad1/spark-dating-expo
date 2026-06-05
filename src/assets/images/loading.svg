@@ -2,7 +2,7 @@
 <g filter="url(#filter0_d_150_1889)">
 <rect x="14" y="14" width="56" height="56" rx="28" fill="url(#paint0_linear_150_1889)" fill-opacity="0.7" shape-rendering="crispEdges"/>
 <rect x="14.5" y="14.5" width="55" height="55" rx="27.5" stroke="url(#paint1_linear_150_1889)" shape-rendering="crispEdges"/>
-<path d="M26 58.24H58V26.24H26V58.24Z" fill="#DC9B00"/>
+<path d="M26 58.24H58V26.24H26V58.24Z" fill="#CEB98F"/>
 </g>
 <defs>
 <filter id="filter0_d_150_1889" x="0" y="0" width="84" height="84" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
@@ -18,11 +18,11 @@
 </filter>
 <linearGradient id="paint0_linear_150_1889" x1="45.92" y1="26.88" x2="58.24" y2="53.76" gradientUnits="userSpaceOnUse">
 <stop stop-color="#FBB202"/>
-<stop offset="1" stop-color="#1E78F5"/>
+<stop offset="1" stop-color="#CEB98F"/>
 </linearGradient>
 <linearGradient id="paint1_linear_150_1889" x1="42" y1="14" x2="60.48" y2="68.32" gradientUnits="userSpaceOnUse">
 <stop stop-color="#FBB202"/>
-<stop offset="1" stop-color="#1E78F5"/>
+<stop offset="1" stop-color="#CEB98F"/>
 </linearGradient>
 </defs>
 </svg>

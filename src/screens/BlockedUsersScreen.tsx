@@ -145,7 +145,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
         <View
           style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
         >
-          <ActivityIndicator color='#1E78F5' />
+          <ActivityIndicator color='#0B0B0B' />
         </View>
       )}
 
@@ -164,7 +164,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
           </Text>
           <TouchableOpacity onPress={() => refetch()}>
             <Text
-              style={{ color: '#1E78F5', fontSize: sf(14), fontWeight: '500' }}
+              style={{ color: '#CEB98F', fontSize: sf(14), fontWeight: '500' }}
             >
               Retry
             </Text>
@@ -244,9 +244,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
                   <View style={{ width: sw(110), alignItems: 'flex-end' }}>
                     <PrimaryButton
                       title='Unblock'
-                      onPress={() => handleUnblock(item.user.id, name)}
-                      colors={['#1E78F5', '#FBB202']}
-                      variant='gradient'
+                      onPress={() => handleUnblock(item.user.id, name)} 
                       height={40}
                       borderRadius={12}
                       textStyle={{

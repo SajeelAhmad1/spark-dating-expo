@@ -113,7 +113,7 @@ export default function App() {
           <QueryProvider>
             <NavigationContainer ref={navRef}>
               <Stack.Navigator
-                initialRouteName="Onboarding1"
+                initialRouteName="LogoScreen"
                 screenOptions={{ headerShown: false }}
               >
                 {/* ── Onboarding ──────────────────────────────────────── */}

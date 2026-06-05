@@ -50,7 +50,7 @@ function groupByCategory(
 const InterestsScreen = ({ navigation }: any) => {
   const storedInterests = useSignupStore(selectInterests);
   const patch = useSignupStore(selectPatch);
-const { interests } = useInterestStore();
+  const { interests } = useInterestStore();
 
   // const { data: rawData, isPending, isError, refetch } = useInterestsCatalog();
   // console.log(rawData, "interest data")
@@ -70,10 +70,7 @@ const { interests } = useInterestStore();
   //   return [];
   // }, [rawData]);
 
-  const categories = useMemo(
-    () => groupByCategory(interests),
-    [interests],
-  );
+  const categories = useMemo(() => groupByCategory(interests), [interests]);
 
   const [selected, setSelected] = useState<string[]>(
     storedInterests.length > 0 ? storedInterests : [],
@@ -129,9 +126,9 @@ const { interests } = useInterestStore();
         </View>
 
         {/* ── Loading ────────────────────────────────────────────────────────── */}
-       {/* {isPending && (
+        {/* {isPending && (
           <View style={{ marginTop: sh(40), alignItems: 'center' }}>
-            <ActivityIndicator color='#FBB202' />
+            <ActivityIndicator color='#0B0B0B' />
             <Text
               style={{ marginTop: sh(8), color: '#7D858E', fontSize: sf(14) }}
             >
@@ -157,7 +154,7 @@ const { interests } = useInterestStore();
             <TouchableOpacity onPress={() => refetch()}>
               <Text
                 style={{
-                  color: '#1E78F5',
+                  color: '#CEB98F',
                   fontSize: sf(14),
                   fontWeight: '500',
                 }}
@@ -169,7 +166,7 @@ const { interests } = useInterestStore();
         )} */}
 
         {/* ── Interest chips ─────────────────────────────────────────────────── */}
-        { categories && (
+        {categories && (
           <View style={{ marginTop: sh(24), gap: sh(24) }}>
             {categories.map(({ category, items }) => (
               <View key={category}>
@@ -233,9 +230,7 @@ const { interests } = useInterestStore();
         <FieldError message={interestsError} />
         <PrimaryButton
           title='Continue'
-          onPress={onContinue}
-          colors={['#1E78F5', '#FBB202']}
-          variant='gradient'
+          onPress={onContinue} 
           style={{
             alignSelf: 'stretch',
             opacity: selected.length >= MIN ? 1 : 0.5,

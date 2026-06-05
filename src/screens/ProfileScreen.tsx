@@ -34,10 +34,12 @@ function calcAge(dob: string | undefined | null): string {
 }
 
 // Extracts URL string from a photo that may be a string or {url, publicId} object
-function photoUrl(photo: string | { url: string; publicId: string } | null | undefined): string {
-  if (!photo) return ''
-  if (typeof photo === 'string') return photo
-  return photo.url
+function photoUrl(
+  photo: string | { url: string; publicId: string } | null | undefined,
+): string {
+  if (!photo) return '';
+  if (typeof photo === 'string') return photo;
+  return photo.url;
 }
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
@@ -51,11 +53,11 @@ const ProfileScreen = ({ navigation }: any) => {
   const profile = user?.profile;
   const interests = user?.interests ?? [];
   const photos = profile?.photos ?? [];
-console.log(photos, "photos profile")
+  console.log(photos, 'photos profile');
   // ✅ Reverse geocoding: Convert lat/lng to city name
   useEffect(() => {
     if (user?.location?.lat && user?.location?.lng) {
-      getCityFromCoords(user.location.lat, user.location.lng).then(setCityName)
+      getCityFromCoords(user.location.lat, user.location.lng).then(setCityName);
     }
   }, [user?.location]);
 
@@ -70,7 +72,7 @@ console.log(photos, "photos profile")
           backgroundColor: '#F7F3ED',
         }}
       >
-        <ActivityIndicator color='#1E78F5' />
+        <ActivityIndicator color='#0B0B0B' />
       </View>
     );
   }
@@ -84,7 +86,7 @@ console.log(photos, "photos profile")
     <View style={{ flex: 1, backgroundColor: '#F7F3ED' }}>
       {/* Full-screen background */}
       {/* <LinearGradient
-        colors={['#1E78F5', '#FBB202']}
+        colors={['#CEB98F', '#FBB202']}
         start={{ x: 0, y: -0.1 }}
         end={{ x: 2, y: 0.7 }}
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
@@ -93,7 +95,7 @@ console.log(photos, "photos profile")
       <View style={styles.flex1}>
         {/* ── Header ──────────────────────────────────────────────────────── */}
         <LinearGradient
-          colors={['#1E78F5', '#FBB202']}
+          colors={['#CEB98F', '#FBB202']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 9 }}
           style={{
@@ -168,7 +170,9 @@ console.log(photos, "photos profile")
             }}
           >
             <Image
-              source={{ uri: photoUrl(photos[0]) || 'https://via.placeholder.com/600' }}
+              source={{
+                uri: photoUrl(photos[0]) || 'https://via.placeholder.com/600',
+              }}
               style={{ width: '100%', height: '100%' }}
               resizeMode='cover'
             />
@@ -219,10 +223,10 @@ console.log(photos, "photos profile")
                     size={sf(14)}
                     color='#FFFFFF'
                   />
-                   <Text 
-                    style={{ fontSize: sf(16), color: '#FFFFFF' }} 
+                  <Text
+                    style={{ fontSize: sf(16), color: '#FFFFFF' }}
                     numberOfLines={1}
-                    ellipsizeMode="tail"
+                    ellipsizeMode='tail'
                   >
                     {cityName || 'Loading location...'}
                   </Text>
@@ -314,7 +318,7 @@ console.log(photos, "photos profile")
                         styles.iconCircle,
                         {
                           backgroundColor: '#FBB20233',
-                          borderColor: '#DC9B00',
+                          borderColor: '#CEB98F',
                         },
                       ]}
                     >
@@ -388,7 +392,7 @@ console.log(photos, "photos profile")
                           styles.iconCircle,
                           {
                             backgroundColor: '#FBB20233',
-                            borderColor: '#DC9B00',
+                            borderColor: '#CEB98F',
                           },
                         ]}
                       >
@@ -396,7 +400,7 @@ console.log(photos, "photos profile")
                           width={sw(18)}
                           height={sh(20)}
                           size={sf(18)}
-                          color='#DC9B00'
+                          color='#CEB98F'
                           strokeWidth={1.5}
                         />
                       </View>
@@ -522,7 +526,7 @@ console.log(photos, "photos profile")
                   styles.card,
                   {
                     minHeight: 152,
-                    justifyContent: 'center', 
+                    justifyContent: 'center',
                   },
                 ]}
               >

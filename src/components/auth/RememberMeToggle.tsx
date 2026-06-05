@@ -11,7 +11,10 @@ export default function RememberMeToggle({
   onToggle: () => void;
 }) {
   return (
-    <TouchableOpacity onPress={onToggle} style={styles.row}>
+    <TouchableOpacity
+      onPress={onToggle}
+      style={styles.row}
+    >
       <View
         style={[
           styles.checkbox,
@@ -24,12 +27,18 @@ export default function RememberMeToggle({
         ]}
       >
         {rememberMe && (
-          <Text style={[styles.checkmark, { fontSize: sf(11), }]} weight="regular">
+          <Text
+            style={[styles.checkmark, { fontSize: sf(11) }]}
+            weight='regular'
+          >
             ✓
           </Text>
         )}
       </View>
-      <Text style={[styles.label, { fontSize: sf(14) }]} weight="medium">
+      <Text
+        style={[styles.label, { fontSize: sf(14) }]}
+        weight='medium'
+      >
         Remember me
       </Text>
     </TouchableOpacity>
@@ -40,11 +49,11 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', columnGap: 8 },
   checkbox: {
     borderWidth: 1,
-    borderColor: '#1E78F5',
+    borderColor: '#CEB98F',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkboxOn: { backgroundColor: '#1E78F5' },
+  checkboxOn: { backgroundColor: '#CEB98F' },
   checkboxOff: { backgroundColor: 'transparent' },
   checkmark: { color: '#FFFFFF' },
   label: { color: '#000000' },

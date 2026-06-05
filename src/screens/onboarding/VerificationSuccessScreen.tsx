@@ -305,7 +305,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
                 weight='regular'
               >
                 Now create a password for{'\n'}
-                <Text style={{ color: '#1E78F5', fontWeight: '600' }}>
+                <Text style={{ color: '#CEB98F', fontWeight: '600' }}>
                   {identifier}
                 </Text>
               </Text>
@@ -389,24 +389,21 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
 
               <PrimaryButton
                 title={isPending ? 'Creating account…' : 'Create account'}
-                onPress={handleSubmit(onValid)}
-                colors={['#1E78F5', '#FBB202']}
-                variant='gradient'
+                onPress={handleSubmit(onValid)} 
                 style={{ alignSelf: 'stretch' }}
                 disabled={isPending}
                 icon={
                   isPending ? (
                     <ActivityIndicator
                       size='small'
-                      color='#ffffff'
+                      color='#0B0B0B'
                     />
                   ) : undefined
                 }
                 iconPosition='middle'
                 textStyle={{
                   fontSize: sf(18),
-                  fontWeight: '600',
-                  color: '#ffffff',
+                  fontWeight: '600', 
                 }}
               />
             </View>
