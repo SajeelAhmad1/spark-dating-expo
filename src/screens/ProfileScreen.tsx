@@ -33,6 +33,13 @@ function calcAge(dob: string | undefined | null): string {
   return String(Math.floor(ageDiff / (365.25 * 24 * 60 * 60 * 1000)));
 }
 
+// Extracts URL string from a photo that may be a string or {url, publicId} object
+function photoUrl(photo: string | { url: string; publicId: string } | null | undefined): string {
+  if (!photo) return ''
+  if (typeof photo === 'string') return photo
+  return photo.url
+}
+
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 const ProfileScreen = ({ navigation }: any) => {
@@ -60,7 +67,7 @@ console.log(photos, "photos profile")
           flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#FFFFFF',
+          backgroundColor: '#F7F3ED',
         }}
       >
         <ActivityIndicator color='#1E78F5' />
@@ -73,9 +80,8 @@ console.log(photos, "photos profile")
   const age = calcAge(profile?.dob);
   const nameLabel = age ? `${displayName} (${age})` : displayName;
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F3ED' }}>
       {/* Full-screen background */}
       {/* <LinearGradient
         colors={['#1E78F5', '#FBB202']}
@@ -162,7 +168,7 @@ console.log(photos, "photos profile")
             }}
           >
             <Image
-              source={{ uri: photos[0].url ?? 'https://via.placeholder.com/600' }}
+              source={{ uri: photoUrl(photos[0]) || 'https://via.placeholder.com/600' }}
               style={{ width: '100%', height: '100%' }}
               resizeMode='cover'
             />
@@ -253,7 +259,7 @@ console.log(photos, "photos profile")
                 marginTop: sh(10),
               }}
             >
-              {photos.slice(1, 3).map((uri, i) => (
+              {photos.slice(1, 3).map((photo, i) => (
                 <View
                   key={i}
                   style={{
@@ -271,7 +277,7 @@ console.log(photos, "photos profile")
                   }}
                 >
                   <Image
-                    source={{ uri.url }}
+                    source={{ uri: photoUrl(photo) }}
                     style={{ width: '100%', height: '100%' }}
                     resizeMode='cover'
                   />

@@ -175,7 +175,7 @@ export default function SignInScreen({
 
   return (
     <View
-      style={{ flex: 1, backgroundColor: '#ffffff', paddingBottom: sh(20) }}
+      style={{ flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) }}
     >
       <View style={{ flex: 1, paddingHorizontal: sw(20), paddingTop: sh(72) }}>
         <TouchableOpacity

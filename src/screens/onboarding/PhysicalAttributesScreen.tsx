@@ -236,7 +236,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
+  safeArea: { flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) },
   scroll: {
     flex: 1,
     paddingHorizontal: sw(20),

@@ -63,7 +63,7 @@ export default function EmailInputScreen({ navigation }: any) {
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
     >
-      <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+      <View style={{ flex: 1, backgroundColor: '#F7F3ED' }}>
         <LinearGradient
           colors={['#EBF3FE', '#ffffff']}
           start={{ x: 0, y: 0 }}

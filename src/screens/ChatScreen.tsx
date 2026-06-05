@@ -363,7 +363,7 @@ export default function ChatScreen({ navigation, route }: any) {
   // ── Loading ───────────────────────────────────────────────────────────────
   if (isCreating) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF' }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F3ED' }}>
         <ActivityIndicator color="#1E78F5" />
         <Text style={{ marginTop: sh(12), color: '#7D858E', fontFamily: 'Poppins-Regular', fontSize: sf(14) }}>
           Opening chat…
@@ -374,7 +374,7 @@ export default function ChatScreen({ navigation, route }: any) {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={0}>
-      <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: sh(40), paddingBottom: sh(20) }}>
+      <View style={{ flex: 1, backgroundColor: '#F7F3ED', paddingTop: sh(40), paddingBottom: sh(20) }}>
         <View style={{ flex: 1 }}>
 
           {/* ── Nav Bar ─────────────────────────────────────────────────── */}

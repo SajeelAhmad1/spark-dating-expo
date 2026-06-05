@@ -109,7 +109,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
-        <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#F7F3ED' }} edges={['bottom', 'left', 'right']}>
           <QueryProvider>
             <NavigationContainer ref={navRef}>
               <Stack.Navigator

@@ -347,7 +347,7 @@ export default function InboxScreen({ navigation, route }: any) {
   const showSections = activeFilter === 'All'
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) }}>
 
       {/* ── Nav Bar ─────────────────────────────────────────────────────── */}
       <View style={styles.navbar}>

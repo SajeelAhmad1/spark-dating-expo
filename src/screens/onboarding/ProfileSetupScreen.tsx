@@ -332,7 +332,7 @@ const ProfileSetupScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea:       { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
+  safeArea:       { flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) },
   scroll:         { flex: 1, paddingHorizontal: sw(20), paddingTop: sh(16), marginTop: sh(60) },
   headerBlock:    { marginTop: sh(12), rowGap: sh(8) },
   screenTitle:    { color: '#000000' },

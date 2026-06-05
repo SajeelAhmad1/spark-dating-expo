@@ -153,7 +153,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F3ED' }}>
       <View style={{ flex: 1, paddingHorizontal: hPad, paddingTop: sh(16), marginTop: sh(60) }}>
         <TouchableOpacity onPress={() => navigation?.goBack()}>
           <ChevronLeft size={sf(24)} color='#000000' />

@@ -439,7 +439,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: '#F7F3ED' },
   page: {
     paddingHorizontal: sw(20),
     paddingTop: sh(80),

@@ -60,7 +60,7 @@ export default NotAvailableScreen
 const styles = StyleSheet.create({
   safe: {
     flex:              1,
-    backgroundColor:   '#FFFFFF',
+    backgroundColor:   '#F7F3ED',
     alignItems:        'center',
     paddingHorizontal: sw(24),
     paddingBottom:     sh(32),

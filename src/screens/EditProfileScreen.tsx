@@ -392,14 +392,14 @@ const EditProfileScreen = ({ navigation }: any) => {
 
   if (isMeLoading) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF' }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F3ED' }}>
         <ActivityIndicator color="#1E78F5" />
       </View>
     )
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: sh(40), paddingBottom: sh(20) }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F3ED', paddingTop: sh(40), paddingBottom: sh(20) }}>
       <View style={{ flex: 1 }}>
 
         {/* ── Header ──────────────────────────────────────────────────── */}

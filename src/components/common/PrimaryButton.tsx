@@ -18,7 +18,7 @@ type IconPosition = 'start' | 'middle' | 'right' | 'end';
 interface PrimaryButtonProps {
   title: string;
   onPress: () => void;
-  colors: string[];
+  colors?: string[];
   iconBackground?: string;
   variant?: ButtonVariant;
   icon?: React.ReactNode;
@@ -36,7 +36,7 @@ interface PrimaryButtonProps {
 const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   title,
   onPress,
-  colors,
+  colors = ['#EAD6A9', '#EAD6A9'],
   iconBackground,
   variant = 'gradient',
   icon,
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   text: {
-    color: '#FFFFFF',
+    color: '#0B0B0B',
     fontFamily: 'Poppins-Medium',
     fontWeight: '500',
     fontSize: sf(16),

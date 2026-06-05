@@ -123,7 +123,7 @@ console.log(user, "useruserrrrrrr")
     <View
       style={{
         flex: 1,
-        backgroundColor: '#F8F8F8',
+        backgroundColor: '#F7F3ED',
         paddingTop: sh(40),
         paddingBottom: sh(20),
       }}

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, useWindowDimensions } from 'react-native';
 
-import OnboardingCard from './OnboardingCard'; 
+import OnboardingCard from './OnboardingCard';
 
 import Profile1 from '@/assets/images/avatar1.svg';
 import Profile2 from '@/assets/images/avatar2.svg';
@@ -12,11 +12,10 @@ import CenterProfile from '@/assets/images/avatar6.svg';
 import LocationIcon from '@/assets/images/locationIcon.svg';
 
 import { sf } from '@/utils/sizeMatters';
-import OrbitAvatarAnimation from '@/components/common/OrbitAvatarAnimation'; 
+import OrbitAvatarAnimation from '@/components/common/OrbitAvatarAnimation';
 
 const OnboardingScreen1 = ({ navigation }: any) => {
-  const { width } = useWindowDimensions(); 
- 
+  const { width } = useWindowDimensions();
 
   // ── Orbit data (UNCHANGED LOGIC) ─────────────────────────────
   const { ORBIT_D, ORBIT_R, AVATARS, PINS } = useMemo(() => {
@@ -44,8 +43,7 @@ const OnboardingScreen1 = ({ navigation }: any) => {
   }, [width]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff', paddingBottom: 20 }}>
-
+    <View style={{ flex: 1, backgroundColor: '#F7F3ED', paddingBottom: 20 }}>
       {/* ── Orbit Animation (REUSABLE COMPONENT) ── */}
       <OrbitAvatarAnimation
         CenterProfile={CenterProfile}
@@ -56,12 +54,12 @@ const OnboardingScreen1 = ({ navigation }: any) => {
 
       {/* ── Bottom Card ── */}
       <OnboardingCard
-        title="Find Your Match"
-        subtitle="Swipe through profiles and connect with people who interest you in real-time."
+        title='Find Your Match'
+        subtitle='Swipe through profiles and connect with people who interest you in real-time.'
         activeDot={0}
-        buttonLabel="Next"
+        buttonLabel='Next'
         onPress={() => navigation.navigate('Onboarding2')}
-      /> 
+      />
     </View>
   );
 };

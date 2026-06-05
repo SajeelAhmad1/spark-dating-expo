@@ -168,7 +168,7 @@ export default EnableLocationScreen;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F7F3ED',
     justifyContent: 'space-between',
     paddingBottom: sh(20),
   },

@@ -254,7 +254,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
+  safeArea: { flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) },
   page: {
     flex: 1,
     paddingHorizontal: sw(20),

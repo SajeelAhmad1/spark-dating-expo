@@ -225,7 +225,7 @@ const MatchScreen = ({ navigation, route }: any) => {
 
   return (
     <View
-      style={{ flex: 1, backgroundColor: '#FBB202', paddingBottom: sh(20) }}
+      style={{ flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) }}
     >
       <View
         style={{

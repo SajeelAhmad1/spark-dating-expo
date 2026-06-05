@@ -251,7 +251,7 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: '#F7F3ED' },
   page: {
     flex: 1,
     paddingHorizontal: sw(20),

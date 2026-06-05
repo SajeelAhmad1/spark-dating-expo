@@ -54,7 +54,7 @@ const BlockedUsersScreen = ({ navigation }: any) => {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#F7F3ED',
         paddingTop: sh(40),
         paddingBottom: sh(20),
       }}

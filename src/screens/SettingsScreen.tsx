@@ -465,7 +465,7 @@ const SettingsScreen = ({ navigation }: any) => {
   )
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: sh(40), paddingBottom: sh(20) }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F3ED', paddingTop: sh(40), paddingBottom: sh(20) }}>
 
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: sw(20), paddingTop: sh(12), paddingBottom: sh(16) }}>

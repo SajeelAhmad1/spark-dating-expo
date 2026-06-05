@@ -93,7 +93,7 @@ const OnboardingCard: React.FC<Props> = ({
                   height: sh(8),
                   width: i === activeDot ? sw(24) : sw(8),
                   borderRadius: sr(4),
-                  backgroundColor: i === activeDot ? "#1E78F5" : "#B6B9C9",
+                  backgroundColor: i === activeDot ? "#C9BB9B" : "#B6B9C9",
                 }}
               />
             ))}
@@ -104,7 +104,6 @@ const OnboardingCard: React.FC<Props> = ({
             <PrimaryButton
               title={buttonLabel}
               onPress={onPress}
-              colors={[Colors.gradientStart, Colors.gradientEnd]}
               textStyle={{
                 fontSize: sf(18), 
               }}

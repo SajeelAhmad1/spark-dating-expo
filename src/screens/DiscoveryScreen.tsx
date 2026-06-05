@@ -276,7 +276,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
 
   // ── Main ──────────────────────────────────────────────────────────────────
   return (
-    <View style={{ flex: 1, paddingBottom: sh(20) }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) }}>
       <LinearGradient colors={['#1E78F5', '#FBB202']} start={{ x: 0, y: -0.1 }} end={{ x: 2, y: 0.7 }} style={StyleSheet.absoluteFill} />
       {Header}
       {Title}

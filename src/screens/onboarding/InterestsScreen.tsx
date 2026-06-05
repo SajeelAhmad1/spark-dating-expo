@@ -252,7 +252,7 @@ const { interests } = useInterestStore();
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(40) },
+  safeArea: { flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(40) },
   scroll: {
     flex: 1,
     paddingHorizontal: sw(20),

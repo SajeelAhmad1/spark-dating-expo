@@ -37,7 +37,7 @@ export default function SignUpScreen({ navigation }: any) {
   };
 
   return (
-    <View style={{ flex: 1, paddingBottom: sh(20) }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) }}>
       <LinearGradient
         colors={['#1E78F5', '#FBB202']}
         start={{ x: 0, y: 0 }}
