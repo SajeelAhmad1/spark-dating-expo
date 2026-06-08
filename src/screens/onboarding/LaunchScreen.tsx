@@ -49,8 +49,8 @@ const FEATURES = [
       <Zap
         width={sf(24)}
         height={sf(24)}
-        color='#FBB202'
-        fill='#FBB202'
+        color='#EAD6A9'
+        fill='#EAD6A9'
       />
     ),
   },
@@ -187,7 +187,7 @@ const LaunchScreen = ({ navigation }: any) => {
 
         <PrimaryButton
           title="Let's find your spark!"
-          onPress={() => navigation.navigate('EnableLocationScreen')} 
+          onPress={() => navigation.navigate('EnableLocationScreen')}
           textStyle={{
             fontSize: sf(18),
             fontWeight: '500',

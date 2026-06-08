@@ -27,6 +27,11 @@ const COLUMN_IMAGES: string[][] = [
     'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&q=80',
     'https://images.unsplash.com/photo-1488716820095-cbe80883c496?w=300&q=80',
     'https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?w=300&q=80',
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&q=80',
+    'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&q=80',
+    'https://images.unsplash.com/photo-1534614971-6be99a7a3ffd?w=300&q=80',
+    'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&q=80',
+    'https://images.unsplash.com/photo-1521119989659-a83eee488004?w=300&q=80',
   ],
   [
     'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&q=80',
@@ -34,6 +39,11 @@ const COLUMN_IMAGES: string[][] = [
     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80',
     'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80',
     'https://images.unsplash.com/photo-1521119989659-a83eee488004?w=300&q=80',
+    'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&q=80',
+    'https://images.unsplash.com/photo-1463453091185-61582044d556?w=300&q=80',
+    'https://images.unsplash.com/photo-1499996860823-5214fcc65f8f?w=300&q=80',
+    'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=300&q=80',
+    'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&q=80',
   ],
   [
     'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&q=80',
@@ -41,6 +51,23 @@ const COLUMN_IMAGES: string[][] = [
     'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=300&q=80',
     'https://images.unsplash.com/photo-1463453091185-61582044d556?w=300&q=80',
     'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=300&q=80',
+    'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&q=80',
+    'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&q=80',
+    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&q=80',
+    'https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?w=300&q=80',
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80',
+  ],
+  [
+    'https://images.unsplash.com/photo-1524638431109-93d95c968f03?w=300&q=80',
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&q=80',
+    'https://images.unsplash.com/photo-1499996860823-5214fcc65f8f?w=300&q=80',
+    'https://images.unsplash.com/photo-1534614971-6be99a7a3ffd?w=300&q=80',
+    'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=300&q=80',
+    'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&q=80',
+    'https://images.unsplash.com/photo-1488716820095-cbe80883c496?w=300&q=80',
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80',
+    'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=300&q=80',
+    'https://images.unsplash.com/photo-1499996860823-5214fcc65f8f?w=300&q=80', 
   ],
 ];
 
@@ -49,7 +76,7 @@ const CARD_WIDTH = sw(110);
 const CARD_HEIGHT = sh(155);
 const CARD_GAP = sh(12);
 const CARD_RADIUS = sf(16);
-const COLUMN_TILT = -12; // degrees – matches the screenshot diagonal
+const COLUMN_TILT = 16; // degrees – matches the screenshot diagonal
 
 // Total height of one full column of cards (used for seamless looping)
 const SINGLE_LOOP_HEIGHT = (CARD_HEIGHT + CARD_GAP) * COLUMN_IMAGES[0].length;
@@ -63,30 +90,31 @@ interface AnimatedColumnProps {
 }
 
 const AnimatedColumn: React.FC<AnimatedColumnProps> = ({ images, direction, xOffset }) => {
-  const translateY = useRef(new Animated.Value(direction === 'down' ? 0 : -SINGLE_LOOP_HEIGHT)).current;
+  // down: start at 0, animate to -SINGLE_LOOP_HEIGHT (strip slides down, resets seamlessly)
+  // up:   start at -SINGLE_LOOP_HEIGHT, animate to 0 (strip slides up, resets seamlessly)
+  const fromValue = direction === 'down' ? 0 : -SINGLE_LOOP_HEIGHT;
+  const toValue   = direction === 'down' ? -SINGLE_LOOP_HEIGHT : 0;
+
+  const translateY = useRef(new Animated.Value(fromValue)).current;
 
   useEffect(() => {
-    // Loop infinitely
-    const toValue = direction === 'down' ? SINGLE_LOOP_HEIGHT : 0;
-    const fromValue = direction === 'down' ? 0 : -SINGLE_LOOP_HEIGHT;
+    translateY.setValue(fromValue);
 
     const loop = Animated.loop(
       Animated.timing(translateY, {
         toValue,
-        duration: 12000,
+        duration: 50000,
         easing: Easing.linear,
         useNativeDriver: true,
       }),
     );
 
-    translateY.setValue(fromValue);
     loop.start();
-
     return () => loop.stop();
   }, []);
 
-  // Duplicate images for seamless loop
-  const doubled = [...images, ...images];
+  // Triple the images so there's always content visible above, in-view, and below
+  const tripled = [...images, ...images, ...images];
 
   return (
     <Animated.View
@@ -100,7 +128,7 @@ const AnimatedColumn: React.FC<AnimatedColumnProps> = ({ images, direction, xOff
         },
       ]}
     >
-      {doubled.map((uri, idx) => (
+      {tripled.map((uri, idx) => (
         <View key={idx} style={styles.card}>
           <Image source={{ uri }} style={styles.cardImage} resizeMode="cover" />
         </View>
@@ -141,12 +169,12 @@ const LogoScreen = ({ navigation }: any) => {
     return () => { cancelled = true; };
   }, [navigation]);
 
-  // Column horizontal spacing – three columns evenly spread across the screen
-  // and slightly overlapping, rotated as a group
+  // Four columns evenly spread across the screen
   const colSpacing = sw(118);
-  const col0X = -colSpacing;
-  const col1X = 0;
-  const col2X = colSpacing;
+  const col0X = -colSpacing * 1.5;
+  const col1X = -colSpacing * 0.5;
+  const col2X =  colSpacing * 0.5;
+  const col3X =  colSpacing * 1.5;
 
   return (
     <View style={styles.root}>
@@ -157,9 +185,10 @@ const LogoScreen = ({ navigation }: any) => {
       <View style={styles.photoArea} pointerEvents="none">
         {/* Rotate all columns together to achieve the diagonal look */}
         <View style={styles.columnsWrapper}>
-          <AnimatedColumn images={COLUMN_IMAGES[0]} direction="down"  xOffset={col0X} />
-          <AnimatedColumn images={COLUMN_IMAGES[1]} direction="up"    xOffset={col1X} />
-          <AnimatedColumn images={COLUMN_IMAGES[2]} direction="down"  xOffset={col2X} />
+          <AnimatedColumn images={COLUMN_IMAGES[0]} direction="down" xOffset={col0X} />
+          <AnimatedColumn images={COLUMN_IMAGES[1]} direction="up"   xOffset={col1X} />
+          <AnimatedColumn images={COLUMN_IMAGES[2]} direction="down" xOffset={col2X} />
+          <AnimatedColumn images={COLUMN_IMAGES[3]} direction="up"   xOffset={col3X} />
         </View>
       </View>
 

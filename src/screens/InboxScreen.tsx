@@ -10,6 +10,7 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { Text } from '@/components/common/Text';
 import {
   ChevronLeft,
@@ -19,6 +20,10 @@ import {
   X,
   Camera,
 } from 'lucide-react-native';
+ 
+import FireIcon from '@/assets/images/fireIcon.svg';
+import GlassIcon from '@/assets/images/glassIcon.svg';
+import LockIcon from '@/assets/images/lockIcon.svg';
 import BottomTabBar from '@/components/common/BottomTabBar';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
@@ -30,15 +35,15 @@ import {
 } from '@/features/chat/hooks';
 import type { ConversationItem } from '@/features/chat/schema';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useMe } from '@/features/profile/hooks';
+import { useMe } from '@/features/profile/hooks'; 
 
 // ── Filter types ──────────────────────────────────────────────────────────────
 
 const FILTERS = [
-  { key: 'All', label: 'All', icon: null },
-  { key: 'ActiveStreaks', label: '🔥 Active Sparks', icon: null },
-  { key: 'ExpiringSoon', label: '⏳ Locking Soon', icon: null },
-  { key: 'Locked', label: '🔒 Locked', icon: null },
+  { key: 'All',          label: 'All',           icon: null,        svg: null },
+  { key: 'ActiveStreaks', label: 'Active Sparks', icon: null,        svg: 'fire' },
+  { key: 'ExpiringSoon',  label: 'Locking Soon',  icon: null,        svg: 'glass' },
+  { key: 'Locked',        label: 'Locked',        icon: null,        svg: 'lock' },
 ] as const;
 
 type FilterKey = (typeof FILTERS)[number]['key'];
@@ -132,14 +137,14 @@ function CameraBtn({ onPress }: { onPress: () => void }) {
       activeOpacity={0.8}
     >
       <LinearGradient
-        colors={['#CEB98F', '#FBB202']}
+        colors={['#EAD6A9', '#EAD6A9']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.cameraBtn}
       >
         <Camera
           size={sf(20)}
-          color='#FFFFFF'
+          color='#0B0B0B'
           strokeWidth={2}
         />
       </LinearGradient>
@@ -152,23 +157,32 @@ function CameraBtn({ onPress }: { onPress: () => void }) {
 function StreakBadge({ count }: { count: number }) {
   return (
     <View style={styles.streakBadge}>
-      <Text style={{ fontSize: sf(11), color: '#CEB98F', fontWeight: '700' }}>
-        🔥 {count}
+      <FireIcon width={12} height={12} />
+      <Text style={{ fontSize: sf(11), color: '#CEB98F', fontWeight: '700', marginLeft: 3 }}>
+        {count}
       </Text>
     </View>
   );
 }
 
 // ── Section header ────────────────────────────────────────────────────────────
+ 
 
-function SectionHeader({ emoji, title }: { emoji: string; title: string }) {
+const SECTION_SVG: Record<string, (color: string) => React.ReactNode> = {
+  fire:  (color) => <FireIcon  width={16} height={16} color={color} />,
+  glass: (color) => <GlassIcon width={16} height={16} color={color} />,
+  lock:  (color) => <LockIcon  width={16} height={16} color={color} />,
+};
+
+function SectionHeader({ svgKey, title }: { svgKey: string; title: string }) {
   return (
     <View style={styles.sectionHeader}>
-      <Text style={{ fontSize: sf(16) }}>{emoji}</Text>
+      {SECTION_SVG[svgKey]('#0B0B0B')}
       <Text style={[styles.sectionTitle, { fontSize: sf(15) }]}>{title}</Text>
     </View>
   );
 }
+
 
 // ── Active / Locking row ──────────────────────────────────────────────────────
 
@@ -186,7 +200,8 @@ function ActiveRow({
   const name =
     `${item.otherUser?.firstName ?? ''} ${item.otherUser?.lastName ?? ''}`.trim() ||
     'Unknown';
-  const avatar = item.otherUser?.photos?.[0];
+  const avatarRaw = item.otherUser?.photos?.[0];
+  const avatar = typeof avatarRaw === 'string' ? avatarRaw : avatarRaw?.url;
   // Show unread dot only when last message was sent by the other user (not me)
   const lastSenderId = item.lastMessage?.senderId;
   const isUnread =
@@ -290,14 +305,22 @@ function LockedRow({
   item,
   onPress,
   onCameraPress,
+  myId,
 }: {
   item: ConversationItem;
   onPress: () => void;
   onCameraPress: () => void;
+  myId?: string;
 }) {
   const name =
     `${item.otherUser?.firstName ?? ''} ${item.otherUser?.lastName ?? ''}`.trim() ||
     'Unknown';
+  const avatarRaw = item.otherUser?.photos?.[0];
+  const avatar = typeof avatarRaw === 'string' ? avatarRaw : avatarRaw?.url;
+  // Show unread dot only when last message was sent by the other user (not me)
+  const lastSenderId = item.lastMessage?.senderId;
+  const isUnread =
+    item.unreadCount > 0 && (!myId || !lastSenderId || lastSenderId !== myId);
 
   return (
     <TouchableOpacity
@@ -305,15 +328,45 @@ function LockedRow({
       onPress={onPress}
       style={styles.row}
     >
-      {/* Dark avatar with lock */}
-      <View
-        style={[styles.avatar, styles.lockedAvatar, { marginRight: sw(12) }]}
-      >
-        <Lock
-          size={sf(22)}
-          color='#FFFFFF'
-          strokeWidth={2}
-        />
+      <View style={{ position: 'relative', marginRight: sw(12) }}>
+        {avatar ? (
+          <View style={[styles.avatar, { overflow: 'hidden' }]}>
+            <Image
+              source={{ uri: avatar }}
+              style={StyleSheet.absoluteFill}
+              resizeMode='cover'
+            />
+            <BlurView
+              intensity={60}
+              tint='dark'
+              style={StyleSheet.absoluteFill}
+            />
+            <View style={styles.lockedAvatarOverlay}>
+              <Lock
+                size={sf(20)}
+                color='#FFFFFF'
+                strokeWidth={2.5}
+              />
+            </View>
+          </View>
+        ) : (
+          <View style={[styles.avatar, styles.lockedAvatar]}>
+            <Lock
+              size={sf(18)}
+              color='#FFFFFF'
+              strokeWidth={2.5}
+            />
+          </View>
+        )}
+        {isUnread && (
+          <View style={styles.unreadDot}>
+            <Text
+              style={{ color: '#FFFFFF', fontSize: sf(8), fontWeight: '800' }}
+            >
+              {item.unreadCount > 9 ? '9+' : item.unreadCount}
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Content */}
@@ -380,20 +433,20 @@ function VisualConversationsModal({
 
           {/* Camera icon */}
           <LinearGradient
-            colors={['#CEB98F', '#FBB202']}
+            colors={['#EAD6A9', '#EAD6A9']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.modalIconWrap}
           >
             <Camera
               size={sf(32)}
-              color='#FFFFFF'
+              color='#0B0B0B'
               strokeWidth={2}
             />
           </LinearGradient>
 
           <Text style={[styles.modalTitle, { fontSize: sf(20) }]}>
-            Unlock chats by sharing a moment
+            “Unlock chats by sharing a moment”
           </Text>
           <Text style={[styles.modalDesc, { fontSize: sf(14) }]}>
             Send a moment to share the 24-hour chat
@@ -447,7 +500,7 @@ export default function InboxScreen({ navigation, route }: any) {
       chatUserId: item.otherUser?.id,
       chatUserName:
         `${item.otherUser?.firstName ?? ''} ${item.otherUser?.lastName ?? ''}`.trim(),
-      chatUserImageUri: item.otherUser?.photos?.[0],
+      chatUserImageUri: (() => { const p = item.otherUser?.photos?.[0]; return typeof p === 'string' ? p : p?.url; })(),
       initialLocked: false,
       autoOpenCamera: autoCamera || cameraSelectMode,
     });
@@ -537,15 +590,18 @@ export default function InboxScreen({ navigation, route }: any) {
                 isActive ? styles.filterChipActive : styles.filterChipInactive,
               ]}
             >
-              <Text
-                style={{
-                  fontSize: sf(13),
-                  fontWeight: '500',
-                  color: isActive ? '#FFFFFF' : '#7D858E',
-                }}
-              >
-                {f.label}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: sw(4) }}>
+                {f.svg && SECTION_SVG[f.svg](isActive ? '#0B0B0B' : '#B6B9C9')}
+                <Text
+                  style={{
+                    fontSize: sf(13),
+                    fontWeight: '500',
+                    color: isActive ? '#0B0B0B' : '#B6B9C9',
+                  }}
+                >
+                  {f.label}
+                </Text>
+              </View>
             </TouchableOpacity>
           );
         })}
@@ -556,7 +612,7 @@ export default function InboxScreen({ navigation, route }: any) {
         <View
           style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
         >
-          <ActivityIndicator color='#CEB98F' />
+          <ActivityIndicator color='#0B0B0B' />
         </View>
       )}
 
@@ -570,7 +626,7 @@ export default function InboxScreen({ navigation, route }: any) {
             gap: sh(12),
           }}
         >
-          <Text style={{ color: '#7D858E', fontSize: sf(14) }}>
+          <Text style={{ color: '#0B0B0B', fontSize: sf(14) }}>
             Could not load conversations.
           </Text>
           <TouchableOpacity
@@ -579,7 +635,7 @@ export default function InboxScreen({ navigation, route }: any) {
               flexDirection: 'row',
               alignItems: 'center',
               gap: sw(6),
-              backgroundColor: '#CEB98F',
+              backgroundColor: '#EAD6A9',
               paddingHorizontal: sw(16),
               paddingVertical: sh(10),
               borderRadius: sr(99),
@@ -587,10 +643,10 @@ export default function InboxScreen({ navigation, route }: any) {
           >
             <RefreshCw
               size={sf(16)}
-              color='#FFFFFF'
+              color='#0B0B0B'
             />
             <Text
-              style={{ color: '#FFFFFF', fontSize: sf(14), fontWeight: '600' }}
+              style={{ color: '#0B0B0B', fontSize: sf(14), fontWeight: '600' }}
             >
               Retry
             </Text>
@@ -614,7 +670,7 @@ export default function InboxScreen({ navigation, route }: any) {
               {activeItems.length > 0 && (
                 <>
                   <SectionHeader
-                    emoji='🔥'
+                    svgKey='fire'
                     title='Active Sparks'
                   />
                   {activeItems.map((item) => (
@@ -633,7 +689,7 @@ export default function InboxScreen({ navigation, route }: any) {
               {expiring.length > 0 && (
                 <>
                   <SectionHeader
-                    emoji='⏳'
+                    svgKey='glass'
                     title='Locking Soon'
                   />
                   {expiring.map((item) => (
@@ -652,13 +708,14 @@ export default function InboxScreen({ navigation, route }: any) {
               {lockedItems.length > 0 && (
                 <>
                   <SectionHeader
-                    emoji='🔒'
+                    svgKey='lock'
                     title='Locked Chats'
                   />
                   {lockedItems.map((item) => (
                     <LockedRow
                       key={item.conversationId}
                       item={item}
+                      myId={myId}
                       onPress={() => setLockedModalVisible(true)}
                       onCameraPress={() => openChat(item, true)}
                     />
@@ -756,7 +813,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
+    // backgroundColor: '#FFFFFF',
     paddingHorizontal: sw(20),
     paddingTop: sh(52),
     paddingBottom: sh(16),
@@ -784,12 +841,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   filterChipActive: {
-    backgroundColor: '#CEB98F',
-    borderColor: '#CEB98F',
+    backgroundColor: '#EAD6A9',
+    borderColor: '#EAD6A9',
   },
   filterChipInactive: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E8E8E8',
+    backgroundColor: 'transparent',
+    borderColor: '#B6B9C9',
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -801,7 +858,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontWeight: '700',
-    color: '#1C1C1E',
+    color: '#0B0B0B',
   },
   row: {
     flexDirection: 'row',
@@ -826,6 +883,12 @@ const styles = StyleSheet.create({
   },
   lockedAvatar: {
     backgroundColor: '#222222',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lockedAvatarOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.35)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -917,7 +980,7 @@ const styles = StyleSheet.create({
     marginBottom: sh(14),
   },
   modalHighlight: {
-    color: '#FBB202',
+    color: '#EAD6A9',
     fontWeight: '600',
     textAlign: 'center',
   },

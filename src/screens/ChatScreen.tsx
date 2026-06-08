@@ -197,7 +197,7 @@ function MsgBubble({
               paddingHorizontal: sw(14),
               paddingVertical: sh(10),
               borderWidth: 1,
-              borderColor: isMe ? '#CEB98F' : '#FBB202',
+              borderColor: isMe ? '#CEB98F' : '#EAD6A9',
               flexDirection: 'row',
               alignItems: 'center',
               gap: sw(8),
@@ -258,7 +258,8 @@ export default function ChatScreen({ navigation, route }: any) {
   // ── My profile ────────────────────────────────────────────────────────────
   const { data: me } = useMe();
   const myId = me?.id;
-  const myAvatar = me?.profile?.photos?.[0];
+  const myAvatarRaw = me?.profile?.photos?.[0];
+  const myAvatar = typeof myAvatarRaw === 'string' ? myAvatarRaw : myAvatarRaw?.url;
 
   // ── Peer profile (for View Profile) ──────────────────────────────────────
   const { data: peerUser } = useGetUserById(chatUserId);
@@ -322,7 +323,7 @@ export default function ChatScreen({ navigation, route }: any) {
   })();
 
   const presenceColor = isPeerTyping
-    ? '#FBB202'
+    ? '#EAD6A9'
     : isOnline
       ? '#22C55E'
       : '#B6B9C9';
@@ -516,11 +517,11 @@ export default function ChatScreen({ navigation, route }: any) {
       icon: (
         <AlertTriangle
           size={sf(18)}
-          color='#FBB202'
+          color='#EAD6A9'
           strokeWidth={1.8}
         />
       ),
-      color: '#FBB202',
+      color: '#EAD6A9',
       onPress: handleBlock,
     },
   ];
@@ -939,12 +940,14 @@ export default function ChatScreen({ navigation, route }: any) {
             </View>
           )}
 
-          <CameraScreen
-            visible={isCameraOpen}
-            onClose={() => setIsCameraOpen(false)}
-            onPhotoCapture={handlePhotoCapture}
-            onVideoCapture={handleVideoCapture}
-          />
+          {isCameraOpen && (
+            <CameraScreen
+              visible={isCameraOpen}
+              onClose={() => setIsCameraOpen(false)}
+              onPhotoCapture={handlePhotoCapture}
+              onVideoCapture={handleVideoCapture}
+            />
+          )}
         </View>
       </View>
 

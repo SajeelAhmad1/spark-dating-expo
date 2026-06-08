@@ -40,7 +40,7 @@ type UserProfile = {
   bio2: string;
   height: string;
   gender: string;
-  location: { lat: number; lng: number }; 
+  location: { lat: number; lng: number };
   attributes: string[];
   interests: string[];
 };
@@ -56,7 +56,7 @@ const UserProfileScreen = ({ navigation, route }: any) => {
   const user: UserProfile = useMemo(() => {
     return route?.params?.user;
   }, [route?.params?.user]);
-console.log(user, "useruserrrrrrr")
+  console.log(user, 'useruserrrrrrr');
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuAnchorPos, setMenuAnchorPos] = useState<{
     x: number;
@@ -69,12 +69,12 @@ console.log(user, "useruserrrrrrr")
 
   useEffect(() => {
     if (user?.location?.lat && user?.location?.lng) {
-      getCityFromCoords(user.location.lat, user.location.lng).then(setCityName)
+      getCityFromCoords(user.location.lat, user.location.lng).then(setCityName);
     }
-  }, [user?.location?.lat, user?.location?.lng])
+  }, [user?.location?.lat, user?.location?.lng]);
 
-    const onLikePress = () => {
-    navigation.navigate("MatchScreen");
+  const onLikePress = () => {
+    navigation.navigate('MatchScreen');
   };
 
   const openMenu = () => {
@@ -91,11 +91,11 @@ console.log(user, "useruserrrrrrr")
       icon: (
         <AlertTriangle
           size={sf(18)}
-          color='#FBB202'
+          color='#EAD6A9'
           strokeWidth={1.8}
         />
       ),
-      color: '#FBB202',
+      color: '#EAD6A9',
       onPress: () => {
         showToast({ text1: 'User Blocked', icon: UserRoundX });
         navigation?.goBack();
@@ -181,25 +181,36 @@ console.log(user, "useruserrrrrrr")
             </View>
           </View>
           <DiscoveryMatchCard
-            item={{ ...user, image: user.images[0], images: user.images, bio: user.bio }}
+            item={{
+              ...user,
+              image: user.images[0],
+              images: user.images,
+              bio: user.bio,
+            }}
             cardWidth={CARD_WIDTH}
             cardHeight={CARD_HEIGHT}
             btnOverlap={BTN_OVERLAP}
             photoTotal={user.images.length}
             photoIndex={0}
             showProgressDots={false}
-            rightChatOnPress={() => navigation?.navigate('ChatScreen', { user })}
+            rightChatOnPress={() =>
+              navigation?.navigate('ChatScreen', { user })
+            }
           />
           <DiscoveryActions
             onLikePress={onLikePress}
-              onStarPress={() =>
-                        showToast({ text1: 'Starred', text2: `${user.name} added to starred users`, icon: Zap })
-                      }
+            onStarPress={() =>
+              showToast({
+                text1: 'Starred',
+                text2: `${user.name} added to starred users`,
+                icon: Zap,
+              })
+            }
             onCrossPress={() => {}}
           />
         </View>
 
-        <Card style={{gap: 10}}>
+        <Card style={{ gap: 10 }}>
           <InfoRow
             icon={<Ruler size={sf(16)} />}
             text={user.height}
@@ -268,8 +279,8 @@ console.log(user, "useruserrrrrrr")
                   key={i}
                   label={interest}
                   filled
-                  style={{ backgroundColor: '#FBB202' }}
-                  textStyle={{  lineHeight: sh(36) }}
+                  style={{ backgroundColor: '#EAD6A9' }}
+                  textStyle={{ lineHeight: sh(36) }}
                 />
               ))}
             </Wrap>
@@ -384,9 +395,7 @@ const Section = ({
 );
 
 const InfoRow = ({ icon, text }: any) => (
-  <View
-    style={{ flexDirection: 'row', alignItems: 'center',  }}
-  >
+  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
     {icon}
     <Text style={styles.infoText}>{text}</Text>
   </View>
@@ -428,17 +437,26 @@ const Chip = ({
   <View
     style={[
       {
-        backgroundColor: filled ? '#FBB202' : '#F1F1F1',
+        backgroundColor: filled ? '#EAD6A9' : '#F1F1F1',
         paddingHorizontal: sw(12),
         borderRadius: sr(32),
-        height: 36, 
+        height: 36,
         justifyContent: 'center',
         gap: sw(4),
       },
       style,
     ]}
   >
-    <Text style={[{ color: filled ? '#000' : '#333', justifyContent: 'center', alignItems: 'center',  }, textStyle]}>
+    <Text
+      style={[
+        {
+          color: filled ? '#000' : '#333',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        textStyle,
+      ]}
+    >
       {label}
     </Text>
   </View>

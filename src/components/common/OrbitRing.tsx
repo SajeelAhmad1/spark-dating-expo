@@ -31,8 +31,8 @@ export interface OrbitRingProps {
  *
  * Usage:
  *   <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
- *     <OrbitRing size={300} duration={7000} color1="#CEB98F40" color2="#FBB20240" />
- *     <OrbitRing size={245} duration={6000} color1="#FBB20240" color2="#CEB98F40" color3="#FBB20240" strokeWidth={4} delay={150} reverse />
+ *     <OrbitRing size={300} duration={7000} color1="#CEB98F40" color2="#EAD6A940" />
+ *     <OrbitRing size={245} duration={6000} color1="#EAD6A940" color2="#CEB98F40" color3="#EAD6A940" strokeWidth={4} delay={150} reverse />
  *   </View>
  */
 const OrbitRing: React.FC<OrbitRingProps> = ({

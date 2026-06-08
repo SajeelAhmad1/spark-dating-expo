@@ -280,7 +280,7 @@ function AgeSheet({
           ) : undefined
         }
         iconPosition='middle'
-        onPress={() => onConfirm(localMin, localMax)} 
+        onPress={() => onConfirm(localMin, localMax)}
         style={{ alignSelf: 'stretch' }}
         textStyle={{ fontSize: sf(16), fontWeight: '500' }}
         disabled={isSaving}
@@ -366,7 +366,7 @@ function DistanceSheet({
           ) : undefined
         }
         iconPosition='middle'
-        onPress={() => onConfirm(local)} 
+        onPress={() => onConfirm(local)}
         style={{ alignSelf: 'stretch' }}
         textStyle={{ fontSize: sf(16), fontWeight: '500' }}
         disabled={isSaving}
@@ -501,8 +501,8 @@ function InviteSheet({
             label: 'Invites Sent',
             value: '0',
             color: '#CEB98F',
-            bg: '#FBB2021A',
-            border: '#FBB202',
+            bg: '#EAD6A91A',
+            border: '#EAD6A9',
           },
           {
             label: 'Signed Up',
@@ -549,7 +549,7 @@ function InviteSheet({
 
       <PrimaryButton
         title='Share Invite Link'
-        onPress={handleShare} 
+        onPress={handleShare}
         icon={
           <Share2
             size={sf(18)}
@@ -1005,7 +1005,7 @@ const SettingsScreen = ({ navigation }: any) => {
           </Text>
           <PrimaryButton
             title='Upgrade to Premium'
-            onPress={() => {}} 
+            onPress={() => {}}
             style={{ alignSelf: 'stretch' }}
             textStyle={{ fontSize: sf(16), fontWeight: '500' }}
             height={sh(48)}
@@ -1038,7 +1038,7 @@ const SettingsScreen = ({ navigation }: any) => {
             }
             iconPosition='middle'
             onPress={handleLogout}
-            disabled={isLoggingOut}  
+            disabled={isLoggingOut}
             style={{ alignSelf: 'stretch', opacity: isLoggingOut ? 0.6 : 1 }}
             textStyle={{ fontSize: sf(20), fontWeight: '500' }}
           />
@@ -1052,7 +1052,7 @@ const SettingsScreen = ({ navigation }: any) => {
               />
             }
             iconPosition='middle'
-            onPress={() => {}} 
+            onPress={() => {}}
             style={{ alignSelf: 'stretch' }}
             textStyle={{ fontSize: sf(20), fontWeight: '500' }}
           />

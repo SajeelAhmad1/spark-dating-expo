@@ -17,11 +17,11 @@
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
 </filter>
 <linearGradient id="paint0_linear_150_1889" x1="45.92" y1="26.88" x2="58.24" y2="53.76" gradientUnits="userSpaceOnUse">
-<stop stop-color="#FBB202"/>
+<stop stop-color="#EAD6A9"/>
 <stop offset="1" stop-color="#CEB98F"/>
 </linearGradient>
 <linearGradient id="paint1_linear_150_1889" x1="42" y1="14" x2="60.48" y2="68.32" gradientUnits="userSpaceOnUse">
-<stop stop-color="#FBB202"/>
+<stop stop-color="#EAD6A9"/>
 <stop offset="1" stop-color="#CEB98F"/>
 </linearGradient>
 </defs>

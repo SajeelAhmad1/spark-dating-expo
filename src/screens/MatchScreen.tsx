@@ -125,8 +125,8 @@ const SparkAnimation = () => {
           <Zap
             width={sf(48)}
             height={sf(48)}
-            color='#FBB202'
-            fill='#FBB202'
+            color='#EAD6A9'
+            fill='#EAD6A9'
           />
         </LinearGradient>
       </Animated.View>

@@ -636,7 +636,7 @@ const EditProfileScreen = ({ navigation }: any) => {
               width: sf(36),
               height: sf(36),
               borderRadius: sr(92),
-              backgroundColor: '#FBB20233',
+              backgroundColor: '#EAD6A933',
               alignItems: 'center',
               justifyContent: 'center',
             }}
@@ -923,7 +923,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                       borderRadius: sr(20),
                       height: sh(32),
                       paddingHorizontal: sw(10),
-                      backgroundColor: '#FBB202',
+                      backgroundColor: '#EAD6A9',
                     }}
                   >
                     <Text
@@ -1126,7 +1126,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                     <Text
                       style={{
                         fontSize: sf(15),
-                        color: isSelected ? '#FBB202' : '#000000',
+                        color: isSelected ? '#EAD6A9' : '#000000',
                         fontWeight: isSelected ? '600' : '400',
                       }}
                     >

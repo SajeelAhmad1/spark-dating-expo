@@ -167,7 +167,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
       <View style={styles.footer}>
         <PrimaryButton
           title='Continue'
-          onPress={handleSubmit(onContinue)} 
+          onPress={handleSubmit(onContinue)}
           style={{ alignSelf: 'stretch' }}
           textStyle={{
             fontSize: sf(20),
@@ -216,7 +216,7 @@ const PhysicalAttributesScreen = ({ navigation }: any) => {
                     <Text
                       style={{
                         fontSize: sf(15),
-                        color: isSelected ? '#FBB202' : '#000000',
+                        color: isSelected ? '#EAD6A9' : '#000000',
                         fontWeight: isSelected ? '600' : '400',
                       }}
                     >
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   screenSubtitle: { color: '#7D858E' },
   fieldsCol: { marginTop: sh(12), rowGap: sh(20) },
   fieldLabel: { color: '#000000', marginBottom: sh(8) },
-  skipNote: { color: '#FBB202', marginTop: sh(20) },
+  skipNote: { color: '#EAD6A9', marginTop: sh(20) },
   footer: { paddingHorizontal: sw(20) },
   modalBackdrop: {
     flex: 1,

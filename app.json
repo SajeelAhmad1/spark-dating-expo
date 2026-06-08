@@ -18,6 +18,7 @@
     },
     "android": {
       "package": "com.sparkdating.app",
+      "jsEngine": "hermes",
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "android.permission.CAMERA",

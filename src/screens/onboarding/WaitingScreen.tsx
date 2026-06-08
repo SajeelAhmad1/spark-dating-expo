@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-    backgroundColor: '#FBB20233',
+    backgroundColor: '#EAD6A933',
     borderWidth: 0.4,
     borderColor: '#CEB98F',
   },

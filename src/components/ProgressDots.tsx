@@ -19,9 +19,9 @@ export const ProgressDots = ({
             height: sh(8),
             flex: 1,
             borderRadius: 999,
-            backgroundColor: isActive ? '#FBB202' : 'transparent',
+            backgroundColor: isActive ? '#EAD6A9' : 'transparent',
             borderWidth: isActive ? 0 : 1.5,
-            borderColor: isActive ? 'transparent' : '#FBB202',
+            borderColor: isActive ? 'transparent' : '#EAD6A9',
           }}
         />
       );

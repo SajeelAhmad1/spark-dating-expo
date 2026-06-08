@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: sh(56),
     borderRadius: sr(999),
-    backgroundColor: '#FBB202',
+    backgroundColor: '#EAD6A9',
   },
   buttonText: {
     fontFamily: 'Poppins-SemiBold',

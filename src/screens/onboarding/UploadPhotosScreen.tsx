@@ -280,7 +280,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
             >
               <X
                 size={sf(12)}
-                color='#fff'
+                color='#0B0B0B'
                 strokeWidth={3}
               />
             </TouchableOpacity>
@@ -304,22 +304,22 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           >
             <View
               style={{
-                width: sw(17.5),
-                height: sw(17.5),
+                width: sw(20),
+                height: sw(20),
                 borderRadius: sr(16),
-                backgroundColor: '#FBB202',
+                backgroundColor: '#EAD6A9',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
               <Plus
                 size={sf(8.33)}
-                color='#fff'
+                color='#0B0B0B'
                 strokeWidth={2.5}
               />
             </View>
             <Text
-              style={{ fontSize: sf(14), color: '#FBB202', fontWeight: '500' }}
+              style={{ fontSize: sf(14), color: '#EAD6A9', fontWeight: '500' }}
             >
               Add
             </Text>
@@ -354,7 +354,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           <Text
             style={{ fontSize: sf(15), fontWeight: '400', color: '#7D858E' }}
           >
-            Add photos to start connecting
+            Add photos to start connecting (required before messaging)
           </Text>
         </View>
         <View style={{ marginTop: sh(28) }}>
@@ -379,7 +379,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
         <PrimaryButton
           title='Complete Profile!'
           onPress={handleCompleteProfile}
-          disabled={isAnyUploading || isCompleting} 
+          disabled={isAnyUploading || isCompleting}
           icon={
             isAnyUploading || isCompleting ? (
               <ActivityIndicator color='#0B0B0B' />

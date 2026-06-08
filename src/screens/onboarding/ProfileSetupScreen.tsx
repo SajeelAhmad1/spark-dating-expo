@@ -238,7 +238,7 @@ const ProfileSetupScreen = ({ navigation }: any) => {
                     borderRadius: sr(15),
                     borderWidth: isSelected ? 0 : 1,
                     borderColor: '#B6B9C9',
-                    backgroundColor: isSelected ? '#FBB202' : 'transparent',
+                    backgroundColor: isSelected ? '#EAD6A9' : 'transparent',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
@@ -353,7 +353,7 @@ const ProfileSetupScreen = ({ navigation }: any) => {
         <View style={styles.section}>
           <Text
             style={[styles.label, { fontSize: sf(15) }]}
-            weight='regular'
+            weight='semibold'
           >
             Add Bio
           </Text>
@@ -383,7 +383,7 @@ const ProfileSetupScreen = ({ navigation }: any) => {
       <View style={styles.footer}>
         <PrimaryButton
           title='Continue'
-          onPress={handleSubmit(onContinue)} 
+          onPress={handleSubmit(onContinue)}
           style={{ alignSelf: 'stretch' }}
           textStyle={{
             fontSize: sf(20),
@@ -432,7 +432,7 @@ const ProfileSetupScreen = ({ navigation }: any) => {
                     <Text
                       style={{
                         fontSize: sf(15),
-                        color: isSelected ? '#FBB202' : '#000000',
+                        color: isSelected ? '#EAD6A9' : '#000000',
                         fontWeight: isSelected ? '600' : '400',
                       }}
                     >

@@ -195,7 +195,7 @@ const InterestsScreen = ({ navigation }: any) => {
                           borderWidth: isSelected ? 0 : 0.4,
                           borderColor: '#B6B9C9',
                           backgroundColor: isSelected
-                            ? '#FBB202'
+                            ? '#EAD6A9'
                             : 'transparent',
                           height: 40,
                           alignItems: 'center',
@@ -224,13 +224,13 @@ const InterestsScreen = ({ navigation }: any) => {
 
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
       <View style={styles.footer}>
-        <Text style={{ fontSize: sf(15), fontWeight: '500', color: '#FBB202' }}>
+        <Text style={{ fontSize: sf(15), fontWeight: '500', color: '#EAD6A9' }}>
           {selected.length}/{MAX} selected
         </Text>
         <FieldError message={interestsError} />
         <PrimaryButton
           title='Continue'
-          onPress={onContinue} 
+          onPress={onContinue}
           style={{
             alignSelf: 'stretch',
             opacity: selected.length >= MIN ? 1 : 0.5,

@@ -1,92 +1,34 @@
-// src/components/discovery/DiscoveryActions.tsx
-import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
-import { Heart, Star, X } from 'lucide-react-native';
-import { sf, sr, sw, sh } from '@/utils/sizeMatters';
+import React from 'react'
+import { TouchableOpacity, View } from 'react-native'
+import { Heart, X }  from 'lucide-react-native'
+import { sf, sr, sw, sh } from '@/utils/sizeMatters'
 
 export default function DiscoveryActions({
   onLikePress,
-  onStarPress,
   onCrossPress,
+  onStarPress,   // kept for API compatibility, unused visually
 }: {
-  onLikePress: () => void;
-  onStarPress: () => void;
-  onCrossPress: () => void;
+  onLikePress:  () => void
+  onCrossPress: () => void
+  onStarPress?: () => void
 }) {
   return (
-    <View
-      style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: sw(20),
-        zIndex: 10,
-      }}
-    >
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: sw(24) }}>
       <TouchableOpacity
-        activeOpacity={0.8}
+        activeOpacity={0.9}
         onPress={onCrossPress}
-        style={{
-          width: sw(52),
-          height: sh(52),
-          borderRadius: sr(28),
-          backgroundColor: '#fff',
-          alignItems: 'center',
-          justifyContent: 'center',
-          shadowColor: '#000',
-          shadowOpacity: 0.1,
-          shadowRadius: sr(8),
-          shadowOffset: { width: 0, height: sh(3) },
-          elevation: 5,
-        }}
+        style={{ width: sw(110), height: sh(64), borderRadius: sr(40), backgroundColor: 'rgba(255,255,255,0.92)', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: sr(12), shadowOffset: { width: 0, height: sh(4) }, elevation: 6 }}
       >
-        <X size={sf(24)} color="#7D858E" strokeWidth={2.5} />
+        <X size={sf(28)} color="#7D858E" strokeWidth={2.5} />
       </TouchableOpacity>
 
       <TouchableOpacity
-        activeOpacity={0.8}
+        activeOpacity={0.9}
         onPress={onLikePress}
-        style={{
-          width: sw(64),
-          height: sh(64),
-          borderRadius: sr(32),
-          backgroundColor: '#fff',
-          alignItems: 'center',
-          justifyContent: 'center',
-          shadowColor: '#FF4D6D',
-          shadowOpacity: 0.4,
-          shadowRadius: sr(10),
-          shadowOffset: { width: 0, height: sh(4) },
-          elevation: 8,
-        }}
+        style={{ width: sw(110), height: sh(64), borderRadius: sr(40), backgroundColor: 'rgba(255,255,255,0.92)', alignItems: 'center', justifyContent: 'center', shadowColor: '#FF4D6D', shadowOpacity: 0.25, shadowRadius: sr(12), shadowOffset: { width: 0, height: sh(4) }, elevation: 6 }}
       >
         <Heart size={sf(32)} color="#FF4D6D" fill="#FF4D6D" strokeWidth={0} />
       </TouchableOpacity>
-
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={onStarPress}
-        style={{
-          width: sw(52),
-          height: sh(52),
-          borderRadius: sr(28),
-          backgroundColor: '#fff',
-          alignItems: 'center',
-          justifyContent: 'center',
-          shadowColor: '#000',
-          shadowOpacity: 0.1,
-          shadowRadius: sr(8),
-          shadowOffset: { width: 0, height: sh(3) },
-          elevation: 5,
-        }}
-      >
-        <Star size={sf(24)} color="#FBB202" fill="#FBB202" strokeWidth={0} />
-      </TouchableOpacity>
     </View>
-  );
+  )
 }
-

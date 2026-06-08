@@ -86,7 +86,7 @@ const ProfileScreen = ({ navigation }: any) => {
     <View style={{ flex: 1, backgroundColor: '#F7F3ED' }}>
       {/* Full-screen background */}
       {/* <LinearGradient
-        colors={['#CEB98F', '#FBB202']}
+        colors={['#CEB98F', '#EAD6A9']}
         start={{ x: 0, y: -0.1 }}
         end={{ x: 2, y: 0.7 }}
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
@@ -95,7 +95,7 @@ const ProfileScreen = ({ navigation }: any) => {
       <View style={styles.flex1}>
         {/* ── Header ──────────────────────────────────────────────────────── */}
         <LinearGradient
-          colors={['#CEB98F', '#FBB202']}
+          colors={['#CEB98F', '#EAD6A9']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 9 }}
           style={{
@@ -317,7 +317,7 @@ const ProfileScreen = ({ navigation }: any) => {
                       style={[
                         styles.iconCircle,
                         {
-                          backgroundColor: '#FBB20233',
+                          backgroundColor: '#EAD6A933',
                           borderColor: '#CEB98F',
                         },
                       ]}
@@ -391,7 +391,7 @@ const ProfileScreen = ({ navigation }: any) => {
                         style={[
                           styles.iconCircle,
                           {
-                            backgroundColor: '#FBB20233',
+                            backgroundColor: '#EAD6A933',
                             borderColor: '#CEB98F',
                           },
                         ]}
@@ -477,7 +477,7 @@ const ProfileScreen = ({ navigation }: any) => {
                     style={{
                       fontSize: sf(20),
                       fontWeight: '600',
-                      color: '#FBB202',
+                      color: '#EAD6A9',
                       textAlign: 'center',
                     }}
                   >
@@ -551,7 +551,7 @@ const ProfileScreen = ({ navigation }: any) => {
                     <View
                       key={i}
                       style={{
-                        backgroundColor: '#FBB202',
+                        backgroundColor: '#EAD6A9',
                         borderRadius: sr(20),
                         paddingHorizontal: sw(14),
                         height: 36,
@@ -658,7 +658,7 @@ const styles = StyleSheet.create({
     width: sf(36),
     height: sf(36),
     borderRadius: sr(92),
-    backgroundColor: '#FBB20233',
+    backgroundColor: '#EAD6A933',
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: '#FFFFFF',

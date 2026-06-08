@@ -56,11 +56,11 @@ const DEFAULT_ITEMS = (
     icon: (
       <AlertTriangle
         size={sf(18)}
-        color='#FBB202'
+        color='#EAD6A9'
         strokeWidth={1.8}
       />
     ),
-    color: '#FBB202',
+    color: '#EAD6A9',
     onPress: onBlock,
   },
 ];

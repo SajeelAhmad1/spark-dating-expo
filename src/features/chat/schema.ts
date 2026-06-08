@@ -6,7 +6,7 @@ export const ChatPeerSchema = z.object({
   id:        z.string(),
   firstName: z.string().nullable(),
   lastName:  z.string().nullable(),
-  photos:    z.array(z.string()),
+  photos:    z.array(z.union([z.string(), z.object({ url: z.string(), publicId: z.string() })])),
 })
 
 export type ChatPeer = z.infer<typeof ChatPeerSchema>

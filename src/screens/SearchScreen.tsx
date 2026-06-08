@@ -49,16 +49,16 @@ const SearchScreen = ({ navigation }: any) => {
         <OrbitRing
           size={orbitContainerSize}
           duration={7000}
-          color1='#FBB202'
-          color2='#FBB202'
+          color1='#EAD6A9'
+          color2='#EAD6A9'
           strokeWidth={1.5}
         />
         <OrbitRing
           size={sf(245)}
           duration={6000}
-          color1='#FBB202'
-          color2='#FBB202'
-          color3='#FBB202'
+          color1='#EAD6A9'
+          color2='#EAD6A9'
+          color3='#EAD6A9'
           strokeWidth={4}
           delay={150}
           reverse
@@ -66,18 +66,18 @@ const SearchScreen = ({ navigation }: any) => {
         <OrbitRing
           size={sf(190)}
           duration={5000}
-          color1='#FBB202'
-          color2='#FBB202'
-          color3='#FBB202'
+          color1='#EAD6A9'
+          color2='#EAD6A9'
+          color3='#EAD6A9'
           strokeWidth={4}
           delay={300}
         />
         <OrbitRing
           size={sf(110)}
           duration={4500}
-          color1='#FBB202'
-          color2='#FBB202'
-          color3='#FBB202'
+          color1='#EAD6A9'
+          color2='#EAD6A9'
+          color3='#EAD6A9'
           strokeWidth={4}
           delay={300}
           reverse
@@ -119,7 +119,7 @@ const SearchScreen = ({ navigation }: any) => {
             <View style={styles.iconWrap}>
               <AlertTriangle
                 size={sf(32)}
-                color='#FBB202'
+                color='#EAD6A9'
                 strokeWidth={1.8}
               />
             </View>

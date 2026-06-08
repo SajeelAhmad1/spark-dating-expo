@@ -24,8 +24,8 @@ const STATS = [
     label: 'Invites sent',
     value: 0,
     color: '#CEB98F',
-    bg: '#FBB2021A',
-    border: '#FBB202',
+    bg: '#EAD6A91A',
+    border: '#EAD6A9',
   },
   {
     id: 'signups',
@@ -202,7 +202,7 @@ const InviteScreen = ({ navigation }: any) => {
         <View style={styles.bottomActions}>
           <PrimaryButton
             title='Share invite link'
-            onPress={handleShare} 
+            onPress={handleShare}
             icon={
               <Share2
                 size={sf(20)}
@@ -210,7 +210,7 @@ const InviteScreen = ({ navigation }: any) => {
               />
             }
             iconPosition='middle'
-            textStyle={{ fontSize: sf(18),  }}
+            textStyle={{ fontSize: sf(18) }}
           />
 
           <TouchableOpacity onPress={handleSkip}>

@@ -214,7 +214,7 @@ export default function RequestsScreen({ navigation }: any) {
           New Matches
         </Text>
 
-        <View style={[styles.badge, { backgroundColor: '#FBB202' }]}>
+        <View style={[styles.badge, { backgroundColor: '#EAD6A9' }]}>
           <Text
             style={{
               fontFamily: 'Poppins-SemiBold',

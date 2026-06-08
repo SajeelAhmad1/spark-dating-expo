@@ -116,7 +116,7 @@ export default function PhotoPreviewScreen({
             paddingBottom: sh(20),
             paddingTop: sh(20),
             zIndex: 10,
-            backgroundColor: 'rgba(251, 178, 2, 0.2)',
+            // backgroundColor: 'rgba(251, 178, 2, 0.2)',
           }}
         >
           {/* <TouchableOpacity
@@ -125,7 +125,7 @@ export default function PhotoPreviewScreen({
               width: sf(60),
               height: sf(60),
               borderRadius: sr(30),
-              backgroundColor: '#FBB202',
+              backgroundColor: '#EAD6A9',
               alignItems: 'center',
               justifyContent: 'center',
             }}
@@ -137,7 +137,7 @@ export default function PhotoPreviewScreen({
           <View style={{ flex: 1 }}>
             <PrimaryButton
               title={isSending ? 'Sending...' : 'Send'}
-              onPress={onSend} 
+              onPress={onSend}
               style={{ alignSelf: 'stretch' }}
               iconPosition='right'
               icon={

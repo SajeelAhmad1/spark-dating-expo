@@ -1,7 +1,7 @@
 export const Colors = {
   primary: '#4A90E2',
   gradientStart: '#CEB98F',
-  gradientEnd: '#FBB202',
+  gradientEnd: '#EAD6A9',
   white: '#FFFFFF',
   lightBlue: '#EAF4FF',
   textPrimary: '#1A1A2E',

@@ -25,7 +25,7 @@ const ToastContent = ({
 
   return (
     <LinearGradient
-      colors={['#FBB202', '#CEB98F']}
+      colors={['#EAD6A9', '#CEB98F']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
       style={[styles.toast, toastStyle]}
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   toast: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FBB202',
+    backgroundColor: '#EAD6A9',
     borderRadius: sr(20),
     paddingHorizontal: sw(12),
     marginHorizontal: sw(10),
