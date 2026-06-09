@@ -9,6 +9,8 @@ import {
   Platform,
   ActivityIndicator,
   Image,
+  Animated,
+  Easing,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import {
@@ -19,7 +21,9 @@ import {
   UserCircle,
   AlertTriangle,
   UserRoundX,
+  Loader,
 } from 'lucide-react-native';
+import Logo from '@/assets/images/logo.svg';
 import CameraIcon from '@/assets/images/cameraIcon.svg';
 import CameraScreen from './CameraScreen';
 import * as ImagePicker from 'expo-image-picker';
@@ -107,6 +111,7 @@ function MsgBubble({
     </View>
   );
 
+  // ── Text bubble ─────────────────────────────────────────────────────────────
   if (message.type === 'text') {
     return (
       <View style={wrapStyle}>
@@ -123,7 +128,9 @@ function MsgBubble({
         >
           <View
             style={{
-              backgroundColor: isMe ? '#CEB98F' : 'rgba(251,178,2,0.2)',
+              // ── Sent: #0B0B0B bg, white text ──────────────────────────
+              // ── Received: #EAD6A9 bg, #0B0B0B text ───────────────────
+              backgroundColor: isMe ? '#0B0B0B' : '#EAD6A9',
               borderTopLeftRadius: sr(16),
               borderTopRightRadius: sr(16),
               borderBottomLeftRadius: isMe ? sr(16) : sr(4),
@@ -135,7 +142,7 @@ function MsgBubble({
           >
             <Text
               style={{
-                color: isMe ? '#FFFFFF' : '#000000',
+                color: isMe ? '#FFFFFF' : '#0B0B0B',
                 fontSize: sf(15),
                 fontFamily: 'Poppins-Regular',
               }}
@@ -149,6 +156,7 @@ function MsgBubble({
     );
   }
 
+  // ── Image bubble ─────────────────────────────────────────────────────────────
   if (message.type === 'image' && message.media?.url) {
     return (
       <View style={wrapStyle}>
@@ -180,58 +188,136 @@ function MsgBubble({
     );
   }
 
+  // ── Streak bubble ─────────────────────────────────────────────────────────────
   if (message.type === 'streak') {
+    if (!isMe) {
+      // ── RECEIVED streak: Logo icon in dark rounded square + "View moment" ──
+      return (
+        <View style={wrapStyle}>
+          <ChatAvatar
+            size={sf(32)}
+            variant='friend'
+            imageUri={friendAvatarUri}
+          />
+          <View style={{ alignItems: 'flex-start' }}>
+            <TouchableOpacity
+              onPress={() => onSnapPress?.(message)}
+              activeOpacity={0.8}
+              style={{
+                backgroundColor: '#EAD6A9',
+                borderRadius: sr(16),
+                borderBottomLeftRadius: sr(4),
+                paddingHorizontal: sw(14),
+                paddingVertical: sh(12),
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: sw(10),
+                opacity: isOptimistic ? 0.6 : 1,
+              }}
+            >
+              {/* Dark rounded square with Logo */}
+              <View
+                style={{
+                  width: sw(38),
+                  height: sw(38),
+                  borderRadius: sr(10),
+                  backgroundColor: '#0B0B0B',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Logo
+                  width={sf(22)}
+                  height={sf(22)}
+                />
+              </View>
+
+              <View>
+                <Text
+                  style={{
+                    fontSize: sf(15),
+                    fontWeight: '600',
+                    color: '#0B0B0B',
+                    fontFamily: 'Poppins-Medium',
+                  }}
+                >
+                  View moment
+                </Text>
+                {message.streakExpiresAt && (
+                  <Text style={{ fontSize: sf(11), color: '#8D7A5A' }}>
+                    {formatMsgTime(message.createdAt)}
+                    {'  '}
+                    {(() => {
+                      const remaining =
+                        new Date(message.streakExpiresAt).getTime() -
+                        Date.now();
+                      const secs = Math.max(0, Math.floor(remaining / 1000));
+                      if (secs < 60) return `${secs}s`;
+                      if (secs < 3600) return `${Math.floor(secs / 60)}m`;
+                      return `${Math.floor(secs / 3600)}h`;
+                    })()}
+                  </Text>
+                )}
+              </View>
+            </TouchableOpacity>
+            {/* Time row below bubble */}
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: sw(4),
+                marginTop: sh(3),
+              }}
+            >
+              <Text style={{ fontSize: sf(10), color: '#B6B9C9' }}>
+                {formatMsgTime(message.createdAt)}
+              </Text>
+            </View>
+          </View>
+        </View>
+      );
+    }
+
+    // ── SENT streak: spinning dots + "Moment" on dark bg ──────────────────────
     return (
       <View style={wrapStyle}>
         <ChatAvatar
           size={sf(32)}
-          variant={isMe ? 'me' : 'friend'}
-          imageUri={isMe ? myAvatarUri : friendAvatarUri}
+          variant='me'
+          imageUri={myAvatarUri}
         />
-        <View style={{ alignItems: isMe ? 'flex-end' : 'flex-start' }}>
+        <View style={{ alignItems: 'flex-end' }}>
           <TouchableOpacity
             onPress={() => onSnapPress?.(message)}
+            activeOpacity={0.8}
             style={{
-              backgroundColor: isMe ? '#CEB98F33' : 'rgba(251,178,2,0.2)',
-              borderRadius: sr(14),
-              paddingHorizontal: sw(14),
-              paddingVertical: sh(10),
-              borderWidth: 1,
-              borderColor: isMe ? '#CEB98F' : '#EAD6A9',
+              backgroundColor: '#0B0B0B',
+              borderRadius: sr(16),
+              borderBottomRightRadius: sr(4),
+              paddingHorizontal: sw(18),
+              paddingVertical: sh(12),
               flexDirection: 'row',
               alignItems: 'center',
-              gap: sw(8),
+              gap: sw(10),
+              opacity: isOptimistic ? 0.6 : 1,
             }}
           >
-            {message.media?.url ? (
-              <Image
-                source={{ uri: message.media.url }}
-                style={{ width: sw(48), height: sh(48), borderRadius: sr(8) }}
-                resizeMode='cover'
-              />
-            ) : (
-              <Text style={{ fontSize: sf(24) }}>🔥</Text>
-            )}
-            <View>
-              <Text
-                style={{
-                  fontSize: sf(14),
-                  color: isMe ? '#CEB98F' : '#CEB98F',
-                  fontFamily: 'Poppins-Medium',
-                }}
-              >
-                Photo
-              </Text>
-              {message.streakExpiresAt && (
-                <Text style={{ fontSize: sf(11), color: '#B6B9C9' }}>
-                  Expires{' '}
-                  {new Date(message.streakExpiresAt).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </Text>
-              )}
-            </View>
+            {/* Spinning dots icon */}
+            <Loader
+              size={14}
+              color='#FFFFFF'
+            />
+
+            <Text
+              style={{
+                fontSize: sf(16),
+                fontWeight: '500',
+                color: '#FFFFFF',
+                fontFamily: 'Poppins-Medium',
+              }}
+            >
+              Moment
+            </Text>
           </TouchableOpacity>
           {timeRow}
         </View>
@@ -259,11 +345,11 @@ export default function ChatScreen({ navigation, route }: any) {
   const { data: me } = useMe();
   const myId = me?.id;
   const myAvatarRaw = me?.profile?.photos?.[0];
-  const myAvatar = typeof myAvatarRaw === 'string' ? myAvatarRaw : myAvatarRaw?.url;
+  const myAvatar =
+    typeof myAvatarRaw === 'string' ? myAvatarRaw : (myAvatarRaw as any)?.url;
 
-  // ── Peer profile (for View Profile) ──────────────────────────────────────
+  // ── Peer profile ──────────────────────────────────────────────────────────
   const { data: peerUser } = useGetUserById(chatUserId);
-  console.log(peerUser, 'peerUser');
 
   // ── State ─────────────────────────────────────────────────────────────────
   const [conversationId, setConversationId] = useState<string | null>(
@@ -328,9 +414,8 @@ export default function ChatScreen({ navigation, route }: any) {
       ? '#22C55E'
       : '#B6B9C9';
 
-  // ── Socket real-time ──────────────────────────────────────────────────────
+  // ── Socket ────────────────────────────────────────────────────────────────
   useConversationSocket(conversationId);
-
   const messages: ChatMessage[] = data?.messages ?? [];
 
   // ── Form ──────────────────────────────────────────────────────────────────
@@ -340,7 +425,7 @@ export default function ChatScreen({ navigation, route }: any) {
   );
   const messageText = watch('messageText');
 
-  // ── Bootstrap conversation ────────────────────────────────────────────────
+  // ── Effects ───────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!conversationId && chatUserId) {
       createConversation(chatUserId).then((res) =>
@@ -349,7 +434,6 @@ export default function ChatScreen({ navigation, route }: any) {
     }
   }, [conversationId, chatUserId]);
 
-  // ── Send initial message from MatchScreen ─────────────────────────────────
   useEffect(() => {
     if (!conversationId || sentInitialRef.current) return;
     if (initialPhotoUri) {
@@ -365,12 +449,10 @@ export default function ChatScreen({ navigation, route }: any) {
     }
   }, [conversationId]);
 
-  // ── Auto-open camera ──────────────────────────────────────────────────────
   useEffect(() => {
     if (autoOpenCamera) setIsCameraOpen(true);
   }, [autoOpenCamera]);
 
-  // ── Mark read ─────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!conversationId || messages.length === 0) return;
     const last = messages[messages.length - 1];
@@ -379,7 +461,6 @@ export default function ChatScreen({ navigation, route }: any) {
     }
   }, [conversationId, messages.length]);
 
-  // ── Scroll ────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (messages.length > 0)
       setTimeout(
@@ -439,7 +520,6 @@ export default function ChatScreen({ navigation, route }: any) {
     }
   };
 
-  // ── Block ─────────────────────────────────────────────────────────────────
   const handleBlock = () => {
     if (!chatUserId) return;
     blockUser(
@@ -453,7 +533,6 @@ export default function ChatScreen({ navigation, route }: any) {
     );
   };
 
-  // ── View Profile — use real peer data from API ────────────────────────────
   const openMenu = () => {
     menuAnchorRef.current?.measureInWindow((x, y, width, height) => {
       setMenuAnchorPos({ x, y, width, height });
@@ -474,13 +553,10 @@ export default function ChatScreen({ navigation, route }: any) {
       ),
       color: '#1C1C1E',
       onPress: () => {
-        // Build UserProfile shape from peerUser API response
         const profile = peerUser?.profile;
         const interests = (peerUser?.interests ?? []).map(
           (ui: any) => ui.interest.name,
         );
-        const location = peerUser?.location ?? '';
-
         navigation?.navigate('UserProfileScreen', {
           user: {
             id: chatUserId ?? '',
@@ -504,7 +580,7 @@ export default function ChatScreen({ navigation, route }: any) {
             gender: profile?.gender
               ? profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1)
               : '',
-            location: location,
+            location: (peerUser as any)?.location ?? '',
             attributes: profile?.ethnicity ? [profile.ethnicity] : [],
             interests,
           },
@@ -579,7 +655,7 @@ export default function ChatScreen({ navigation, route }: any) {
         }}
       >
         <View style={{ flex: 1 }}>
-          {/* ── Nav Bar ─────────────────────────────────────────────────── */}
+          {/* ── Nav Bar ───────────────────────────────────────────────── */}
           <View
             style={{
               flexDirection: 'row',
@@ -622,7 +698,10 @@ export default function ChatScreen({ navigation, route }: any) {
                   fontSize: sf(20),
                   lineHeight: sf(22),
                   color: '#000000',
+                  flexShrink: 1,
                 }}
+                numberOfLines={1}
+                ellipsizeMode='tail'
               >
                 {chatUserName}
               </Text>
@@ -667,7 +746,7 @@ export default function ChatScreen({ navigation, route }: any) {
             </TouchableOpacity>
           </View>
 
-          {/* ── Messages ────────────────────────────────────────────────── */}
+          {/* ── Messages ──────────────────────────────────────────────── */}
           {messagesLoading ? (
             <View
               style={{
@@ -744,7 +823,7 @@ export default function ChatScreen({ navigation, route }: any) {
             />
           )}
 
-          {/* ── Locked overlay ──────────────────────────────────────────── */}
+          {/* ── Locked overlay ────────────────────────────────────────── */}
           {isLocked && (
             <View
               style={{
@@ -803,7 +882,7 @@ export default function ChatScreen({ navigation, route }: any) {
             </View>
           )}
 
-          {/* ── Bottom bar ──────────────────────────────────────────────── */}
+          {/* ── Bottom bar ────────────────────────────────────────────── */}
           {isLocked ? (
             <TouchableOpacity
               onPress={() => setIsCameraOpen(true)}
@@ -889,7 +968,7 @@ export default function ChatScreen({ navigation, route }: any) {
                 }}
               >
                 <TextInput
-                  placeholder='Respond with a message'
+                  placeholder='Type to a message...'
                   placeholderTextColor='#B6B9C9'
                   value={messageText}
                   onChangeText={(v) => {

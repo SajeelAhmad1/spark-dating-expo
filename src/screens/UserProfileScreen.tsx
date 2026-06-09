@@ -148,7 +148,7 @@ const UserProfileScreen = ({ navigation, route }: any) => {
             marginTop: sh(12),
           }}
         >
-          <View
+          {/* <View
             style={{
               position: 'absolute',
               top: sh(20),
@@ -179,7 +179,7 @@ const UserProfileScreen = ({ navigation, route }: any) => {
                 🔥 101
               </Text>
             </View>
-          </View>
+          </View> */}
           <DiscoveryMatchCard
             item={{
               ...user,
@@ -271,7 +271,7 @@ const UserProfileScreen = ({ navigation, route }: any) => {
         {!!user.interests?.length && (
           <Section
             title='Interests'
-            style={{ minHeight: 152 }}
+            style={{ minHeight: 152, paddingVertical: sh(12) }}
           >
             <Wrap style={{ marginTop: sh(2) }}>
               {user.interests.map((interest, i) => (
@@ -476,17 +476,17 @@ const Wrap = ({
 
 const Footer = ({ onBackToTop }: { onBackToTop: () => void }) => (
   <View style={{ alignItems: 'center', marginVertical: sh(30) }}>
-    <TouchableOpacity
+    {/* <TouchableOpacity
       onPress={() => showToast({ text1: 'User Blocked', icon: UserRoundX })}
     >
       <Text style={styles.footerText}>Block</Text>
-    </TouchableOpacity>
+    </TouchableOpacity> */}
     <View
       style={{
         height: 1,
         backgroundColor: '#7D858E',
         width: '100%',
-        marginVertical: sh(8),
+        marginVertical: sh(12),
       }}
     />
     <TouchableOpacity onPress={onBackToTop}>

@@ -5,11 +5,8 @@ import { Text } from '@/components/common/Text';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ProgressDots } from '@/components/ProgressDots';
 import ChatIcon from '@/assets/images/chatIcon.svg';
-import type { MATCHES } from '@/constants/matches';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { Image } from 'react-native';
-
-type MatchItem = (typeof MATCHES)[number];
 
 export default function DiscoveryMatchCard({
   item,
@@ -21,7 +18,7 @@ export default function DiscoveryMatchCard({
   showProgressDots = true,
   rightChatOnPress,
 }: {
-  item: MatchItem;
+  item: any;
   cardWidth: number;
   cardHeight: number;
   btnOverlap: number;
@@ -76,18 +73,36 @@ export default function DiscoveryMatchCard({
               justifyContent: 'center',
             }}
           >
-            <Text
+            <View
               style={{
-                fontFamily: 'Poppins-SemiBold',
-                fontSize: sf(16),
-                color: '#fff',
-                flexShrink: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: sw(8),
               }}
-              numberOfLines={1}
-              ellipsizeMode='tail'
             >
-              {item.name}, {item.age}
-            </Text>
+              <Text
+                style={{
+                  fontFamily: 'Poppins-SemiBold',
+                  fontSize: sf(16),
+                  color: '#fff',
+                  maxWidth: sw(300),
+                  flexShrink: 1,
+                }}
+                numberOfLines={1}
+                ellipsizeMode='tail'
+              >
+                {item.name},
+              </Text>
+              <Text
+                style={{
+                  fontFamily: 'Poppins-SemiBold',
+                  fontSize: sf(16),
+                  color: '#fff',
+                }}
+              >
+                {item.age}
+              </Text>
+            </View>
             <View
               style={{
                 flexDirection: 'row',
@@ -96,19 +111,45 @@ export default function DiscoveryMatchCard({
                 zIndex: 30,
               }}
             >
-              <Text
-                style={{
-                  fontFamily: 'Poppins-Regular',
-                  fontSize: sf(13),
-                  color: 'rgba(255,255,255,0.85)',
-                  flex: 1,
-                  flexShrink: 1,
-                }}
-                numberOfLines={1}
-                ellipsizeMode='tail'
-              >
-                {item.bio || 'No bio yet'}
-              </Text>
+           <View  style={{
+                flexDirection: 'row',
+                alignItems: 'center', 
+                 gap: sw(8),
+              }}>
+               {item.interests && item.interests.length > 0 ? (
+                item.interests
+                  ?.slice(0, 2)
+                  ?.map((interest: any, index: number) => (
+                    <Text
+                      key={index}
+                      style={{
+                        fontFamily: 'Poppins-Regular',
+                        fontSize: sf(13),
+                        color: 'rgba(255,255,255,0.85)',
+                        
+                      }}
+                      numberOfLines={1}
+                      ellipsizeMode='tail'
+                    >
+                      {interest}
+                    </Text>
+                  ))
+              ) : (
+                <Text
+                  style={{
+                    fontFamily: 'Poppins-Regular',
+                    fontSize: sf(13),
+                    color: 'rgba(255,255,255,0.85)',
+                    flex: 1,
+                    flexShrink: 1,
+                  }}
+                  numberOfLines={1}
+                  ellipsizeMode='tail'
+                >
+                  {'No Interests'}
+                </Text>
+              )}
+           </View>
               <TouchableOpacity
                 onPress={(e) => {
                   e.stopPropagation();
