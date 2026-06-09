@@ -20,7 +20,7 @@ import {
   X,
   Camera,
 } from 'lucide-react-native';
- 
+
 import FireIcon from '@/assets/images/fireIcon.svg';
 import GlassIcon from '@/assets/images/glassIcon.svg';
 import LockIcon from '@/assets/images/lockIcon.svg';
@@ -35,15 +35,15 @@ import {
 } from '@/features/chat/hooks';
 import type { ConversationItem } from '@/features/chat/schema';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useMe } from '@/features/profile/hooks'; 
+import { useMe } from '@/features/profile/hooks';
 
 // ── Filter types ──────────────────────────────────────────────────────────────
 
 const FILTERS = [
-  { key: 'All',          label: 'All',           icon: null,        svg: null },
-  { key: 'ActiveStreaks', label: 'Active Sparks', icon: null,        svg: 'fire' },
-  { key: 'ExpiringSoon',  label: 'Locking Soon',  icon: null,        svg: 'glass' },
-  { key: 'Locked',        label: 'Locked',        icon: null,        svg: 'lock' },
+  { key: 'All', label: 'All', icon: null, svg: null },
+  { key: 'ActiveStreaks', label: 'Active Sparks', icon: null, svg: 'fire' },
+  { key: 'ExpiringSoon', label: 'Locking Soon', icon: null, svg: 'glass' },
+  { key: 'Locked', label: 'Locked', icon: null, svg: 'lock' },
 ] as const;
 
 type FilterKey = (typeof FILTERS)[number]['key'];
@@ -157,8 +157,18 @@ function CameraBtn({ onPress }: { onPress: () => void }) {
 function StreakBadge({ count }: { count: number }) {
   return (
     <View style={styles.streakBadge}>
-      <FireIcon width={12} height={12} />
-      <Text style={{ fontSize: sf(11), color: '#CEB98F', fontWeight: '700', marginLeft: 3 }}>
+      <FireIcon
+        width={12}
+        height={12}
+      />
+      <Text
+        style={{
+          fontSize: sf(11),
+          color: '#CEB98F',
+          fontWeight: '700',
+          marginLeft: 3,
+        }}
+      >
         {count}
       </Text>
     </View>
@@ -166,12 +176,29 @@ function StreakBadge({ count }: { count: number }) {
 }
 
 // ── Section header ────────────────────────────────────────────────────────────
- 
 
 const SECTION_SVG: Record<string, (color: string) => React.ReactNode> = {
-  fire:  (color) => <FireIcon  width={16} height={16} color={color} />,
-  glass: (color) => <GlassIcon width={16} height={16} color={color} />,
-  lock:  (color) => <LockIcon  width={16} height={16} color={color} />,
+  fire: (color) => (
+    <FireIcon
+      width={16}
+      height={16}
+      color={color}
+    />
+  ),
+  glass: (color) => (
+    <GlassIcon
+      width={16}
+      height={16}
+      color={color}
+    />
+  ),
+  lock: (color) => (
+    <LockIcon
+      width={16}
+      height={16}
+      color={color}
+    />
+  ),
 };
 
 function SectionHeader({ svgKey, title }: { svgKey: string; title: string }) {
@@ -182,7 +209,6 @@ function SectionHeader({ svgKey, title }: { svgKey: string; title: string }) {
     </View>
   );
 }
-
 
 // ── Active / Locking row ──────────────────────────────────────────────────────
 
@@ -500,7 +526,10 @@ export default function InboxScreen({ navigation, route }: any) {
       chatUserId: item.otherUser?.id,
       chatUserName:
         `${item.otherUser?.firstName ?? ''} ${item.otherUser?.lastName ?? ''}`.trim(),
-      chatUserImageUri: (() => { const p = item.otherUser?.photos?.[0]; return typeof p === 'string' ? p : p?.url; })(),
+      chatUserImageUri: (() => {
+        const p = item.otherUser?.photos?.[0];
+        return typeof p === 'string' ? p : p?.url;
+      })(),
       initialLocked: false,
       autoOpenCamera: autoCamera || cameraSelectMode,
     });
@@ -590,7 +619,13 @@ export default function InboxScreen({ navigation, route }: any) {
                 isActive ? styles.filterChipActive : styles.filterChipInactive,
               ]}
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: sw(4) }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: sw(4),
+                }}
+              >
                 {f.svg && SECTION_SVG[f.svg](isActive ? '#0B0B0B' : '#B6B9C9')}
                 <Text
                   style={{
@@ -795,7 +830,10 @@ export default function InboxScreen({ navigation, route }: any) {
         </ScrollView>
       )}
 
-      <BottomTabBar />
+      {/* ── Bottom tab bar ──────────────────────────────────────────── */}
+      <View style={styles.tabBarWrap}>
+        <BottomTabBar />
+      </View>
 
       {/* ── Visual Conversations Modal ───────────────────────────────────── */}
       <VisualConversationsModal
@@ -983,5 +1021,13 @@ const styles = StyleSheet.create({
     color: '#EAD6A9',
     fontWeight: '600',
     textAlign: 'center',
+  },
+  tabBarWrap: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#000000',
+    zIndex: 15,
   },
 });

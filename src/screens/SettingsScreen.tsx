@@ -1044,17 +1044,18 @@ const SettingsScreen = ({ navigation }: any) => {
           />
           <PrimaryButton
             title='Delete Account'
+            colors={['#FF073E', '#FF073E']}
             icon={
               <Trash2
                 width={sf(24)}
                 height={sf(24)}
-                color='#0B0B0B'
+                color='#FFFFFF'
               />
             }
             iconPosition='middle'
             onPress={() => {}}
             style={{ alignSelf: 'stretch' }}
-            textStyle={{ fontSize: sf(20), fontWeight: '500' }}
+            textStyle={{ fontSize: sf(20), fontWeight: '500', color: "#FFFFFF" }}
           />
         </View>
       </ScrollView>

@@ -12,7 +12,14 @@ import {
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { Settings, Plus, X, ChevronDown, Check } from 'lucide-react-native';
+import {
+  Settings,
+  Plus,
+  X,
+  ChevronDown,
+  Check,
+  PencilLine,
+} from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import ETHNICITIES from '@/constants/ethnicities';
 import HEIGHTS from '@/constants/heights';
@@ -636,14 +643,14 @@ const EditProfileScreen = ({ navigation }: any) => {
               width: sf(36),
               height: sf(36),
               borderRadius: sr(92),
-              backgroundColor: '#EAD6A933',
+              backgroundColor: 'rgba(251, 178, 2, 0.2)',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
             <Settings
               size={sf(20)}
-              color='#000000'
+              color='#0B0B0B'
             />
           </TouchableOpacity>
         </View>
@@ -807,38 +814,39 @@ const EditProfileScreen = ({ navigation }: any) => {
                 <FieldError message={errors.lastName?.message} />
               </View>
             </View>
+            <View style={{ flexDirection: 'row', gap: sw(12) }}>
+              <View style={{ flex: 1 }}>
+                <Text style={labelStyle}>Gender</Text>
+                {renderDropdownTrigger('gender')}
+              </View>
 
-            <View>
-              <Text style={labelStyle}>Gender</Text>
-              {renderDropdownTrigger('gender')}
-            </View>
-
-            {/* Birthday — modal variant prevents openPicker crash */}
-            <View>
-              <Text style={labelStyle}>Birthday</Text>
-              <TouchableOpacity
-                onPress={() => setDatePickerOpen(true)}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  borderWidth: 1,
-                  borderColor: '#7D858E',
-                  borderRadius: sr(8),
-                  paddingHorizontal: sw(8),
-                  height: sh(48),
-                }}
-              >
-                <Text
+              {/* Birthday — modal variant prevents openPicker crash */}
+              <View style={{ flex: 1 }}>
+                <Text style={labelStyle}>Birthday</Text>
+                <TouchableOpacity
+                  onPress={() => setDatePickerOpen(true)}
                   style={{
-                    fontFamily: 'Poppins-Regular',
-                    fontSize: sf(16),
-                    color: '#1C1C1E',
-                    flex: 1,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderColor: '#7D858E',
+                    borderRadius: sr(8),
+                    paddingHorizontal: sw(8),
+                    height: sh(48),
                   }}
                 >
-                  {formatDate(birthDate)}
-                </Text>
-              </TouchableOpacity>
+                  <Text
+                    style={{
+                      fontFamily: 'Poppins-Regular',
+                      fontSize: sf(16),
+                      color: '#1C1C1E',
+                      flex: 1,
+                    }}
+                  >
+                    {formatDate(birthDate)}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
             <View>
@@ -905,11 +913,15 @@ const EditProfileScreen = ({ navigation }: any) => {
                       fontSize: sf(14),
                     }}
                   >
-                    Edit
+                    {/* Edit */}
+                    <PencilLine
+                      size={16}
+                      color={'#0B0B0B'}
+                    />
                   </Text>
                 </TouchableOpacity>
               </View>
-              <View style={{ height: 1, backgroundColor: '#EFEFEF' }} />
+              <View style={{ height: 1, backgroundColor: '#7D858E' }} />
               <View
                 style={{ flexDirection: 'row', flexWrap: 'wrap', gap: sw(8) }}
               >
@@ -920,17 +932,18 @@ const EditProfileScreen = ({ navigation }: any) => {
                       flexDirection: 'row',
                       alignItems: 'center',
                       gap: sw(4),
-                      borderRadius: sr(20),
-                      height: sh(32),
+                      height: sh(36),
                       paddingHorizontal: sw(10),
-                      backgroundColor: '#EAD6A9',
+                      borderWidth: 1,
+                      borderColor: '#7D858E',
+                      borderRadius: sr(99),
                     }}
                   >
                     <Text
                       style={{
                         fontFamily: 'Poppins-Regular',
-                        fontSize: sf(13),
-                        color: '#000000',
+                        fontSize: sf(14),
+                        color: '#404040',
                       }}
                     >
                       {name}
@@ -942,10 +955,20 @@ const EditProfileScreen = ({ navigation }: any) => {
                         )
                       }
                       hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+                      style={{ 
+                          width: 16,
+                          height: 16,
+                          borderRadius: sr(99),
+                          backgroundColor: '#FF3366',
+                          padding: 5,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          zIndex: 10,
+                        }}
                     >
                       <X
                         size={sf(11)}
-                        color='#000000'
+                        color='#FFFFFF'
                         strokeWidth={2.5}
                       />
                     </TouchableOpacity>
@@ -958,7 +981,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                       backgroundColor: '#CEB98F',
                       borderRadius: sr(99),
                       paddingHorizontal: sw(12),
-                      height: sh(32),
+                      height: sh(36),
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
@@ -966,8 +989,8 @@ const EditProfileScreen = ({ navigation }: any) => {
                     <Text
                       style={{
                         fontFamily: 'Poppins-Medium',
-                        fontSize: sf(13),
-                        color: '#FFFFFF',
+                        fontSize: sf(14),
+                        color: '#0B0B0B',
                       }}
                     >
                       + Add
@@ -986,7 +1009,7 @@ const EditProfileScreen = ({ navigation }: any) => {
             paddingHorizontal: sw(20),
             paddingVertical: sh(16),
             gap: sw(12),
-            backgroundColor: '#FFFFFF',
+            // backgroundColor: '#FFFFFF',
           }}
         >
           <TouchableOpacity
@@ -996,14 +1019,14 @@ const EditProfileScreen = ({ navigation }: any) => {
               height: sh(56),
               borderRadius: sr(32),
               borderWidth: 1,
-              borderColor: '#FF3366',
-              backgroundColor: 'rgba(255,51,102,0.05)',
+              borderColor: '#555555',
+              // backgroundColor: 'rgba(255,51,102,0.05)',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
             <Text
-              style={{ fontWeight: '500', fontSize: sf(20), color: '#1C1C1E' }}
+              style={{ fontWeight: '500', fontSize: sf(20), color: '#0B0B0B' }}
             >
               Cancel
             </Text>
@@ -1015,7 +1038,7 @@ const EditProfileScreen = ({ navigation }: any) => {
               width: sw(184),
               height: sh(56),
               borderRadius: sr(32),
-              backgroundColor: '#FF3366',
+              backgroundColor: '#EAD6A9',
               alignItems: 'center',
               justifyContent: 'center',
               opacity: isSaving ? 0.6 : 1,
@@ -1026,7 +1049,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                 style={{
                   fontWeight: '500',
                   fontSize: sf(20),
-                  color: '#FFFFFF',
+                  color: '#0B0B0B',
                 }}
               >
                 Saving...
@@ -1036,7 +1059,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                 style={{
                   fontWeight: '500',
                   fontSize: sf(20),
-                  color: '#FFFFFF',
+                  color: '#0B0B0B',
                 }}
               >
                 Save

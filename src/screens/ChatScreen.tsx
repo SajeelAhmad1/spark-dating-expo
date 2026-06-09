@@ -740,7 +740,7 @@ export default function ChatScreen({ navigation, route }: any) {
             >
               <MoreVertical
                 size={sf(22)}
-                color='#CEB98F'
+                color='#0B0B0B'
                 strokeWidth={2}
               />
             </TouchableOpacity>

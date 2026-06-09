@@ -94,58 +94,44 @@ const ProfileScreen = ({ navigation }: any) => {
 
       <View style={styles.flex1}>
         {/* ── Header ──────────────────────────────────────────────────────── */}
-        <LinearGradient
-          colors={['#CEB98F', '#EAD6A9']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 9 }}
+
+        <View
           style={{
-            borderBottomWidth: 1,
-            borderBottomColor: 'rgba(255,255,255,0.2)',
-            shadowColor: '#000000',
-            shadowOpacity: 0.032,
-            shadowRadius: 7,
-            shadowOffset: { width: 0, height: 2 },
-            elevation: 3,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: sw(20),
+            paddingTop: sh(12),
+            marginTop: sh(60),
+            paddingBottom: sh(16),
           }}
         >
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingHorizontal: sw(20),
-              paddingTop: sh(12),
-              marginTop: sh(60),
-              paddingBottom: sh(16),
-            }}
+          <TouchableOpacity
+            onPress={() => navigation.navigate('EditProfileScreen')}
+            style={styles.iconBtn}
           >
-            <TouchableOpacity
-              onPress={() => navigation.navigate('EditProfileScreen')}
-              style={styles.iconBtn}
-            >
-              <Edit2
-                size={sf(20)}
-                color='#FFFFFF'
-              />
-            </TouchableOpacity>
+            <Edit2
+              size={sf(20)}
+              color='#0B0B0B'
+            />
+          </TouchableOpacity>
 
-            <Text
-              style={{ color: '#FFF', fontSize: sf(20), fontWeight: '600' }}
-            >
-              Profile
-            </Text>
+          <Text
+            style={{ color: '#000000', fontSize: sf(20), fontWeight: '600' }}
+          >
+            Profile
+          </Text>
 
-            <TouchableOpacity
-              onPress={() => navigation.navigate('SettingsScreen')}
-              style={styles.iconBtn}
-            >
-              <Settings
-                size={sf(20)}
-                color='#FFFFFF'
-              />
-            </TouchableOpacity>
-          </View>
-        </LinearGradient>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('SettingsScreen')}
+            style={styles.iconBtn}
+          >
+            <Settings
+              size={sf(20)}
+              color='#0B0B0B'
+            />
+          </TouchableOpacity>
+        </View>
 
         {/* ── Scrollable content ───────────────────────────────────────────── */}
         <ScrollView
@@ -391,8 +377,8 @@ const ProfileScreen = ({ navigation }: any) => {
                         style={[
                           styles.iconCircle,
                           {
-                            backgroundColor: '#EAD6A933',
-                            borderColor: '#CEB98F',
+                            backgroundColor: 'rgba(251, 178, 2, 0.2)',
+                            borderColor: 'rgba(251, 178, 2, 0.2)',
                           },
                         ]}
                       >
@@ -400,7 +386,7 @@ const ProfileScreen = ({ navigation }: any) => {
                           width={sw(18)}
                           height={sh(20)}
                           size={sf(18)}
-                          color='#CEB98F'
+                          color='#0B0B0B'
                           strokeWidth={1.5}
                         />
                       </View>
@@ -421,7 +407,7 @@ const ProfileScreen = ({ navigation }: any) => {
                     </View>
                     <ChevronRight
                       size={sf(20)}
-                      color='#555555'
+                      color='#0B0B0B'
                     />
                   </View>
                   <View
@@ -634,7 +620,9 @@ const ProfileScreen = ({ navigation }: any) => {
             </View>
           </View>
         </ScrollView>
-
+      </View>
+      {/* ── Bottom tab bar ──────────────────────────────────────────── */}
+      <View style={styles.tabBarWrap}>
         <BottomTabBar />
       </View>
     </View>
@@ -658,10 +646,10 @@ const styles = StyleSheet.create({
     width: sf(36),
     height: sf(36),
     borderRadius: sr(92),
-    backgroundColor: '#EAD6A933',
+    backgroundColor: 'rgba(251, 178, 2, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    borderColor: '#FFFFFF',
+    borderColor: 'rgba(251, 178, 2, 0.2)',
     borderWidth: 1,
   },
   iconCircle: {
@@ -671,6 +659,14 @@ const styles = StyleSheet.create({
     borderWidth: 0.4,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  tabBarWrap: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#000000',
+    zIndex: 15,
   },
 });
 

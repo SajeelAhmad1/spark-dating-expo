@@ -125,8 +125,8 @@ const SparkAnimation = () => {
           <Zap
             width={sf(48)}
             height={sf(48)}
-            color='#EAD6A9'
-            fill='#EAD6A9'
+            color='#0B0B0B'
+            fill='#0B0B0B'
           />
         </LinearGradient>
       </Animated.View>
@@ -154,7 +154,8 @@ const MatchScreen = ({ navigation, route }: any) => {
   const autoOpenCamera: boolean = !!route?.params?.autoOpenCamera;
 
   const { data: me } = useMe();
-  const myPhoto = me?.profile?.photos?.[0];
+  const myPhotoRaw = me?.profile?.photos?.[0];
+  const myPhoto = typeof myPhotoRaw === 'string' ? myPhotoRaw : myPhotoRaw?.url;
 
   const [isCamOpen, setIsCamOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -295,7 +296,7 @@ const MatchScreen = ({ navigation, route }: any) => {
         <View style={styles.inputRow}>
           <TextInput
             placeholder='Say something nice…'
-            placeholderTextColor='#FFFFFF'
+            placeholderTextColor='#0B0B0B'
             value={inputMessage}
             onChangeText={(v) =>
               setValue('inputMessage', v, { shouldValidate: true })
@@ -320,7 +321,7 @@ const MatchScreen = ({ navigation, route }: any) => {
             ) : (
               <Send
                 size={sf(24)}
-                color='#FFFFFF'
+                color='#0B0B0B'
                 strokeWidth={2}
               />
             )}
@@ -334,6 +335,7 @@ const MatchScreen = ({ navigation, route }: any) => {
             <CameraIcon
               width={sw(42)}
               height={sh(42)}
+              color="#0B0B0B"
             />
           </TouchableOpacity>
         </View>
@@ -343,7 +345,7 @@ const MatchScreen = ({ navigation, route }: any) => {
         {isCreatingConv && (
           <Text
             style={{
-              color: 'rgba(255,255,255,0.7)',
+              color: '#0B0B0B',
               fontSize: sf(12),
               marginTop: sh(4),
             }}
@@ -361,7 +363,7 @@ const MatchScreen = ({ navigation, route }: any) => {
         />
 
         {/* ── Close ────────────────────────────────────────────────── */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={closeCameraAndPreview}
           style={{
             paddingHorizontal: 8,
@@ -372,10 +374,9 @@ const MatchScreen = ({ navigation, route }: any) => {
             justifyContent: 'center',
             marginTop: sh(8),
           }}
-        >
-          {/* <X size={sf(18)} color="#FFFFFF" strokeWidth={2.5} /> */}
+        > 
           <Text>Share later</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
@@ -401,14 +402,14 @@ const styles = StyleSheet.create({
     width: '100%',
     height: sh(56),
     marginBottom: sh(8),
-    backgroundColor: 'rgba(0,0,0,0.12)',
+    // backgroundColor: 'rgba(0,0,0,0.12)',
     gap: sw(10),
   },
   input: {
     flex: 1,
     fontFamily: 'Poppins-Regular',
     fontSize: sf(15),
-    color: '#FFFFFF',
+    color: '#0B0B0B',
     padding: 0,
   },
   iconBtn: {
