@@ -94,10 +94,6 @@ function PasswordField({
       <View
         style={[styles.inputRow, errorMessage ? styles.inputRowError : null]}
       >
-        <Lock
-          size={sf(18)}
-          color='#9CA3AF'
-        />
         <TextInput
           value={value}
           onChangeText={onChangeText}
@@ -325,7 +321,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
                   setValue('password', v, { shouldValidate: true })
                 }
                 onBlur={() => trigger('password')}
-                placeholder='Min. 8 characters'
+                placeholder='********'
                 errorMessage={errors.password?.message}
                 show={showPassword}
                 onToggle={() => setShowPassword((p) => !p)}
@@ -340,7 +336,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
                   setValue('confirmPassword', v, { shouldValidate: true })
                 }
                 onBlur={() => trigger('confirmPassword')}
-                placeholder='Re-enter your password'
+                placeholder='********'
                 errorMessage={errors.confirmPassword?.message}
                 show={showConfirm}
                 onToggle={() => setShowConfirm((p) => !p)}
@@ -389,7 +385,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
 
               <PrimaryButton
                 title={isPending ? 'Creating account…' : 'Create account'}
-                onPress={handleSubmit(onValid)} 
+                onPress={handleSubmit(onValid)}
                 style={{ alignSelf: 'stretch' }}
                 disabled={isPending}
                 icon={
@@ -403,7 +399,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
                 iconPosition='middle'
                 textStyle={{
                   fontSize: sf(18),
-                  fontWeight: '600', 
+                  fontWeight: '600',
                 }}
               />
             </View>
@@ -476,17 +472,24 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    borderWidth: 1.5,
-    borderColor: '#E5E7EB',
-    borderRadius: sr(12),
-    paddingHorizontal: sw(14),
-    height: sh(56),
     gap: sw(10),
-    marginBottom: sh(0),
+    // backgroundColor: '#FFFFFF',
+    // borderWidth:     1,
+    borderBottomWidth: 1,
+    borderColor: '#B6B9C9',
+    // borderRadius:    sr(12),
+    // paddingHorizontal: sw(14),
+    height: sh(48),
+    // marginBottom:    sh(4),
   },
   inputRowError: { borderColor: '#EF4444' },
-  textInput: { flex: 1, fontSize: sf(15), color: '#111827', padding: 0 },
+  textInput: {
+    flex: 1,
+    fontFamily: 'Poppins-Regular',
+    fontSize: sf(16),
+    color: '#000000',
+    padding: 0,
+  },
   fieldError: {
     fontSize: sf(12),
     color: '#EF4444',
@@ -496,7 +499,13 @@ const styles = StyleSheet.create({
   },
   termsWrap: { marginTop: sh(20) },
   terms: { color: '#9CA3AF', textAlign: 'center' },
-  termsLink: { textDecorationLine: 'underline', color: '#6B7280' },
+  termsLink: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: sf(16),
+    color: '#CEB98F',
+    fontWeight: '500',
+    textDecorationLine: 'underline',
+  },
 });
 
 export default VerificationSuccessScreen;

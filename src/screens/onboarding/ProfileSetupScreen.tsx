@@ -1,5 +1,5 @@
 // screens/onboarding/ProfileSetupScreen.tsx
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -8,6 +8,8 @@ import {
   Modal,
   FlatList,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
@@ -19,6 +21,8 @@ import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { createProfileSetupSchema } from '@/schemas/onboarding';
 import { useSignupStore, selectForm, selectPatch } from '@/store/signupStore';
+import { useInterestsCatalog } from '@/features/interests/hooks';
+import { useInterestStore } from '@/store/interestStore';
 
 const GENDERS = ['Male', 'Female', 'Other'];
 const DAYS = Array.from({ length: 31 }, (_, i) => String(i + 1));
@@ -36,12 +40,26 @@ const MONTHS = [
   'Nov',
   'Dec',
 ];
-const YEARS = Array.from({ length: 100 }, (_, i) => String(2024 - i));
+const CURRENT_YEAR = new Date().getFullYear();
+const YEARS = Array.from({ length: CURRENT_YEAR - 1970 + 1 }, (_, i) =>
+  String(CURRENT_YEAR - i),
+);
 
 type DropdownField = 'day' | 'month' | 'year' | 'height' | 'ethnicity' | null;
 
 const ProfileSetupScreen = ({ navigation }: any) => {
   const [openDropdown, setOpenDropdown] = useState<DropdownField>(null);
+  const scrollRef = useRef<ScrollView>(null);
+  const bioRef = useRef<TextInput>(null);
+
+  const { data: interests } = useInterestsCatalog();
+  const { interests: storeInterests, setInterests } = useInterestStore();
+  useEffect(() => {
+    // Sirf tabhi save karo jab store empty ho
+    if (interests && interests.length > 0 && storeInterests.length === 0) {
+      setInterests(interests);
+    }
+  }, [interests, storeInterests.length, setInterests]);
 
   const form = useSignupStore(selectForm);
   const patch = useSignupStore(selectPatch);
@@ -138,314 +156,334 @@ const ProfileSetupScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View style={styles.safeArea}>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={{ paddingBottom: sh(120) }}
-        keyboardShouldPersistTaps='handled'
-        showsVerticalScrollIndicator={false}
-      >
-        <TouchableOpacity onPress={() => navigation?.goBack()}>
-          <ChevronLeft
-            size={sf(24)}
-            color='#000000'
-          />
-        </TouchableOpacity>
-
-        <View style={styles.headerBlock}>
-          <Text
-            style={[styles.screenTitle, { fontSize: sf(28) }]}
-            weight='semibold'
-          >
-            Tell Us About You
-          </Text>
-          <Text
-            style={[styles.screenSubtitle, { fontSize: sf(15) }]}
-            weight='regular'
-          >
-            Complete your profile to get started
-          </Text>
-        </View>
-
-        {/* First & Last Name */}
-        <View style={styles.nameRow}>
-          <View style={styles.flex1}>
-            <Text
-              style={[styles.label, { fontSize: sf(15) }]}
-              weight='semibold'
-            >
-              First Name
-            </Text>
-            <TextInput
-              placeholder='JJ'
-              placeholderTextColor='#7D858E'
-              value={firstName}
-              onChangeText={(v) =>
-                setValue('firstName', v, { shouldValidate: true })
-              }
-              onBlur={() => trigger('firstName')}
-              style={[
-                inputStyle,
-                errors.firstName && { borderColor: '#DC2626' },
-              ]}
-            />
-            <FieldError message={errors.firstName?.message} />
-          </View>
-          <View style={styles.flex1}>
-            <Text
-              style={[styles.label, { fontSize: sf(15) }]}
-              weight='semibold'
-            >
-              Last Name
-            </Text>
-            <TextInput
-              placeholder='Smith'
-              placeholderTextColor='#7D858E'
-              value={lastName}
-              onChangeText={(v) =>
-                setValue('lastName', v, { shouldValidate: true })
-              }
-              onBlur={() => trigger('lastName')}
-              style={[
-                inputStyle,
-                errors.lastName && { borderColor: '#DC2626' },
-              ]}
-            />
-            <FieldError message={errors.lastName?.message} />
-          </View>
-        </View>
-
-        {/* Gender */}
-        <View style={styles.section}>
-          <Text
-            style={[styles.label, { fontSize: sf(15) }]}
-            weight='semibold'
-          >
-            Gender
-          </Text>
-          <View style={styles.row}>
-            {GENDERS.map((g) => {
-              const isSelected = gender === g;
-              return (
-                <TouchableOpacity
-                  key={g}
-                  onPress={() =>
-                    setValue('gender', g, { shouldValidate: true })
-                  }
-                  style={{
-                    flex: 1,
-                    height: sh(56),
-                    borderRadius: sr(15),
-                    borderWidth: isSelected ? 0 : 1,
-                    borderColor: '#B6B9C9',
-                    backgroundColor: isSelected ? '#EAD6A9' : 'transparent',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: sf(15),
-                      color: '#000000',
-                      fontWeight: '400',
-                      lineHeight: sh(46),
-                    }}
-                  >
-                    {g}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-          <FieldError message={errors.gender?.message} />
-        </View>
-
-        {/* Date of Birth */}
-        <View style={styles.section}>
-          <Text
-            style={[styles.label, { fontSize: sf(15) }]}
-            weight='semibold'
-          >
-            Date of birth
-          </Text>
-          <View style={styles.row}>
-            {(['day', 'month', 'year'] as NonNullable<DropdownField>[]).map(
-              (field) => (
-                <TouchableOpacity
-                  key={field}
-                  onPress={() => setOpenDropdown(field)}
-                  style={{
-                    flex: 1,
-                    height: sh(56),
-                    borderRadius: sr(15),
-                    borderWidth: 1,
-                    borderColor: '#B6B9C9',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    paddingHorizontal: sw(12),
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: sf(15),
-                      color: '#000000',
-                      lineHeight: sh(40),
-                    }}
-                  >
-                    {dropdownValues[field]}
-                  </Text>
-                  <ChevronDown
-                    size={sf(16)}
-                    color='#000000'
-                  />
-                </TouchableOpacity>
-              ),
-            )}
-          </View>
-          <FieldError message={dobError} />
-        </View>
-
-        {/* Height & Ethnicity */}
-        {(['height', 'ethnicity'] as const).map((key) => (
-          <View
-            key={key}
-            style={styles.section}
-          >
-            <Text
-              style={[styles.label, { fontSize: sf(15) }]}
-              weight='semibold'
-            >
-              {key === 'height' ? 'Height (cm)' : 'Ethnicity'}
-            </Text>
-            <TouchableOpacity
-              onPress={() => setOpenDropdown(key)}
-              style={{
-                height: sh(56),
-                borderRadius: sr(15),
-                borderWidth: 1,
-                borderColor: '#B6B9C9',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                paddingHorizontal: sw(16),
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: sf(15),
-                  color: dropdownValues[key] ? '#000000' : '#7D858E',
-                  lineHeight: sh(56),
-                }}
-              >
-                {dropdownValues[key] ||
-                  (key === 'height' ? 'Select height' : 'Select ethnicity')}
-              </Text>
-              <ChevronDown
-                size={sf(18)}
-                color='#000000'
-              />
-            </TouchableOpacity>
-          </View>
-        ))}
-
-        {/* Bio */}
-        <View style={styles.section}>
-          <Text
-            style={[styles.label, { fontSize: sf(15) }]}
-            weight='semibold'
-          >
-            Add Bio
-          </Text>
-          <TextInput
-            placeholder='Write something interesting...'
-            placeholderTextColor='#7D858E'
-            value={bio}
-            onChangeText={(v) => setValue('bio', v, { shouldValidate: true })}
-            onBlur={() => trigger('bio')}
-            multiline
-            textAlignVertical='top'
-            style={{
-              borderWidth: 1,
-              borderColor: errors.bio ? '#DC2626' : '#B6B9C9',
-              borderRadius: sr(15),
-              height: sh(120),
-              paddingHorizontal: sw(16),
-              paddingTop: sh(14),
-              fontSize: sf(15),
-              color: '#000000',
-            }}
-          />
-          <FieldError message={errors.bio?.message} />
-        </View>
-      </ScrollView>
-
-      <View style={styles.footer}>
-        <PrimaryButton
-          title='Continue'
-          onPress={handleSubmit(onContinue)}
-          style={{ alignSelf: 'stretch' }}
-          textStyle={{
-            fontSize: sf(20),
-            fontWeight: '500',
-            lineHeight: sh(56),
-          }}
-        />
-      </View>
-
-      {/* Dropdown Modal */}
-      <Modal
-        visible={openDropdown !== null}
-        transparent
-        animationType='fade'
-        onRequestClose={() => setOpenDropdown(null)}
-      >
-        <TouchableOpacity
-          style={styles.modalBackdrop}
-          activeOpacity={1}
-          onPress={() => setOpenDropdown(null)}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <View style={styles.safeArea}>
+        <ScrollView
+          ref={scrollRef}
+          style={styles.scroll}
+          contentContainerStyle={{ paddingBottom: sh(120) }}
+          keyboardShouldPersistTaps='handled'
+          showsVerticalScrollIndicator={false}
         >
-          <View style={[styles.modalSheet, { maxHeight: sh(320) }]}>
-            <View style={styles.modalHandle} />
-            <FlatList
-              data={openDropdown ? dropdownOptions[openDropdown] : []}
-              keyExtractor={(item) => item}
-              showsVerticalScrollIndicator={false}
-              renderItem={({ item }) => {
-                const isSelected = openDropdown
-                  ? dropdownValues[openDropdown] === item
-                  : false;
+          <TouchableOpacity onPress={() => navigation?.goBack()}>
+            <ChevronLeft
+              size={sf(24)}
+              color='#000000'
+            />
+          </TouchableOpacity>
+
+          <View style={styles.headerBlock}>
+            <Text
+              style={[styles.screenTitle, { fontSize: sf(28) }]}
+              weight='semibold'
+            >
+              Tell Us About You
+            </Text>
+            <Text
+              style={[styles.screenSubtitle, { fontSize: sf(15) }]}
+              weight='regular'
+            >
+              Complete your profile to get started
+            </Text>
+          </View>
+
+          {/* First & Last Name */}
+          <View style={styles.nameRow}>
+            <View style={styles.flex1}>
+              <Text
+                style={[styles.label, { fontSize: sf(15) }]}
+                weight='semibold'
+              >
+                First Name
+              </Text>
+              <TextInput
+                placeholder='JJ'
+                placeholderTextColor='#7D858E'
+                value={firstName}
+                onChangeText={(v) =>
+                  setValue('firstName', v, { shouldValidate: true })
+                }
+                onBlur={() => trigger('firstName')}
+                style={[
+                  inputStyle,
+                  errors.firstName && { borderColor: '#DC2626' },
+                ]}
+              />
+              <FieldError message={errors.firstName?.message} />
+            </View>
+            <View style={styles.flex1}>
+              <Text
+                style={[styles.label, { fontSize: sf(15) }]}
+                weight='semibold'
+              >
+                Last Name
+              </Text>
+              <TextInput
+                placeholder='Smith'
+                placeholderTextColor='#7D858E'
+                value={lastName}
+                onChangeText={(v) =>
+                  setValue('lastName', v, { shouldValidate: true })
+                }
+                onBlur={() => trigger('lastName')}
+                style={[
+                  inputStyle,
+                  errors.lastName && { borderColor: '#DC2626' },
+                ]}
+              />
+              <FieldError message={errors.lastName?.message} />
+            </View>
+          </View>
+
+          {/* Gender */}
+          <View style={styles.section}>
+            <Text
+              style={[styles.label, { fontSize: sf(15) }]}
+              weight='semibold'
+            >
+              Gender
+            </Text>
+            <View style={styles.row}>
+              {GENDERS.map((g) => {
+                const isSelected = gender === g;
                 return (
                   <TouchableOpacity
+                    key={g}
                     onPress={() =>
-                      openDropdown && handleDropdownSelect(openDropdown, item)
+                      setValue('gender', g, { shouldValidate: true })
                     }
                     style={{
-                      paddingVertical: sh(14),
-                      borderBottomWidth: 1,
-                      borderBottomColor: '#F0F0F0',
-                      backgroundColor: isSelected ? '#FFF8E7' : 'transparent',
-                      paddingHorizontal: sw(8),
-                      borderRadius: sr(8),
+                      flex: 1,
+                      height: sh(56),
+                      borderRadius: sr(15),
+                      borderWidth: isSelected ? 0 : 1,
+                      borderColor: '#B6B9C9',
+                      backgroundColor: isSelected ? '#EAD6A9' : 'transparent',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
                     <Text
                       style={{
                         fontSize: sf(15),
-                        color: isSelected ? '#EAD6A9' : '#000000',
-                        fontWeight: isSelected ? '600' : '400',
+                        color: '#000000',
+                        fontWeight: '400',
+                        lineHeight: sh(46),
                       }}
                     >
-                      {item}
+                      {g}
                     </Text>
                   </TouchableOpacity>
                 );
+              })}
+            </View>
+            <FieldError message={errors.gender?.message} />
+          </View>
+
+          {/* Date of Birth */}
+          <View style={styles.section}>
+            <Text
+              style={[styles.label, { fontSize: sf(15) }]}
+              weight='semibold'
+            >
+              Date of birth
+            </Text>
+            <View style={styles.row}>
+              {(['day', 'month', 'year'] as NonNullable<DropdownField>[]).map(
+                (field) => (
+                  <TouchableOpacity
+                    key={field}
+                    onPress={() => setOpenDropdown(field)}
+                    style={{
+                      flex: 1,
+                      height: sh(56),
+                      borderRadius: sr(15),
+                      borderWidth: 1,
+                      borderColor: '#B6B9C9',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      paddingHorizontal: sw(12),
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: sf(15),
+                        color: '#000000',
+                        lineHeight: sh(40),
+                      }}
+                    >
+                      {dropdownValues[field]}
+                    </Text>
+                    <ChevronDown
+                      size={sf(16)}
+                      color='#000000'
+                    />
+                  </TouchableOpacity>
+                ),
+              )}
+            </View>
+            <FieldError message={dobError} />
+          </View>
+
+          {/* Height & Ethnicity */}
+          {(['height', 'ethnicity'] as const).map((key) => (
+            <View
+              key={key}
+              style={styles.section}
+            >
+              <Text
+                style={[styles.label, { fontSize: sf(15) }]}
+                weight='semibold'
+              >
+                {key === 'height' ? 'Height (cm)' : 'Ethnicity'}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setOpenDropdown(key)}
+                style={{
+                  height: sh(56),
+                  borderRadius: sr(15),
+                  borderWidth: 1,
+                  borderColor: '#B6B9C9',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingHorizontal: sw(16),
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: sf(15),
+                    color: dropdownValues[key] ? '#000000' : '#7D858E',
+                    lineHeight: sh(56),
+                  }}
+                >
+                  {dropdownValues[key] ||
+                    (key === 'height' ? 'Select height' : 'Select ethnicity')}
+                </Text>
+                <ChevronDown
+                  size={sf(18)}
+                  color='#000000'
+                />
+              </TouchableOpacity>
+            </View>
+          ))}
+
+          {/* Bio */}
+          <View style={styles.section}>
+            <Text
+              style={[styles.label, { fontSize: sf(15) }]}
+              weight='semibold'
+            >
+              Add Bio
+            </Text>
+            <TextInput
+              ref={bioRef}
+              placeholder='Write something interesting...'
+              placeholderTextColor='#7D858E'
+              value={bio}
+              onChangeText={(v) => setValue('bio', v, { shouldValidate: true })}
+              onBlur={() => trigger('bio')}
+              onFocus={() => {
+                setTimeout(() => {
+                  bioRef.current?.measureLayout(
+                    scrollRef.current as any,
+                    (_x, y) =>
+                      scrollRef.current?.scrollTo({
+                        y: y - sh(20),
+                        animated: true,
+                      }),
+                    () => {},
+                  );
+                }, 150);
+              }}
+              multiline
+              textAlignVertical='top'
+              style={{
+                borderWidth: 1,
+                borderColor: errors.bio ? '#DC2626' : '#B6B9C9',
+                borderRadius: sr(15),
+                height: sh(120),
+                paddingHorizontal: sw(16),
+                paddingTop: sh(14),
+                fontSize: sf(15),
+                color: '#000000',
               }}
             />
+            <FieldError message={errors.bio?.message} />
           </View>
-        </TouchableOpacity>
-      </Modal>
-    </View>
+        </ScrollView>
+
+        <View style={styles.footer}>
+          <PrimaryButton
+            title='Continue'
+            onPress={handleSubmit(onContinue)}
+            style={{ alignSelf: 'stretch' }}
+            textStyle={{
+              fontSize: sf(20),
+              fontWeight: '500',
+              lineHeight: sh(56),
+            }}
+          />
+        </View>
+
+        {/* Dropdown Modal */}
+        <Modal
+          visible={openDropdown !== null}
+          transparent
+          animationType='fade'
+          onRequestClose={() => setOpenDropdown(null)}
+        >
+          <TouchableOpacity
+            style={styles.modalBackdrop}
+            activeOpacity={1}
+            onPress={() => setOpenDropdown(null)}
+          >
+            <View style={[styles.modalSheet, { maxHeight: sh(320) }]}>
+              <View style={styles.modalHandle} />
+              <FlatList
+                data={openDropdown ? dropdownOptions[openDropdown] : []}
+                keyExtractor={(item) => item}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => {
+                  const isSelected = openDropdown
+                    ? dropdownValues[openDropdown] === item
+                    : false;
+                  return (
+                    <TouchableOpacity
+                      onPress={() =>
+                        openDropdown && handleDropdownSelect(openDropdown, item)
+                      }
+                      style={{
+                        paddingVertical: sh(14),
+                        borderBottomWidth: 1,
+                        borderBottomColor: '#F0F0F0',
+                        backgroundColor: isSelected ? '#FFF8E7' : 'transparent',
+                        paddingHorizontal: sw(8),
+                        borderRadius: sr(8),
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: sf(15),
+                          color: isSelected ? '#EAD6A9' : '#000000',
+                          fontWeight: isSelected ? '600' : '400',
+                        }}
+                      >
+                        {item}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -465,7 +503,7 @@ const styles = StyleSheet.create({
   label: { color: '#000000', marginBottom: sh(8) },
   section: { marginTop: sh(24) },
   row: { flexDirection: 'row', columnGap: sw(12) },
-  footer: { paddingHorizontal: sw(20), backgroundColor: '#FFFFFF' },
+  footer: { paddingHorizontal: sw(20) },
   modalBackdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',

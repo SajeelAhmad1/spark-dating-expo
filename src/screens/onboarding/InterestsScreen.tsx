@@ -174,7 +174,7 @@ const InterestsScreen = ({ navigation }: any) => {
                   style={{
                     fontSize: sf(15),
                     fontWeight: '600',
-                    color: '#000000',
+                    color: '#0B0B0B',
                     marginBottom: sh(12),
                   }}
                 >
@@ -192,8 +192,8 @@ const InterestsScreen = ({ navigation }: any) => {
                         style={{
                           paddingHorizontal: sw(14),
                           borderRadius: 999,
-                          borderWidth: isSelected ? 0 : 0.4,
-                          borderColor: '#B6B9C9',
+                          borderWidth: isSelected ? 1 : 0.9,
+                          borderColor:  isSelected ? '#CEB98F' : '#7D858E',
                           backgroundColor: isSelected
                             ? '#EAD6A9'
                             : 'transparent',
@@ -204,9 +204,9 @@ const InterestsScreen = ({ navigation }: any) => {
                       >
                         <Text
                           style={{
-                            fontSize: sf(13),
+                            fontSize: sf(14),
                             fontWeight: '400',
-                            color: isSelected ? '#000000' : '#7D858E',
+                            color: isSelected ? '#0B0B0B' : '#404040',
                             lineHeight: 40,
                           }}
                         >
@@ -224,9 +224,9 @@ const InterestsScreen = ({ navigation }: any) => {
 
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
       <View style={styles.footer}>
-        <Text style={{ fontSize: sf(15), fontWeight: '500', color: '#EAD6A9' }}>
+        {/* <Text style={{ fontSize: sf(15), fontWeight: '500', color: '#EAD6A9' }}>
           {selected.length}/{MAX} selected
-        </Text>
+        </Text> */}
         <FieldError message={interestsError} />
         <PrimaryButton
           title='Continue'
@@ -261,8 +261,7 @@ const styles = StyleSheet.create({
     right: 0,
     paddingHorizontal: sw(24),
     paddingBottom: sh(20),
-    paddingTop: sh(8),
-    backgroundColor: '#fff',
+    paddingTop: sh(8), 
     alignItems: 'center',
     gap: sh(12),
   },

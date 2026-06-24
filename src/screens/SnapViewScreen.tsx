@@ -3,6 +3,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   Image,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   TextInput,
   TouchableOpacity,
@@ -25,12 +27,18 @@ function SnapPhotoBody({
   snapUri,
   isPaused,
   onAutoClose,
+  onRemainingChange,
 }: {
   snapUri: string;
   isPaused: boolean;
   onAutoClose: () => void;
+  onRemainingChange: (s: number) => void;
 }) {
   const [remainingSeconds, setRemainingSeconds] = useState(PHOTO_SNAP_SECONDS);
+
+  useEffect(() => {
+    onRemainingChange(remainingSeconds);
+  }, [remainingSeconds]);
 
   useEffect(() => {
     if (isPaused) return;
@@ -45,33 +53,11 @@ function SnapPhotoBody({
   }, [isPaused, remainingSeconds, onAutoClose]);
 
   return (
-    <>
-      <Image
-        source={{ uri: snapUri }}
-        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-        resizeMode="cover"
-      />
-      <View
-        style={{
-          position: "absolute",
-          top: sh(16),
-          right: sw(16),
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 10,
-        }}
-        pointerEvents="none"
-      >
-        <Text style={{ color: "#FFFFFF", fontSize: sf(16), fontWeight: "600" }}>
-          {remainingSeconds}s
-        </Text>
-        {isPaused && (
-          <Text style={{ color: "#FFFFFF", fontSize: sf(14), fontWeight: "600" }}>
-            Paused
-          </Text>
-        )}
-      </View>
-    </>
+    <Image
+      source={{ uri: snapUri }}
+      style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+      resizeMode="cover"
+    />
   );
 }
 
@@ -80,10 +66,12 @@ function SnapVideoBody({
   snapUri,
   isPaused,
   onAutoClose,
+  onRemainingChange,
 }: {
   snapUri: string;
   isPaused: boolean;
   onAutoClose: () => void;
+  onRemainingChange: (s: number) => void;
 }) {
   const player = useVideoPlayer(snapUri, (p) => {
     p.loop = false;
@@ -121,6 +109,7 @@ function SnapVideoBody({
   useEffect(() => {
     if (isPaused) return;
     setRemainingSeconds(videoRemainingSeconds);
+    onRemainingChange(videoRemainingSeconds);
     if (videoDurationSeconds > 0 && videoRemainingSeconds <= 0) {
       onAutoClose();
     }
@@ -132,34 +121,12 @@ function SnapVideoBody({
   }, [isPaused, onAutoClose, playedToEnd?.playedToEnd]);
 
   return (
-    <>
-      <VideoView
-        player={player}
-        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-        contentFit="cover"
-        nativeControls={false}
-      />
-      <View
-        style={{
-          position: "absolute",
-          top: sh(16),
-          right: sw(16),
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 10,
-        }}
-        pointerEvents="none"
-      >
-        <Text style={{ color: "#FFFFFF", fontSize: sf(16), fontWeight: "600" }}>
-          {remainingSeconds}s
-        </Text>
-        {isPaused && (
-          <Text style={{ color: "#FFFFFF", fontSize: sf(14), fontWeight: "600" }}>
-            Paused
-          </Text>
-        )}
-      </View>
-    </>
+    <VideoView
+      player={player}
+      style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+      contentFit="cover"
+      nativeControls={false}
+    />
   );
 }
 
@@ -172,6 +139,7 @@ export default function SnapViewScreen({ navigation, route }: any) {
   const [keyboardPaused, setKeyboardPaused] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [holdPaused, setHoldPaused] = useState(false);
+  const [remainingSeconds, setRemainingSeconds] = useState(PHOTO_SNAP_SECONDS);
 
   const isPaused = keyboardPaused || cameraOpen || holdPaused;
 
@@ -242,7 +210,10 @@ export default function SnapViewScreen({ navigation, route }: any) {
         if (shouldClose) close();
       }}
     >
-      <View style={{ flex: 1, backgroundColor: "#000000" }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor: "#000000" }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <Pressable
           style={{ flex: 1 }}
           onPressIn={onBackdropPressIn}
@@ -254,12 +225,14 @@ export default function SnapViewScreen({ navigation, route }: any) {
                 snapUri={snapUri}
                 isPaused={isPaused}
                 onAutoClose={close}
+                onRemainingChange={setRemainingSeconds}
               />
             ) : (
               <SnapPhotoBody
                 snapUri={snapUri}
                 isPaused={isPaused}
                 onAutoClose={close}
+                onRemainingChange={setRemainingSeconds}
               />
             )
           ) : (
@@ -276,10 +249,34 @@ export default function SnapViewScreen({ navigation, route }: any) {
             </View>
           )}
 
+          {/* Timer overlay — positioned relative to KeyboardAvoidingView (the real screen root) */}
+          {snapUri && (
+            <View
+              style={{
+                position: "absolute",
+                top: sh(40),
+                right: sw(16),
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 10,
+              }}
+              pointerEvents="none"
+            >
+              <Text style={{ color: "#FFFFFF", fontSize: sf(16), fontWeight: "600" }}>
+                {remainingSeconds}s
+              </Text>
+              {isPaused && (
+                <Text style={{ color: "#FFFFFF", fontSize: sf(14), fontWeight: "600" }}>
+                  Paused
+                </Text>
+              )}
+            </View>
+          )}
+
           <View
             style={{
               position: "absolute",
-              top: sh(16),
+              top: sh(40),
               left: sw(16),
               right: sw(16),
               flexDirection: "row",
@@ -312,13 +309,11 @@ export default function SnapViewScreen({ navigation, route }: any) {
         {/* Bottom bar: typing + camera — pauses snap (not tap-to-close) */}
         <View
           style={{
-            position: "absolute",
-            bottom: sh(16),
-            left: 0,
-            right: 0,
             flexDirection: "row",
             alignItems: "center",
             paddingHorizontal: sw(16),
+            paddingBottom: sh(16),
+            paddingTop: sh(8),
             gap: 14,
           }}
         >
@@ -371,7 +366,7 @@ export default function SnapViewScreen({ navigation, route }: any) {
           onPhotoCapture={() => setCameraOpen(false)}
           onVideoCapture={() => setCameraOpen(false)}
         />
-      </View>
+      </KeyboardAvoidingView>
     </PanGestureHandler>
   );
 }

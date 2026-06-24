@@ -210,7 +210,7 @@ const InviteScreen = ({ navigation }: any) => {
               />
             }
             iconPosition='middle'
-            textStyle={{ fontSize: sf(18) }}
+            textStyle={{ fontSize: sf(18), fontWeight: '500', lineHeight: sf(22) }}
           />
 
           <TouchableOpacity onPress={handleSkip}>

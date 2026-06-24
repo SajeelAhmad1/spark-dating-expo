@@ -22,6 +22,7 @@ import {
   AlertTriangle,
   UserRoundX,
   Loader,
+  CheckCheck,
 } from 'lucide-react-native';
 import Logo from '@/assets/images/logo.svg';
 import CameraIcon from '@/assets/images/cameraIcon.svg';
@@ -98,15 +99,10 @@ function MsgBubble({
         {isOptimistic ? '  ···' : ''}
       </Text>
       {isMe && (
-        <Text
-          style={{
-            fontSize: sf(11),
-            color: isSeen ? '#CEB98F' : '#B6B9C9',
-            fontWeight: '700',
-          }}
-        >
-          ✓✓
-        </Text>
+        <View 
+        > 
+          <CheckCheck size={15} color={isSeen ? '#1E78F5' : '#B6B9C9'} />
+        </View>
       )}
     </View>
   );
@@ -411,7 +407,7 @@ export default function ChatScreen({ navigation, route }: any) {
   const presenceColor = isPeerTyping
     ? '#EAD6A9'
     : isOnline
-      ? '#22C55E'
+      ? '#1E78F5'
       : '#B6B9C9';
 
   // ── Socket ────────────────────────────────────────────────────────────────
@@ -922,7 +918,7 @@ export default function ChatScreen({ navigation, route }: any) {
                 paddingHorizontal: sw(16),
                 paddingVertical: sh(8),
                 gap: 14,
-                backgroundColor: '#FFFFFF',
+                // backgroundColor: '#FFFFFF',
               }}
             >
               <TouchableOpacity

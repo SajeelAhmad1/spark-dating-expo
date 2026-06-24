@@ -372,8 +372,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
       <View
         style={{
           paddingHorizontal: hPad,
-          paddingBottom: sh(20),
-          backgroundColor: '#fff',
+          paddingBottom: sh(20), 
         }}
       >
         <PrimaryButton
