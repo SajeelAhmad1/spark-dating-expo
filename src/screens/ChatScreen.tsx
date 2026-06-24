@@ -637,11 +637,7 @@ export default function ChatScreen({ navigation, route }: any) {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={0}
-    >
+    <>
       <View
         style={{
           flex: 1,
@@ -776,6 +772,8 @@ export default function ChatScreen({ navigation, route }: any) {
                           : 'photo',
                         chatUserName,
                         chatUserImageUri,
+                        chatUserId,
+                        conversationId,
                       });
                     }
                   }}
@@ -1006,7 +1004,7 @@ export default function ChatScreen({ navigation, route }: any) {
                   ) : (
                     <Send
                       size={sf(20)}
-                      color={messageText.trim() ? '#CEB98F' : '#B6B9C9'}
+                      color={messageText.trim() ? '#0B0B0B' : '#B6B9C9'}
                       strokeWidth={2}
                     />
                   )}
@@ -1032,6 +1030,6 @@ export default function ChatScreen({ navigation, route }: any) {
         anchorPosition={menuAnchorPos}
         items={menuItems}
       />
-    </KeyboardAvoidingView>
+    </>
   );
 }

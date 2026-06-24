@@ -1,6 +1,7 @@
 // screens/SnapViewScreen.tsxa
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -18,6 +19,12 @@ import { sf, sw, sh } from "@/utils/sizeMatters";
 import ChatAvatar from "@/components/chat/ChatAvatar";
 import CameraScreen from "@/screens/CameraScreen";
 import CameraIcon from "@/assets/images/cameraIcon.svg";
+import { Send } from "lucide-react-native";
+import {
+  useCreateDirectConversation,
+  useSendMessage,
+  useConversationSocket,
+} from "@/features/chat/hooks";
 
 const PHOTO_SNAP_SECONDS = 5;
 const HOLD_MS = 350;
@@ -135,11 +142,54 @@ export default function SnapViewScreen({ navigation, route }: any) {
   const snapType: "photo" | "video" =
     route?.params?.snapType === "video" ? "video" : "photo";
   const chatUserName: string = route?.params?.chatUserName ?? "User";
+  const chatUserId: string | undefined = route?.params?.chatUserId;
+  const passedConversationId: string | undefined = route?.params?.conversationId;
 
+  const [conversationId, setConversationId] = useState<string | null>(
+    passedConversationId ?? null,
+  );
+  const [messageText, setMessageText] = useState("");
   const [keyboardPaused, setKeyboardPaused] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [holdPaused, setHoldPaused] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState(PHOTO_SNAP_SECONDS);
+
+  const { mutateAsync: createConversation } = useCreateDirectConversation();
+  const { mutate: sendMsg, isPending: isSending } = useSendMessage(conversationId ?? "");
+  useConversationSocket(conversationId);
+
+  // Ensure we have a conversation before sending
+  const ensureConversation = useCallback(async (): Promise<string | null> => {
+    if (conversationId) return conversationId;
+    if (!chatUserId) return null;
+    const res = await createConversation(chatUserId);
+    const id = res.conversation.id;
+    setConversationId(id);
+    return id;
+  }, [conversationId, chatUserId, createConversation]);
+
+  const handleSendText = useCallback(async () => {
+    const trimmed = messageText.trim();
+    if (!trimmed) return;
+    const convId = await ensureConversation();
+    if (!convId) return;
+    sendMsg({ type: "text", text: trimmed });
+    setMessageText("");
+    Keyboard.dismiss();
+    close();
+  }, [messageText, ensureConversation, sendMsg]);
+
+  const handleSendSnap = useCallback(async (uri: string) => {
+    const convId = await ensureConversation();
+    if (!convId) return;
+    sendMsg({
+      type: "streak",
+      media: { url: uri, mime: "image/jpeg" },
+      streak: { ttlSeconds: 86400 },
+    });
+    setCameraOpen(false);
+    close();
+  }, [ensureConversation, sendMsg]);
 
   const isPaused = keyboardPaused || cameraOpen || holdPaused;
 
@@ -306,16 +356,19 @@ export default function SnapViewScreen({ navigation, route }: any) {
           </View>
         </Pressable>
 
-        {/* Bottom bar: typing + camera — pauses snap (not tap-to-close) */}
+        {/* Bottom bar: camera + input — absolute overlay over the snap */}
         <View
           style={{
+            position: "absolute",
+            bottom: sh(16),
+            left: 0,
+            right: 0,
             flexDirection: "row",
             alignItems: "center",
             paddingHorizontal: sw(16),
-            paddingBottom: sh(16),
-            paddingTop: sh(8),
             gap: 14,
           }}
+          pointerEvents="box-none"
         >
           <TouchableOpacity
             onPress={() => setCameraOpen(true)}
@@ -340,31 +393,71 @@ export default function SnapViewScreen({ navigation, route }: any) {
             </View>
           </TouchableOpacity>
 
-          <TextInput
-            placeholder="Respond with a message"
-            placeholderTextColor="#B6B9C9"
+          <View
             style={{
               flex: 1,
-              // height: sh(48),
-              borderRadius: 12,
+              flexDirection: "row",
+              alignItems: "center",
+              borderRadius: 15,
               borderWidth: 1,
-              borderColor: "#B6B9C9",
-              paddingHorizontal: sw(16),
+              borderColor: "rgba(255,255,255,0.5)",
               backgroundColor: "#FFFFFF",
-              fontFamily: "Poppins-Regular",
-              fontSize: sf(16),
-              color: "#000000",
+              paddingHorizontal: sw(16),
+              gap: sw(8),
             }}
-            onFocus={() => setKeyboardPaused(true)}
-            onBlur={() => setKeyboardPaused(false)}
-          />
+          >
+            <TextInput
+              placeholder="Respond with a message"
+              placeholderTextColor="#B6B9C9"
+              value={messageText}
+              onChangeText={setMessageText}
+              onSubmitEditing={handleSendText}
+              returnKeyType="send"
+              blurOnSubmit={false}
+              style={{
+                flex: 1,
+                height: sh(48),
+                fontFamily: "Poppins-Regular",
+                fontSize: sf(15),
+                color: "#000000",
+                padding: 0,
+              }}
+              onFocus={() => setKeyboardPaused(true)}
+              onBlur={() => setKeyboardPaused(false)}
+            />
+            <TouchableOpacity
+              onPress={handleSendText}
+              disabled={!messageText.trim() || isSending}
+            >
+              {isSending ? (
+                <ActivityIndicator size="small" color="#000000" />
+              ) : (
+                <Send
+                  size={sf(20)}
+                  color={messageText.trim() ? "#000000" : "rgba(0,0,0,0.5)"}
+                  strokeWidth={2}
+                />
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
 
         <CameraScreen
           visible={cameraOpen}
           onClose={() => setCameraOpen(false)}
-          onPhotoCapture={() => setCameraOpen(false)}
-          onVideoCapture={() => setCameraOpen(false)}
+          onPhotoCapture={handleSendSnap}
+          onVideoCapture={(uri) => {
+            ensureConversation().then((convId) => {
+              if (!convId) return;
+              sendMsg({
+                type: "streak",
+                media: { url: uri, mime: "video/mp4" },
+                streak: { ttlSeconds: 86400 },
+              });
+              setCameraOpen(false);
+              close();
+            });
+          }}
         />
       </KeyboardAvoidingView>
     </PanGestureHandler>
