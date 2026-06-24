@@ -38,12 +38,18 @@ import SettingsScreen            from '@/screens/SettingsScreen'
 import BlockedUsersScreen        from '@/screens/BlockedUsersScreen'
 import UserProfileScreen         from '@/screens/UserProfileScreen'
 import SnapViewScreen            from '@/screens/SnapViewScreen'
+import ForgotPasswordScreen from '@/screens/auth/ForgotPasswordScreen'
+import ForgotPasswordVerifyOtpScreen from '@/screens/auth/ForgotPasswordVerifyOtpScreen' 
+import ResetPasswordScreen from '@/screens/auth/ResetPasswordScreen'
+import PasswordUpdatedScreen from '@/screens/auth/PasswordUpdatedScreen'
+
 
 import { useFonts }    from 'expo-font'
 import Toast           from 'react-native-toast-message'
 import { toastConfig } from '@/utils/toastConfig'
 import { QueryProvider } from '@/providers/QueryProvider'
 import { parseChatNotification, getInitialNotification } from '@/services/fcm'
+
 
 const isExpoGo = Constants.executionEnvironment === 'storeClient'
 
@@ -125,6 +131,10 @@ export default function App() {
                 {/* ── Auth ────────────────────────────────────────────── */}
                 <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
                 <Stack.Screen name="SignInScreen" component={SignInScreen} />
+                <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} />
+                <Stack.Screen name="ForgotPasswordVerifyOtpScreen" component={ForgotPasswordVerifyOtpScreen} />
+                <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen} />
+                <Stack.Screen name="PasswordUpdatedScreen" component={PasswordUpdatedScreen} />
 
                 {/* ── Signup flow ──────────────────────────────────────── */}
                 <Stack.Screen name="EmailInputScreen"          component={EmailInputScreen} />

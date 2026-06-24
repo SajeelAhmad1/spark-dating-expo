@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { authApi } from './api'
+import { authApi }     from './api'
 import type {
   LoginDto,
   SetPasswordDto,
@@ -7,18 +7,16 @@ import type {
   SignupStartPhoneDto,
   VerifyOtpPhoneDto,
 } from './schema'
-import { tokenStore } from '@/api/client'
-import { queryClient } from '@/utils/queryClient'
-import { showToast } from '@/utils/toast'
+import { tokenStore }      from '@/api/client'
+import { queryClient }     from '@/utils/queryClient'
+import { showToast }       from '@/utils/toast'
 import { registerFcmToken, unregisterFcmToken } from '@/services/fcm'
 import { disconnectSocket } from '@/services/socket'
 
 // ── Sign-up ───────────────────────────────────────────────────────────────────
 
 export const useSetPassword = () =>
-  useMutation({
-    mutationFn: (dto: SetPasswordDto) => authApi.setPassword(dto),
-  })
+  useMutation({ mutationFn: (dto: SetPasswordDto) => authApi.setPassword(dto) })
 
 export const useSignupStartWithPhone = () =>
   useMutation({
@@ -27,23 +25,20 @@ export const useSignupStartWithPhone = () =>
   })
 
 export const useVerifyOtpPhone = () =>
-  useMutation({
-    mutationFn: (dto: VerifyOtpPhoneDto) => authApi.verifyOtpPhone(dto),
-  })
+  useMutation({ mutationFn: (dto: VerifyOtpPhoneDto) => authApi.verifyOtpPhone(dto) })
 
 // ── Login ─────────────────────────────────────────────────────────────────────
 
 export const useLogin = () =>
   useMutation({
     mutationFn: (dto: LoginDto) => authApi.login(dto),
-    onSuccess: async (data) => { 
+    onSuccess: async (data) => {
       await Promise.all([
         tokenStore.setAccess(data.accessToken),
         tokenStore.setRefresh(data.refreshToken),
         tokenStore.setUser(data.user),
       ])
       queryClient.invalidateQueries()
-      // Register FCM token after credentials are stored so API calls are authenticated
       await registerFcmToken()
     },
   })
@@ -71,20 +66,34 @@ export const useLogout = () =>
     mutationFn: authApi.logout,
     onSettled: async () => {
       try {
-        // 1. Remove FCM token from backend + clear local cache
         await unregisterFcmToken()
-
-        // 2. Disconnect socket
         disconnectSocket()
-
-        // 3. Clear all stored tokens + user data
         await tokenStore.clearAll()
-
-        // 4. Clear React Query cache
         queryClient.clear()
       } catch (error) {
         console.error('Logout cleanup failed:', error)
         showToast({ text1: error ? `${error}` : 'Logout Failed' })
       }
     },
+  })
+
+// ── Forgot password ───────────────────────────────────────────────────────────
+
+export const useForgotPasswordStart = () =>
+  useMutation({
+    mutationFn: (payload: { phone?: string; email?: string }) =>
+      authApi.forgotPasswordStart(payload),
+  })
+
+export const useForgotPasswordVerify = () =>
+  useMutation({
+    mutationFn: (payload: {
+      sessionId: string; code: string; phone?: string; email?: string
+    }) => authApi.forgotPasswordVerify(payload),
+  })
+
+export const useForgotPasswordReset = () =>
+  useMutation({
+    mutationFn: (payload: { resetToken: string; newPassword: string }) =>
+      authApi.forgotPasswordReset(payload),
   })

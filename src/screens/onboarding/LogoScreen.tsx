@@ -160,9 +160,10 @@ const LogoScreen = ({ navigation }: any) => {
         } else {
           navigation.replace('EnableLocationScreen');
         }
-      } else {
-        navigation.replace('SignInScreen');
-      }
+      } 
+      // else {
+      //   navigation.replace('SignInScreen');
+      // }
     };
 
     bootstrap();
@@ -218,7 +219,7 @@ const LogoScreen = ({ navigation }: any) => {
         <View style={styles.buttonWrapper}>
           <PrimaryButton
             title="Next"
-            onPress={() => navigation.navigate('EnableLocationScreen')}
+            onPress={() => navigation.navigate('SignUpScreen')}
             textStyle={{ fontSize: sf(18) }}
           />
         </View>

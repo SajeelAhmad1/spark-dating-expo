@@ -43,7 +43,7 @@ const OnboardingScreen1 = ({ navigation }: any) => {
   }, [width]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F7F3ED', paddingBottom: 20 }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F3ED'  }}>
       {/* ── Orbit Animation (REUSABLE COMPONENT) ── */}
       <OrbitAvatarAnimation
         CenterProfile={CenterProfile}

@@ -143,7 +143,7 @@ function SignInFormBody({
           rememberMe={rememberMe}
           onToggle={() => setValue('rememberMe', !getValues().rememberMe)}
         />
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordScreen')}>
           <Text
             style={{ color: '#CEB98F', fontWeight: '500', fontSize: sf(14) }}
           >
