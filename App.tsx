@@ -49,6 +49,7 @@ import Toast           from 'react-native-toast-message'
 import { toastConfig } from '@/utils/toastConfig'
 import { QueryProvider } from '@/providers/QueryProvider'
 import { parseChatNotification, getInitialNotification } from '@/services/fcm'
+import { StatusBar } from 'expo-status-bar'
 
 
 const isExpoGo = Constants.executionEnvironment === 'storeClient'
@@ -117,6 +118,11 @@ export default function App() {
       <SafeAreaProvider>
         <SafeAreaView style={{ flex: 1, backgroundColor: '#F7F3ED' }} edges={['bottom', 'left', 'right']}>
           <QueryProvider>
+             <StatusBar
+              style="dark"
+              translucent={false}
+              backgroundColor="#FFFFFF"
+            />
             <NavigationContainer ref={navRef}>
               <Stack.Navigator
                 initialRouteName="Onboarding1"

@@ -7,6 +7,7 @@ import {
   Dimensions,
   Keyboard,
   Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
@@ -109,7 +110,11 @@ const NumberEnterScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.safeArea}>
-      <View style={styles.page}>
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <View style={styles.page}>
         <View style={styles.headerBlock}>
           <Text
             style={[styles.title, { fontSize: sf(28) }]}
@@ -200,7 +205,8 @@ const NumberEnterScreen = ({ navigation }: any) => {
             </Text>
           </Text>
         </View>
-      </View>
+        </View>
+      </KeyboardAvoidingView>
 
       <CountryPicker
         lang='en'

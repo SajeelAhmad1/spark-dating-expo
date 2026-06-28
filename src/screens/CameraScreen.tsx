@@ -3,8 +3,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   TouchableOpacity,
-  StyleSheet,
-  StatusBar,
+  StyleSheet, 
   Modal,
   ActivityIndicator,
 } from 'react-native';
@@ -208,12 +207,7 @@ export default function CameraScreen({
         visible={visible}
         animationType='slide'
         statusBarTranslucent
-      >
-        <StatusBar
-          barStyle='light-content'
-          backgroundColor='#000'
-          hidden
-        />
+      > 
         <View style={styles.fullScreenContainer}>
           {hasPermission ? (
             <>
