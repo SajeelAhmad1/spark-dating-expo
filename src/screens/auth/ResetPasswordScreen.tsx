@@ -196,15 +196,15 @@ export default function ResetPasswordScreen({ navigation, route }: any) {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1, backgroundColor: '#F7F3ED' }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
     >
-      <View style={styles.root}>
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
           <View style={styles.page}>
 
             {/* ── Back ──────────────────────────────────────────────── */}
@@ -303,8 +303,7 @@ export default function ResetPasswordScreen({ navigation, route }: any) {
             </TouchableOpacity>
 
           </View>
-        </ScrollView>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   )
 }
@@ -312,10 +311,6 @@ export default function ResetPasswordScreen({ navigation, route }: any) {
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: '#F7F3ED', 
-  },
   page: {
     flex:              1,
     paddingHorizontal: sw(20),

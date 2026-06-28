@@ -634,7 +634,7 @@ const ProfileScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  flex1: { flex: 1, paddingBottom: sh(20) },
+  flex1: { flex: 1, paddingBottom: sh(60) },
   card: {
     backgroundColor: '#FFFFFF',
     paddingVertical: sh(12),

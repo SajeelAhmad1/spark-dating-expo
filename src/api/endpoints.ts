@@ -16,6 +16,7 @@ export const ENDPOINTS = {
   },
   USER: {
     ME:               '/api/me',
+    DELETE_ACCOUNT:   '/api/me',
     PROFILE_COMPLETE: '/api/profile/complete',
     PROFILE_EDIT:     '/api/profile/edit',
     DELETE:           (id: string) => `/api/users/${id}`,

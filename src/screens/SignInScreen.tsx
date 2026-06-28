@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { ChevronLeft } from 'lucide-react-native';
 import SignInTabs from '@/components/auth/SignInTabs';
@@ -174,10 +174,16 @@ export default function SignInScreen({
   const [activeTab, setActiveTab] = useState<AuthSigninTab>(initialTab);
 
   return (
-    <View
-      style={{ flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) }}
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: '#F7F3ED' }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={{ flex: 1, paddingHorizontal: sw(20), paddingTop: sh(72) }}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: sh(20) }}
+        keyboardShouldPersistTaps='handled'
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={{ flex: 1, paddingHorizontal: sw(20), paddingTop: sh(72) }}>
         <TouchableOpacity
           style={{ width: sw(32), height: sw(32) }}
           onPress={() => navigation.goBack()}
@@ -209,7 +215,8 @@ export default function SignInScreen({
           tab={activeTab}
           navigation={navigation}
         />
-      </View>
-    </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

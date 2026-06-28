@@ -9,6 +9,7 @@ import {
   Platform,
   Share,
   StyleSheet,
+  TextInput,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import {
@@ -29,7 +30,7 @@ import {
 } from '@/features/discovery/hooks';
 import { useLogout } from '@/features/auth/hooks';
 import { useMe } from '@/features/profile/hooks';
-import { useEditProfile } from '@/features/profile/hooks';
+import { useEditProfile, useDeleteAccount } from '@/features/profile/hooks';
 import { showToast } from '@/utils/toast';
 import Slider from '@react-native-community/slider';
 import * as Clipboard from 'expo-clipboard';
@@ -100,6 +101,7 @@ function BottomSheet({
           flex: 1,
           backgroundColor: 'rgba(0,0,0,0.45)',
           justifyContent: 'flex-end',
+          marginBottom: sh(24),
         }}
       >
         <TouchableOpacity
@@ -579,6 +581,61 @@ function InviteSheet({
   );
 }
 
+// ── Delete account sheet ──────────────────────────────────────────────────────
+
+function DeleteAccountSheet({
+  visible,
+  onClose,
+  onConfirm,
+  isDeleting,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  isDeleting: boolean;
+}) {
+  return (
+    <BottomSheet visible={visible} onClose={onClose}>
+      <Text style={[styles.sheetTitle, { color: '#FF073E' }]}>Delete Account</Text>
+      <Text
+        style={{
+          fontFamily: 'Poppins-Regular',
+          fontSize: sf(14),
+          color: '#7D858E',
+          textAlign: 'center',
+          marginBottom: sh(24),
+          lineHeight: sf(22),
+        }}
+      >
+        This action is{' '}
+        <Text style={{ color: '#FF073E', fontFamily: 'Poppins-SemiBold' }}>permanent</Text>.
+        {' '}All your data, matches, and messages will be deleted and cannot be recovered.
+      </Text>
+      <PrimaryButton
+        title={isDeleting ? 'Deleting…' : 'Yes, Delete My Account'}
+        colors={['#FF073E', '#FF073E']}
+        icon={
+          isDeleting ? (
+            <ActivityIndicator size='small' color='#FFFFFF' />
+          ) : (
+            <Trash2 width={sf(20)} height={sf(20)} color='#FFFFFF' />
+          )
+        }
+        iconPosition='middle'
+        onPress={onConfirm}
+        disabled={isDeleting}
+        style={{ alignSelf: 'stretch', marginBottom: sh(12) }}
+        textStyle={{ fontSize: sf(16), fontWeight: '600', color: '#FFFFFF' }}
+      />
+      <TouchableOpacity onPress={onClose} style={styles.sheetCancel}>
+        <Text style={{ color: '#7D858E', fontSize: sf(15), fontFamily: 'Poppins-Medium' }}>
+          Cancel
+        </Text>
+      </TouchableOpacity>
+    </BottomSheet>
+  );
+}
+
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 const SettingsScreen = ({ navigation }: any) => {
@@ -587,6 +644,20 @@ const SettingsScreen = ({ navigation }: any) => {
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
   const { data: me } = useMe();
   const { mutate: editProfile, isPending: isSavingProfile } = useEditProfile();
+  const { mutate: deleteAccount, isPending: isDeletingAccount } = useDeleteAccount();
+
+  const [deleteSheetVisible, setDeleteSheetVisible] = useState(false);
+
+  const handleDeleteAccount = () => {
+    deleteAccount(undefined, {
+      onSuccess: () => {
+        setDeleteSheetVisible(false);
+        navigation.replace('SignInScreen');
+      },
+      onError: (err: any) =>
+        showToast({ text1: 'Failed to delete account', text2: err?.message }),
+    });
+  };
 
   // ── Local toggles ─────────────────────────────────────────────────────────
   const [pushNotifications, setPushNotifications] = useState(false);
@@ -1053,7 +1124,7 @@ const SettingsScreen = ({ navigation }: any) => {
               />
             }
             iconPosition='middle'
-            onPress={() => {}}
+            onPress={() => setDeleteSheetVisible(true)}
             style={{ alignSelf: 'stretch' }}
             textStyle={{ fontSize: sf(20), fontWeight: '500', color: "#FFFFFF" }}
           />
@@ -1104,6 +1175,13 @@ const SettingsScreen = ({ navigation }: any) => {
       <InviteSheet
         visible={openDialog === 'invite'}
         onClose={closeDialog}
+      />
+
+      <DeleteAccountSheet
+        visible={deleteSheetVisible}
+        onClose={() => setDeleteSheetVisible(false)}
+        onConfirm={handleDeleteAccount}
+        isDeleting={isDeletingAccount}
       />
     </View>
   );
