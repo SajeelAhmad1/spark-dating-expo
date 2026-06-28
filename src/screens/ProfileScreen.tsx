@@ -22,6 +22,7 @@ import BottomTabBar from '@/components/common/BottomTabBar';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { useMe } from '@/features/profile/hooks';
 import { getCityFromCoords } from '@/utils/location';
+import { StatusBar } from 'expo-status-bar';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -83,6 +84,8 @@ const ProfileScreen = ({ navigation }: any) => {
   const nameLabel = age ? `${displayName} (${age})` : displayName;
 
   return (
+    <> 
+    <StatusBar style='dark'  translucent={false} />
     <View style={{ flex: 1, backgroundColor: '#F7F3ED' }}>
       {/* Full-screen background */}
       {/* <LinearGradient
@@ -626,6 +629,7 @@ const ProfileScreen = ({ navigation }: any) => {
         <BottomTabBar />
       </View>
     </View>
+    </>
   );
 };
 

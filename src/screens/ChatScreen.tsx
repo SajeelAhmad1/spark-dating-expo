@@ -48,6 +48,7 @@ import { useBlockUser } from '@/features/social/hooks';
 import { useMe } from '@/features/profile/hooks';
 import { useGetUserById } from '@/features/users/hooks';
 import type { ChatMessage } from '@/features/chat/schema';
+import { StatusBar } from 'expo-status-bar';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -99,9 +100,11 @@ function MsgBubble({
         {isOptimistic ? '  ···' : ''}
       </Text>
       {isMe && (
-        <View 
-        > 
-          <CheckCheck size={15} color={isSeen ? '#1E78F5' : '#B6B9C9'} />
+        <View>
+          <CheckCheck
+            size={15}
+            color={isSeen ? '#1E78F5' : '#B6B9C9'}
+          />
         </View>
       )}
     </View>
@@ -638,398 +641,403 @@ export default function ChatScreen({ navigation, route }: any) {
 
   return (
     <>
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: '#F7F3ED',
-          paddingTop: sh(40),
-          paddingBottom: sh(20),
-        }}
+      <StatusBar style='dark' backgroundColor='#FFFFFF' translucent={false} />
+      <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor: '#F7F3ED' }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={{ flex: 1 }}>
-          {/* ── Nav Bar ───────────────────────────────────────────────── */}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingHorizontal: sw(16),
-              paddingBottom: sh(14),
-              backgroundColor: '#FFFFFF',
-              borderBottomWidth: 0.4,
-              borderBottomColor: '#B6B9C9',
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => navigation?.goBack()}
-              style={{ marginRight: sw(12) }}
-            >
-              <ChevronLeft
-                size={sf(24)}
-                color='#7D858E'
-                strokeWidth={2}
-              />
-            </TouchableOpacity>
-
-            <ChatAvatar
-              size={sf(40)}
-              variant='friend'
-              imageUri={chatUserImageUri}
-            />
-
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'column',
-                justifyContent: 'center',
-                marginLeft: sw(10),
-              }}
-            >
-              <Text
-                style={{
-                  fontWeight: '400',
-                  fontSize: sf(20),
-                  lineHeight: sf(22),
-                  color: '#000000',
-                  flexShrink: 1,
-                }}
-                numberOfLines={1}
-                ellipsizeMode='tail'
-              >
-                {chatUserName}
-              </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: sw(4),
-                }}
-              >
-                {isOnline && !isPeerTyping && (
-                  <View
-                    style={{
-                      width: sf(7),
-                      height: sf(7),
-                      borderRadius: 99,
-                      backgroundColor: '#22C55E',
-                    }}
-                  />
-                )}
-                <Text
-                  style={{
-                    fontWeight: '400',
-                    fontSize: sf(12),
-                    color: presenceColor,
-                  }}
-                >
-                  {presenceLabel}
-                </Text>
-              </View>
-            </View>
-
-            <TouchableOpacity
-              ref={menuAnchorRef}
-              onPress={openMenu}
-            >
-              <MoreVertical
-                size={sf(22)}
-                color='#0B0B0B'
-                strokeWidth={2}
-              />
-            </TouchableOpacity>
-          </View>
-
-          {/* ── Messages ──────────────────────────────────────────────── */}
-          {messagesLoading ? (
-            <View
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <ActivityIndicator color='#0B0B0B' />
-            </View>
-          ) : (
-            <FlatList
-              ref={flatListRef}
-              data={messages}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item, index }) => (
-                <MsgBubble
-                  message={item}
-                  isMe={
-                    item.senderId === myId || item.id.startsWith('optimistic-')
-                  }
-                  isSeen={isMessageSeen(index)}
-                  friendAvatarUri={chatUserImageUri}
-                  myAvatarUri={myAvatar}
-                  onSnapPress={(msg) => {
-                    if (msg.media?.url) {
-                      navigation.navigate('SnapViewScreen', {
-                        snapUri: msg.media.url,
-                        snapType: msg.media.mime?.startsWith('video')
-                          ? 'video'
-                          : 'photo',
-                        chatUserName,
-                        chatUserImageUri,
-                        chatUserId,
-                        conversationId,
-                      });
-                    }
-                  }}
-                />
-              )}
-              contentContainerStyle={{
-                paddingVertical: sh(12),
-                flexGrow: 1,
-                justifyContent: 'flex-end',
-              }}
-              showsVerticalScrollIndicator={false}
-              onEndReached={() => {
-                if (hasNextPage) fetchNextPage();
-              }}
-              onEndReachedThreshold={0.1}
-              ListHeaderComponent={
-                isFetchingNextPage ? (
-                  <ActivityIndicator
-                    color='#0B0B0B'
-                    style={{ marginVertical: sh(8) }}
-                  />
-                ) : null
-              }
-              ListEmptyComponent={
-                <View
-                  style={{
-                    flex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingTop: sh(60),
-                  }}
-                >
-                  <Text style={{ fontSize: sf(40), marginBottom: sh(8) }}>
-                    👋
-                  </Text>
-                  <Text style={{ fontSize: sf(15), color: '#8D8D8D' }}>
-                    Say hello!
-                  </Text>
-                </View>
-              }
-            />
-          )}
-
-          {/* ── Locked overlay ────────────────────────────────────────── */}
-          {isLocked && (
-            <View
-              style={{
-                ...StyleSheet.absoluteFillObject,
-                padding: 12,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <View
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: 20,
-                  overflow: 'hidden',
-                }}
-              >
-                <View
-                  style={{
-                    ...StyleSheet.absoluteFill,
-                    backgroundColor: 'rgba(255,243,200,0.55)',
-                  }}
-                />
-                <BlurView
-                  style={StyleSheet.absoluteFill}
-                  intensity={85}
-                  tint='light'
-                />
-                <View
-                  style={{
-                    ...StyleSheet.absoluteFill,
-                    backgroundColor: 'rgba(251,178,2,0.2)',
-                  }}
-                />
-                <View
-                  style={{
-                    ...StyleSheet.absoluteFillObject,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 12,
-                  }}
-                >
-                  <Text style={{ fontSize: sf(40) }}>🔒</Text>
-                  <Text
-                    style={{
-                      fontFamily: 'Poppins-Medium',
-                      fontWeight: '500',
-                      fontSize: sf(32),
-                      color: '#000000',
-                    }}
-                  >
-                    Chat Locked
-                  </Text>
-                </View>
-              </View>
-            </View>
-          )}
-
-          {/* ── Bottom bar ────────────────────────────────────────────── */}
-          {isLocked ? (
-            <TouchableOpacity
-              onPress={() => setIsCameraOpen(true)}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6,
-                backgroundColor: 'rgba(251,178,2,0.6)',
-                marginHorizontal: sw(16),
-                marginBottom: sh(16),
-                marginTop: sh(8),
-                borderRadius: sr(15),
-                height: sh(56),
-                paddingHorizontal: sw(20),
-              }}
-            >
-              <CameraIcon
-                width={40}
-                height={40}
-              />
-              <Text
-                style={{
-                  fontWeight: '500',
-                  fontSize: sf(16),
-                  color: '#000000',
-                }}
-              >
-                Send moment to Unlock the chat
-              </Text>
-            </TouchableOpacity>
-          ) : (
+        <View
+          style={{
+            flex: 1,
+            paddingTop: sh(40),
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            {/* ── Nav Bar ───────────────────────────────────────────────── */}
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 paddingHorizontal: sw(16),
-                paddingVertical: sh(8),
-                gap: 14,
-                // backgroundColor: '#FFFFFF',
+                paddingBottom: sh(14),
+                backgroundColor: '#FFFFFF',
+                borderBottomWidth: 0.4,
+                borderBottomColor: '#B6B9C9',
               }}
             >
               <TouchableOpacity
-                onPress={() => setIsCameraOpen(true)}
-                style={{
-                  width: sw(40),
-                  height: sh(40),
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
+                onPress={() => navigation?.goBack()}
+                style={{ marginRight: sw(12) }}
               >
-                <View
-                  style={{
-                    width: sw(56),
-                    height: sh(56),
-                    overflow: 'hidden',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: sr(94),
-                  }}
-                >
-                  <CameraIcon />
-                </View>
+                <ChevronLeft
+                  size={sf(24)}
+                  color='#7D858E'
+                  strokeWidth={2}
+                />
               </TouchableOpacity>
+
+              <ChatAvatar
+                size={sf(40)}
+                variant='friend'
+                imageUri={chatUserImageUri}
+              />
 
               <View
                 style={{
                   flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  height: sh(56),
-                  borderRadius: sr(15),
-                  borderWidth: 1,
-                  borderColor: '#B6B9C9',
-                  paddingHorizontal: sw(16),
-                  gap: 8,
-                  backgroundColor: '#FFFFFF',
-                  shadowColor: '#000000',
-                  shadowOffset: { width: 0, height: 0 },
-                  shadowOpacity: 0.04,
-                  shadowRadius: 24,
-                  elevation: 1,
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  marginLeft: sw(10),
                 }}
               >
-                <TextInput
-                  placeholder='Type to a message...'
-                  placeholderTextColor='#B6B9C9'
-                  value={messageText}
-                  onChangeText={(v) => {
-                    setValue('messageText', v, { shouldValidate: true });
-                    onTyping();
-                  }}
-                  onBlur={() => {
-                    trigger('messageText');
-                    onStopTyping();
-                  }}
-                  onSubmitEditing={handleSendText}
-                  returnKeyType='send'
-                  blurOnSubmit={false}
+                <Text
                   style={{
-                    flex: 1,
-                    fontFamily: 'Poppins-Regular',
-                    fontSize: sf(16),
+                    fontWeight: '400',
+                    fontSize: sf(20),
+                    lineHeight: sf(22),
                     color: '#000000',
-                    padding: 0,
-                    height: sh(56),
+                    flexShrink: 1,
                   }}
-                />
-                <TouchableOpacity onPress={handleOpenGallery}>
-                  <ImageIcon
-                    size={sf(20)}
-                    color='#7D858E'
-                    strokeWidth={1.8}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleSendText}
-                  disabled={!messageText.trim() || isSending}
+                  numberOfLines={1}
+                  ellipsizeMode='tail'
                 >
-                  {isSending ? (
-                    <ActivityIndicator
-                      size='small'
-                      color='#0B0B0B'
-                    />
-                  ) : (
-                    <Send
-                      size={sf(20)}
-                      color={messageText.trim() ? '#0B0B0B' : '#B6B9C9'}
-                      strokeWidth={2}
+                  {chatUserName}
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: sw(4),
+                  }}
+                >
+                  {isOnline && !isPeerTyping && (
+                    <View
+                      style={{
+                        width: sf(7),
+                        height: sf(7),
+                        borderRadius: 99,
+                        backgroundColor: '#22C55E',
+                      }}
                     />
                   )}
-                </TouchableOpacity>
+                  <Text
+                    style={{
+                      fontWeight: '400',
+                      fontSize: sf(12),
+                      color: presenceColor,
+                    }}
+                  >
+                    {presenceLabel}
+                  </Text>
+                </View>
               </View>
+
+              <TouchableOpacity
+                ref={menuAnchorRef}
+                onPress={openMenu}
+              >
+                <MoreVertical
+                  size={sf(22)}
+                  color='#0B0B0B'
+                  strokeWidth={2}
+                />
+              </TouchableOpacity>
             </View>
-          )}
 
-          {isCameraOpen && (
-            <CameraScreen
-              visible={isCameraOpen}
-              onClose={() => setIsCameraOpen(false)}
-              onPhotoCapture={handlePhotoCapture}
-              onVideoCapture={handleVideoCapture}
-            />
-          )}
+            {/* ── Messages ──────────────────────────────────────────────── */}
+            {messagesLoading ? (
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <ActivityIndicator color='#0B0B0B' />
+              </View>
+            ) : (
+              <FlatList
+                ref={flatListRef}
+                data={messages}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item, index }) => (
+                  <MsgBubble
+                    message={item}
+                    isMe={
+                      item.senderId === myId ||
+                      item.id.startsWith('optimistic-')
+                    }
+                    isSeen={isMessageSeen(index)}
+                    friendAvatarUri={chatUserImageUri}
+                    myAvatarUri={myAvatar}
+                    onSnapPress={(msg) => {
+                      if (msg.media?.url) {
+                        navigation.navigate('SnapViewScreen', {
+                          snapUri: msg.media.url,
+                          snapType: msg.media.mime?.startsWith('video')
+                            ? 'video'
+                            : 'photo',
+                          chatUserName,
+                          chatUserImageUri,
+                          chatUserId,
+                          conversationId,
+                        });
+                      }
+                    }}
+                  />
+                )}
+                contentContainerStyle={{
+                  paddingVertical: sh(12),
+                  flexGrow: 1,
+                  justifyContent: 'flex-end',
+                }}
+                showsVerticalScrollIndicator={false}
+                onEndReached={() => {
+                  if (hasNextPage) fetchNextPage();
+                }}
+                onEndReachedThreshold={0.1}
+                ListHeaderComponent={
+                  isFetchingNextPage ? (
+                    <ActivityIndicator
+                      color='#0B0B0B'
+                      style={{ marginVertical: sh(8) }}
+                    />
+                  ) : null
+                }
+                ListEmptyComponent={
+                  <View
+                    style={{
+                      flex: 1,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingTop: sh(60),
+                    }}
+                  >
+                    <Text style={{ fontSize: sf(40), marginBottom: sh(8) }}>
+                      👋
+                    </Text>
+                    <Text style={{ fontSize: sf(15), color: '#8D8D8D' }}>
+                      Say hello!
+                    </Text>
+                  </View>
+                }
+              />
+            )}
+
+            {/* ── Locked overlay ────────────────────────────────────────── */}
+            {isLocked && (
+              <View
+                style={{
+                  ...StyleSheet.absoluteFillObject,
+                  padding: 12,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <View
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 20,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <View
+                    style={{
+                      ...StyleSheet.absoluteFill,
+                      backgroundColor: 'rgba(255,243,200,0.55)',
+                    }}
+                  />
+                  <BlurView
+                    style={StyleSheet.absoluteFill}
+                    intensity={85}
+                    tint='light'
+                  />
+                  <View
+                    style={{
+                      ...StyleSheet.absoluteFill,
+                      backgroundColor: 'rgba(251,178,2,0.2)',
+                    }}
+                  />
+                  <View
+                    style={{
+                      ...StyleSheet.absoluteFillObject,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 12,
+                    }}
+                  >
+                    <Text style={{ fontSize: sf(40) }}>🔒</Text>
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins-Medium',
+                        fontWeight: '500',
+                        fontSize: sf(32),
+                        color: '#000000',
+                      }}
+                    >
+                      Chat Locked
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )}
+
+            {/* ── Bottom bar ────────────────────────────────────────────── */}
+            {isLocked ? (
+              <TouchableOpacity
+                onPress={() => setIsCameraOpen(true)}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                  backgroundColor: 'rgba(251,178,2,0.6)',
+                  marginHorizontal: sw(16),
+                  marginBottom: sh(16),
+                  marginTop: sh(8),
+                  borderRadius: sr(15),
+                  height: sh(56),
+                  paddingHorizontal: sw(20),
+                }}
+              >
+                <CameraIcon
+                  width={40}
+                  height={40}
+                />
+                <Text
+                  style={{
+                    fontWeight: '500',
+                    fontSize: sf(16),
+                    color: '#000000',
+                  }}
+                >
+                  Send moment to Unlock the chat
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingHorizontal: sw(16),
+                  paddingVertical: sh(8),
+                  gap: 14,
+                  // backgroundColor: '#FFFFFF',
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => setIsCameraOpen(true)}
+                  style={{
+                    width: sw(40),
+                    height: sh(40),
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <View
+                    style={{
+                      width: sw(56),
+                      height: sh(56),
+                      overflow: 'hidden',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: sr(94),
+                    }}
+                  >
+                    <CameraIcon />
+                  </View>
+                </TouchableOpacity>
+
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    height: sh(56),
+                    borderRadius: sr(15),
+                    borderWidth: 1,
+                    borderColor: '#B6B9C9',
+                    paddingHorizontal: sw(16),
+                    gap: 8,
+                    backgroundColor: '#FFFFFF',
+                    shadowColor: '#000000',
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.04,
+                    shadowRadius: 24,
+                    elevation: 1,
+                  }}
+                >
+                  <TextInput
+                    placeholder='Type to a message...'
+                    placeholderTextColor='#B6B9C9'
+                    value={messageText}
+                    onChangeText={(v) => {
+                      setValue('messageText', v, { shouldValidate: true });
+                      onTyping();
+                    }}
+                    onBlur={() => {
+                      trigger('messageText');
+                      onStopTyping();
+                    }}
+                    onSubmitEditing={handleSendText}
+                    returnKeyType='send'
+                    blurOnSubmit={false}
+                    style={{
+                      flex: 1,
+                      fontFamily: 'Poppins-Regular',
+                      fontSize: sf(16),
+                      color: '#000000',
+                      padding: 0,
+                      height: sh(56),
+                    }}
+                  />
+                  <TouchableOpacity onPress={handleOpenGallery}>
+                    <ImageIcon
+                      size={sf(20)}
+                      color='#7D858E'
+                      strokeWidth={1.8}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleSendText}
+                    disabled={!messageText.trim() || isSending}
+                  >
+                    {isSending ? (
+                      <ActivityIndicator
+                        size='small'
+                        color='#0B0B0B'
+                      />
+                    ) : (
+                      <Send
+                        size={sf(20)}
+                        color={messageText.trim() ? '#0B0B0B' : '#B6B9C9'}
+                        strokeWidth={2}
+                      />
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+
+            {isCameraOpen && (
+              <CameraScreen
+                visible={isCameraOpen}
+                onClose={() => setIsCameraOpen(false)}
+                onPhotoCapture={handlePhotoCapture}
+                onVideoCapture={handleVideoCapture}
+              />
+            )}
+          </View>
         </View>
-      </View>
 
-      <ChatMenu
-        visible={menuVisible}
-        onClose={() => setMenuVisible(false)}
-        anchorPosition={menuAnchorPos}
-        items={menuItems}
-      />
+        <ChatMenu
+          visible={menuVisible}
+          onClose={() => setMenuVisible(false)}
+          anchorPosition={menuAnchorPos}
+          items={menuItems}
+        />
+      </KeyboardAvoidingView>
     </>
   );
 }

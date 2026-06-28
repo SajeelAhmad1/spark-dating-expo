@@ -9,6 +9,8 @@ import {
   Modal,
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -162,7 +164,7 @@ function InterestPickerModal({
             borderTopLeftRadius: sr(24),
             borderTopRightRadius: sr(24),
             maxHeight: '85%',
-            paddingBottom: sh(40),
+            paddingBottom: sh(60),
           }}
         >
           {/* Header */}
@@ -611,15 +613,16 @@ const EditProfileScreen = ({ navigation }: any) => {
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#F7F3ED',
-        paddingTop: sh(40),
-        paddingBottom: sh(20),
-      }}
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: '#F7F3ED' }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View style={{ flex: 1 }}>
+      <View
+        style={{
+          flex: 1,
+          paddingTop: sh(40),
+        }}
+      >
         {/* ── Header ──────────────────────────────────────────────────── */}
         <View
           style={{
@@ -1171,7 +1174,7 @@ const EditProfileScreen = ({ navigation }: any) => {
         onClose={() => setShowInterests(false)}
         isSaving={false}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

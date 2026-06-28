@@ -13,10 +13,18 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Settings, Heart, X, Zap } from 'lucide-react-native';
+import {
+  Settings,
+  Heart,
+  X,
+  Zap,
+  RefreshCw,
+  AlertTriangle,
+} from 'lucide-react-native';
 import BottomTabBar from '@/components/common/BottomTabBar';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { showToast } from '@/utils/toast';
@@ -25,6 +33,7 @@ import { useDiscoverProfiles, useSwipe } from '@/features/discovery/hooks';
 import type { DiscoveryProfile } from '@/features/discovery/schema';
 import { useLocationStore } from '@/store/locationStore';
 import { ProgressDots } from '@/components/ProgressDots';
+import { BlurView } from 'expo-blur';
 
 const { width: SW, height: SH } = Dimensions.get('window');
 const CARD_WIDTH = SW;
@@ -95,6 +104,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
   const {
     data,
     isPending,
+    isFetching,
     isError,
     refetch,
     fetchNextPage,
@@ -107,7 +117,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
   );
 
   const profiles = data?.profiles ?? [];
-console.log(data, "data discoveryscreen");
+  console.log(data, 'data discoveryscreen');
   const [photoIndex, setPhotoIndex] = useState(0);
   const activeProfile = profiles[0];
   const activeMatch = activeProfile ? profileToCardItem(activeProfile) : null;
@@ -212,43 +222,69 @@ console.log(data, "data discoveryscreen");
         style={[
           styles.fullScreen,
           {
-            backgroundColor: '#111',
+            backgroundColor: '#F7F3ED',
             alignItems: 'center',
             justifyContent: 'center',
             gap: sh(12),
           },
         ]}
       >
-        <Text style={{ fontSize: sf(40) }}>✨</Text>
-        <Text
-          style={{
-            color: '#FFFFFF',
-            fontSize: sf(20),
-            fontFamily: 'Poppins-SemiBold',
-            textAlign: 'center',
-          }}
-        >
-          {isError ? 'Unable to load profiles' : "You've seen everyone!"}
-        </Text>
-        <TouchableOpacity
-          onPress={() => refetch()}
-          style={{
-            backgroundColor: 'rgba(255,255,255,0.15)',
-            paddingHorizontal: sw(24),
-            paddingVertical: sh(12),
-            borderRadius: sr(99),
-          }}
-        >
-          <Text
-            style={{
-              color: '#FFFFFF',
-              fontFamily: 'Poppins-SemiBold',
-              fontSize: sf(15),
-            }}
-          >
-            {isError ? 'Try Again' : 'Refresh'}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.overlay}>
+          <BlurView
+            intensity={60}
+            tint='dark'
+            style={StyleSheet.absoluteFill}
+          />
+          <View style={styles.dialog}>
+            <LinearGradient
+              colors={['rgba(30,120,245,0.15)', 'rgba(251,178,2,0.10)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+            <View style={styles.iconWrap}>
+              <AlertTriangle
+                size={sf(32)}
+                color='#0B0B0B'
+                strokeWidth={1.8}
+              />
+            </View>
+            <Text style={styles.dialogTitle}>
+              {' '}
+              {isError ? 'Unable to load profiles' : "You've seen everyone!"}
+            </Text>
+            {/* <Text style={styles.dialogBody}>
+              {isError ? 'Unable to load profiles' : "You've seen everyone!"}
+            </Text> */}
+            <TouchableOpacity
+              onPress={() => refetch()}
+              disabled={isFetching}
+              style={styles.retryBtn}
+            >
+              {isFetching ? (
+                <ActivityIndicator
+                  size='small'
+                  color='#0B0B0B'
+                />
+              ) : (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: sw(8),
+                  }}
+                >
+                  <RefreshCw
+                    size={sf(16)}
+                    color='#0B0B0B'
+                    strokeWidth={2}
+                  />
+                  <Text style={styles.retryText}>Try Again</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
         <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
           <BottomTabBar />
         </View>
@@ -450,14 +486,14 @@ const styles = StyleSheet.create({
     right: sw(20),
     zIndex: 10,
   },
-  nameText: { 
+  nameText: {
     fontWeight: 600,
     fontSize: sf(24),
     color: '#FFFFFF',
     lineHeight: sf(38),
     marginBottom: sh(6),
   },
-  bioText: { 
+  bioText: {
     fontSize: sf(14),
     color: '#D9D9D9',
     lineHeight: sf(22),
@@ -470,7 +506,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: sw(8),
   },
-  pill: { 
+  pill: {
     height: 29,
     backgroundColor: 'rgba(234, 214, 169, 0.4)',
     borderRadius: sr(20),
@@ -481,7 +517,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pillText: { 
+  pillText: {
     fontSize: sf(14),
     color: '#FFFFFF',
     lineHeight: sf(20),
@@ -535,5 +571,61 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
     zIndex: 15,
   },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: sw(24),
+  },
+  dialog: {
+    width: '100%',
+    borderRadius: sr(24),
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    alignItems: 'center',
+    paddingHorizontal: sw(24),
+    paddingVertical: sh(32),
+    gap: sh(10),
+  },
+  iconWrap: {
+    width: sf(64),
+    height: sf(64),
+    borderRadius: 9999,
+    backgroundColor: 'rgba(251,178,2,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(251,178,2,0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: sh(4),
+  },
+  dialogTitle: {
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: sf(18),
+    color: '#0B0B0B',
+    textAlign: 'center',
+  },
+  dialogBody: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: sf(14),
+    color: 'rgba(255,255,255,0.7)',
+    textAlign: 'center',
+    lineHeight: sf(22),
+    marginBottom: sh(8),
+  },
+  retryBtn: {
+    marginTop: sh(4),
+    height: sh(48),
+    paddingHorizontal: sw(32),
+    borderRadius: sr(99),
+    backgroundColor: '#CEB98F',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  retryText: {
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: sf(15),
+    color: '#0B0B0B',
+  },
 });
-
