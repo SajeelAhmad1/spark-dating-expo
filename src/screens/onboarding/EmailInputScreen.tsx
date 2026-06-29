@@ -114,27 +114,9 @@ export default function EmailInputScreen({ navigation }: any) {
 
             {/* Email field */}
             <View style={{ marginBottom: sh(16) }}>
-              <Text style={[styles.label]}>Email Address</Text>
-              <View
-                style={[
-                  styles.inputStyle,
-                  {
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    backgroundColor: '#F9FAFB',
-                    borderWidth: 1.5,
-                    borderColor: errors.email ? '#EF4444' : '#E5E7EB',
-                    borderRadius: sf(12),
-                    paddingHorizontal: sw(14),
-                    height: sh(56),
-                    gap: sw(10),
-                  },
-                ]}
-              >
-                <Mail
-                  size={sf(18)}
-                  color='#9CA3AF'
-                />
+              <Text  style={[styles.label, { fontSize: sf(18),  }]}
+                      weight="semibold">Email Address</Text>
+              <View style={styles.fieldRow} > 
                 <TextInput
                   value={email}
                   onChangeText={(v) =>
@@ -146,9 +128,7 @@ export default function EmailInputScreen({ navigation }: any) {
                   keyboardType='email-address'
                   autoCapitalize='none'
                   autoCorrect={false}
-                  style={[
-                    { flex: 1, fontSize: sf(15), color: '#111827', padding: 0 },
-                  ]}
+                 style={[styles.input, { fontSize: sf(12), paddingVertical: sh(8) }]}
                 />
               </View>
               {errors.email && (
@@ -196,19 +176,15 @@ export default function EmailInputScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
-  inputStyle: {
-    borderWidth: 1,
-    borderColor: '#B6B9C9',
-    borderRadius: sr(15),
-    height: sh(56),
-    paddingHorizontal: sw(10),
-    fontSize: sf(15),
-    color: '#000000',
+   label: { color: "#000000" },
+  fieldRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#B6B9C9",
   },
-  label: {
-    color: '#000000',
-    fontSize: sf(15),
-    fontWeight: '600',
-    marginBottom: sh(6),
+  input: {
+    flex: 1,
+    color: "#7D858E",
   },
 });

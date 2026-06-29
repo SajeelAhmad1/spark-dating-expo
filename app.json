@@ -69,7 +69,13 @@
           "defaultChannel": "chat"
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-auth-session",
+        {
+          "scheme": "sparkdating"
+        }
+      ]
     ],
     "extra": {
       "apiBaseUrl": "http://192.168.18.19:5000",
