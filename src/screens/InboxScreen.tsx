@@ -24,8 +24,7 @@ import {
 
 import FireIcon from '@/assets/images/fireIcon.svg';
 import GlassIcon from '@/assets/images/glassIcon.svg';
-import LockIcon from '@/assets/images/lockIcon.svg';
-import TabLayout from '@/components/layout/TabLayout';
+import LockIcon from '@/assets/images/lockIcon.svg'; 
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { inboxSearchFormSchema } from '@/schemas/messaging';
@@ -540,7 +539,7 @@ export default function InboxScreen({ navigation, route }: any) {
   const showSections = activeFilter === 'All';
 
   return (
-    <TabLayout>
+    <>
     <View
       style={{ flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) }}
     >
@@ -844,7 +843,7 @@ export default function InboxScreen({ navigation, route }: any) {
         onClose={() => setLockedModalVisible(false)}
       />
       </View>
-    </TabLayout>
+    </>
   );
 }
 

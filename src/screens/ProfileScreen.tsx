@@ -17,8 +17,7 @@ import {
   MapPin,
   ChevronRight,
   Venus,
-} from 'lucide-react-native';
-import TabLayout from '@/components/layout/TabLayout';
+} from 'lucide-react-native'; 
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { useMe } from '@/features/profile/hooks';
 import { getCityFromCoords } from '@/utils/location'; 
@@ -83,7 +82,7 @@ const ProfileScreen = ({ navigation }: any) => {
   const nameLabel = age ? `${displayName} (${age})` : displayName;
 
   return (
-    <TabLayout>
+    <>
       <View style={{ flex: 1, backgroundColor: '#F7F3ED' }}>
       {/* Full-screen background */}
       {/* <LinearGradient
@@ -623,7 +622,7 @@ const ProfileScreen = ({ navigation }: any) => {
         </ScrollView>
       </View>
       </View>
-    </TabLayout>
+    </>
   );
 };
 

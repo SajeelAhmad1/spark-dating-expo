@@ -16,7 +16,6 @@ import InviteScreen              from '@/screens/onboarding/InviteScreen'
 import WaitingScreen             from '@/screens/onboarding/WaitingScreen'
 import LaunchScreen              from '@/screens/onboarding/LaunchScreen'
 import SignInScreen              from '@/screens/SignInScreen'
-import ProfileScreen             from '@/screens/ProfileScreen'
 import EmailInputScreen          from '@/screens/onboarding/EmailInputScreen'
 import NumberInputScreen         from '@/screens/onboarding/NumberInputScreen'
 import NumberVerifyScreen        from '@/screens/onboarding/NumberVerifyScreen'
@@ -28,21 +27,19 @@ import UploadPhotosScreen        from '@/screens/onboarding/UploadPhotosScreen'
 import EnableLocationScreen      from '@/screens/EnableLocationScreen'
 import NotAvailableScreen        from '@/screens/NotAvailableScreen'
 import SearchScreen              from '@/screens/SearchScreen'
-import DiscoveryScreen           from '@/screens/DiscoveryScreen'
 import MatchScreen               from '@/screens/MatchScreen'
 import RequestsScreen            from '@/screens/RequestsScreen'
-import InboxScreen               from '@/screens/InboxScreen'
 import ChatScreen                from '@/screens/ChatScreen'
 import EditProfileScreen         from './src/screens/EditProfileScreen'
 import SettingsScreen            from '@/screens/SettingsScreen'
 import BlockedUsersScreen        from '@/screens/BlockedUsersScreen'
 import UserProfileScreen         from '@/screens/UserProfileScreen'
 import SnapViewScreen            from '@/screens/SnapViewScreen'
-import ForgotPasswordScreen from '@/screens/auth/ForgotPasswordScreen'
-import ForgotPasswordVerifyOtpScreen from '@/screens/auth/ForgotPasswordVerifyOtpScreen' 
-import ResetPasswordScreen from '@/screens/auth/ResetPasswordScreen'
-import PasswordUpdatedScreen from '@/screens/auth/PasswordUpdatedScreen'
-
+import ForgotPasswordScreen          from '@/screens/auth/ForgotPasswordScreen'
+import ForgotPasswordVerifyOtpScreen from '@/screens/auth/ForgotPasswordVerifyOtpScreen'
+import ResetPasswordScreen           from '@/screens/auth/ResetPasswordScreen'
+import PasswordUpdatedScreen         from '@/screens/auth/PasswordUpdatedScreen'
+import TabNavigator              from '@/navigation/TabNavigator'
 
 import { useFonts }    from 'expo-font'
 import Toast           from 'react-native-toast-message'
@@ -50,26 +47,24 @@ import { toastConfig } from '@/utils/toastConfig'
 import { QueryProvider } from '@/providers/QueryProvider'
 import { parseChatNotification, getInitialNotification } from '@/services/fcm'
 import { StatusBar } from 'expo-status-bar'
-
+import type { RootStackParamList } from '@/types/navigation'
 
 const isExpoGo = Constants.executionEnvironment === 'storeClient'
 
-const Stack = createStackNavigator()
+const Stack = createStackNavigator<RootStackParamList>()
 
-// ── Navigation ref — used by FCM service to navigate imperatively ─────────────
-export const navigationRef = NavigationContainerRef<any>
+export const navigationRef = NavigationContainerRef<RootStackParamList>
 
-// ── Navigate to conversation from notification data ───────────────────────────
 function navigateToConversation(
-  ref: React.RefObject<NavigationContainerRef<any>>,
-  conversationId: string
+  ref: React.RefObject<NavigationContainerRef<RootStackParamList>>,
+  conversationId: string,
 ) {
   if (!ref.current?.isReady()) return
   ref.current.navigate('ChatScreen', { conversationId })
 }
 
 export default function App() {
-  const navRef = useRef<NavigationContainerRef<any>>(null)
+  const navRef = useRef<NavigationContainerRef<RootStackParamList>>(null)
 
   const [loaded, error] = useFonts({
     'Poppins-Thin':       require('./src/assets/fonts/Poppins-Thin.ttf'),
@@ -85,7 +80,6 @@ export default function App() {
   })
 
   useEffect(() => {
-    // Remote push notifications are not supported in Expo Go SDK 53+
     if (isExpoGo) return
 
     const foregroundSub = Notifications.addNotificationResponseReceivedListener((response) => {
@@ -95,20 +89,13 @@ export default function App() {
       }
     })
 
-    // ── Handle notification tap from BACKGROUND / TERMINATED state ────────
-    // getInitialNotification returns the notification that launched the app.
-    // React Query will refetch stale message history automatically on screen mount
-    // (staleTime: 15s) so no manual fetch is needed here.
     getInitialNotification().then((data) => {
       if (data?.conversationId) {
-        // Small delay to ensure NavigationContainer is ready
         setTimeout(() => navigateToConversation(navRef, data.conversationId), 500)
       }
     })
 
-    return () => {
-      foregroundSub.remove()
-    }
+    return () => { foregroundSub.remove() }
   }, [])
 
   if (!loaded && !error) return null
@@ -118,10 +105,7 @@ export default function App() {
       <SafeAreaProvider>
         <SafeAreaView style={{ flex: 1, backgroundColor: '#F7F3ED' }} edges={['bottom', 'left', 'right']}>
           <QueryProvider>
-             <StatusBar
-              style="dark"
-              translucent={false} 
-            />
+            <StatusBar style="dark" translucent={false} />
             <NavigationContainer ref={navRef}>
               <Stack.Navigator
                 initialRouteName="Onboarding1"
@@ -134,12 +118,12 @@ export default function App() {
                 <Stack.Screen name="LogoScreen"   component={LogoScreen} />
 
                 {/* ── Auth ────────────────────────────────────────────── */}
-                <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
-                <Stack.Screen name="SignInScreen" component={SignInScreen} />
-                <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} />
+                <Stack.Screen name="SignUpScreen"                  component={SignUpScreen} />
+                <Stack.Screen name="SignInScreen"                  component={SignInScreen} />
+                <Stack.Screen name="ForgotPasswordScreen"          component={ForgotPasswordScreen} />
                 <Stack.Screen name="ForgotPasswordVerifyOtpScreen" component={ForgotPasswordVerifyOtpScreen} />
-                <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen} />
-                <Stack.Screen name="PasswordUpdatedScreen" component={PasswordUpdatedScreen} />
+                <Stack.Screen name="ResetPasswordScreen"           component={ResetPasswordScreen} />
+                <Stack.Screen name="PasswordUpdatedScreen"         component={PasswordUpdatedScreen} />
 
                 {/* ── Signup flow ──────────────────────────────────────── */}
                 <Stack.Screen name="EmailInputScreen"          component={EmailInputScreen} />
@@ -158,19 +142,18 @@ export default function App() {
                 <Stack.Screen name="EnableLocationScreen" component={EnableLocationScreen} />
                 <Stack.Screen name="NotAvailableScreen"   component={NotAvailableScreen} />
 
-                {/* ── Discovery ────────────────────────────────────────── */}
-                <Stack.Screen name="SearchScreen"    component={SearchScreen} />
-                <Stack.Screen name="DiscoveryScreen" component={DiscoveryScreen} />
-                <Stack.Screen name="MatchScreen"     component={MatchScreen} />
+                {/* ── Main app (tabs) ──────────────────────────────────── */}
+                <Stack.Screen name="MainTabs"       component={TabNavigator} />
+                <Stack.Screen name="SearchScreen"   component={SearchScreen} />
+                <Stack.Screen name="MatchScreen"    component={MatchScreen} />
 
-                {/* ── Social ───────────────────────────────────────────── */}
+                {/* ── Chat ─────────────────────────────────────────────── */}
                 <Stack.Screen name="RequestsScreen" component={RequestsScreen} />
-                <Stack.Screen name="InboxScreen"    component={InboxScreen} />
+                {/* <Stack.Screen name="InboxScreen"    component={InboxScreen as any} /> */}
                 <Stack.Screen name="ChatScreen"     component={ChatScreen} />
                 <Stack.Screen name="SnapViewScreen" component={SnapViewScreen} />
 
                 {/* ── Profile ──────────────────────────────────────────── */}
-                <Stack.Screen name="ProfileScreen"      component={ProfileScreen} />
                 <Stack.Screen name="EditProfileScreen"  component={EditProfileScreen} />
                 <Stack.Screen name="SettingsScreen"     component={SettingsScreen} />
                 <Stack.Screen name="BlockedUsersScreen" component={BlockedUsersScreen} />

@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { ChevronLeft, Heart, X, RefreshCw } from 'lucide-react-native';
-import BottomTabBar from '@/components/common/BottomTabBar';
 import { sf, sh, sw, sr } from '@/utils/sizeMatters';
 import {
   useAcceptConnectionRequest,
@@ -328,8 +327,6 @@ export default function RequestsScreen({ navigation }: any) {
           )}
         </ScrollView>
       )}
-
-      <BottomTabBar />
     </View>
   );
 }

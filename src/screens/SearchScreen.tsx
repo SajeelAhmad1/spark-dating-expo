@@ -35,7 +35,7 @@ const SearchScreen = ({ navigation }: any) => {
       return;
     }
     if (coords && !isPending && data !== undefined) {
-      navigation.replace('DiscoveryScreen');
+      navigation.replace('MainTabs');
     }
   }, [coords, isLoading, isPending, data, navigation]);
 

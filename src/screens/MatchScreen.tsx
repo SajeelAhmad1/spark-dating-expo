@@ -259,7 +259,7 @@ const MatchScreen = ({ navigation, route }: any) => {
 
   const closeCameraAndPreview = () => {
     setIsCamOpen(false);
-    navigation.replace('DiscoveryScreen');
+    navigation.replace('MainTabs');
   };
 
   return (

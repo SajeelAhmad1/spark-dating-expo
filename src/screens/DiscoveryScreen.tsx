@@ -26,8 +26,7 @@ import {
   Zap,
   RefreshCw,
   AlertTriangle,
-} from 'lucide-react-native';
-import TabLayout from '@/components/layout/TabLayout';
+} from 'lucide-react-native'; 
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { showToast } from '@/utils/toast';
 import { PanGestureHandler } from 'react-native-gesture-handler';
@@ -210,18 +209,18 @@ const DiscoveryScreen = ({ navigation }: any) => {
   // ── Loading ───────────────────────────────────────────────────────────────
   if (isPending && profiles.length === 0) {
     return (
-      <TabLayout>
+      <>
         <View style={styles.fullScreen}>
           <SkeletonCard />
         </View>
-      </TabLayout>
+      </>
     );
   }
 
   // ── Empty ─────────────────────────────────────────────────────────────────
   if (profiles.length === 0 && !isFetchingNextPage) {
     return (
-      <TabLayout>
+      <>
       <View
         style={[
           styles.fullScreen,
@@ -299,7 +298,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
           </View>
         </ScrollView>
       </View>
-      </TabLayout>
+      </>
     );
   }
 
@@ -308,7 +307,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
     activeMatch?.images?.[photoIndex] ?? activeMatch?.image ?? '';
 
   return (
-    <TabLayout>
+    <>
     <View style={styles.fullScreen}>
       {/* ── Full-screen swipeable card ──────────────────────────────── */}
       <PanGestureHandler
@@ -454,7 +453,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
       </View>
 
     </View>
-    </TabLayout>
+    </>
   );
 };
 
@@ -490,7 +489,7 @@ const styles = StyleSheet.create({
   // Info block at bottom
   infoWrap: {
     position: 'absolute',
-    bottom: sh(200), // sits above action buttons
+    bottom: sh(140), // sits above action buttons
     left: sw(20),
     right: sw(20),
     zIndex: 10,
@@ -535,7 +534,7 @@ const styles = StyleSheet.create({
   // Action buttons row
   actionsRow: {
     position: 'absolute',
-    bottom: sh(110), // sits above tab bar
+    bottom: sh(20), // sits above tab bar
     left: 0,
     right: 0,
     flexDirection: 'row',
