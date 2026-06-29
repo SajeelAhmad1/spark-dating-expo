@@ -1,4 +1,3 @@
-// screens/onboarding/InterestsScreen.tsx
 import React, { useMemo, useState } from 'react';
 import {
   View,
@@ -8,6 +7,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
+import RefreshControl from '@/components/common/RefreshControl';
 import { ChevronLeft } from 'lucide-react-native';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { FieldError } from '@/components/common/FieldError';
@@ -104,6 +104,15 @@ const InterestsScreen = ({ navigation }: any) => {
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: sh(130) }}
         showsVerticalScrollIndicator={false}
+        // refreshControl={
+        //   <RefreshControl
+        //     refreshing={false}
+        //     onRefresh={() => {
+        //       // Add any refresh logic here if needed
+        //       // For now, this is just for UI consistency
+        //     }}
+        //   />
+        // }
       >
         <TouchableOpacity onPress={() => navigation?.goBack()}>
           <ChevronLeft

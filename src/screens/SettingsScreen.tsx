@@ -12,6 +12,7 @@ import {
   TextInput,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
+import RefreshControl from '@/components/common/RefreshControl';
 import {
   ChevronLeft,
   ChevronRight,
@@ -255,7 +256,7 @@ function AgeSheet({
         minimumTrackTintColor='#CEB98F'
         maximumTrackTintColor='#E0E0E0'
         thumbTintColor='#CEB98F'
-        style={{ marginBottom: sh(12) }}
+        style={{ marginBottom: sh(12), zIndex: 1 }}
       />
 
       <Text style={styles.sliderLabel}>Max Age: {localMax}</Text>
@@ -268,7 +269,7 @@ function AgeSheet({
         minimumTrackTintColor='#CEB98F'
         maximumTrackTintColor='#E0E0E0'
         thumbTintColor='#CEB98F'
-        style={{ marginBottom: sh(24) }}
+        style={{ marginBottom: sh(24), zIndex: 2 }}
       />
 
       <PrimaryButton
@@ -946,6 +947,15 @@ const SettingsScreen = ({ navigation }: any) => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: sw(20) }}
+        // refreshControl={
+        //   <RefreshControl
+        //     refreshing={prefsLoading || isSavingProfile}
+        //     onRefresh={() => {
+        //       // Refresh user data and preferences
+        //       // Since these use React Query, they should automatically refetch
+        //     }}
+        //   />
+        // }
       >
         {/* ── Account ─────────────────────────────────────────────────── */}
         <SectionTitle title='Account' />

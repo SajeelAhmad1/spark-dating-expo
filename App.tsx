@@ -120,8 +120,7 @@ export default function App() {
           <QueryProvider>
              <StatusBar
               style="dark"
-              translucent={false}
-              backgroundColor="#FFFFFF"
+              translucent={false} 
             />
             <NavigationContainer ref={navRef}>
               <Stack.Navigator

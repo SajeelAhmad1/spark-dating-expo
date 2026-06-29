@@ -13,6 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
+import RefreshControl from '@/components/common/RefreshControl';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {
   Settings,
@@ -662,6 +663,15 @@ const EditProfileScreen = ({ navigation }: any) => {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps='handled'
           contentContainerStyle={{ paddingBottom: sh(10) }}
+          // refreshControl={
+          //   <RefreshControl
+          //     refreshing={isMeLoading || isSaving || uploading.length > 0}
+          //     onRefresh={() => {
+          //       // Refresh user profile data
+          //       // Since this uses React Query, it should automatically refetch
+          //     }}
+          //   />
+          // }
         >
           {/* ── Photo grid ──────────────────────────────────────────── */}
           <View

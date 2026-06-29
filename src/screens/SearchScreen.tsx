@@ -5,8 +5,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
+import RefreshControl from '@/components/common/RefreshControl';
 import ProfileAvatar from '@/assets/images/profileAvatar.svg';
 import OrbitRing from '@/components/common/OrbitRing';
 import { sf, sh, sr, sw } from '@/utils/sizeMatters';
@@ -38,7 +40,15 @@ const SearchScreen = ({ navigation }: any) => {
   }, [coords, isLoading, isPending, data, navigation]);
 
   return (
-    <View style={styles.safeArea}>
+    <ScrollView 
+      contentContainerStyle={styles.safeArea}
+      // refreshControl={
+      //   <RefreshControl
+      //     refreshing={isFetching}
+      //     onRefresh={() => refetch()}
+      //   />
+      // }
+    >
       {/* ── Orbit animation ── */}
       <View
         style={[
@@ -158,7 +168,7 @@ const SearchScreen = ({ navigation }: any) => {
           </View>
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 };
 

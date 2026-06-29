@@ -267,7 +267,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.safeArea}>
         <ScrollView

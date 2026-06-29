@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Text } from '@/components/common/Text';
+import RefreshControl from '@/components/common/RefreshControl';
 import {
   ChevronLeft,
   Search,
@@ -24,7 +25,7 @@ import {
 import FireIcon from '@/assets/images/fireIcon.svg';
 import GlassIcon from '@/assets/images/glassIcon.svg';
 import LockIcon from '@/assets/images/lockIcon.svg';
-import BottomTabBar from '@/components/common/BottomTabBar';
+import TabLayout from '@/components/layout/TabLayout';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { inboxSearchFormSchema } from '@/schemas/messaging';
@@ -539,6 +540,7 @@ export default function InboxScreen({ navigation, route }: any) {
   const showSections = activeFilter === 'All';
 
   return (
+    <TabLayout>
     <View
       style={{ flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) }}
     >
@@ -698,6 +700,12 @@ export default function InboxScreen({ navigation, route }: any) {
             paddingBottom: sh(140),
           }}
           style={{ flex: 1 }}
+          // refreshControl={
+          //   <RefreshControl
+          //     refreshing={isFetching}
+          //     onRefresh={() => refetch()}
+          //   />
+          // }
         >
           {showSections ? (
             <>
@@ -830,17 +838,13 @@ export default function InboxScreen({ navigation, route }: any) {
         </ScrollView>
       )}
 
-      {/* ── Bottom tab bar ──────────────────────────────────────────── */}
-      <View style={styles.tabBarWrap}>
-        <BottomTabBar />
-      </View>
-
       {/* ── Visual Conversations Modal ───────────────────────────────────── */}
       <VisualConversationsModal
         visible={lockedModalVisible}
         onClose={() => setLockedModalVisible(false)}
       />
-    </View>
+      </View>
+    </TabLayout>
   );
 }
 
@@ -1022,12 +1026,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
-  tabBarWrap: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#000000',
-    zIndex: 15,
-  },
+
 });

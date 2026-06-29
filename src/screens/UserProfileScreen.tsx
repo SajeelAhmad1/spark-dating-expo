@@ -12,6 +12,7 @@ import {
   Alert,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
+import RefreshControl from '@/components/common/RefreshControl';
 import {
   MoreVertical,
   MapPin,
@@ -138,6 +139,15 @@ const UserProfileScreen = ({ navigation, route }: any) => {
         ref={scrollRef}
         showsVerticalScrollIndicator={false}
         style={{ flex: 1 }}
+        // refreshControl={
+        //   <RefreshControl
+        //     refreshing={false}
+        //     onRefresh={() => {
+        //       // Add any refresh logic here if needed
+        //       // For static profile data, this is just for UI consistency
+        //     }}
+        //   />
+        // }
       >
         {/* ── Hero Card ── */}
         <View

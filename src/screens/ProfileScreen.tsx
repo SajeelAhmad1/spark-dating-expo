@@ -18,7 +18,7 @@ import {
   ChevronRight,
   Venus,
 } from 'lucide-react-native';
-import BottomTabBar from '@/components/common/BottomTabBar';
+import TabLayout from '@/components/layout/TabLayout';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { useMe } from '@/features/profile/hooks';
 import { getCityFromCoords } from '@/utils/location'; 
@@ -83,8 +83,8 @@ const ProfileScreen = ({ navigation }: any) => {
   const nameLabel = age ? `${displayName} (${age})` : displayName;
 
   return (
-    <>  
-    <View style={{ flex: 1, backgroundColor: '#F7F3ED' }}>
+    <TabLayout>
+      <View style={{ flex: 1, backgroundColor: '#F7F3ED' }}>
       {/* Full-screen background */}
       {/* <LinearGradient
         colors={['#CEB98F', '#EAD6A9']}
@@ -622,12 +622,8 @@ const ProfileScreen = ({ navigation }: any) => {
           </View>
         </ScrollView>
       </View>
-      {/* ── Bottom tab bar ──────────────────────────────────────────── */}
-      <View style={styles.tabBarWrap}>
-        <BottomTabBar />
       </View>
-    </View>
-    </>
+    </TabLayout>
   );
 };
 
@@ -662,14 +658,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tabBarWrap: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#000000',
-    zIndex: 15,
-  },
+
 });
 
 export default ProfileScreen;

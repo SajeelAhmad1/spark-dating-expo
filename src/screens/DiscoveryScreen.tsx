@@ -14,8 +14,10 @@ import {
   StyleSheet,
   Image,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
+import RefreshControl from '@/components/common/RefreshControl';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Settings,
@@ -25,7 +27,7 @@ import {
   RefreshCw,
   AlertTriangle,
 } from 'lucide-react-native';
-import BottomTabBar from '@/components/common/BottomTabBar';
+import TabLayout from '@/components/layout/TabLayout';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { showToast } from '@/utils/toast';
 import { PanGestureHandler } from 'react-native-gesture-handler';
@@ -208,87 +210,96 @@ const DiscoveryScreen = ({ navigation }: any) => {
   // ── Loading ───────────────────────────────────────────────────────────────
   if (isPending && profiles.length === 0) {
     return (
-      <View style={styles.fullScreen}>
-        <SkeletonCard />
-        <BottomTabBar />
-      </View>
+      <TabLayout>
+        <View style={styles.fullScreen}>
+          <SkeletonCard />
+        </View>
+      </TabLayout>
     );
   }
 
   // ── Empty ─────────────────────────────────────────────────────────────────
   if (profiles.length === 0 && !isFetchingNextPage) {
     return (
+      <TabLayout>
       <View
         style={[
           styles.fullScreen,
           {
             backgroundColor: '#F7F3ED',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: sh(12),
           },
         ]}
       >
-        <View style={styles.overlay}>
-          <BlurView
-            intensity={60}
-            tint='dark'
-            style={StyleSheet.absoluteFill}
-          />
-          <View style={styles.dialog}>
-            <LinearGradient
-              colors={['rgba(30,120,245,0.15)', 'rgba(251,178,2,0.10)']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+        <ScrollView
+          contentContainerStyle={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: sh(12),
+          }}
+          // refreshControl={
+          //   <RefreshControl
+          //     refreshing={isFetching}
+          //     onRefresh={() => refetch()}
+          //   />
+          // }
+        >
+          <View style={styles.overlay}>
+            <BlurView
+              intensity={60}
+              tint='dark'
               style={StyleSheet.absoluteFill}
             />
-            <View style={styles.iconWrap}>
-              <AlertTriangle
-                size={sf(32)}
-                color='#0B0B0B'
-                strokeWidth={1.8}
+            <View style={styles.dialog}>
+              <LinearGradient
+                colors={['rgba(30,120,245,0.15)', 'rgba(251,178,2,0.10)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFill}
               />
-            </View>
-            <Text style={styles.dialogTitle}>
-              {' '}
-              {isError ? 'Unable to load profiles' : "You've seen everyone!"}
-            </Text>
-            {/* <Text style={styles.dialogBody}>
-              {isError ? 'Unable to load profiles' : "You've seen everyone!"}
-            </Text> */}
-            <TouchableOpacity
-              onPress={() => refetch()}
-              disabled={isFetching}
-              style={styles.retryBtn}
-            >
-              {isFetching ? (
-                <ActivityIndicator
-                  size='small'
+              <View style={styles.iconWrap}>
+                <AlertTriangle
+                  size={sf(32)}
                   color='#0B0B0B'
+                  strokeWidth={1.8}
                 />
-              ) : (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: sw(8),
-                  }}
-                >
-                  <RefreshCw
-                    size={sf(16)}
+              </View>
+              <Text style={styles.dialogTitle}>
+                {' '}
+                {isError ? 'Unable to load profiles' : "You've seen everyone!"}
+              </Text>
+              <TouchableOpacity
+                onPress={() => refetch()}
+                disabled={isFetching}
+                style={styles.retryBtn}
+              >
+                {isFetching ? (
+                  <ActivityIndicator
+                    size='small'
                     color='#0B0B0B'
-                    strokeWidth={2}
                   />
-                  <Text style={styles.retryText}>Try Again</Text>
-                </View>
-              )}
-            </TouchableOpacity>
+                ) : (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: sw(8),
+                    }}
+                  >
+                    <RefreshCw
+                      size={sf(16)}
+                      color='#0B0B0B'
+                      strokeWidth={2}
+                    />
+                    <Text style={styles.retryText}>Try Again</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-        <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
-          <BottomTabBar />
-        </View>
+        </ScrollView>
       </View>
+      </TabLayout>
     );
   }
 
@@ -297,6 +308,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
     activeMatch?.images?.[photoIndex] ?? activeMatch?.image ?? '';
 
   return (
+    <TabLayout>
     <View style={styles.fullScreen}>
       {/* ── Full-screen swipeable card ──────────────────────────────── */}
       <PanGestureHandler
@@ -441,11 +453,8 @@ const DiscoveryScreen = ({ navigation }: any) => {
         </TouchableOpacity>
       </View>
 
-      {/* ── Bottom tab bar ──────────────────────────────────────────── */}
-      <View style={styles.tabBarWrap}>
-        <BottomTabBar />
-      </View>
     </View>
+    </TabLayout>
   );
 };
 
@@ -563,14 +572,7 @@ const styles = StyleSheet.create({
   },
 
   // Tab bar wrapper (black bg strip)
-  tabBarWrap: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#000000',
-    zIndex: 15,
-  },
+
   overlay: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',

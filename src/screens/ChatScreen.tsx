@@ -13,6 +13,7 @@ import {
   Easing,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
+import RefreshControl from '@/components/common/RefreshControl';
 import {
   ChevronLeft,
   MoreVertical,
@@ -796,6 +797,14 @@ export default function ChatScreen({ navigation, route }: any) {
                   if (hasNextPage) fetchNextPage();
                 }}
                 onEndReachedThreshold={0.1}
+                // refreshControl={
+                //   <RefreshControl
+                //     refreshing={isFetchingNextPage}
+                //     onRefresh={() => {
+                //       if (hasNextPage) fetchNextPage();
+                //     }}
+                //   />
+                // }
                 ListHeaderComponent={
                   isFetchingNextPage ? (
                     <ActivityIndicator

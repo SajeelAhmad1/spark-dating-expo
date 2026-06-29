@@ -14,6 +14,7 @@ import Logo from '@/assets/images/logo.svg';
 import { Text } from '@/components/common/Text';
 import { sf, sw, sh } from '@/utils/sizeMatters';
 import PrimaryButton from '@/components/common/PrimaryButton';
+import { StatusBar } from 'expo-status-bar';
 
 const SPLASH_DELAY_MS = 1400;
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -67,7 +68,7 @@ const COLUMN_IMAGES: string[][] = [
     'https://images.unsplash.com/photo-1488716820095-cbe80883c496?w=300&q=80',
     'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80',
     'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=300&q=80',
-    'https://images.unsplash.com/photo-1499996860823-5214fcc65f8f?w=300&q=80', 
+    'https://images.unsplash.com/photo-1499996860823-5214fcc65f8f?w=300&q=80',
   ],
 ];
 
@@ -89,11 +90,15 @@ interface AnimatedColumnProps {
   xOffset: number;
 }
 
-const AnimatedColumn: React.FC<AnimatedColumnProps> = ({ images, direction, xOffset }) => {
+const AnimatedColumn: React.FC<AnimatedColumnProps> = ({
+  images,
+  direction,
+  xOffset,
+}) => {
   // down: start at 0, animate to -SINGLE_LOOP_HEIGHT (strip slides down, resets seamlessly)
   // up:   start at -SINGLE_LOOP_HEIGHT, animate to 0 (strip slides up, resets seamlessly)
   const fromValue = direction === 'down' ? 0 : -SINGLE_LOOP_HEIGHT;
-  const toValue   = direction === 'down' ? -SINGLE_LOOP_HEIGHT : 0;
+  const toValue = direction === 'down' ? -SINGLE_LOOP_HEIGHT : 0;
 
   const translateY = useRef(new Animated.Value(fromValue)).current;
 
@@ -121,16 +126,20 @@ const AnimatedColumn: React.FC<AnimatedColumnProps> = ({ images, direction, xOff
       style={[
         styles.column,
         {
-          transform: [
-            { translateY },
-            { translateX: xOffset },
-          ],
+          transform: [{ translateY }, { translateX: xOffset }],
         },
       ]}
     >
       {tripled.map((uri, idx) => (
-        <View key={idx} style={styles.card}>
-          <Image source={{ uri }} style={styles.cardImage} resizeMode="cover" />
+        <View
+          key={idx}
+          style={styles.card}
+        >
+          <Image
+            source={{ uri }}
+            style={styles.cardImage}
+            resizeMode='cover'
+          />
         </View>
       ))}
     </Animated.View>
@@ -160,82 +169,112 @@ const LogoScreen = ({ navigation }: any) => {
         } else {
           navigation.replace('EnableLocationScreen');
         }
-      } 
+      }
       // else {
       //   navigation.replace('SignInScreen');
       // }
     };
 
     bootstrap();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [navigation]);
 
   // Four columns evenly spread across the screen
   const colSpacing = sw(118);
   const col0X = -colSpacing * 1.5;
   const col1X = -colSpacing * 0.5;
-  const col2X =  colSpacing * 0.5;
-  const col3X =  colSpacing * 1.5;
+  const col2X = colSpacing * 0.5;
+  const col3X = colSpacing * 1.5;
 
   return (
-    <View style={styles.root}>
-      {/* ── Dark background ── */}
-      <View style={StyleSheet.absoluteFill} />
-
-      {/* ── Scrolling photo grid (top ~60% of screen) ── */}
-      <View style={styles.photoArea} pointerEvents="none">
-        {/* Rotate all columns together to achieve the diagonal look */}
-        <View style={styles.columnsWrapper}>
-          <AnimatedColumn images={COLUMN_IMAGES[0]} direction="down" xOffset={col0X} />
-          <AnimatedColumn images={COLUMN_IMAGES[1]} direction="up"   xOffset={col1X} />
-          <AnimatedColumn images={COLUMN_IMAGES[2]} direction="down" xOffset={col2X} />
-          <AnimatedColumn images={COLUMN_IMAGES[3]} direction="up"   xOffset={col3X} />
-        </View>
-      </View>
-
-      {/* ── Gradient fade from photo area into black ── */}
-      <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.55)', '#000000']}
-        style={styles.fadeOverlay}
-        pointerEvents="none"
+    <>
+      <StatusBar
+        style='light'
+        translucent={false}
       />
+      <View style={styles.root}>
+        {/* ── Dark background ── */}
+        <View style={StyleSheet.absoluteFill} />
 
-      {/* ── Bottom content ── */}
-      <View style={styles.bottomContent}>
-        {/* Logo icon */}
-        <View style={styles.logoContainer}>
-          <Logo width={sf(88)} height={sf(88)} />
+        {/* ── Scrolling photo grid (top ~60% of screen) ── */}
+        <View
+          style={styles.photoArea}
+          pointerEvents='none'
+        >
+          {/* Rotate all columns together to achieve the diagonal look */}
+          <View style={styles.columnsWrapper}>
+            <AnimatedColumn
+              images={COLUMN_IMAGES[0]}
+              direction='down'
+              xOffset={col0X}
+            />
+            <AnimatedColumn
+              images={COLUMN_IMAGES[1]}
+              direction='up'
+              xOffset={col1X}
+            />
+            <AnimatedColumn
+              images={COLUMN_IMAGES[2]}
+              direction='down'
+              xOffset={col2X}
+            />
+            <AnimatedColumn
+              images={COLUMN_IMAGES[3]}
+              direction='up'
+              xOffset={col3X}
+            />
+          </View>
         </View>
 
-        {/* App name */}
-        <Text style={styles.appName}>Spark</Text>
+        {/* ── Gradient fade from photo area into black ── */}
+        <LinearGradient
+          colors={['transparent', 'rgba(0,0,0,0.55)', '#000000']}
+          style={styles.fadeOverlay}
+          pointerEvents='none'
+        />
 
-        {/* Tagline */}
-        <Text style={styles.tagline}>
-          The first move is not a message anymore,{'\n'}it's a moment
-        </Text>
+        {/* ── Bottom content ── */}
+        <View style={styles.bottomContent}>
+          {/* Logo icon */}
+          <View style={styles.logoContainer}>
+            <Logo
+              width={sf(88)}
+              height={sf(88)}
+            />
+          </View>
 
-        {/* CTA button */}
-        <View style={styles.buttonWrapper}>
-          <PrimaryButton
-            title="Next"
-            onPress={() => navigation.navigate('SignUpScreen')}
-            textStyle={{ fontSize: sf(18) }}
-          />
-        </View>
+          {/* App name */}
+          <Text style={styles.appName}>Spark</Text>
 
-        {/* Login link */}
-        <View style={styles.loginRow}>
-          <Text style={styles.alreadyLogin}>Already have an account? </Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('SignInScreen')}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.alreadyLoginLink}>Login</Text>
-          </TouchableOpacity>
+          {/* Tagline */}
+          <Text style={styles.tagline}>
+            The first move is not a message anymore,{'\n'}it's a moment
+          </Text>
+
+          {/* CTA button */}
+          <View style={styles.buttonWrapper}>
+            <PrimaryButton
+              title='Next'
+              onPress={() => navigation.navigate('SignUpScreen')}
+              textStyle={{ fontSize: sf(18) }}
+            />
+          </View>
+
+          {/* Login link */}
+          <View style={styles.loginRow}>
+            <Text style={styles.alreadyLogin}>Already have an account? </Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('SignInScreen')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.alreadyLoginLink}>Login</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    </>
   );
 };
 
