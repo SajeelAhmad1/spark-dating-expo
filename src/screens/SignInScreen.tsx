@@ -17,7 +17,6 @@ import {
   loginPhoneSchema,
 } from '@/features/auth/schema';
 import { FieldErrors } from 'react-hook-form';
-import { tokenStore } from '@/api/client';
 
 // ─── Form body ────────────────────────────────────────────────────────────────
 
@@ -57,17 +56,11 @@ function SignInFormBody({
       {
         onSuccess: async (data: any) => {
           showToast({ text1: 'Logged in successfully' });
-          console.log(data?.user, 'loginscreen response user');
 
-          // Route based on what the backend says is next
           if (data.next === 'complete_profile') {
             navigation.replace('ProfileSetupScreen');
           } else {
-            // 'home' or anything else → go to location screen
-            const user = await tokenStore.getUser();
-            console.log(data?.user, 'loginscreen tokenStore user');
-
-            if (user?.location?.lat && user?.location?.lng) {
+            if (data?.user?.location?.lat && data?.user?.location?.lng) {
               navigation.replace('SearchScreen');
             } else {
               navigation.replace('EnableLocationScreen');

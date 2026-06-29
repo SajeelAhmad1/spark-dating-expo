@@ -30,6 +30,8 @@ const SearchScreen = ({ navigation }: any) => {
   console.log(data, 'data Searchscreen');
   console.log(isError, 'isError Searchscreen');
   useEffect(() => {
+    console.log("coords", coords);
+console.log("isLoading", isLoading);
     if (!coords && !isLoading) {
       navigation.replace('EnableLocationScreen');
       return;

@@ -6,6 +6,7 @@ interface LocationState {
   coords: { lat: number; lng: number } | null;
   isLoading: boolean;
   error: string | null;
+  setCoords: (coords: { lat: number; lng: number }) => void;
   fetchLocation: () => Promise<void>;
   clearLocation: () => void;
 }
@@ -15,9 +16,11 @@ export const useLocationStore = create<LocationState>((set, get) => ({
   isLoading: false,
   error: null,
 
+  setCoords: (coords) => set({ coords, error: null }),
+
   fetchLocation: async () => {
     const { coords, isLoading } = get();
-    
+
     // Already have location? Skip
     if (coords) return;
     if (isLoading) return;

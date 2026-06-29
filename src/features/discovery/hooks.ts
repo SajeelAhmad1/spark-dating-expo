@@ -2,6 +2,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import { discoveryApi } from './api';
 import { queryKeys } from '@/api/endpoints';
 import { showToast } from '@/utils/toast';
+import { tokenStore } from '@/api/client';
 import type {
   AvailabilityRequest,
   DiscoverProfilesResponse,
@@ -22,6 +23,16 @@ export const useUpdateLocation = () =>
   useMutation({
     mutationFn: (payload: UpdateLocationRequest) =>
       discoveryApi.updateLocation(payload),
+    onSuccess: async (_, payload) => {
+      // Keep tokenStore in sync so LogoScreen reads the correct location on next app open
+      const user = await tokenStore.getUser();
+      if (user) {
+        await tokenStore.setUser({
+          ...user,
+          location: { lat: payload.lat, lng: payload.lng },
+        } as any);
+      }
+    },
   });
 
 export const useDiscoverProfiles = (payload: DiscoverProfilesRequest | null) =>

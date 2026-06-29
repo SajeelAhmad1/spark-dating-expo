@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { tokenStore } from '@/api/client';
+import { useLocationStore } from '@/store/locationStore';
 import Logo from '@/assets/images/logo.svg';
 import { Text } from '@/components/common/Text';
 import { sf, sw, sh } from '@/utils/sizeMatters';
@@ -158,21 +159,25 @@ const LogoScreen = ({ navigation }: any) => {
       ]);
 
       await new Promise<void>((r) => setTimeout(r, SPLASH_DELAY_MS));
-      console.log(user, 'user logoscreen');
       if (cancelled) return;
 
       if (token) {
+        // Logged-in — resume where they left off
         if (!user?.profile) {
           navigation.replace('ProfileSetupScreen');
-        } else if (user?.location?.lat && user?.location?.lng) {
-          navigation.replace('SearchScreen');
-        } else {
+        } else if (!user.location?.lat || !user.location?.lng) {
           navigation.replace('EnableLocationScreen');
+        } else {
+          // Seed locationStore so SearchScreen doesn't redirect to EnableLocationScreen
+          useLocationStore.getState().setCoords({
+            lat: user.location.lat,
+            lng: user.location.lng,
+          });
+          navigation.replace('SearchScreen');
         }
+      } else {
+        navigation.replace('SignUpScreen');
       }
-      // else {
-      //   navigation.replace('SignInScreen');
-      // }
     };
 
     bootstrap();

@@ -2,6 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Image, View, useWindowDimensions } from 'react-native';
 import { sf, sw, sh } from '@/utils/sizeMatters'; 
 import OnboardingCard from './OnboardingCard';
+import * as SecureStore from 'expo-secure-store';
+
+const ONBOARDING_SEEN_KEY = 'onboarding_seen';
 
 export default function Onboarding3({ navigation }: any) {
   const { width, height } = useWindowDimensions();
@@ -163,7 +166,10 @@ export default function Onboarding3({ navigation }: any) {
         subtitle="Keep your connection alive with daily snaps. The longer your streak, the stronger your bond."
         activeDot={2}
         buttonLabel="Next"
-        onPress={() => navigation.navigate('LogoScreen')}
+        onPress={async () => {
+          await SecureStore.setItemAsync(ONBOARDING_SEEN_KEY, 'true');
+          navigation.replace('LogoScreen');
+        }}
       />
     </View>
   );
