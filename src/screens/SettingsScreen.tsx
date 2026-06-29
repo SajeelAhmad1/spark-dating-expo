@@ -10,6 +10,7 @@ import {
   Share,
   StyleSheet,
   TextInput,
+  Pressable,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import RefreshControl from '@/components/common/RefreshControl';
@@ -34,6 +35,7 @@ import { useMe } from '@/features/profile/hooks';
 import { useEditProfile, useDeleteAccount } from '@/features/profile/hooks';
 import { showToast } from '@/utils/toast';
 import Slider from '@react-native-community/slider';
+import RangeSlider from '@/components/common/RangeSlider';
 import * as Clipboard from 'expo-clipboard';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -110,14 +112,11 @@ function BottomSheet({
           activeOpacity={1}
           onPress={onClose}
         />
-        {/* Sheet — stops propagation to backdrop */}
-        <View
-          onStartShouldSetResponder={() => true}
-          style={styles.sheet}
-        >
+        {/* Sheet */}
+        <Pressable style={styles.sheet}>
           <View style={styles.sheetHandle} />
           {children}
-        </View>
+        </Pressable>
       </View>
     </Modal>
   );
@@ -246,30 +245,14 @@ function AgeSheet({
         {localMin} – {localMax}
       </Text>
 
-      <Text style={styles.sliderLabel}>Min Age: {localMin}</Text>
-      <Slider
-        minimumValue={18}
-        maximumValue={Math.max(18, localMax - 1)}
-        step={1}
-        value={localMin}
-        onValueChange={(v) => setLocalMin(Math.round(v))}
-        minimumTrackTintColor='#CEB98F'
-        maximumTrackTintColor='#E0E0E0'
-        thumbTintColor='#CEB98F'
-        style={{ marginBottom: sh(12), zIndex: 1 }}
-      />
-
-      <Text style={styles.sliderLabel}>Max Age: {localMax}</Text>
-      <Slider
-        minimumValue={localMin + 1}
-        maximumValue={99}
-        step={1}
-        value={localMax}
-        onValueChange={(v) => setLocalMax(Math.round(v))}
-        minimumTrackTintColor='#CEB98F'
-        maximumTrackTintColor='#E0E0E0'
-        thumbTintColor='#CEB98F'
-        style={{ marginBottom: sh(24), zIndex: 2 }}
+      <RangeSlider
+        min={18}
+        max={99}
+        low={localMin}
+        high={localMax}
+        onLowChange={setLocalMin}
+        onHighChange={setLocalMax}
+        style={{ marginBottom: sh(24) }}
       />
 
       <PrimaryButton
@@ -644,6 +627,7 @@ const SettingsScreen = ({ navigation }: any) => {
   const { mutate: patchPrefs } = usePatchDiscoveryPreferences();
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
   const { data: me } = useMe();
+  console.log(me, "me111111111")
   const { mutate: editProfile, isPending: isSavingProfile } = useEditProfile();
   const { mutate: deleteAccount, isPending: isDeletingAccount } = useDeleteAccount();
 
@@ -753,6 +737,7 @@ const SettingsScreen = ({ navigation }: any) => {
           showToast({ text1: 'Age range updated' });
         },
         onError: (err: any) => {
+          console.log(err?.message, "err?.message");
           setIsSavingDlg(false);
           showToast({ text1: 'Failed', text2: err?.message });
         },
@@ -960,8 +945,8 @@ const SettingsScreen = ({ navigation }: any) => {
         {/* ── Account ─────────────────────────────────────────────────── */}
         <SectionTitle title='Account' />
         <SettingRow
-          label='Email'
-          value={me?.email ?? 'Example@gmail.com'}
+          label={me?.phone ? 'Phone' : 'Email'}
+          value={me?.email ? me?.email : me?.phone || 'example@me.com'}
         />
         <SettingRow label='Password' />
         {/* <SettingRow label="Blocked Users" onPress={() => navigation.navigate('BlockedUsersScreen')} /> */}
@@ -1246,11 +1231,5 @@ const styles = StyleSheet.create({
   sheetCancel: {
     marginTop: sh(16),
     alignItems: 'center',
-  },
-  sliderLabel: {
-    fontFamily: 'Poppins-Regular',
-    fontSize: sf(13),
-    color: '#7D858E',
-    marginBottom: sh(6),
   },
 });

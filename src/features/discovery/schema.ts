@@ -105,8 +105,8 @@ export type SwipeResponse = z.infer<typeof SwipeResponseSchema>;
 // ── GET/PATCH /api/discovery/preferences ─────────────────────────────────────
 
 export const DiscoveryPreferencesSchema = z.object({
-  youngerAgeDelta: z.number().int().min(0).max(20),
-  olderAgeDelta: z.number().int().min(0).max(20),
+  youngerAgeDelta: z.number().int().min(0).max(81),
+  olderAgeDelta: z.number().int().min(0).max(81),
   maxDistanceKm: z.number().int().min(1).max(200),
 });
 
