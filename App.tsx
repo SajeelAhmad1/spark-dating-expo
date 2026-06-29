@@ -148,8 +148,7 @@ export default function App() {
                 <Stack.Screen name="MatchScreen"    component={MatchScreen} />
 
                 {/* ── Chat ─────────────────────────────────────────────── */}
-                <Stack.Screen name="RequestsScreen" component={RequestsScreen} />
-                {/* <Stack.Screen name="InboxScreen"    component={InboxScreen as any} /> */}
+                <Stack.Screen name="RequestsScreen" component={RequestsScreen} /> 
                 <Stack.Screen name="ChatScreen"     component={ChatScreen} />
                 <Stack.Screen name="SnapViewScreen" component={SnapViewScreen} />
 
