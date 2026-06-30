@@ -7,6 +7,7 @@ import { ProgressDots } from '@/components/ProgressDots';
 import ChatIcon from '@/assets/images/chatIcon.svg';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { Image } from 'react-native';
+import { mapInterestLabels } from '@/utils/mapUserProfile';
 
 export default function DiscoveryMatchCard({
   item,
@@ -28,6 +29,7 @@ export default function DiscoveryMatchCard({
   rightChatOnPress?: () => void;
 }) {
   const imageUri = item.images?.[photoIndex] ?? item.image;
+  const interestLabels = mapInterestLabels(item.interests);
 
   return (
     <View
@@ -69,7 +71,8 @@ export default function DiscoveryMatchCard({
               borderColor: 'rgba(251,178,2,0.5)',
               borderRadius: sr(12),
               paddingHorizontal: sw(12),
-              height: 60,
+              minHeight: sh(60),
+              paddingVertical: sh(8),
               justifyContent: 'center',
             }}
           >
@@ -108,25 +111,28 @@ export default function DiscoveryMatchCard({
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                zIndex: 30,
+                marginTop: sh(4),
               }}
             >
-           <View  style={{
-                flexDirection: 'row',
-                alignItems: 'center', 
-                 gap: sw(8),
-              }}>
-               {item.interests && item.interests.length > 0 ? (
-                item.interests
-                  ?.slice(0, 2)
-                  ?.map((interest: any, index: number) => (
+              <View
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: sw(8),
+                  marginRight: sw(8),
+                }}
+              >
+                {interestLabels.length > 0 ? (
+                  interestLabels.slice(0, 2).map((interest, index) => (
                     <Text
                       key={index}
                       style={{
                         fontFamily: 'Poppins-Regular',
                         fontSize: sf(13),
                         color: 'rgba(255,255,255,0.85)',
-                        
+                        flexShrink: 1,
                       }}
                       numberOfLines={1}
                       ellipsizeMode='tail'
@@ -134,37 +140,36 @@ export default function DiscoveryMatchCard({
                       {interest}
                     </Text>
                   ))
-              ) : (
-                <Text
-                  style={{
-                    fontFamily: 'Poppins-Regular',
-                    fontSize: sf(13),
-                    color: 'rgba(255,255,255,0.85)',
-                    flex: 1,
-                    flexShrink: 1,
-                  }}
-                  numberOfLines={1}
-                  ellipsizeMode='tail'
-                >
-                  {'No Interests'}
-                </Text>
-              )}
-           </View>
+                ) : (
+                  <Text
+                    style={{
+                      fontFamily: 'Poppins-Regular',
+                      fontSize: sf(13),
+                      color: 'rgba(255,255,255,0.85)',
+                      flex: 1,
+                      flexShrink: 1,
+                    }}
+                    numberOfLines={1}
+                    ellipsizeMode='tail'
+                  >
+                    No Interests
+                  </Text>
+                )}
+              </View>
               <TouchableOpacity
                 onPress={(e) => {
                   e.stopPropagation();
                   rightChatOnPress?.();
                 }}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                style={{ flexShrink: 0 }}
               >
                 <View
                   style={{
-                    width: 24,
-                    height: 24,
+                    width: sw(24),
+                    height: sh(24),
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginTop: sh(-8),
-                    zIndex: 50,
                   }}
                 >
                   <ChatIcon />

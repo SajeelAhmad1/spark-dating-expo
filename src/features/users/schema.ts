@@ -22,14 +22,29 @@ export const PublicUserSchema = z.object({
     .optional(),
   interests: z
     .array(
-      z.object({
-        interest: z.object({ id: z.string(), name: z.string() }),
-      }),
+      z.union([
+        z.string(),
+        z.object({
+          interest: z
+            .object({
+              id: z.string().optional(),
+              name: z.string(),
+              icon: z.string().nullable().optional(),
+            })
+            .passthrough(),
+        }).passthrough(),
+        z
+          .object({
+            name: z.string(),
+            icon: z.string().nullable().optional(),
+          })
+          .passthrough(),
+      ]),
     )
-    .optional(),
+    .nullish(),
   location: z.any().nullable().optional(),
-  matchesCount: z.number().nullable(),
-  streakCount: z.number().nullable(),
+  matchesCount: z.number().nullable().optional(),
+  streakCount: z.number().nullable().optional(),
 });
 
 export const GetUserByIdResponseSchema = z.object({

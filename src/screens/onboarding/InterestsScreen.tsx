@@ -102,7 +102,7 @@ const InterestsScreen = ({ navigation }: any) => {
     <View style={styles.safeArea}>
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={{ paddingBottom: sh(130) }}
+        contentContainerStyle={{ paddingBottom: sh(100) }}
         showsVerticalScrollIndicator={false}
         // refreshControl={
         //   <RefreshControl
@@ -249,7 +249,7 @@ const InterestsScreen = ({ navigation }: any) => {
           onPress={onContinue}
           style={{
             alignSelf: 'stretch',
-            opacity: selected.length >= MIN ? 1 : 0.5,
+            opacity: selected.length >= MIN ? 1 : 1,
           }}
           textStyle={{
             fontSize: sf(20),

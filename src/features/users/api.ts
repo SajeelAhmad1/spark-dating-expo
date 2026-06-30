@@ -4,7 +4,11 @@ import { GetUserByIdResponse, GetUserByIdResponseSchema } from './schema'
 
 export const usersApi = {
   getUserById: async (userId: string): Promise<GetUserByIdResponse> => {
-    const raw = await apiPost(ENDPOINTS.USERS.GET_BY_ID, { userId })
-    return GetUserByIdResponseSchema.parse(raw)
+    const raw = await apiPost<unknown>(ENDPOINTS.USERS.GET_BY_ID, { userId })
+    const payload =
+      raw && typeof raw === 'object' && 'user' in raw
+        ? raw
+        : { user: raw }
+    return GetUserByIdResponseSchema.parse(payload)
   },
 }

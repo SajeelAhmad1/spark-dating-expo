@@ -413,7 +413,7 @@ function InviteSheet({
 
   const statCards = [
     {
-      label: 'Invites Sent',
+      label: stats?.invitesSent && stats?.invitesSent > 1 ? 'Invites Sent' : 'Invite Sent',
       value: String(stats?.invitesSent ?? 0),
       color: '#CEB98F',
       bg: '#EAD6A91A',

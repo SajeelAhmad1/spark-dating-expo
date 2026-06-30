@@ -775,7 +775,7 @@ export default function ChatScreen({ navigation, route }: any) {
                 </View>
               </View>
 
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 ref={menuAnchorRef}
                 onPress={openMenu}
               >
@@ -784,7 +784,7 @@ export default function ChatScreen({ navigation, route }: any) {
                   color='#0B0B0B'
                   strokeWidth={2}
                 />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
 
             {/* ── Messages ──────────────────────────────────────────────── */}

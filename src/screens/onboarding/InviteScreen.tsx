@@ -167,7 +167,7 @@ const InviteScreen = ({ navigation }: any) => {
   const statsCards = [
     {
       id: 'invites',
-      label: 'Invites sent',
+      label: stats?.invitesSent && stats?.invitesSent > 1 ? 'Invites sent' : 'Invite sent',
       value: stats?.invitesSent ?? 0,
       color: '#CEB98F',
       bg: '#EAD6A91A',

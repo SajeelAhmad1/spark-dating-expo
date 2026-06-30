@@ -491,7 +491,7 @@ const ProfileScreen = ({ navigation }: any) => {
               <View
                 style={[
                   styles.card,
-                  { minHeight: 139, justifyContent: 'center' },
+                  { justifyContent: 'center', paddingVertical: sh(12) },
                 ]}
               >
                 <Text
@@ -552,7 +552,7 @@ const ProfileScreen = ({ navigation }: any) => {
                         style={{
                           fontSize: sf(16),
                           color: '#000000',
-                          lineHeight: sh(16),
+                          lineHeight: sh(22),
                         }}
                       >
                         {entry.interest.name}
@@ -641,7 +641,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.09,
     shadowRadius: 25,
     shadowOffset: { width: 0, height: 0 },
-    elevation: 5,
+    elevation: 3,
   },
   iconBtn: {
     width: sf(36),

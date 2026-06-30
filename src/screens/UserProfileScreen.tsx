@@ -24,6 +24,8 @@ import {
   Flag,
   UserRoundX,
   Zap,
+  MessageCircle,
+  Heart,
 } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import DiscoveryMatchCard from '@/components/discovery/DiscoveryMatchCard';
@@ -33,7 +35,7 @@ import { showToast } from '@/utils/toast';
 import ChatMenu, { type ChatMenuItem } from '@/screens/ChatMenu';
 import { getCityFromCoords } from '@/utils/location';
 import { useGetUserById } from '@/features/users/hooks';
-import { mapPublicUserToProfile } from '@/utils/mapUserProfile';
+import { mapInterestLabels, mapPublicUserToProfile } from '@/utils/mapUserProfile';
 
 type UserProfile = {
   id: string;
@@ -62,7 +64,13 @@ const UserProfileScreen = ({ navigation, route }: any) => {
   const { data: fetchedUser, isLoading } = useGetUserById(userId);
   const user: UserProfile | null = useMemo(() => {
     if (fetchedUser) return mapPublicUserToProfile(fetchedUser);
-    if (route?.params?.user?.name) return route.params.user as UserProfile;
+    if (route?.params?.user?.name) {
+      const raw = route.params.user as UserProfile & { interests?: unknown };
+      return {
+        ...raw,
+        interests: mapInterestLabels(raw.interests),
+      };
+    }
     return null;
   }, [fetchedUser, route?.params?.user]);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -110,10 +118,10 @@ const UserProfileScreen = ({ navigation, route }: any) => {
 
   const menuItems: ChatMenuItem[] = [
     {
-      key: 'block',
-      label: 'Block',
+      key: 'chat',
+      label: 'Chat',
       icon: (
-        <AlertTriangle
+        <MessageCircle
           size={sf(18)}
           color='#EAD6A9'
           strokeWidth={1.8}
@@ -121,26 +129,10 @@ const UserProfileScreen = ({ navigation, route }: any) => {
       ),
       color: '#EAD6A9',
       onPress: () => {
-        showToast({ text1: 'User Blocked', icon: UserRoundX });
+        // showToast({ text1: 'User Chat', icon: MessageCircle });
         navigation?.goBack();
       },
-    },
-    {
-      key: 'report',
-      label: 'Report',
-      icon: (
-        <Flag
-          size={sf(18)}
-          color='#E53935'
-          strokeWidth={1.8}
-        />
-      ),
-      color: '#E53935',
-      onPress: () => {
-        showToast({ text1: 'User Reported', icon: AlertTriangle });
-        navigation?.goBack();
-      },
-    },
+    }, 
   ];
 
   return (
@@ -219,6 +211,7 @@ const UserProfileScreen = ({ navigation, route }: any) => {
               image: user.images[0],
               images: user.images,
               bio: user.bio,
+              interests: user.interests,
             }}
             cardWidth={CARD_WIDTH}
             cardHeight={CARD_HEIGHT}
@@ -230,8 +223,16 @@ const UserProfileScreen = ({ navigation, route }: any) => {
               navigation?.navigate('ChatScreen', { user })
             }
           />
+          <View style={{ marginTop: sh(-28) }}>
           <DiscoveryActions
-            onLikePress={onLikePress}
+            // onLikePress={onLikePress}
+            onLikePress={() => {
+              showToast({
+                text1: 'Liked',
+                text2: `You've already liked this profile`,
+                icon: Heart,
+              })
+            }}
             onStarPress={() =>
               showToast({
                 text1: 'Starred',
@@ -239,11 +240,18 @@ const UserProfileScreen = ({ navigation, route }: any) => {
                 icon: Zap,
               })
             }
-            onCrossPress={() => {}}
-          />
+              onCrossPress={() => {
+                showToast({
+                  text1: 'Disliked',
+                  text2: `${user.name} is removed from your matches`,
+                  icon: UserRoundX,
+                })
+              }}
+            />
+          </View>
         </View>
 
-        <Card style={{ gap: 10 }}>
+        <Card style={{ gap: 10, marginTop: sh(0) }}>
           <InfoRow
             icon={<Ruler size={sf(16)} />}
             text={user.height}
@@ -397,7 +405,8 @@ const Card = ({
         backgroundColor: '#fff',
         borderRadius: sr(12),
         paddingHorizontal: sw(16),
-        minHeight: 136,
+        // minHeight: 136,
+        paddingVertical: sh(12),
         justifyContent: 'center',
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 0 },

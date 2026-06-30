@@ -1,5 +1,5 @@
 // screens/onboarding/ProfileSetupScreen.tsx
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -8,7 +8,7 @@ import {
   Modal,
   FlatList,
   StyleSheet,
-  KeyboardAvoidingView,
+  Keyboard,
   Platform,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
@@ -49,8 +49,7 @@ type DropdownField = 'day' | 'month' | 'year' | 'height' | 'ethnicity' | null;
 
 const ProfileSetupScreen = ({ navigation }: any) => {
   const [openDropdown, setOpenDropdown] = useState<DropdownField>(null);
-  const scrollRef = useRef<ScrollView>(null);
-  const bioRef = useRef<TextInput>(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const { data: interests } = useInterestsCatalog();
   const { interests: storeInterests, setInterests } = useInterestStore();
@@ -60,6 +59,25 @@ const ProfileSetupScreen = ({ navigation }: any) => {
       setInterests(interests);
     }
   }, [interests, storeInterests.length, setInterests]);
+
+  useEffect(() => {
+    const showEvent =
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent =
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const form = useSignupStore(selectForm);
   const patch = useSignupStore(selectPatch);
@@ -156,18 +174,15 @@ const ProfileSetupScreen = ({ navigation }: any) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <View style={styles.safeArea}>
-        <ScrollView
-          ref={scrollRef}
-          style={styles.scroll}
-          contentContainerStyle={{ paddingBottom: sh(120) }}
-          keyboardShouldPersistTaps='handled'
-          showsVerticalScrollIndicator={false}
-        >
+    <View style={styles.safeArea}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={{
+          paddingBottom: keyboardHeight > 0 ? sh(16) : sh(16),
+        }}
+        keyboardShouldPersistTaps='handled'
+        showsVerticalScrollIndicator={false}
+      >
           <TouchableOpacity onPress={() => navigation?.goBack()}>
             <ChevronLeft
               size={sf(24)}
@@ -269,7 +284,7 @@ const ProfileSetupScreen = ({ navigation }: any) => {
                     <Text
                       style={{
                         fontSize: sf(15),
-                        color: '#000000',
+                        color: isSelected ? '#000000' : '#7D858E',
                         fontWeight: '400',
                         lineHeight: sh(46),
                       }}
@@ -373,7 +388,7 @@ const ProfileSetupScreen = ({ navigation }: any) => {
           ))}
 
           {/* Bio */}
-          <View style={styles.section}>
+          <View style={[styles.section, styles.bioSection]}>
             <Text
               style={[styles.label, { fontSize: sf(15) }]}
               weight='semibold'
@@ -381,25 +396,11 @@ const ProfileSetupScreen = ({ navigation }: any) => {
               Add Bio
             </Text>
             <TextInput
-              ref={bioRef}
               placeholder='Write something interesting...'
               placeholderTextColor='#7D858E'
               value={bio}
               onChangeText={(v) => setValue('bio', v, { shouldValidate: true })}
               onBlur={() => trigger('bio')}
-              onFocus={() => {
-                setTimeout(() => {
-                  bioRef.current?.measureLayout(
-                    scrollRef.current as any,
-                    (_x, y) =>
-                      scrollRef.current?.scrollTo({
-                        y: y - sh(20),
-                        animated: true,
-                      }),
-                    () => {},
-                  );
-                }, 150);
-              }}
               multiline
               textAlignVertical='top'
               style={{
@@ -415,22 +416,22 @@ const ProfileSetupScreen = ({ navigation }: any) => {
             />
             <FieldError message={errors.bio?.message} />
           </View>
-        </ScrollView>
+      </ScrollView>
 
-        <View style={styles.footer}>
-          <PrimaryButton
-            title='Continue'
-            onPress={handleSubmit(onContinue)}
-            style={{ alignSelf: 'stretch' }}
-            textStyle={{
-              fontSize: sf(20),
-              fontWeight: '500',
-              lineHeight: sh(56),
-            }}
-          />
-        </View>
+      <View style={[styles.footer, { marginBottom: keyboardHeight }]}>
+        <PrimaryButton
+          title='Continue'
+          onPress={handleSubmit(onContinue)}
+          style={{ alignSelf: 'stretch' }}
+          textStyle={{
+            fontSize: sf(20),
+            fontWeight: '500',
+            lineHeight: sh(56),
+          }}
+        />
+      </View>
 
-        {/* Dropdown Modal */}
+      {/* Dropdown Modal */}
         <Modal
           visible={openDropdown !== null}
           transparent
@@ -482,13 +483,12 @@ const ProfileSetupScreen = ({ navigation }: any) => {
             </View>
           </TouchableOpacity>
         </Modal>
-      </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) },
+  safeArea: { flex: 1, backgroundColor: '#F7F3ED' },
   scroll: {
     flex: 1,
     paddingHorizontal: sw(20),
@@ -502,8 +502,9 @@ const styles = StyleSheet.create({
   flex1: { flex: 1 },
   label: { color: '#000000', marginBottom: sh(8) },
   section: { marginTop: sh(24) },
+  bioSection: { marginBottom: sh(16) },
   row: { flexDirection: 'row', columnGap: sw(12) },
-  footer: { paddingHorizontal: sw(20) },
+  footer: { paddingHorizontal: sw(20), paddingBottom: 16 },
   modalBackdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',

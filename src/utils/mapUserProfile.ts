@@ -1,5 +1,30 @@
 import type { PublicUser } from '@/features/users/schema'
 
+export function mapInterestLabels(interests: unknown): string[] {
+  if (!Array.isArray(interests)) return []
+
+  return interests
+    .map((entry) => {
+      if (typeof entry === 'string') return entry.trim()
+
+      if (!entry || typeof entry !== 'object') return ''
+
+      const item = entry as {
+        name?: string
+        icon?: string | null
+        interest?: { name?: string; icon?: string | null }
+      }
+
+      const interest = item.interest ?? item
+      const name = interest.name?.trim()
+      if (!name) return ''
+
+      const icon = interest.icon ? `${interest.icon} ` : ''
+      return `${icon}${name}`
+    })
+    .filter(Boolean)
+}
+
 function photoToUrl(photo: unknown): string | null {
   if (!photo) return null
   if (typeof photo === 'string') return photo
@@ -37,6 +62,6 @@ export function mapPublicUserToProfile(user: PublicUser) {
         ? { lat: loc.lat, lng: loc.lng }
         : { lat: 0, lng: 0 },
     attributes: profile?.ethnicity ? [profile.ethnicity] : [],
-    interests: (user.interests ?? []).map((ui) => ui.interest.name),
+    interests: mapInterestLabels(user.interests),
   }
 }
