@@ -506,14 +506,19 @@ export default function InboxScreen({ navigation, route }: any) {
   const {
     data: conversationsData,
     isPending,
+    isFetching,
     isError,
     refetch,
-    isFetching,
+    isRefetching,
   } = useConversations();
+  console.log('inboxscreen conversationsData', conversationsData?.items);
+  console.log('inboxscreen isPending', isPending);
+  console.log('inboxscreen isFetching', isFetching);
+  console.log('inboxscreen isRefetching', isRefetching); 
+  console.log('inboxscreen isError', isError);
   const conversations = conversationsData?.items ?? [];
-  const { mutateAsync: createConversation } = useCreateDirectConversation();
-  const { data: me } = useMe();
-  const myId = me?.id;
+  const showLoading =
+    (isPending || (isFetching && conversations.length === 0)) && !isError;
 
   useFocusEffect(
     useCallback(() => {
@@ -521,13 +526,21 @@ export default function InboxScreen({ navigation, route }: any) {
     }, [refetch]),
   );
 
-  const filtered = filterItems(conversations, activeFilter, safeSearch);
+  const { mutateAsync: createConversation } = useCreateDirectConversation();
+  const { data: me } = useMe();
+  const myId = me?.id;
 
+  const filtered = filterItems(conversations, activeFilter, safeSearch);
+  console.log('inboxscreen filtered', filtered);
   // Group by status
   const activeItems = filtered.filter((i) => getChatStatus(i) === 'active');
   const expiring = filtered.filter((i) => getChatStatus(i) === 'lockingSoon');
   const lockedItems = filtered.filter((i) => getChatStatus(i) === 'locked');
 
+  console.log('inboxscreen activeItems', activeItems);
+  console.log('inboxscreen expiring', expiring);
+  console.log('inboxscreen lockedItems', lockedItems);
+  
   const openChat = (item: ConversationItem, autoCamera = false) => {
     navigation.navigate('ChatScreen', {
       conversationId: item.conversationId,
@@ -545,6 +558,109 @@ export default function InboxScreen({ navigation, route }: any) {
 
   // When filter is not 'All', show a flat list without section headers
   const showSections = activeFilter === 'All';
+
+  const emptyState = (
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingTop: sh(60),
+        gap: sh(12),
+      }}
+    >
+      <Text style={{ fontSize: sf(40) }}>💬</Text>
+      <Text
+        style={{
+          fontSize: sf(15),
+          color: '#8D8D8D',
+          textAlign: 'center',
+        }}
+      >
+        {searchQuery ? 'No results found' : 'No conversations yet'}
+      </Text>
+    </View>
+  );
+
+  const renderInboxContent = () => {
+    if (filtered.length === 0) return emptyState;
+
+    if (!showSections) {
+      return (
+        <>
+          {filtered.map((item) => {
+            const status = getChatStatus(item);
+            if (status === 'locked') {
+              return (
+                <LockedRow
+                  key={item.conversationId}
+                  item={item}
+                  onPress={() => setLockedModalVisible(true)}
+                  onCameraPress={() => openChat(item, true)}
+                />
+              );
+            }
+            return (
+              <ActiveRow
+                key={item.conversationId}
+                item={item}
+                myId={myId}
+                onPress={() => openChat(item)}
+                onCameraPress={() => openChat(item, true)}
+              />
+            );
+          })}
+        </>
+      );
+    }
+
+    return (
+      <>
+        {activeItems.length > 0 && (
+          <>
+            <SectionHeader svgKey='fire' title='Active Sparks' />
+            {activeItems.map((item) => (
+              <ActiveRow
+                key={item.conversationId}
+                item={item}
+                myId={myId}
+                onPress={() => openChat(item)}
+                onCameraPress={() => openChat(item, true)}
+              />
+            ))}
+          </>
+        )}
+        {expiring.length > 0 && (
+          <>
+            <SectionHeader svgKey='glass' title='Locking Soon' />
+            {expiring.map((item) => (
+              <ActiveRow
+                key={item.conversationId}
+                item={item}
+                myId={myId}
+                onPress={() => openChat(item)}
+                onCameraPress={() => openChat(item, true)}
+              />
+            ))}
+          </>
+        )}
+        {lockedItems.length > 0 && (
+          <>
+            <SectionHeader svgKey='lock' title='Locked Chats' />
+            {lockedItems.map((item) => (
+              <LockedRow
+                key={item.conversationId}
+                item={item}
+                myId={myId}
+                onPress={() => setLockedModalVisible(true)}
+                onCameraPress={() => openChat(item, true)}
+              />
+            ))}
+          </>
+        )}
+      </>
+    );
+  };
 
   return (
     <>
@@ -574,14 +690,7 @@ export default function InboxScreen({ navigation, route }: any) {
           Inbox
         </Text>
 
-        <View style={{ width: sw(60), alignItems: 'flex-end' }}>
-          {isFetching && (
-            <ActivityIndicator
-              size='small'
-              color='#0B0B0B'
-            />
-          )}
-        </View>
+        <View style={{ width: sw(60) }} />
       </View>
 
       {/* ── Search ──────────────────────────────────────────────────────── */}
@@ -651,199 +760,65 @@ export default function InboxScreen({ navigation, route }: any) {
         })}
       </ScrollView>
 
-      {/* ── Loading ──────────────────────────────────────────────────────── */}
-      {isPending && !conversationsData && (
-        <View
-          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
-        >
-          <ActivityIndicator color='#0B0B0B' />
-        </View>
-      )}
-
-      {/* ── Error ────────────────────────────────────────────────────────── */}
-      {isError && !isPending && (
-        <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: sh(12),
-          }}
-        >
-          <Text style={{ color: '#0B0B0B', fontSize: sf(14) }}>
-            Could not load conversations.
-          </Text>
-          <TouchableOpacity
-            onPress={() => refetch()}
+      {/* ── Body ─────────────────────────────────────────────────────────── */}
+      <View style={{ flex: 1 }}>
+        {showLoading ? (
+          <View
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+          >
+            <ActivityIndicator color='#0B0B0B' />
+          </View>
+        ) : isError ? (
+          <View
             style={{
-              flexDirection: 'row',
+              flex: 1,
               alignItems: 'center',
-              gap: sw(6),
-              backgroundColor: '#EAD6A9',
-              paddingHorizontal: sw(16),
-              paddingVertical: sh(10),
-              borderRadius: sr(99),
+              justifyContent: 'center',
+              gap: sh(12),
+              paddingHorizontal: sw(24),
             }}
           >
-            <RefreshCw
-              size={sf(16)}
-              color='#0B0B0B'
-            />
-            <Text
-              style={{ color: '#0B0B0B', fontSize: sf(14), fontWeight: '600' }}
-            >
-              Retry
+            <Text style={{ color: '#0B0B0B', fontSize: sf(14), textAlign: 'center' }}>
+              Could not load conversations.
             </Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* ── Conversation list ────────────────────────────────────────────── */}
-      {!isPending && !isError && (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingHorizontal: sw(20),
-            paddingBottom: sh(140),
-          }}
-          style={{ flex: 1 }}
-          refreshControl={
-            <RefreshControl
-              refreshing={isFetching}
-              onRefresh={() => refetch()}
-            />
-          }
-        >
-          {showSections ? (
-            <>
-              {/* Active Streaks */}
-              {activeItems.length > 0 && (
-                <>
-                  <SectionHeader
-                    svgKey='fire'
-                    title='Active Sparks'
-                  />
-                  {activeItems.map((item) => (
-                    <ActiveRow
-                      key={item.conversationId}
-                      item={item}
-                      myId={myId}
-                      onPress={() => openChat(item)}
-                      onCameraPress={() => openChat(item, true)}
-                    />
-                  ))}
-                </>
-              )}
-
-              {/* Locking Soon */}
-              {expiring.length > 0 && (
-                <>
-                  <SectionHeader
-                    svgKey='glass'
-                    title='Locking Soon'
-                  />
-                  {expiring.map((item) => (
-                    <ActiveRow
-                      key={item.conversationId}
-                      item={item}
-                      myId={myId}
-                      onPress={() => openChat(item)}
-                      onCameraPress={() => openChat(item, true)}
-                    />
-                  ))}
-                </>
-              )}
-
-              {/* Locked Chats */}
-              {lockedItems.length > 0 && (
-                <>
-                  <SectionHeader
-                    svgKey='lock'
-                    title='Locked Chats'
-                  />
-                  {lockedItems.map((item) => (
-                    <LockedRow
-                      key={item.conversationId}
-                      item={item}
-                      myId={myId}
-                      onPress={() => setLockedModalVisible(true)}
-                      onCameraPress={() => openChat(item, true)}
-                    />
-                  ))}
-                </>
-              )}
-
-              {/* Empty state */}
-              {filtered.length === 0 && (
-                <View
-                  style={{
-                    alignItems: 'center',
-                    marginTop: sh(60),
-                    gap: sh(12),
-                  }}
-                >
-                  <Text style={{ fontSize: sf(40) }}>💬</Text>
-                  <Text
-                    style={{
-                      fontSize: sf(15),
-                      color: '#8D8D8D',
-                      textAlign: 'center',
-                    }}
-                  >
-                    {searchQuery ? 'No results found' : 'No conversations yet'}
-                  </Text>
-                </View>
-              )}
-            </>
-          ) : (
-            // Flat filtered list (no section headers when filter active)
-            <>
-              {filtered.map((item) => {
-                const status = getChatStatus(item);
-                if (status === 'locked') {
-                  return (
-                    <LockedRow
-                      key={item.conversationId}
-                      item={item}
-                      onPress={() => setLockedModalVisible(true)}
-                      onCameraPress={() => openChat(item, true)}
-                    />
-                  );
-                }
-                return (
-                  <ActiveRow
-                    key={item.conversationId}
-                    item={item}
-                    myId={myId}
-                    onPress={() => openChat(item)}
-                    onCameraPress={() => openChat(item, true)}
-                  />
-                );
-              })}
-              {filtered.length === 0 && (
-                <View
-                  style={{
-                    alignItems: 'center',
-                    marginTop: sh(60),
-                    gap: sh(12),
-                  }}
-                >
-                  <Text style={{ fontSize: sf(40) }}>💬</Text>
-                  <Text
-                    style={{
-                      fontSize: sf(15),
-                      color: '#8D8D8D',
-                      textAlign: 'center',
-                    }}
-                  >
-                    {searchQuery ? 'No results found' : 'No conversations yet'}
-                  </Text>
-                </View>
-              )}
-            </>
-          )}
-        </ScrollView>
-      )}
+            <TouchableOpacity
+              onPress={() => refetch()}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: sw(6),
+                backgroundColor: '#EAD6A9',
+                paddingHorizontal: sw(16),
+                paddingVertical: sh(10),
+                borderRadius: sr(99),
+              }}
+            >
+              <RefreshCw size={sf(16)} color='#0B0B0B' />
+              <Text style={{ color: '#0B0B0B', fontSize: sf(14), fontWeight: '600' }}>
+                Retry
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingHorizontal: sw(20),
+              paddingBottom: sh(140),
+              flexGrow: 1,
+            }}
+            style={{ flex: 1 }}
+            // refreshControl={
+            //   <RefreshControl
+            //     refreshing={isRefetching}
+            //     onRefresh={() => refetch()}
+            //   />
+            // }
+          >
+            {renderInboxContent()}
+          </ScrollView>
+        )}
+      </View>
 
       {/* ── Visual Conversations Modal ───────────────────────────────────── */}
       <VisualConversationsModal

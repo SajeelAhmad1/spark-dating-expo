@@ -15,13 +15,23 @@ export const chatApi = {
     userId: string,
   ): Promise<CreateDirectConversationResponse> => {
     const raw = await apiPost(ENDPOINTS.CHAT.CREATE_DIRECT, { userId })
-    return CreateDirectConversationResponseSchema.parse(raw)
+    const parsed = CreateDirectConversationResponseSchema.safeParse(raw)
+    if (!parsed.success) {
+      console.error('[chat] create conversation parse error:', parsed.error.flatten())
+      throw new Error('Invalid create conversation response')
+    }
+    return parsed.data
   },
 
   // REST: conversations list
   listConversations: async (limit = 20): Promise<ListConversationsResponse> => {
     const raw = await apiGet(ENDPOINTS.CHAT.CONVERSATIONS, { limit })
-    return ListConversationsResponseSchema.parse(raw)
+    const parsed = ListConversationsResponseSchema.safeParse(raw)
+    if (!parsed.success) {
+      console.error('[chat] conversations parse error:', parsed.error.flatten())
+      throw new Error('Invalid conversations response')
+    }
+    return parsed.data
   },
 
   // REST: message history (paginated)

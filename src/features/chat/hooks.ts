@@ -22,6 +22,7 @@ import {
 } from '@/services/socket'
 import { uploadToCloudinary } from '@/utils/cloudinary'
 import type { ChatMessage, ConversationItem, ListConversationsResponse } from './schema'
+import { useAuthStore, selectIsAuthenticated } from '@/store/authStore'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -30,9 +31,38 @@ function updateConversationsCache(
   updater: (items: ConversationItem[]) => ConversationItem[]
 ) {
   qc.setQueryData<ListConversationsResponse>(queryKeys.chat.conversations(), (old) => {
-    const items = Array.isArray(old?.items) ? old.items : []
-    return { items: updater(items) }
+    // Never seed an empty cache before the REST API has loaded — that blocks the inbox.
+    if (!old || !Array.isArray(old.items)) return old
+    return { items: updater(old.items) }
   })
+}
+
+function refetchConversations(qc: ReturnType<typeof useQueryClient>) {
+  return qc.refetchQueries({ queryKey: queryKeys.chat.conversations(), type: 'active' })
+}
+
+function normalizeSocketMessage(rawMsg: any, conversationId?: string): ChatMessage {
+  const created =
+    rawMsg?.createdAt instanceof Date
+      ? rawMsg.createdAt.toISOString()
+      : String(rawMsg?.createdAt ?? new Date().toISOString())
+  const updated =
+    rawMsg?.updatedAt instanceof Date
+      ? rawMsg.updatedAt.toISOString()
+      : String(rawMsg?.updatedAt ?? created)
+  return {
+    ...(rawMsg as ChatMessage),
+    id: String(rawMsg?.id ?? ''),
+    conversationId: String(rawMsg?.conversationId ?? conversationId ?? ''),
+    senderId: String(rawMsg?.senderId ?? ''),
+    createdAt: created,
+    updatedAt: updated,
+    streakExpiresAt: rawMsg?.streakExpiresAt
+      ? rawMsg.streakExpiresAt instanceof Date
+        ? rawMsg.streakExpiresAt.toISOString()
+        : String(rawMsg.streakExpiresAt)
+      : null,
+  }
 }
 
 function sortByCreatedAt(messages: ChatMessage[]): ChatMessage[] {
@@ -53,20 +83,26 @@ export const useCreateDirectConversation = () => {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (userId: string) => chatApi.createDirectConversation(userId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.chat.conversations() }),
+    onSuccess: async () => {
+      await refetchConversations(qc)
+    },
     onError: (err: any) => showToast({ text1: 'Could not open chat', text2: err?.message }),
   })
 }
 
 // ── List conversations (REST) ─────────────────────────────────────────────────
 
-export const useConversations = (limit = 20) =>
-  useQuery({
+export const useConversations = (limit = 20) => {
+  const isAuthenticated = useAuthStore(selectIsAuthenticated)
+  return useQuery({
     queryKey: queryKeys.chat.conversations(),
     queryFn: () => chatApi.listConversations(limit),
-    staleTime: 1000 * 30,
+    enabled: isAuthenticated,
+    staleTime: 0,
     gcTime: 1000 * 60 * 5,
+    refetchOnMount: 'always',
   })
+}
 
 // ── List messages (REST, paginated history) ───────────────────────────────────
 
@@ -149,10 +185,15 @@ function applyDeliveryReceipt(
 
 function injectMessageIntoCache(
   qc: ReturnType<typeof useQueryClient>,
-  rawMsg: any
+  rawMsg: any,
+  conversationId?: string
 ) {
-  const msg = rawMsg as ChatMessage
+  const msg = normalizeSocketMessage(rawMsg, conversationId)
   const convId = msg.conversationId
+  if (!convId) {
+    void refetchConversations(qc)
+    return
+  }
 
   qc.setQueryData<any>(queryKeys.chat.messages(convId), (old: any) => {
     if (!old) {
@@ -177,31 +218,62 @@ function injectMessageIntoCache(
     return { ...old, pages: newPages }
   })
 
-  updateConversationsCache(qc, (items) => {
-    const updated = items.map((item) => {
-      if (item.conversationId !== convId) return item
-      const isFromPeer = item.otherUser?.id === msg.senderId
-      return {
-        ...item,
-        unreadCount: isFromPeer ? (item.unreadCount ?? 0) + 1 : item.unreadCount,
-        lastMessage: {
-          id: msg.id,
-          type: msg.type,
-          text: msg.text ?? null,
-          media: msg.media ?? null,
-          createdAt: msg.createdAt,
-          senderId: msg.senderId,
-        },
-        lastMessageAt: msg.createdAt,
-      }
-    })
-    const idx = updated.findIndex((i) => i.conversationId === convId)
-    if (idx > 0) {
-      const [moved] = updated.splice(idx, 1)
-      updated.unshift(moved)
+  const cached = qc.getQueryData<ListConversationsResponse>(queryKeys.chat.conversations())
+  if (cached?.items?.length) {
+    const idx = cached.items.findIndex((i) => i.conversationId === convId)
+    if (idx >= 0) {
+      updateConversationsCache(qc, (items) => {
+        const updated = items.map((item) => {
+          if (item.conversationId !== convId) return item
+          const isFromPeer = item.otherUser?.id === msg.senderId
+          return {
+            ...item,
+            unreadCount: isFromPeer ? (item.unreadCount ?? 0) + 1 : item.unreadCount,
+            lastMessage: {
+              id: msg.id,
+              type: msg.type,
+              text: msg.text ?? null,
+              media: msg.media ?? null,
+              createdAt: msg.createdAt,
+              senderId: msg.senderId,
+            },
+            lastMessageAt: msg.createdAt,
+          }
+        })
+        if (idx > 0) {
+          const [moved] = updated.splice(idx, 1)
+          updated.unshift(moved)
+        }
+        return updated
+      })
+      return
     }
-    return updated
+  }
+
+  // New or missing conversation — show immediately, then sync from REST.
+  qc.setQueryData<ListConversationsResponse>(queryKeys.chat.conversations(), (old) => {
+    const items = Array.isArray(old?.items) ? old.items : []
+    if (items.some((i) => i.conversationId === convId)) return old ?? { items }
+    const newItem: ConversationItem = {
+      conversationId: convId,
+      type: 'direct',
+      otherUser: null,
+      unreadCount: 0,
+      streakCount: 0,
+      chatStatus: 'active',
+      lastMessage: {
+        id: msg.id,
+        type: msg.type,
+        text: msg.text ?? null,
+        media: msg.media ?? null,
+        createdAt: msg.createdAt,
+        senderId: msg.senderId,
+      },
+      lastMessageAt: msg.createdAt,
+    }
+    return { items: [newItem, ...items] }
   })
+  void refetchConversations(qc)
 }
 
 // ── Real-time socket for a conversation ───────────────────────────────────────
@@ -209,8 +281,8 @@ function injectMessageIntoCache(
 export function useConversationSocket(conversationId: string | null) {
   const qc = useQueryClient()
 
-  const injectMessage = useCallback((rawMsg: any) => {
-    injectMessageIntoCache(qc, rawMsg)
+  const injectMessage = useCallback((rawMsg: any, convId?: string) => {
+    injectMessageIntoCache(qc, rawMsg, convId)
   }, [qc])
 
   useEffect(() => {
@@ -220,7 +292,7 @@ export function useConversationSocket(conversationId: string | null) {
 
     const onMessageNew = (payload: { conversationId: string; message: ChatMessage }) => {
       if (payload.conversationId === conversationId) {
-        injectMessage(payload.message)
+        injectMessage(payload.message, payload.conversationId)
       }
     }
 
@@ -276,7 +348,7 @@ export function useGlobalChatRealtime(enabled: boolean) {
     let sock: ReturnType<typeof getSocket> = null
 
     const onMessageNew = (payload: { conversationId: string; message: ChatMessage }) => {
-      injectMessageIntoCache(qc, payload.message)
+      injectMessageIntoCache(qc, payload.message, payload.conversationId)
     }
 
     const onMessageRead = (payload: { conversationId: string; messageId: string; userIds: string[] }) => {
@@ -296,7 +368,7 @@ export function useGlobalChatRealtime(enabled: boolean) {
     }
 
     const onReconnect = () => {
-      qc.invalidateQueries({ queryKey: queryKeys.chat.conversations() })
+      void refetchConversations(qc)
     }
 
     setup()
@@ -397,7 +469,7 @@ export const useSendMessage = (conversationId: string) => {
           })),
         }
       })
-      qc.invalidateQueries({ queryKey: queryKeys.chat.conversations() })
+      injectMessageIntoCache(qc, realMsg, conversationId)
     },
 
     onError: (_err, _vars, context) => {

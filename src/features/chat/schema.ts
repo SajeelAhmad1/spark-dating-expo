@@ -19,8 +19,8 @@ export const LastMessageSchema = z.object({
   senderId:        z.string().optional(),
   text:            z.string().nullable().optional(),
   media:           z.any().nullable().optional(),
-  streakExpiresAt: z.string().nullable().optional(),
-  createdAt:       z.string(),
+  streakExpiresAt: z.coerce.string().nullable().optional(),
+  createdAt:       z.coerce.string(),
 })
 
 export const ConversationItemSchema = z.object({
@@ -31,7 +31,7 @@ export const ConversationItemSchema = z.object({
   streakCount:    z.number().optional().default(0),
   chatStatus:     z.enum(['active', 'lockingSoon', 'locked']).optional().default('active'),
   lastMessage:    LastMessageSchema.nullable(),
-  lastMessageAt:  z.string().nullable().optional(),
+  lastMessageAt:  z.coerce.string().nullable().optional(),
 })
 
 export const ListConversationsResponseSchema = z.object({
@@ -43,8 +43,8 @@ export const CreateDirectConversationResponseSchema = z.object({
     id:        z.string(),
     type:      z.string(),
     memberIds: z.array(z.string()),
-    createdAt: z.string(),
-    updatedAt: z.string(),
+    createdAt: z.coerce.string(),
+    updatedAt: z.coerce.string(),
   }),
 })
 

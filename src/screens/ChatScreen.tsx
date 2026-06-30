@@ -351,9 +351,15 @@ function MsgBubble({
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function ChatScreen({ navigation, route }: any) {
-  const chatUserName: string = route?.params?.chatUserName ?? 'User';
-  const chatUserImageUri: string | undefined = route?.params?.chatUserImageUri;
-  const routeChatUserId: string | undefined = route?.params?.chatUserId;
+  const routeUser = route?.params?.user as
+    | { id?: string; name?: string; images?: string[] }
+    | undefined;
+  const chatUserName: string =
+    route?.params?.chatUserName ?? routeUser?.name ?? 'User';
+  const chatUserImageUri: string | undefined =
+    route?.params?.chatUserImageUri ?? routeUser?.images?.[0];
+  const routeChatUserId: string | undefined =
+    route?.params?.chatUserId ?? routeUser?.id;
   const initialLocked: boolean = route?.params?.initialLocked ?? false;
   const autoOpenCamera: boolean = !!route?.params?.autoOpenCamera;
   const passedConversationId: string | undefined =
