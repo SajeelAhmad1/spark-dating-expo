@@ -603,16 +603,16 @@ export default function ChatScreen({ navigation, route }: any) {
   ];
 
   // ── Seen detection ────────────────────────────────────────────────────────
-  const lastFriendIdx = messages.reduceRight(
-    (acc, msg, i) => (acc === -1 && msg.senderId !== myId ? i : acc),
-    -1,
-  );
+  // A message is seen when the recipient's userId appears in message.readBy[]
+  // which is stamped in-cache by the onMessageRead socket handler.
+  // The old heuristic (lastFriendIdx > idx) only turned blue when the friend
+  // replied, which was wrong.
   const isMessageSeen = (idx: number) => {
-    if (!myId) return false;
-    const msg = messages[idx];
-    if (!msg || msg.senderId !== myId) return false;
-    return lastFriendIdx > idx;
-  };
+    if (!myId || !chatUserId) return false
+    const msg = messages[idx]
+    if (!msg || msg.senderId !== myId) return false
+    return Array.isArray((msg as any).readBy) && (msg as any).readBy.includes(chatUserId)
+  }
 
   // ── Loading ───────────────────────────────────────────────────────────────
   if (isCreating) {

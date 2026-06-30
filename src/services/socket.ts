@@ -118,13 +118,17 @@ export function leaveConversation(conversationId: string) {
 }
 
 // ── Typing helpers ────────────────────────────────────────────────────────────
+// Uses the connected socket directly. Guards against not-yet-connected state
+// so typing events are never silently dropped before the socket is ready.
 
 export function emitTyping(conversationId: string) {
-  socket?.emit('typing:start', { conversationId })
+  if (!socket?.connected) return
+  socket.emit('typing:start', { conversationId })
 }
 
 export function emitStopTyping(conversationId: string) {
-  socket?.emit('typing:stop', { conversationId })
+  if (!socket?.connected) return
+  socket.emit('typing:stop', { conversationId })
 }
 
 // ── Send message (socket-only, no REST fallback) ──────────────────────────────

@@ -19,6 +19,7 @@ import {
   getSocket,
   type SocketMessagePayload,
 } from '@/services/socket'
+import { uploadToCloudinary } from '@/utils/cloudinary'
 import type { ChatMessage, ConversationItem } from './schema'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -140,9 +141,12 @@ export function useConversationSocket(conversationId: string | null) {
       }
     }
 
-    // Handle read receipts from other members
+    // Handle read receipts — update both the conversation unread count AND
+    // stamp each message with the readers so isSeen can turn blue immediately.
     const onMessageRead = (payload: { conversationId: string; messageId: string; userIds: string[] }) => {
       if (payload.conversationId !== conversationId) return
+
+      // Zero out unread badge on the conversation list
       qc.setQueryData<any>(queryKeys.chat.conversations(), (old: any) => {
         if (!old) return old
         return {
@@ -152,6 +156,27 @@ export function useConversationSocket(conversationId: string | null) {
               ? { ...item, unreadCount: 0 }
               : item
           ),
+        }
+      })
+
+      // Mark every message up to messageId as read by the given userIds
+      qc.setQueryData<any>(queryKeys.chat.messages(conversationId), (old: any) => {
+        if (!old) return old
+        let reached = false
+        return {
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            items: page.items.map((m: ChatMessage) => {
+              if (reached) return m
+              const updated = {
+                ...m,
+                readBy: Array.from(new Set([...(m as any).readBy ?? [], ...payload.userIds])),
+              }
+              if (m.id === payload.messageId) reached = true
+              return updated
+            }),
+          })),
         }
       })
     }
@@ -190,7 +215,23 @@ export const useSendMessage = (conversationId: string) => {
 
   return useMutation({
     mutationFn: async (payload: SendPayload) => {
-      const socketPayload = { conversationId, ...payload } as SocketMessagePayload
+      // BUG 3 FIX: upload local file:// URI to Cloudinary before sending via
+      // socket so the receiver gets a publicly accessible CDN URL, not a
+      // device-local path that only the sender can read.
+      let resolvedPayload = payload
+      if (payload.type !== 'text') {
+        const localUri = payload.media.url
+        const isLocal = localUri.startsWith('file://') || localUri.startsWith('content://')
+        if (isLocal) {
+          const uploaded = await uploadToCloudinary(localUri)
+          resolvedPayload = {
+            ...payload,
+            media: { ...payload.media, url: uploaded.secure_url },
+          } as SendPayload
+        }
+      }
+
+      const socketPayload = { conversationId, ...resolvedPayload } as SocketMessagePayload
       const res = await sendSocketMessage(socketPayload)
       if (!res.ok || !res.data?.message) {
         throw new Error(res.error ?? 'Failed to send message')
@@ -332,10 +373,16 @@ export function useTypingIndicator(
   const stopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isTypingRef = useRef(false)
+  // BUG 1 FIX: gate typing emits until the socket setup async fn has completed.
+  // The server's typing:start handler checks socket.data.joinedConversations —
+  // if the user starts typing before connectSocket()+joinConversation() resolve,
+  // every emit is silently dropped and the other user never sees "typing...".
+  const joinedRef = useRef(false)
 
   useEffect(() => {
     if (!conversationId || !peerId) return
     let cancelled = false
+    joinedRef.current = false
 
     const onTypingUpdate = (data: { conversationId: string; userId: string; isTyping: boolean }) => {
       if (data.conversationId !== conversationId || data.userId !== peerId) return
@@ -349,13 +396,17 @@ export function useTypingIndicator(
     const setup = async () => {
       const sock = await connectSocket()
       if (cancelled) return
-      // conversation room already joined by useConversationSocket — no duplicate join needed
+      // Room is already joined by useConversationSocket — no duplicate join needed.
+      // We only need the socket to be connected to attach the listener.
       sock.on('typing:update', onTypingUpdate)
+      // Mark ready so onTyping/onStopTyping are allowed to emit
+      joinedRef.current = true
     }
 
     setup()
     return () => {
       cancelled = true
+      joinedRef.current = false
       const sock = getSocket()
       if (sock) sock.off('typing:update', onTypingUpdate)
       if (stopTimerRef.current) clearTimeout(stopTimerRef.current)
@@ -363,7 +414,7 @@ export function useTypingIndicator(
   }, [conversationId, peerId])
 
   const onTyping = useCallback(() => {
-    if (!conversationId) return
+    if (!conversationId || !joinedRef.current) return
     if (!isTypingRef.current) {
       isTypingRef.current = true
       emitTyping(conversationId)
@@ -380,7 +431,7 @@ export function useTypingIndicator(
     if (typingTimerRef.current) clearTimeout(typingTimerRef.current)
     if (isTypingRef.current) {
       isTypingRef.current = false
-      emitStopTyping(conversationId)
+      if (joinedRef.current) emitStopTyping(conversationId)
     }
   }, [conversationId])
 
