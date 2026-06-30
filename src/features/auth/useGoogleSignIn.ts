@@ -10,12 +10,9 @@ import { useGoogleAuth } from './hooks';
 WebBrowser.maybeCompleteAuthSession();
 
 const GOOGLE_CLIENT_IDS = {
-  webClientId:
-    '455021014657-cr575mkgjqkf10u6kl8ldbd362okj22n.apps.googleusercontent.com',
-  iosClientId:
-    '45....',
-  androidClientId:
-    '455021014657-2lbr4pl5jgqkrgsqsjg9eiivn6d6ccfv.apps.googleusercontent.com',
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID, 
+  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID, 
+  androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID, 
 };
 
 /** Google-accepted redirect URI for native OAuth (reverse client ID scheme). */
