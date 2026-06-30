@@ -7,6 +7,7 @@ export const InterestSchema = z.object({
   id: z.string(),
   name: z.string(),
   category: z.string(),
+  icon: z.string().nullable().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

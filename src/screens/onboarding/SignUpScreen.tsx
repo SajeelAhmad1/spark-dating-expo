@@ -111,7 +111,7 @@ export default function SignUpScreen({ navigation }: any) {
               <Text style={{ color: '#CEB98F' }}>Cookies Policy</Text>
             </Text>
 
-            {/* <PrimaryButton
+            <PrimaryButton
               title='Continue with email'
               onPress={() => navigation.navigate('EmailInputScreen')}
               iconBackground='#0B0B0B'
@@ -129,18 +129,18 @@ export default function SignUpScreen({ navigation }: any) {
                 fontSize: sf(16),
                 fontWeight: '500', 
               }}
-            /> */}
+            />
 
             <PrimaryButton
               title='Continue with mobile'
               onPress={() => navigation.navigate('NumberInputScreen')}
               colors={['#EAD6A9']}
               iconBackground='#0B0B0B'
-              variant='outline'
+              variant='solid' 
               icon={
                 <Phone
-                  width={sf(28)}
-                  height={sf(28)}
+                  width={24}
+                  height={24}
                   color='#CEB98F'
                 />
               }
@@ -157,8 +157,8 @@ export default function SignUpScreen({ navigation }: any) {
               title={isGooglePending ? 'Signing in…' : 'Continue with google'}
               onPress={handleGoogleSignIn}
               disabled={isGooglePending || !isReady}
-              iconBackground='#0B0B0B'
-              variant='solid'
+              iconBackground='#EDEDED'
+              variant='outline'
               icon={
                 <GoogleIcon
                   width={sf(28)}
@@ -169,6 +169,8 @@ export default function SignUpScreen({ navigation }: any) {
               style={{
                 // backgroundColor: 'white',
                 opacity: isGooglePending || !isReady ? 0.6 : 1,
+                borderWidth: 1,
+                borderColor: '#555555',
               }}
               textStyle={{
                 fontSize: sf(16),

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
-import { ChevronDown } from 'lucide-react-native';
+import { ChevronDown, ChevronLeft } from 'lucide-react-native';
 import { CountryPicker } from 'react-native-country-codes-picker';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sh, sw, sr } from '@/utils/sizeMatters';
@@ -114,7 +114,23 @@ const NumberEnterScreen = ({ navigation }: any) => {
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
+      
         <View style={styles.page}>
+             {/* Back */}
+         <TouchableOpacity
+              style={{
+                width: sw(36),
+                height: sw(36),
+                justifyContent: 'center',
+              }}
+              onPress={() => navigation.goBack()}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <ChevronLeft
+                size={sf(24)}
+                color='#000000'
+              />
+            </TouchableOpacity>
         <View style={styles.headerBlock}>
           <Text
             style={[styles.title, { fontSize: sf(28) }]}
@@ -265,7 +281,7 @@ const styles = StyleSheet.create({
     marginTop: sh(80),
     paddingBottom: sh(24),
   },
-  headerBlock: { marginTop: sh(64), rowGap: sh(8) },
+  headerBlock: { marginTop: sh(20), rowGap: sh(8) },
   title: { color: '#000000' },
   subtitle: { color: '#7D858E' },
   phoneRow: {
@@ -286,7 +302,7 @@ const styles = StyleSheet.create({
   phoneInput: { flex: 1, color: '#000000', fontWeight: '500' },
   helper: { color: '#7D858E', marginTop: sh(16) },
   helperMuted: { color: '#7D858E' },
-  btnWrap: { marginTop: sh(24) },
+  btnWrap: { marginTop: sh(32) },
   footerRow: { marginTop: sh(16), alignItems: 'center' },
   footerText: { color: '#7D858E' },
   loginLink: { color: '#CEB98F', textDecorationLine: 'underline' },

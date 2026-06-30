@@ -1,20 +1,30 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { Share2, Bell, Users2 } from 'lucide-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sw, sh, sr } from '@/utils/sizeMatters';
-
-// ─── Constants ────────────────────────────────────────────
-const CURRENT = 454;
-const TARGET = 1000;
-const REMAINING = TARGET - CURRENT;
-const PROGRESS = (CURRENT / TARGET) * 100;
+import { useLaunchProgress } from '@/features/referrals/hooks';
 
 // ─── Screen ───────────────────────────────────────────────
-const WaitingScreen = ({ navigation }: any) => (
+const WaitingScreen = ({ navigation }: any) => {
+  const { data: progress, isLoading } = useLaunchProgress();
+
+  const target = progress?.target ?? 1000;
+  const current = progress?.current ?? 0;
+  const remaining = progress?.remaining ?? Math.max(target - current, 0);
+  const progressPercent = progress?.progressPercent ?? 0;
+
+  if (isLoading) {
+    return (
+      <View style={[styles.safeArea, styles.loading]}>
+        <ActivityIndicator color='#0B0B0B' />
+      </View>
+    );
+  }
+
+  return (
   <View style={styles.safeArea}>
     <View style={styles.page}>
       {/* ── Main Content ── */}
@@ -53,7 +63,7 @@ const WaitingScreen = ({ navigation }: any) => (
             style={{ fontFamily: 'Poppins-Medium', color: '#CEB98F' }}
             weight='medium'
           >
-            {TARGET.toLocaleString()} people
+            {target.toLocaleString()} people
           </Text>{' '}
           join. Invite friends to speed it up!
         </Text>
@@ -75,12 +85,12 @@ const WaitingScreen = ({ navigation }: any) => (
                 { fontFamily: 'Poppins-Medium', fontSize: sf(16) },
               ]}
             >
-              {CURRENT}/{TARGET}
+              {current}/{target}
             </Text>
           </View>
 
           <View style={styles.track}>
-            <View style={[styles.trackFill, { width: `${PROGRESS}%` }]} />
+            <View style={[styles.trackFill, { width: `${progressPercent}%` }]} />
           </View>
 
           <Text
@@ -89,7 +99,7 @@ const WaitingScreen = ({ navigation }: any) => (
               { fontFamily: 'Poppins-Medium', fontSize: sf(14) },
             ]}
           >
-            {REMAINING} more to go!
+            {remaining} more to go!
           </Text>
         </View>
 
@@ -116,7 +126,7 @@ const WaitingScreen = ({ navigation }: any) => (
                 { fontFamily: 'Poppins-Regular', fontSize: sf(13) },
               ]}
             >
-              We will send you a notification when we reach {TARGET} users
+              We will send you a notification when we reach {target} users
             </Text>
           </View>
         </View>
@@ -141,10 +151,12 @@ const WaitingScreen = ({ navigation }: any) => (
       />
     </View>
   </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) },
+  loading: { alignItems: 'center', justifyContent: 'center' },
   page: { flex: 1, paddingHorizontal: sw(20) },
   main: {
     flex: 1,

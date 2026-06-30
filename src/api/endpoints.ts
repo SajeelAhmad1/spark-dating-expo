@@ -53,6 +53,11 @@ export const ENDPOINTS = {
   CLOUDINARY: {
     DELETE_IMAGE: '/api/cloudinary/image',
   },
+  REFERRALS: {
+    STATS:           '/api/referrals/stats',
+    SHARE:           '/api/referrals/share',
+    LAUNCH_PROGRESS: '/api/referrals/launch-progress',
+  },
 } as const
 
 export const queryKeys = {
@@ -88,5 +93,10 @@ export const queryKeys = {
     all:           () => ['chat']                                        as const,
     conversations: () => ['chat', 'conversations']                       as const,
     messages:      (id: string) => ['chat', 'messages', id]              as const,
+  },
+  referrals: {
+    all:            () => ['referrals'] as const,
+    stats:          () => ['referrals', 'stats'] as const,
+    launchProgress: () => ['referrals', 'launch-progress'] as const,
   },
 } as const

@@ -20,6 +20,7 @@ import {
 } from 'lucide-react-native'; 
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import { useMe } from '@/features/profile/hooks';
+import { useReferralStats } from '@/features/referrals/hooks';
 import { getCityFromCoords } from '@/utils/location'; 
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -45,14 +46,16 @@ function photoUrl(
 
 const ProfileScreen = ({ navigation }: any) => {
   const { data: user, isLoading } = useMe();
-  console.log(user, 'console user in profile');
-  const [premiumUnlocked, setPremiumUnlocked] = useState(false);
+  const { data: referralStats } = useReferralStats();
   const [cityName, setCityName] = useState<string>('');
+
+  const premiumUnlocked = referralStats?.premiumUnlocked ?? false;
+  const invitesSent = referralStats?.invitesSent ?? 0;
+  const premiumInviteTarget = referralStats?.premiumInviteTarget ?? 2;
 
   const profile = user?.profile;
   const interests = user?.interests ?? [];
   const photos = profile?.photos ?? [];
-  console.log(photos, 'photos profile');
   // ✅ Reverse geocoding: Convert lat/lng to city name
   useEffect(() => {
     if (user?.location?.lat && user?.location?.lng) {
@@ -349,7 +352,6 @@ const ProfileScreen = ({ navigation }: any) => {
                 </View>
               ) : (
                 <TouchableOpacity
-                  onPress={() => setPremiumUnlocked(true)}
                   activeOpacity={0.8}
                   style={{
                     minHeight: 106,
@@ -401,7 +403,7 @@ const ProfileScreen = ({ navigation }: any) => {
                           Invite Friends, Get Premium Free!
                         </Text>
                         <Text style={{ fontSize: sf(13), color: '#555555' }}>
-                          0 of 2 friends invited
+                          {invitesSent} of {premiumInviteTarget} friends invited
                         </Text>
                       </View>
                     </View>
@@ -420,7 +422,8 @@ const ProfileScreen = ({ navigation }: any) => {
                     <View
                       style={{
                         height: sh(10),
-                        backgroundColor: '#EDEDED',
+                        backgroundColor:
+                          invitesSent >= 1 ? '#CEB98F' : '#EDEDED',
                         borderRadius: sr(99),
                         width: '49%',
                       }}
@@ -428,7 +431,8 @@ const ProfileScreen = ({ navigation }: any) => {
                     <View
                       style={{
                         height: sh(10),
-                        backgroundColor: '#EDEDED',
+                        backgroundColor:
+                          invitesSent >= 2 ? '#CEB98F' : '#EDEDED',
                         borderRadius: sr(99),
                         width: '49%',
                       }}

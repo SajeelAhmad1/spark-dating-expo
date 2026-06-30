@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Share,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { showToast } from '@/utils/toast';
@@ -14,28 +15,10 @@ import Gift from '@/assets/images/gift.svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sw, sh, sr } from '@/utils/sizeMatters';
-
-// ─── Constants ────────────────────────────────────────────
-const REFERRAL_LINK = 'https://spark.app/invite/SPARK-QT53V4';
-
-const STATS = [
-  {
-    id: 'invites',
-    label: 'Invites sent',
-    value: 0,
-    color: '#CEB98F',
-    bg: '#EAD6A91A',
-    border: '#EAD6A9',
-  },
-  {
-    id: 'signups',
-    label: 'Signed up',
-    value: 0,
-    color: '#CEB98F',
-    bg: '#CEB98F1A',
-    border: '#CEB98F',
-  },
-];
+import {
+  useRecordReferralShare,
+  useReferralStats,
+} from '@/features/referrals/hooks';
 
 // ─── Sub Components ───────────────────────────────────────
 
@@ -88,7 +71,13 @@ const Subtitle = () => (
   </Text>
 );
 
-const ReferralLinkBox = ({ onCopy }: { onCopy: () => void }) => (
+const ReferralLinkBox = ({
+  referralLink,
+  onCopy,
+}: {
+  referralLink: string;
+  onCopy: () => void;
+}) => (
   <View style={styles.linkBoxOuter}>
     <Text
       style={{
@@ -113,7 +102,7 @@ const ReferralLinkBox = ({ onCopy }: { onCopy: () => void }) => (
           flex: 1,
         }}
       >
-        {REFERRAL_LINK}
+        {referralLink}
       </Text>
 
       <TouchableOpacity
@@ -129,7 +118,19 @@ const ReferralLinkBox = ({ onCopy }: { onCopy: () => void }) => (
   </View>
 );
 
-const StatCard = ({ label, value, color, bg, border }: (typeof STATS)[0]) => (
+const StatCard = ({
+  label,
+  value,
+  color,
+  bg,
+  border,
+}: {
+  label: string;
+  value: number;
+  color: string;
+  bg: string;
+  border: string;
+}) => (
   <View style={[styles.statCard, { backgroundColor: bg, borderColor: border }]}>
     <Text
       style={{
@@ -159,8 +160,32 @@ const StatCard = ({ label, value, color, bg, border }: (typeof STATS)[0]) => (
 
 // ─── Main Screen ──────────────────────────────────────────
 const InviteScreen = ({ navigation }: any) => {
+  const { data: stats, isLoading } = useReferralStats();
+  const recordShare = useRecordReferralShare();
+
+  const referralLink = stats?.referralLink ?? '';
+  const statsCards = [
+    {
+      id: 'invites',
+      label: 'Invites sent',
+      value: stats?.invitesSent ?? 0,
+      color: '#CEB98F',
+      bg: '#EAD6A91A',
+      border: '#EAD6A9',
+    },
+    {
+      id: 'signups',
+      label: 'Signed up',
+      value: stats?.signupsCount ?? 0,
+      color: '#CEB98F',
+      bg: '#CEB98F1A',
+      border: '#CEB98F',
+    },
+  ];
+
   const handleCopy = async () => {
-    await Clipboard.setStringAsync(REFERRAL_LINK);
+    if (!referralLink) return;
+    await Clipboard.setStringAsync(referralLink);
     showToast({ text1: 'Link copied' });
   };
 
@@ -169,17 +194,27 @@ const InviteScreen = ({ navigation }: any) => {
   };
 
   const handleShare = async () => {
+    if (!referralLink) return;
     try {
+      await recordShare.mutateAsync();
       const content =
         Platform.OS === 'ios'
-          ? { message: REFERRAL_LINK, url: REFERRAL_LINK }
-          : { message: REFERRAL_LINK };
+          ? { message: referralLink, url: referralLink }
+          : { message: referralLink };
       await Share.share(content);
       navigation.navigate('WaitingScreen');
     } catch {
       showToast({ text1: 'Could not open share', type: 'error' });
     }
   };
+
+  if (isLoading) {
+    return (
+      <View style={[styles.safeArea, styles.loading]}>
+        <ActivityIndicator color='#0B0B0B' />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.safeArea}>
@@ -188,9 +223,12 @@ const InviteScreen = ({ navigation }: any) => {
           <GiftIcon />
           <Title />
           <Subtitle />
-          <ReferralLinkBox onCopy={handleCopy} />
+          <ReferralLinkBox
+            referralLink={referralLink}
+            onCopy={handleCopy}
+          />
           <View style={styles.statsRow}>
-            {STATS.map((stat) => (
+            {statsCards.map((stat) => (
               <StatCard
                 key={stat.id}
                 {...stat}
@@ -234,6 +272,7 @@ const InviteScreen = ({ navigation }: any) => {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) },
+  loading: { alignItems: 'center', justifyContent: 'center' },
   page: { flex: 1, paddingHorizontal: sw(20) },
   main: {
     flex: 1,

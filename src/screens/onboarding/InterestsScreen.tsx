@@ -30,13 +30,13 @@ const MIN = 3;
 
 function groupByCategory(
   interests: Interest[],
-): { category: string; items: string[] }[] {
-  const map = new Map<string, string[]>();
+): { category: string; items: { name: string; icon?: string | null }[] }[] {
+  const map = new Map<string, { name: string; icon?: string | null }[]>();
 
   for (const interest of interests) {
     const cat = interest.category;
     if (!map.has(cat)) map.set(cat, []);
-    map.get(cat)!.push(interest.name);
+    map.get(cat)!.push({ name: interest.name, icon: interest.icon });
   }
 
   return Array.from(map.entries()).map(([category, items]) => ({
@@ -193,11 +193,11 @@ const InterestsScreen = ({ navigation }: any) => {
                   style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}
                 >
                   {items.map((item) => {
-                    const isSelected = selected.includes(item);
+                    const isSelected = selected.includes(item.name);
                     return (
                       <TouchableOpacity
-                        key={item}
-                        onPress={() => toggle(item)}
+                        key={item.name}
+                        onPress={() => toggle(item.name)}
                         style={{
                           paddingHorizontal: sw(14),
                           borderRadius: 999,
@@ -209,8 +209,15 @@ const InterestsScreen = ({ navigation }: any) => {
                           height: 40,
                           alignItems: 'center',
                           justifyContent: 'center',
+                          flexDirection: 'row',
+                          gap: sw(6),
                         }}
                       >
+                        {!!item.icon && (
+                          <Text style={{ fontSize: sf(14), lineHeight: sf(18) }}>
+                            {item.icon}
+                          </Text>
+                        )}
                         <Text
                           style={{
                             fontSize: sf(14),
@@ -219,7 +226,7 @@ const InterestsScreen = ({ navigation }: any) => {
                             lineHeight: 40,
                           }}
                         >
-                          {item}
+                          {item.name}
                         </Text>
                       </TouchableOpacity>
                     );

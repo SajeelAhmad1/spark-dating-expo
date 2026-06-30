@@ -37,12 +37,15 @@ import { showToast } from '@/utils/toast';
 import Slider from '@react-native-community/slider';
 import RangeSlider from '@/components/common/RangeSlider';
 import * as Clipboard from 'expo-clipboard';
+import {
+  useRecordReferralShare,
+  useReferralStats,
+} from '@/features/referrals/hooks';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const GENDER_OPTIONS = ['Male', 'Female', 'Other'];
 const SHOW_ME_OPTIONS = ['Women', 'Men', 'Everyone'];
-const REFERRAL_LINK = 'https://spark.app/invite/SPARK-QT53V4';
 
 type DialogType = 'gender' | 'showMe' | 'age' | 'distance' | 'invite' | null;
 
@@ -384,22 +387,46 @@ function InviteSheet({
   visible: boolean;
   onClose: () => void;
 }) {
+  const { data: stats } = useReferralStats();
+  const recordShare = useRecordReferralShare();
+  const referralLink = stats?.referralLink ?? '';
+
   const handleCopy = async () => {
-    await Clipboard.setStringAsync(REFERRAL_LINK);
+    if (!referralLink) return;
+    await Clipboard.setStringAsync(referralLink);
     showToast({ text1: 'Link copied!' });
   };
 
   const handleShare = async () => {
+    if (!referralLink) return;
     try {
+      await recordShare.mutateAsync();
       await Share.share(
         Platform.OS === 'ios'
-          ? { message: REFERRAL_LINK, url: REFERRAL_LINK }
-          : { message: REFERRAL_LINK },
+          ? { message: referralLink, url: referralLink }
+          : { message: referralLink },
       );
     } catch {
       showToast({ text1: 'Could not open share' });
     }
   };
+
+  const statCards = [
+    {
+      label: 'Invites Sent',
+      value: String(stats?.invitesSent ?? 0),
+      color: '#CEB98F',
+      bg: '#EAD6A91A',
+      border: '#EAD6A9',
+    },
+    {
+      label: 'Signed Up',
+      value: String(stats?.signupsCount ?? 0),
+      color: '#CEB98F',
+      bg: '#CEB98F1A',
+      border: '#CEB98F',
+    },
+  ];
 
   return (
     <BottomSheet
@@ -466,7 +493,7 @@ function InviteSheet({
               color: '#000000',
             }}
           >
-            {REFERRAL_LINK}
+            {referralLink}
           </Text>
           <TouchableOpacity
             onPress={handleCopy}
@@ -482,22 +509,7 @@ function InviteSheet({
 
       {/* Stats row */}
       <View style={{ flexDirection: 'row', gap: sw(12), marginBottom: sh(20) }}>
-        {[
-          {
-            label: 'Invites Sent',
-            value: '0',
-            color: '#CEB98F',
-            bg: '#EAD6A91A',
-            border: '#EAD6A9',
-          },
-          {
-            label: 'Signed Up',
-            value: '0',
-            color: '#CEB98F',
-            bg: '#CEB98F1A',
-            border: '#CEB98F',
-          },
-        ].map((s) => (
+        {statCards.map((s) => (
           <View
             key={s.label}
             style={{
