@@ -897,7 +897,7 @@ const SettingsScreen = ({ navigation }: any) => {
         flex: 1,
         backgroundColor: '#F7F3ED',
         paddingTop: sh(40),
-        paddingBottom: sh(20),
+        
       }}
     >
       {/* ── Header ──────────────────────────────────────────────────────── */}
@@ -931,7 +931,7 @@ const SettingsScreen = ({ navigation }: any) => {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: sw(20) }}
+        contentContainerStyle={{ paddingHorizontal: sw(20), paddingBottom: sh(20) }}
         // refreshControl={
         //   <RefreshControl
         //     refreshing={prefsLoading || isSavingProfile}

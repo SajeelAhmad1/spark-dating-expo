@@ -136,7 +136,7 @@ const ProfileScreen = ({ navigation }: any) => {
         {/* ── Scrollable content ───────────────────────────────────────────── */}
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: sh(20) }}
+          contentContainerStyle={{ paddingBottom: sh(10) }}
         >
           {/* ── Primary photo ─────────────────────────────────────────────── */}
           <View
@@ -627,7 +627,7 @@ const ProfileScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  flex1: { flex: 1, paddingBottom: sh(60) },
+  flex1: { flex: 1,  },
   card: {
     backgroundColor: '#FFFFFF',
     paddingVertical: sh(12),
