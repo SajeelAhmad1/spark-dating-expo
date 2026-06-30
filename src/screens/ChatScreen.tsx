@@ -52,6 +52,7 @@ import { useMe } from '@/features/profile/hooks';
 import { useGetUserById } from '@/features/users/hooks';
 import type { ChatMessage } from '@/features/chat/schema';
 import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { onSocketReconnect } from '@/services/socket';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -351,6 +352,7 @@ function MsgBubble({
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function ChatScreen({ navigation, route }: any) {
+  const insets = useSafeAreaInsets();
   const routeUser = route?.params?.user as
     | { id?: string; name?: string; images?: string[] }
     | undefined;
@@ -689,23 +691,22 @@ export default function ChatScreen({ navigation, route }: any) {
         style={{ flex: 1, backgroundColor: '#F7F3ED' }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View
-          style={{
-            flex: 1,
-            paddingTop: sh(40),
-          }}
-        >
-          <View style={{ flex: 1 }}>
-            {/* ── Nav Bar ───────────────────────────────────────────────── */}
+        <View style={{ flex: 1 }}>
+          {/* ── Nav Bar (white extends into status bar area) ─────────── */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              paddingTop: insets.top,
+              borderBottomWidth: 0.4,
+              borderBottomColor: '#B6B9C9',
+            }}
+          >
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 paddingHorizontal: sw(16),
                 paddingBottom: sh(14),
-                backgroundColor: '#FFFFFF',
-                borderBottomWidth: 0.4,
-                borderBottomColor: '#B6B9C9',
               }}
             >
               <TouchableOpacity
@@ -801,6 +802,7 @@ export default function ChatScreen({ navigation, route }: any) {
                 />
               </TouchableOpacity> */}
             </View>
+          </View>
 
             {/* ── Messages ──────────────────────────────────────────────── */}
             {messagesLoading ? (
@@ -1096,7 +1098,6 @@ export default function ChatScreen({ navigation, route }: any) {
               />
             )}
           </View>
-        </View>
 
         <ChatMenu
           visible={menuVisible}
