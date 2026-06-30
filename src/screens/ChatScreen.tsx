@@ -428,6 +428,8 @@ export default function ChatScreen({ navigation, route }: any) {
   const menuAnchorRef = useRef<View>(null);
   const flatListRef = useRef<FlatList>(null);
   const sentInitialRef = useRef(false);
+  const initialScrollPendingRef = useRef(true);
+  const stickToBottomRef = useRef(true);
 
   // ── Hooks ─────────────────────────────────────────────────────────────────
   const { mutateAsync: createConversation, isPending: isCreating } =
@@ -477,6 +479,15 @@ export default function ChatScreen({ navigation, route }: any) {
   // ── Socket ────────────────────────────────────────────────────────────────
   useConversationSocket(conversationId);
   const messages: ChatMessage[] = data?.messages ?? [];
+
+  const scrollToBottom = useCallback((animated = false) => {
+    flatListRef.current?.scrollToEnd({ animated });
+  }, []);
+
+  useEffect(() => {
+    initialScrollPendingRef.current = true;
+    stickToBottomRef.current = true;
+  }, [conversationId]);
 
   // ── Form ──────────────────────────────────────────────────────────────────
   const { watch, setValue, handleSubmit, reset, trigger } = useZodForm(
@@ -531,12 +542,41 @@ export default function ChatScreen({ navigation, route }: any) {
   }, [conversationId, lastPeerMessageId]);
 
   useEffect(() => {
-    if (messages.length > 0)
-      setTimeout(
-        () => flatListRef.current?.scrollToEnd({ animated: true }),
-        100,
-      );
-  }, [messages.length]);
+    if (messagesLoading || messages.length === 0) return;
+
+    if (initialScrollPendingRef.current) {
+      requestAnimationFrame(() => scrollToBottom(false));
+      return;
+    }
+
+    if (stickToBottomRef.current) {
+      requestAnimationFrame(() => scrollToBottom(true));
+    }
+  }, [messagesLoading, messages.length, messages[messages.length - 1]?.id, scrollToBottom]);
+
+  const handleMessagesContentSizeChange = useCallback(() => {
+    if (messages.length === 0) return;
+
+    if (initialScrollPendingRef.current) {
+      scrollToBottom(false);
+      initialScrollPendingRef.current = false;
+      return;
+    }
+
+    if (stickToBottomRef.current) {
+      scrollToBottom(false);
+    }
+  }, [messages.length, scrollToBottom]);
+
+  const handleMessagesScroll = useCallback(
+    (event: { nativeEvent: { contentOffset: { y: number }; contentSize: { height: number }; layoutMeasurement: { height: number } } }) => {
+      const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+      const distanceFromBottom =
+        contentSize.height - layoutMeasurement.height - contentOffset.y;
+      stickToBottomRef.current = distanceFromBottom < sh(80);
+    },
+    [],
+  );
 
   // ── Send handlers ─────────────────────────────────────────────────────────
   const handleSendText = handleSubmit((data) => {
@@ -820,6 +860,9 @@ export default function ChatScreen({ navigation, route }: any) {
                 ref={flatListRef}
                 data={messages}
                 keyExtractor={(item) => item.id}
+                onContentSizeChange={handleMessagesContentSizeChange}
+                onScroll={handleMessagesScroll}
+                scrollEventThrottle={16}
                 renderItem={({ item, index }) => (
                   <MsgBubble
                     message={item}
