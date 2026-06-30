@@ -2,6 +2,7 @@
 import { useCallback, useMemo } from 'react';
 import { Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import { useGoogleAuth } from './hooks';
 
@@ -10,11 +11,11 @@ WebBrowser.maybeCompleteAuthSession();
 
 const GOOGLE_CLIENT_IDS = {
   webClientId:
-    '144133634463-h1ls3krjhf5dadg5rjvrcmbubqr6psr7.apps.googleusercontent.com',
+    '455021014657-cr575mkgjqkf10u6kl8ldbd362okj22n.apps.googleusercontent.com',
   iosClientId:
-    '144133634463-j5snf2goel77aiei2eppt7bkf15qq8rr.apps.googleusercontent.com',
+    '45....',
   androidClientId:
-    '144133634463-5u6ej3rg93g6vpauohunhshph5honfuc.apps.googleusercontent.com',
+    '455021014657-2lbr4pl5jgqkrgsqsjg9eiivn6d6ccfv.apps.googleusercontent.com',
 };
 
 /** Google-accepted redirect URI for native OAuth (reverse client ID scheme). */
@@ -23,35 +24,30 @@ function googleNativeRedirectUri(clientId: string) {
   return `com.googleusercontent.apps.${id}:/oauth2redirect`;
 }
 
+function getGoogleRedirectUri(): string {
+  if (Platform.OS === 'android') {
+    return googleNativeRedirectUri(GOOGLE_CLIENT_IDS.androidClientId);
+  }
+  if (Platform.OS === 'ios') {
+    return googleNativeRedirectUri(GOOGLE_CLIENT_IDS.iosClientId);
+  }
+  return makeRedirectUri();
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function useGoogleSignIn() {
   const { mutate: googleVerify, isPending } = useGoogleAuth();
 
-  const redirectUriOptions = useMemo(() => {
-    if (Platform.OS === 'android') {
-      return {
-        native: googleNativeRedirectUri(GOOGLE_CLIENT_IDS.androidClientId),
-      };
-    }
-    if (Platform.OS === 'ios') {
-      return {
-        native: googleNativeRedirectUri(GOOGLE_CLIENT_IDS.iosClientId),
-      };
-    }
-    return {};
-  }, []);
+  const redirectUri = useMemo(() => getGoogleRedirectUri(), []);
 
-  const [request, , promptAsync] = Google.useAuthRequest(
-    {
-      webClientId: GOOGLE_CLIENT_IDS.webClientId,
-      iosClientId: GOOGLE_CLIENT_IDS.iosClientId,
-      androidClientId: GOOGLE_CLIENT_IDS.androidClientId,
-      responseType: 'code',
-      scopes: ['openid', 'profile', 'email'],
-    },
-    redirectUriOptions,
-  );
+  const [request, , promptAsync] = Google.useIdTokenAuthRequest({
+    webClientId: GOOGLE_CLIENT_IDS.webClientId,
+    iosClientId: GOOGLE_CLIENT_IDS.iosClientId,
+    androidClientId: GOOGLE_CLIENT_IDS.androidClientId,
+    redirectUri,
+    scopes: ['openid', 'profile', 'email'],
+  });
 
   const signIn = useCallback(
     async (
