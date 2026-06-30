@@ -101,7 +101,7 @@ export type AppStackParamList = {
   EditProfileScreen: undefined;
   SettingsScreen: undefined;
   BlockedUsersScreen: undefined;
-  UserProfileScreen: { user: any };
+  UserProfileScreen: { user?: any; userId?: string };
 };
 
 // ── Root stack (just the two navigators) ─────────────────────────────────────

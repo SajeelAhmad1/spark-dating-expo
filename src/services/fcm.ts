@@ -164,6 +164,8 @@ export interface ChatNotificationData {
   conversationId: string;
   messageId: string;
   senderId?: string;
+  senderName?: string;
+  senderPhotoUrl?: string;
   messageType?: string;
   textPreview?: string;
 }
@@ -181,6 +183,8 @@ export function parseChatNotification(
     conversationId: data.conversationId,
     messageId: data.messageId,
     senderId: data.senderId,
+    senderName: data.senderName,
+    senderPhotoUrl: data.senderPhotoUrl,
     messageType: data.messageType,
     textPreview: data.textPreview,
   };

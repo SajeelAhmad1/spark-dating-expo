@@ -72,6 +72,8 @@ export const ChatMessageSchema = z.object({
   media:           MessageMediaSchema.nullable().optional(),
   streakExpiresAt: z.string().nullable().optional(),
   streakViewedBy:  z.array(z.string()).optional(),
+  readBy:          z.array(z.string()).optional(),
+  deliveredTo:     z.array(z.string()).optional(),
   createdAt:       z.string(),
   updatedAt:       z.string(),
 })

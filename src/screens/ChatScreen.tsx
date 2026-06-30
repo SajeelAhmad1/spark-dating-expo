@@ -23,6 +23,7 @@ import {
   AlertTriangle,
   UserRoundX,
   Loader,
+  Check,
   CheckCheck,
 } from 'lucide-react-native';
 import Logo from '@/assets/images/logo.svg';
@@ -44,12 +45,14 @@ import {
   useConversationSocket,
   usePresence,
   useTypingIndicator,
+  useConversations,
 } from '@/features/chat/hooks';
 import { useBlockUser } from '@/features/social/hooks';
 import { useMe } from '@/features/profile/hooks';
 import { useGetUserById } from '@/features/users/hooks';
 import type { ChatMessage } from '@/features/chat/schema';
 import { StatusBar } from 'expo-status-bar';
+import { onSocketReconnect } from '@/services/socket';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -65,6 +68,7 @@ function formatMsgTime(iso: string): string {
 function MsgBubble({
   message,
   isMe,
+  isDelivered,
   isSeen,
   friendAvatarUri,
   myAvatarUri,
@@ -72,12 +76,22 @@ function MsgBubble({
 }: {
   message: ChatMessage;
   isMe: boolean;
+  isDelivered: boolean;
   isSeen: boolean;
   friendAvatarUri?: string;
   myAvatarUri?: string;
   onSnapPress?: (msg: ChatMessage) => void;
 }) {
-  const isOptimistic = message.id.startsWith('optimistic-');
+  const isOptimistic = message.id.startsWith('optimistic-')
+  // Tick states:
+  //   optimistic  → no tick (still sending)
+  //   real + !isDelivered → single gray tick (sent to server, recipient offline)
+  //   real + isDelivered + !isSeen → double gray tick (delivered to device)
+  //   real + isSeen → double blue tick
+  // isDelivered = message has a real server id AND recipient was online when it arrived.
+  // We approximate delivered as: message is real (non-optimistic) — the server
+  // confirmed receipt. isSeen comes from readBy[] stamped by message:read events.
+  const showTick = isMe && !isOptimistic;
 
   const wrapStyle: any = {
     flexDirection: isMe ? 'row-reverse' : 'row',
@@ -100,12 +114,18 @@ function MsgBubble({
         {formatMsgTime(message.createdAt)}
         {isOptimistic ? '  ···' : ''}
       </Text>
-      {isMe && (
+      {showTick && (
         <View>
-          <CheckCheck
-            size={15}
-            color={isSeen ? '#1E78F5' : '#B6B9C9'}
-          />
+          {isSeen ? (
+            // Double blue tick — read by recipient
+            <CheckCheck size={15} color='#1E78F5' />
+          ) : isDelivered ? (
+            // Double gray tick — delivered but not yet read
+            <CheckCheck size={15} color='#B6B9C9' />
+          ) : (
+            // Single gray tick — sent to server, recipient offline
+            <Check size={15} color='#B6B9C9' />
+          )}
         </View>
       )}
     </View>
@@ -333,13 +353,23 @@ function MsgBubble({
 export default function ChatScreen({ navigation, route }: any) {
   const chatUserName: string = route?.params?.chatUserName ?? 'User';
   const chatUserImageUri: string | undefined = route?.params?.chatUserImageUri;
-  const chatUserId: string | undefined = route?.params?.chatUserId;
+  const routeChatUserId: string | undefined = route?.params?.chatUserId;
   const initialLocked: boolean = route?.params?.initialLocked ?? false;
   const autoOpenCamera: boolean = !!route?.params?.autoOpenCamera;
   const passedConversationId: string | undefined =
     route?.params?.conversationId;
   const initialText: string | undefined = route?.params?.initialText;
   const initialPhotoUri: string | undefined = route?.params?.initialPhotoUri;
+
+  const { data: conversationsData } = useConversations();
+  const conversations = conversationsData?.items;
+  const resolvedConversationId =
+    passedConversationId ??
+    conversations?.find((c) => c.otherUser?.id === routeChatUserId)?.conversationId ??
+    null;
+  const chatUserId =
+    routeChatUserId ??
+    conversations?.find((c) => c.conversationId === resolvedConversationId)?.otherUser?.id;
 
   // ── My profile ────────────────────────────────────────────────────────────
   const { data: me } = useMe();
@@ -351,9 +381,31 @@ export default function ChatScreen({ navigation, route }: any) {
   // ── Peer profile ──────────────────────────────────────────────────────────
   const { data: peerUser } = useGetUserById(chatUserId);
 
+  const convPeer = conversations?.find(
+    (c) => c.conversationId === resolvedConversationId,
+  )?.otherUser;
+
+  const displayName = (() => {
+    if (chatUserName && chatUserName !== 'User') return chatUserName;
+    const fromPeer = peerUser?.profile;
+    const name = `${fromPeer?.firstName ?? ''} ${fromPeer?.lastName ?? ''}`.trim();
+    if (name) return name;
+    const fromConv = `${convPeer?.firstName ?? ''} ${convPeer?.lastName ?? ''}`.trim();
+    return fromConv || chatUserName;
+  })();
+
+  const displayAvatar = (() => {
+    if (chatUserImageUri) return chatUserImageUri;
+    const peerPhoto = peerUser?.profile?.photos?.[0];
+    if (peerPhoto) return typeof peerPhoto === 'string' ? peerPhoto : (peerPhoto as any)?.url;
+    const convPhoto = convPeer?.photos?.[0];
+    if (convPhoto) return typeof convPhoto === 'string' ? convPhoto : (convPhoto as any)?.url;
+    return undefined;
+  })();
+
   // ── State ─────────────────────────────────────────────────────────────────
   const [conversationId, setConversationId] = useState<string | null>(
-    passedConversationId ?? null,
+    resolvedConversationId,
   );
   const [isLocked, setIsLocked] = useState(initialLocked);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
@@ -427,6 +479,12 @@ export default function ChatScreen({ navigation, route }: any) {
 
   // ── Effects ───────────────────────────────────────────────────────────────
   useEffect(() => {
+    if (!conversationId && resolvedConversationId) {
+      setConversationId(resolvedConversationId);
+    }
+  }, [conversationId, resolvedConversationId]);
+
+  useEffect(() => {
     if (!conversationId && chatUserId) {
       createConversation(chatUserId).then((res) =>
         setConversationId(res.conversation.id),
@@ -453,13 +511,16 @@ export default function ChatScreen({ navigation, route }: any) {
     if (autoOpenCamera) setIsCameraOpen(true);
   }, [autoOpenCamera]);
 
+  const lastPeerMessageId = [...messages]
+    .reverse()
+    .find((m) => !m.id.startsWith('optimistic-') && m.senderId !== myId)?.id;
+
   useEffect(() => {
-    if (!conversationId || messages.length === 0) return;
-    const last = messages[messages.length - 1];
-    if (last && !last.id.startsWith('optimistic-') && last.senderId !== myId) {
-      markRead(last.id);
-    }
-  }, [conversationId, messages.length]);
+    if (!conversationId || !lastPeerMessageId) return;
+    markRead(lastPeerMessageId);
+    const offReconnect = onSocketReconnect(() => markRead(lastPeerMessageId));
+    return offReconnect;
+  }, [conversationId, lastPeerMessageId]);
 
   useEffect(() => {
     if (messages.length > 0)
@@ -553,38 +614,7 @@ export default function ChatScreen({ navigation, route }: any) {
       ),
       color: '#1C1C1E',
       onPress: () => {
-        const profile = peerUser?.profile;
-        const interests = (peerUser?.interests ?? []).map(
-          (ui: any) => ui.interest.name,
-        );
-        navigation?.navigate('UserProfileScreen', {
-          user: {
-            id: chatUserId ?? '',
-            name:
-              `${profile?.firstName ?? ''} ${profile?.lastName ?? ''}`.trim() ||
-              chatUserName,
-            age: profile?.dob
-              ? Math.floor(
-                  (Date.now() - new Date(profile.dob).getTime()) /
-                    (365.25 * 24 * 60 * 60 * 1000),
-                )
-              : 0,
-            images: profile?.photos?.length
-              ? profile.photos
-              : chatUserImageUri
-                ? [chatUserImageUri]
-                : [],
-            bio: profile?.bio ?? '',
-            bio2: profile?.bio ?? '',
-            height: profile?.height ? `${profile.height} cm` : '',
-            gender: profile?.gender
-              ? profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1)
-              : '',
-            location: (peerUser as any)?.location ?? '',
-            attributes: profile?.ethnicity ? [profile.ethnicity] : [],
-            interests,
-          },
-        });
+        navigation?.navigate('UserProfileScreen', { userId: chatUserId });
       },
     },
     {
@@ -602,16 +632,22 @@ export default function ChatScreen({ navigation, route }: any) {
     },
   ];
 
-  // ── Seen detection ────────────────────────────────────────────────────────
-  // A message is seen when the recipient's userId appears in message.readBy[]
-  // which is stamped in-cache by the onMessageRead socket handler.
-  // The old heuristic (lastFriendIdx > idx) only turned blue when the friend
-  // replied, which was wrong.
-  const isMessageSeen = (idx: number) => {
+  // ── Tick state ────────────────────────────────────────────────────────────
+  // isSeen      → recipient's id is in message.readBy[]
+  // isDelivered → recipient's id is in message.deliveredTo[]
+  const isMessageSeen = (idx: number): boolean => {
     if (!myId || !chatUserId) return false
     const msg = messages[idx]
     if (!msg || msg.senderId !== myId) return false
     return Array.isArray((msg as any).readBy) && (msg as any).readBy.includes(chatUserId)
+  }
+
+  const isMessageDelivered = (idx: number): boolean => {
+    if (!chatUserId) return false
+    const msg = messages[idx]
+    if (!msg || msg.senderId !== myId) return false
+    if (msg.id.startsWith('optimistic-')) return false
+    return Array.isArray((msg as any).deliveredTo) && (msg as any).deliveredTo.includes(chatUserId)
   }
 
   // ── Loading ───────────────────────────────────────────────────────────────
@@ -680,7 +716,7 @@ export default function ChatScreen({ navigation, route }: any) {
               <ChatAvatar
                 size={sf(40)}
                 variant='friend'
-                imageUri={chatUserImageUri}
+                imageUri={displayAvatar}
               />
 
               <View
@@ -702,7 +738,7 @@ export default function ChatScreen({ navigation, route }: any) {
                   numberOfLines={1}
                   ellipsizeMode='tail'
                 >
-                  {chatUserName}
+                  {displayName}
                 </Text>
                 <View
                   style={{
@@ -768,6 +804,7 @@ export default function ChatScreen({ navigation, route }: any) {
                       item.senderId === myId ||
                       item.id.startsWith('optimistic-')
                     }
+                    isDelivered={isMessageDelivered(index)}
                     isSeen={isMessageSeen(index)}
                     friendAvatarUri={chatUserImageUri}
                     myAvatarUri={myAvatar}

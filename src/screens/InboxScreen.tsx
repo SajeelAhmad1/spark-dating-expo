@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   TextInput,
@@ -10,6 +10,7 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import { Text } from '@/components/common/Text';
 import RefreshControl from '@/components/common/RefreshControl';
@@ -503,15 +504,22 @@ export default function InboxScreen({ navigation, route }: any) {
     searchQuery.length > 120 ? searchQuery.slice(0, 120) : searchQuery;
 
   const {
-    data: conversations = [],
-    isLoading,
+    data: conversationsData,
+    isPending,
     isError,
     refetch,
     isFetching,
   } = useConversations();
+  const conversations = conversationsData?.items ?? [];
   const { mutateAsync: createConversation } = useCreateDirectConversation();
   const { data: me } = useMe();
   const myId = me?.id;
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
 
   const filtered = filterItems(conversations, activeFilter, safeSearch);
 
@@ -644,7 +652,7 @@ export default function InboxScreen({ navigation, route }: any) {
       </ScrollView>
 
       {/* ── Loading ──────────────────────────────────────────────────────── */}
-      {isLoading && (
+      {isPending && !conversationsData && (
         <View
           style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
         >
@@ -653,7 +661,7 @@ export default function InboxScreen({ navigation, route }: any) {
       )}
 
       {/* ── Error ────────────────────────────────────────────────────────── */}
-      {isError && !isLoading && (
+      {isError && !isPending && (
         <View
           style={{
             flex: 1,
@@ -691,7 +699,7 @@ export default function InboxScreen({ navigation, route }: any) {
       )}
 
       {/* ── Conversation list ────────────────────────────────────────────── */}
-      {!isLoading && !isError && (
+      {!isPending && !isError && (
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -699,12 +707,12 @@ export default function InboxScreen({ navigation, route }: any) {
             paddingBottom: sh(140),
           }}
           style={{ flex: 1 }}
-          // refreshControl={
-          //   <RefreshControl
-          //     refreshing={isFetching}
-          //     onRefresh={() => refetch()}
-          //   />
-          // }
+          refreshControl={
+            <RefreshControl
+              refreshing={isFetching}
+              onRefresh={() => refetch()}
+            />
+          }
         >
           {showSections ? (
             <>

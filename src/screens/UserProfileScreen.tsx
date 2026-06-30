@@ -10,6 +10,7 @@ import {
   ImageStyle,
   StyleProp,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import RefreshControl from '@/components/common/RefreshControl';
@@ -31,6 +32,8 @@ import { ViewStyle } from 'react-native';
 import { showToast } from '@/utils/toast';
 import ChatMenu, { type ChatMenuItem } from '@/screens/ChatMenu';
 import { getCityFromCoords } from '@/utils/location';
+import { useGetUserById } from '@/features/users/hooks';
+import { mapPublicUserToProfile } from '@/utils/mapUserProfile';
 
 type UserProfile = {
   id: string;
@@ -54,10 +57,14 @@ const BTN_OVERLAP = sf(32);
 
 const UserProfileScreen = ({ navigation, route }: any) => {
   const scrollRef = useRef<ScrollView>(null);
-  const user: UserProfile = useMemo(() => {
-    return route?.params?.user;
-  }, [route?.params?.user]);
-  console.log(user, 'useruserrrrrrr');
+  const userId: string | undefined =
+    route?.params?.userId ?? route?.params?.user?.id ?? route?.params?.peer?.id;
+  const { data: fetchedUser, isLoading } = useGetUserById(userId);
+  const user: UserProfile | null = useMemo(() => {
+    if (fetchedUser) return mapPublicUserToProfile(fetchedUser);
+    if (route?.params?.user?.name) return route.params.user as UserProfile;
+    return null;
+  }, [fetchedUser, route?.params?.user]);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuAnchorPos, setMenuAnchorPos] = useState<{
     x: number;
@@ -73,6 +80,22 @@ const UserProfileScreen = ({ navigation, route }: any) => {
       getCityFromCoords(user.location.lat, user.location.lng).then(setCityName);
     }
   }, [user?.location?.lat, user?.location?.lng]);
+
+  if (isLoading && !user) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F3ED' }}>
+        <ActivityIndicator color="#0B0B0B" />
+      </View>
+    );
+  }
+
+  if (!user) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F3ED' }}>
+        <Text>User not found</Text>
+      </View>
+    );
+  }
 
   const onLikePress = () => {
     navigation.navigate('MatchScreen');

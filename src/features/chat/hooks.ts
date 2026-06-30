@@ -17,12 +17,23 @@ import {
   emitTyping,
   emitStopTyping,
   getSocket,
+  onSocketReconnect,
   type SocketMessagePayload,
 } from '@/services/socket'
 import { uploadToCloudinary } from '@/utils/cloudinary'
-import type { ChatMessage, ConversationItem } from './schema'
+import type { ChatMessage, ConversationItem, ListConversationsResponse } from './schema'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+function updateConversationsCache(
+  qc: ReturnType<typeof useQueryClient>,
+  updater: (items: ConversationItem[]) => ConversationItem[]
+) {
+  qc.setQueryData<ListConversationsResponse>(queryKeys.chat.conversations(), (old) => {
+    const items = Array.isArray(old?.items) ? old.items : []
+    return { items: updater(items) }
+  })
+}
 
 function sortByCreatedAt(messages: ChatMessage[]): ChatMessage[] {
   return [...messages].sort(
@@ -55,7 +66,6 @@ export const useConversations = (limit = 20) =>
     queryFn: () => chatApi.listConversations(limit),
     staleTime: 1000 * 30,
     gcTime: 1000 * 60 * 5,
-    select: (res) => res.items,
   })
 
 // ── List messages (REST, paginated history) ───────────────────────────────────
@@ -73,10 +83,126 @@ export const useMessages = (conversationId: string | null) =>
       const all = data.pages.flatMap((p) => p.items)
       return {
         pages: data.pages,
-        messages: sortByCreatedAt(dedupeMessages(all))
+        messages: sortByCreatedAt(dedupeMessages(all)),
       }
     },
   })
+
+function stampMessagesUpTo(
+  pages: any[],
+  messageId: string,
+  field: 'readBy' | 'deliveredTo',
+  userIds: string[]
+) {
+  let reached = false
+  return pages.map((page: any) => ({
+    ...page,
+    items: page.items.map((m: ChatMessage) => {
+      if (reached) return m
+      const updated = {
+        ...m,
+        [field]: Array.from(new Set([...((m as any)[field] ?? []), ...userIds])),
+      }
+      if (m.id === messageId) reached = true
+      return updated
+    }),
+  }))
+}
+
+function applyReadReceipt(
+  qc: ReturnType<typeof useQueryClient>,
+  conversationId: string,
+  messageId: string,
+  userIds: string[]
+) {
+  updateConversationsCache(qc, (items) =>
+    items.map((item) =>
+      item.conversationId === conversationId
+        ? { ...item, unreadCount: 0 }
+        : item
+    )
+  )
+
+  qc.setQueryData<any>(queryKeys.chat.messages(conversationId), (old: any) => {
+    if (!old) return old
+    return {
+      ...old,
+      pages: stampMessagesUpTo(old.pages, messageId, 'readBy', userIds),
+    }
+  })
+}
+
+function applyDeliveryReceipt(
+  qc: ReturnType<typeof useQueryClient>,
+  conversationId: string,
+  messageId: string,
+  userIds: string[]
+) {
+  qc.setQueryData<any>(queryKeys.chat.messages(conversationId), (old: any) => {
+    if (!old) return old
+    return {
+      ...old,
+      pages: stampMessagesUpTo(old.pages, messageId, 'deliveredTo', userIds),
+    }
+  })
+}
+
+function injectMessageIntoCache(
+  qc: ReturnType<typeof useQueryClient>,
+  rawMsg: any
+) {
+  const msg = rawMsg as ChatMessage
+  const convId = msg.conversationId
+
+  qc.setQueryData<any>(queryKeys.chat.messages(convId), (old: any) => {
+    if (!old) {
+      return {
+        pages: [{ items: [msg], nextCursor: null }],
+        pageParams: [undefined],
+      }
+    }
+    const pages = old.pages as any[]
+    const allIds = new Set(pages.flatMap((p: any) => p.items.map((m: any) => m.id)))
+    if (allIds.has(msg.id)) return old
+
+    const newPages = [...pages]
+    const last = { ...newPages[newPages.length - 1] }
+    last.items = [
+      ...last.items.filter(
+        (m: any) => !m.id.startsWith('optimistic-') || m.senderId !== msg.senderId
+      ),
+      msg,
+    ]
+    newPages[newPages.length - 1] = last
+    return { ...old, pages: newPages }
+  })
+
+  updateConversationsCache(qc, (items) => {
+    const updated = items.map((item) => {
+      if (item.conversationId !== convId) return item
+      const isFromPeer = item.otherUser?.id === msg.senderId
+      return {
+        ...item,
+        unreadCount: isFromPeer ? (item.unreadCount ?? 0) + 1 : item.unreadCount,
+        lastMessage: {
+          id: msg.id,
+          type: msg.type,
+          text: msg.text ?? null,
+          media: msg.media ?? null,
+          createdAt: msg.createdAt,
+          senderId: msg.senderId,
+        },
+        lastMessageAt: msg.createdAt,
+      }
+    })
+    const idx = updated.findIndex((i) => i.conversationId === convId)
+    if (idx > 0) {
+      const [moved] = updated.splice(idx, 1)
+      updated.unshift(moved)
+    }
+    return updated
+  })
+}
 
 // ── Real-time socket for a conversation ───────────────────────────────────────
 
@@ -84,56 +210,13 @@ export function useConversationSocket(conversationId: string | null) {
   const qc = useQueryClient()
 
   const injectMessage = useCallback((rawMsg: any) => {
-    const msg = rawMsg as ChatMessage
-    const convId = msg.conversationId
-
-    // Update messages cache — dedupe + sort
-    qc.setQueryData<any>(queryKeys.chat.messages(convId), (old: any) => {
-      if (!old) return old
-      const pages = old.pages as any[]
-      const allIds = new Set(pages.flatMap((p: any) => p.items.map((m: any) => m.id)))
-      if (allIds.has(msg.id)) return old // already present — skip
-
-      const newPages = [...pages]
-      const last = { ...newPages[newPages.length - 1] }
-      // Remove matching optimistic placeholder (same sender, optimistic id)
-      last.items = [
-        ...last.items.filter(
-          (m: any) => !m.id.startsWith('optimistic-') || m.senderId !== msg.senderId
-        ),
-        msg,
-      ]
-      newPages[newPages.length - 1] = last
-      return { ...old, pages: newPages }
-    })
-
-    // Bump conversations list lastMessage
-    qc.setQueryData<any>(queryKeys.chat.conversations(), (old: any) => {
-      if (!old) return old
-      return {
-        ...old,
-        items: (old.items as ConversationItem[]).map((item) =>
-          item.conversationId === convId
-            ? {
-                ...item,
-                lastMessage: {
-                  id: msg.id,
-                  type: msg.type,
-                  text: msg.text ?? null,
-                  media: msg.media ?? null,
-                  createdAt: msg.createdAt,
-                },
-                lastMessageAt: msg.createdAt,
-              }
-            : item
-        ),
-      }
-    })
+    injectMessageIntoCache(qc, rawMsg)
   }, [qc])
 
   useEffect(() => {
     if (!conversationId) return
     let cancelled = false
+    let sock: ReturnType<typeof getSocket> = null
 
     const onMessageNew = (payload: { conversationId: string; message: ChatMessage }) => {
       if (payload.conversationId === conversationId) {
@@ -141,69 +224,102 @@ export function useConversationSocket(conversationId: string | null) {
       }
     }
 
-    // Handle read receipts — update both the conversation unread count AND
-    // stamp each message with the readers so isSeen can turn blue immediately.
     const onMessageRead = (payload: { conversationId: string; messageId: string; userIds: string[] }) => {
       if (payload.conversationId !== conversationId) return
+      applyReadReceipt(qc, conversationId, payload.messageId, payload.userIds)
+    }
 
-      // Zero out unread badge on the conversation list
-      qc.setQueryData<any>(queryKeys.chat.conversations(), (old: any) => {
-        if (!old) return old
-        return {
-          ...old,
-          items: (old.items as ConversationItem[]).map((item) =>
-            item.conversationId === conversationId
-              ? { ...item, unreadCount: 0 }
-              : item
-          ),
-        }
-      })
-
-      // Mark every message up to messageId as read by the given userIds
-      qc.setQueryData<any>(queryKeys.chat.messages(conversationId), (old: any) => {
-        if (!old) return old
-        let reached = false
-        return {
-          ...old,
-          pages: old.pages.map((page: any) => ({
-            ...page,
-            items: page.items.map((m: ChatMessage) => {
-              if (reached) return m
-              const updated = {
-                ...m,
-                readBy: Array.from(new Set([...(m as any).readBy ?? [], ...payload.userIds])),
-              }
-              if (m.id === payload.messageId) reached = true
-              return updated
-            }),
-          })),
-        }
-      })
+    const onMessageDelivered = (payload: { conversationId: string; messageId: string; userIds: string[] }) => {
+      if (payload.conversationId !== conversationId) return
+      applyDeliveryReceipt(qc, conversationId, payload.messageId, payload.userIds)
     }
 
     const setup = async () => {
-      const sock = await connectSocket()
+      sock = await connectSocket()
       if (cancelled) return
       await joinConversation(conversationId)
+      if (cancelled) return
       sock.on('message:new', onMessageNew)
       sock.on('message:read', onMessageRead)
+      sock.on('message:delivered', onMessageDelivered)
+    }
+
+    const rejoin = () => {
+      if (!cancelled && conversationId) joinConversation(conversationId)
     }
 
     setup()
+    const offReconnect = onSocketReconnect(rejoin)
 
     return () => {
       cancelled = true
+      offReconnect()
       leaveConversation(conversationId)
-      const sock = getSocket()
       if (sock) {
         sock.off('message:new', onMessageNew)
         sock.off('message:read', onMessageRead)
+        sock.off('message:delivered', onMessageDelivered)
       }
     }
   }, [conversationId, injectMessage, qc])
 }
 
-// ── Send message (socket-only, no REST fallback) ──────────────────────────────
+// ── Global socket listeners (user room) ───────────────────────────────────────
+// Handles read receipts, delivery receipts, and inbox updates app-wide.
+
+export function useGlobalChatRealtime(enabled: boolean) {
+  const qc = useQueryClient()
+
+  useEffect(() => {
+    if (!enabled) return
+    let cancelled = false
+    let sock: ReturnType<typeof getSocket> = null
+
+    const onMessageNew = (payload: { conversationId: string; message: ChatMessage }) => {
+      injectMessageIntoCache(qc, payload.message)
+    }
+
+    const onMessageRead = (payload: { conversationId: string; messageId: string; userIds: string[] }) => {
+      applyReadReceipt(qc, payload.conversationId, payload.messageId, payload.userIds)
+    }
+
+    const onMessageDelivered = (payload: { conversationId: string; messageId: string; userIds: string[] }) => {
+      applyDeliveryReceipt(qc, payload.conversationId, payload.messageId, payload.userIds)
+    }
+
+    const setup = async () => {
+      sock = await connectSocket()
+      if (cancelled) return
+      sock.on('message:new', onMessageNew)
+      sock.on('message:read', onMessageRead)
+      sock.on('message:delivered', onMessageDelivered)
+    }
+
+    const onReconnect = () => {
+      qc.invalidateQueries({ queryKey: queryKeys.chat.conversations() })
+    }
+
+    setup()
+    const offReconnect = onSocketReconnect(onReconnect)
+
+    return () => {
+      cancelled = true
+      offReconnect()
+      if (sock) {
+        sock.off('message:new', onMessageNew)
+        sock.off('message:read', onMessageRead)
+        sock.off('message:delivered', onMessageDelivered)
+      }
+    }
+  }, [enabled, qc])
+}
+
+/** @deprecated Use useGlobalChatRealtime via ChatRealtimeProvider instead */
+export function useGlobalReadReceipts() {
+  useGlobalChatRealtime(true)
+}
+
+// ── Send message ──────────────────────────────────────────────────────────────
 
 export type SendPayload =
   | { type: 'text'; text: string }
@@ -215,9 +331,8 @@ export const useSendMessage = (conversationId: string) => {
 
   return useMutation({
     mutationFn: async (payload: SendPayload) => {
-      // BUG 3 FIX: upload local file:// URI to Cloudinary before sending via
-      // socket so the receiver gets a publicly accessible CDN URL, not a
-      // device-local path that only the sender can read.
+      // Upload local file:// URI to Cloudinary first so the receiver
+      // gets a publicly accessible CDN URL, not a device-local path.
       let resolvedPayload = payload
       if (payload.type !== 'text') {
         const localUri = payload.media.url
@@ -270,7 +385,6 @@ export const useSendMessage = (conversationId: string) => {
     },
 
     onSuccess: (realMsg, _vars, context) => {
-      // Replace optimistic with real message from server
       qc.setQueryData<any>(queryKeys.chat.messages(conversationId), (old: any) => {
         if (!old) return old
         return {
@@ -287,7 +401,6 @@ export const useSendMessage = (conversationId: string) => {
     },
 
     onError: (_err, _vars, context) => {
-      // Rollback optimistic message
       qc.setQueryData<any>(queryKeys.chat.messages(conversationId), (old: any) => {
         if (!old) return old
         return {
@@ -303,25 +416,26 @@ export const useSendMessage = (conversationId: string) => {
   })
 }
 
-// ── Mark read (socket-only) ───────────────────────────────────────────────────
+// ── Mark read ─────────────────────────────────────────────────────────────────
 
 export const useMarkRead = (conversationId: string) => {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (lastReadMessageId: string) =>
-      markConversationRead(conversationId, lastReadMessageId),
+    mutationFn: async (lastReadMessageId: string) => {
+      await connectSocket()
+      await joinConversation(conversationId)
+      const res = await markConversationRead(conversationId, lastReadMessageId)
+      if (!res.ok) throw new Error(res.error ?? 'Failed to mark read')
+      return res
+    },
     onSuccess: () => {
-      qc.setQueryData<any>(queryKeys.chat.conversations(), (old: any) => {
-        if (!old) return old
-        return {
-          ...old,
-          items: (old.items as ConversationItem[]).map((item) =>
-            item.conversationId === conversationId
-              ? { ...item, unreadCount: 0 }
-              : item
-          ),
-        }
-      })
+      updateConversationsCache(qc, (items) =>
+        items.map((item) =>
+          item.conversationId === conversationId
+            ? { ...item, unreadCount: 0 }
+            : item
+        )
+      )
     },
   })
 }
@@ -346,7 +460,6 @@ export function usePresence(peerId: string | undefined) {
       const sock = await connectSocket()
       if (cancelled) return
       sock.on('presence:update', onPresence)
-      // Request current status immediately on mount
       sock.emit('presence:ping', { userId: peerId })
     }
 
@@ -373,10 +486,10 @@ export function useTypingIndicator(
   const stopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isTypingRef = useRef(false)
-  // BUG 1 FIX: gate typing emits until the socket setup async fn has completed.
-  // The server's typing:start handler checks socket.data.joinedConversations —
-  // if the user starts typing before connectSocket()+joinConversation() resolve,
-  // every emit is silently dropped and the other user never sees "typing...".
+  // FIX 2: joinedRef is set true only AFTER joinConversation resolves,
+  // not just after connectSocket. The server drops typing:start if the socket
+  // is not in socket.data.joinedConversations — this ref ensures we never
+  // emit before the server-side join has been acknowledged.
   const joinedRef = useRef(false)
 
   useEffect(() => {
@@ -396,17 +509,26 @@ export function useTypingIndicator(
     const setup = async () => {
       const sock = await connectSocket()
       if (cancelled) return
-      // Room is already joined by useConversationSocket — no duplicate join needed.
-      // We only need the socket to be connected to attach the listener.
       sock.on('typing:update', onTypingUpdate)
-      // Mark ready so onTyping/onStopTyping are allowed to emit
+      await joinConversation(conversationId)
+      if (cancelled) return
       joinedRef.current = true
     }
 
+    const rejoin = async () => {
+      if (cancelled || !conversationId) return
+      joinedRef.current = false
+      const res = await joinConversation(conversationId)
+      if (!cancelled && res.ok) joinedRef.current = true
+    }
+
     setup()
+    const offReconnect = onSocketReconnect(rejoin)
+
     return () => {
       cancelled = true
       joinedRef.current = false
+      offReconnect()
       const sock = getSocket()
       if (sock) sock.off('typing:update', onTypingUpdate)
       if (stopTimerRef.current) clearTimeout(stopTimerRef.current)

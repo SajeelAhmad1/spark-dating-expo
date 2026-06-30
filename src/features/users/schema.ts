@@ -11,7 +11,12 @@ export const PublicUserSchema = z.object({
       bio: z.string().nullable().optional(),
       height: z.number().nullable().optional(),
       ethnicity: z.string().nullable().optional(),
-      photos: z.array(z.string()),
+      photos: z.array(
+        z.union([
+          z.string(),
+          z.object({ url: z.string(), publicId: z.string().optional() }),
+        ]),
+      ),
     })
     .nullable()
     .optional(),

@@ -7,9 +7,10 @@ import { tokenStore } from '@/api/client'
 let socket: Socket | null = null
 let reconnectAttempts = 0
 const MAX_RECONNECT_DELAY = 8000
-let _connectingPromise: Promise<Socket> | null = null // prevents multiple simultaneous connections
+let _connectingPromise: Promise<Socket> | null = null
 
-const offlineQueue: Array<{ event: string; payload: any; cb?: (res: any) => void }> = []
+const joinedConversations = new Set<string>()
+const reconnectListeners = new Set<() => void>()
 
 export const getSocket = (): Socket | null => socket
 
@@ -17,14 +18,37 @@ function log(event: string, data?: any) {
   console.log(`[Socket] ${event}`, data ? JSON.stringify(data) : '')
 }
 
-export async function connectSocket(): Promise<Socket> {
-  // Already connected — return immediately
-  if (socket?.connected) return socket
+function waitForConnect(sock: Socket, timeoutMs = 10_000): Promise<void> {
+  if (sock.connected) return Promise.resolve()
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      sock.off('connect', onConnect)
+      reject(new Error('Socket connection timeout'))
+    }, timeoutMs)
+    const onConnect = () => {
+      clearTimeout(timer)
+      resolve()
+    }
+    sock.on('connect', onConnect)
+  })
+}
 
-  // Connection already in progress — wait for it instead of creating a second socket
+async function rejoinConversations() {
+  if (!socket?.connected || joinedConversations.size === 0) return
+  for (const conversationId of joinedConversations) {
+    await joinConversation(conversationId)
+  }
+}
+
+export function onSocketReconnect(listener: () => void) {
+  reconnectListeners.add(listener)
+  return () => reconnectListeners.delete(listener)
+}
+
+export async function connectSocket(): Promise<Socket> {
+  if (socket?.connected) return socket
   if (_connectingPromise) return _connectingPromise
 
-  // Stale disconnected socket — clean it up
   if (socket && !socket.connected) {
     socket.removeAllListeners()
     socket.disconnect()
@@ -41,14 +65,15 @@ export async function connectSocket(): Promise<Socket> {
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: MAX_RECONNECT_DELAY,
-      timeout: 10_000
+      timeout: 10_000,
     })
 
     socket.on('connect', () => {
       reconnectAttempts = 0
       _connectingPromise = null
       log('connected', { id: socket?.id })
-      flushOfflineQueue()
+      rejoinConversations().catch(() => {})
+      for (const listener of reconnectListeners) listener()
     })
 
     socket.on('disconnect', (reason) => {
@@ -65,9 +90,9 @@ export async function connectSocket(): Promise<Socket> {
     socket.on('reconnect', (attemptNumber) => {
       reconnectAttempts = 0
       log('reconnected', { attemptNumber })
-      flushOfflineQueue()
     })
 
+    await waitForConnect(socket)
     return socket
   })()
 
@@ -76,26 +101,13 @@ export async function connectSocket(): Promise<Socket> {
 
 export function disconnectSocket() {
   _connectingPromise = null
+  joinedConversations.clear()
   if (socket) {
     socket.removeAllListeners()
     socket.disconnect()
     socket = null
   }
-  offlineQueue.length = 0
   log('disconnected (manual)')
-}
-
-// ── Offline queue flush ───────────────────────────────────────────────────────
-
-function flushOfflineQueue() {
-  if (!socket?.connected || offlineQueue.length === 0) return
-  log('flushOfflineQueue', { count: offlineQueue.length })
-  while (offlineQueue.length > 0) {
-    const item = offlineQueue.shift()
-    if (item) {
-      socket.emit(item.event, item.payload, item.cb)
-    }
-  }
 }
 
 // ── Room helpers ──────────────────────────────────────────────────────────────
@@ -104,22 +116,29 @@ export function joinConversation(
   conversationId: string
 ): Promise<{ ok: boolean; error?: string }> {
   return new Promise((resolve) => {
-    if (!socket?.connected) return resolve({ ok: false, error: 'Not connected' })
-    socket.emit('conversation:join', { conversationId }, (res: { ok: boolean; error?: string }) => {
-      log('conversation:join', { conversationId, ok: res.ok })
-      resolve(res)
-    })
+    const doJoin = () => {
+      if (!socket?.connected) return resolve({ ok: false, error: 'Not connected' })
+      socket.emit('conversation:join', { conversationId }, (res: { ok: boolean; error?: string }) => {
+        if (res.ok) joinedConversations.add(conversationId)
+        log('conversation:join', { conversationId, ok: res.ok })
+        resolve(res)
+      })
+    }
+    if (!socket?.connected) {
+      connectSocket().then(doJoin).catch(() => resolve({ ok: false, error: 'Not connected' }))
+    } else {
+      doJoin()
+    }
   })
 }
 
 export function leaveConversation(conversationId: string) {
+  joinedConversations.delete(conversationId)
   socket?.emit('conversation:leave', { conversationId })
   log('conversation:leave', { conversationId })
 }
 
 // ── Typing helpers ────────────────────────────────────────────────────────────
-// Uses the connected socket directly. Guards against not-yet-connected state
-// so typing events are never silently dropped before the socket is ready.
 
 export function emitTyping(conversationId: string) {
   if (!socket?.connected) return
@@ -131,7 +150,7 @@ export function emitStopTyping(conversationId: string) {
   socket.emit('typing:stop', { conversationId })
 }
 
-// ── Send message (socket-only, no REST fallback) ──────────────────────────────
+// ── Send message ──────────────────────────────────────────────────────────────
 
 export type SocketMessagePayload =
   | { conversationId: string; type: 'text'; text: string }
@@ -142,24 +161,24 @@ export function sendSocketMessage(
   payload: SocketMessagePayload
 ): Promise<{ ok: boolean; data?: { message: any }; error?: string }> {
   return new Promise((resolve) => {
-    if (!socket?.connected) {
-      // Queue message for later if offline
-      offlineQueue.push({
-        event: 'message:send',
-        payload,
-        cb: (res: any) => resolve(res)
+    const doSend = () => {
+      if (!socket?.connected) {
+        return resolve({ ok: false, error: 'Not connected to server' })
+      }
+      socket.emit('message:send', payload, (res: { ok: boolean; data?: { message: any }; error?: string }) => {
+        log('message:send', { conversationId: payload.conversationId, ok: res.ok })
+        resolve(res)
       })
-      log('message:send (queued)', { conversationId: payload.conversationId })
-      return resolve({ ok: false, error: 'Queued for retry' })
     }
-    socket.emit('message:send', payload, (res: { ok: boolean; data?: { message: any }; error?: string }) => {
-      log('message:send', { conversationId: payload.conversationId, ok: res.ok })
-      resolve(res)
-    })
+    if (!socket?.connected) {
+      connectSocket().then(doSend).catch(() => resolve({ ok: false, error: 'Not connected to server' }))
+    } else {
+      doSend()
+    }
   })
 }
 
-// ── Mark read (socket-only) ───────────────────────────────────────────────────
+// ── Mark read ─────────────────────────────────────────────────────────────────
 
 export function markConversationRead(
   conversationId: string,

@@ -300,8 +300,7 @@ export default function RequestsScreen({ navigation }: any) {
               onReject={() => handleReject(req)}
               onViewProfile={() =>
                 navigation.navigate('UserProfileScreen', {
-                  requestId: req.id,
-                  peer: req.peer,
+                  userId: req.peer.id,
                 })
               }
               isAccepting={processingId === req.id && true}

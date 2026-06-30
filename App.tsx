@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
@@ -14,23 +14,42 @@ import { StatusBar } from 'expo-status-bar';
 
 import { QueryProvider } from '@/providers/QueryProvider';
 import { AuthGate }      from '@/components/bootstrap/AuthGate';
+import { ChatRealtimeProvider } from '@/components/chat/ChatRealtimeProvider';
 import RootNavigator     from '@/navigation/RootNavigator';
 import { toastConfig }   from '@/utils/toastConfig';
-import { parseChatNotification, getInitialNotification } from '@/services/fcm';
+import { parseChatNotification, getInitialNotification, type ChatNotificationData } from '@/services/fcm';
 import type { AppStackParamList } from '@/types/navigation';
 
 const isExpoGo = Constants.executionEnvironment === 'storeClient';
 
-// Module-level navigation ref — usable from FCM handlers and other non-component code.
 export const navigationRef = createNavigationContainerRef<AppStackParamList>();
 
-function navigateToConversation(conversationId: string) {
-  if (!navigationRef.isReady()) return;
-  navigationRef.navigate('ChatScreen', { conversationId });
+let pendingChatNav: ChatNotificationData | null = null;
+
+function navigateToChat(data: ChatNotificationData) {
+  const params = {
+    conversationId: data.conversationId,
+    chatUserId: data.senderId,
+    chatUserName: data.senderName,
+    chatUserImageUri: data.senderPhotoUrl,
+  };
+
+  if (!navigationRef.isReady()) {
+    pendingChatNav = data;
+    return;
+  }
+
+  navigationRef.navigate('ChatScreen', params);
+  pendingChatNav = null;
+}
+
+function flushPendingChatNav() {
+  if (pendingChatNav) {
+    navigateToChat(pendingChatNav);
+  }
 }
 
 export default function App() {
-  // Becomes true once AuthGate finishes bootstrapping and hides the splash.
   const [bootstrapped, setBootstrapped] = useState(false);
 
   const [loaded, fontError] = useFonts({
@@ -46,31 +65,46 @@ export default function App() {
     'ZenDots-Regular':    require('./src/assets/fonts/ZenDots-Regular.ttf'),
   });
 
+  const handleNotificationTap = useCallback((data: ChatNotificationData) => {
+    if (!bootstrapped) {
+      pendingChatNav = data;
+      return;
+    }
+    const tryNav = (attempt = 0) => {
+      if (navigationRef.isReady()) {
+        navigateToChat(data);
+      } else if (attempt < 10) {
+        setTimeout(() => tryNav(attempt + 1), 300);
+      } else {
+        pendingChatNav = data;
+      }
+    };
+    tryNav();
+  }, [bootstrapped]);
+
   useEffect(() => {
     if (isExpoGo) return;
 
     const foregroundSub = Notifications.addNotificationResponseReceivedListener(
       (response) => {
         const data = parseChatNotification(response.notification);
-        if (data?.conversationId) {
-          navigateToConversation(data.conversationId);
-        }
+        if (data?.conversationId) handleNotificationTap(data);
       },
     );
 
     getInitialNotification().then((data) => {
-      if (data?.conversationId) {
-        setTimeout(() => navigateToConversation(data.conversationId), 500);
-      }
+      if (data?.conversationId) handleNotificationTap(data);
     });
 
     return () => {
       foregroundSub.remove();
     };
-  }, []);
+  }, [handleNotificationTap]);
 
-  // Return null while fonts are loading — the native splash screen is still
-  // visible (AuthGate called SplashScreen.preventAutoHideAsync at module load).
+  useEffect(() => {
+    if (bootstrapped) flushPendingChatNav();
+  }, [bootstrapped]);
+
   if (!loaded && !fontError) return null;
 
   return (
@@ -83,18 +117,11 @@ export default function App() {
           <QueryProvider>
             <StatusBar style="dark" translucent={false} />
 
-            {/*
-              AuthGate runs once on mount:
-                1. Reads access token + user from SecureStore
-                2. Restores location into locationStore if available
-                3. Calls authStore.setAuthenticated / setUnauthenticated
-                4. Hides the native splash screen
-                5. Calls onReady → bootstrapped = true → NavigationContainer mounts
-            */}
             <AuthGate onReady={() => setBootstrapped(true)} />
 
             {bootstrapped && (
-              <NavigationContainer ref={navigationRef}>
+              <NavigationContainer ref={navigationRef} onReady={flushPendingChatNav}>
+                <ChatRealtimeProvider />
                 <RootNavigator />
               </NavigationContainer>
             )}
