@@ -719,61 +719,76 @@ export default function ChatScreen({ navigation, route }: any) {
                 />
               </TouchableOpacity>
 
-              <ChatAvatar
-                size={sf(40)}
-                variant='friend'
-                imageUri={displayAvatar}
-              />
-
-              <View
+              <TouchableOpacity
                 style={{
                   flex: 1,
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  marginLeft: sw(10),
+                  flexDirection: 'row',
+                  alignItems: 'center',
                 }}
+                activeOpacity={0.7}
+                disabled={!chatUserId}
+                onPress={() =>
+                  navigation?.navigate('UserProfileScreen', {
+                    userId: chatUserId,
+                  })
+                }
               >
-                <Text
-                  style={{
-                    fontWeight: '400',
-                    fontSize: sf(20),
-                    lineHeight: sf(22),
-                    color: '#000000',
-                    flexShrink: 1,
-                  }}
-                  numberOfLines={1}
-                  ellipsizeMode='tail'
-                >
-                  {displayName}
-                </Text>
+                <ChatAvatar
+                  size={sf(40)}
+                  variant='friend'
+                  imageUri={displayAvatar}
+                />
+
                 <View
                   style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: sw(4),
+                    flex: 1,
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    marginLeft: sw(10),
                   }}
                 >
-                  {isOnline && !isPeerTyping && (
-                    <View
-                      style={{
-                        width: sf(7),
-                        height: sf(7),
-                        borderRadius: 99,
-                        backgroundColor: '#22C55E',
-                      }}
-                    />
-                  )}
                   <Text
                     style={{
                       fontWeight: '400',
-                      fontSize: sf(12),
-                      color: presenceColor,
+                      fontSize: sf(20),
+                      lineHeight: sf(22),
+                      color: '#000000',
+                      flexShrink: 1,
+                    }}
+                    numberOfLines={1}
+                    ellipsizeMode='tail'
+                  >
+                    {displayName}
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: sw(4),
                     }}
                   >
-                    {presenceLabel}
-                  </Text>
+                    {isOnline && !isPeerTyping && (
+                      <View
+                        style={{
+                          width: sf(7),
+                          height: sf(7),
+                          borderRadius: 99,
+                          backgroundColor: '#22C55E',
+                        }}
+                      />
+                    )}
+                    <Text
+                      style={{
+                        fontWeight: '400',
+                        fontSize: sf(12),
+                        color: presenceColor,
+                      }}
+                    >
+                      {presenceLabel}
+                    </Text>
+                  </View>
                 </View>
-              </View>
+              </TouchableOpacity>
 
               {/* <TouchableOpacity
                 ref={menuAnchorRef}
