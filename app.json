@@ -10,6 +10,14 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.sparkdating.app",
       "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "sparkdating",
+              "com.googleusercontent.apps.144133634463-j5snf2goel77aiei2eppt7bkf15qq8rr"
+            ]
+          }
+        ],
         "NSCameraUsageDescription": "We need camera access to take photos.",
         "NSLocationWhenInUseUsageDescription": "We need your location.",
         "NSMicrophoneUsageDescription": "We need microphone access.",
@@ -19,6 +27,19 @@
     "android": {
       "package": "com.sparkdating.app",
       "googleServicesFile": "./google-services.json",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "category": ["BROWSABLE", "DEFAULT"],
+          "data": [
+            {
+              "scheme": "com.googleusercontent.apps.144133634463-5u6ej3rg93g6vpauohunhshph5honfuc",
+              "path": "/oauth2redirect"
+            }
+          ]
+        }
+      ],
       "androidStatusBar": {
         "backgroundColor": "#FFFFFF",
         "barStyle": "dark-content",

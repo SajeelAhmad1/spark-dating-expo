@@ -111,7 +111,7 @@ export default function SignUpScreen({ navigation }: any) {
               <Text style={{ color: '#CEB98F' }}>Cookies Policy</Text>
             </Text>
 
-            <PrimaryButton
+            {/* <PrimaryButton
               title='Continue with email'
               onPress={() => navigation.navigate('EmailInputScreen')}
               iconBackground='#0B0B0B'
@@ -129,7 +129,7 @@ export default function SignUpScreen({ navigation }: any) {
                 fontSize: sf(16),
                 fontWeight: '500', 
               }}
-            />
+            /> */}
 
             <PrimaryButton
               title='Continue with mobile'

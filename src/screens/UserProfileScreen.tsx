@@ -265,9 +265,9 @@ const UserProfileScreen = ({ navigation, route }: any) => {
           />
         ))}
 
-        <Section title='Bio'>
+       {user.bio2 && <Section title='Bio'>
           <Text style={styles.description}>{user.bio2}</Text>
-        </Section>
+        </Section>}
 
         {user.images.slice(2, 3).map((img, i) => (
           <ImageCard
