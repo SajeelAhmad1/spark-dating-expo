@@ -9,15 +9,11 @@ import {
   Easing,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { tokenStore } from '@/api/client';
-import { useLocationStore } from '@/store/locationStore';
 import Logo from '@/assets/images/logo.svg';
 import { Text } from '@/components/common/Text';
 import { sf, sw, sh } from '@/utils/sizeMatters';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { StatusBar } from 'expo-status-bar';
-
-const SPLASH_DELAY_MS = 1400;
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 // ─── Placeholder images (replace with your actual assets) ───────────────────
@@ -148,44 +144,8 @@ const AnimatedColumn: React.FC<AnimatedColumnProps> = ({
 };
 
 // ─── LogoScreen ──────────────────────────────────────────────────────────────
+// Pure presentation screen — all auth decisions are made by AuthGate at startup.
 const LogoScreen = ({ navigation }: any) => {
-  useEffect(() => {
-    let cancelled = false;
-
-    const bootstrap = async () => {
-      const [token, user] = await Promise.all([
-        tokenStore.getAccess(),
-        tokenStore.getUser(),
-      ]);
-
-      await new Promise<void>((r) => setTimeout(r, SPLASH_DELAY_MS));
-      if (cancelled) return;
-
-      if (token) {
-        // Logged-in — resume where they left off
-        if (!user?.profile) {
-          navigation.replace('ProfileSetupScreen');
-        } else if (!user.location?.lat || !user.location?.lng) {
-          navigation.replace('EnableLocationScreen');
-        } else {
-          // Seed locationStore so SearchScreen doesn't redirect to EnableLocationScreen
-          useLocationStore.getState().setCoords({
-            lat: user.location.lat,
-            lng: user.location.lng,
-          });
-          navigation.replace('SearchScreen');
-        }
-      } else {
-        navigation.replace('SignUpScreen');
-      }
-    };
-
-    bootstrap();
-    return () => {
-      cancelled = true;
-    };
-  }, [navigation]);
-
   // Four columns evenly spread across the screen
   const colSpacing = sw(118);
   const col0X = -colSpacing * 1.5;

@@ -22,7 +22,7 @@ import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { z } from 'zod';
-import { useSetPassword } from '@/features/auth/hooks';
+import { useSetPassword, useLogin } from '@/features/auth/hooks';
 import * as SecureStore from 'expo-secure-store';
 import { showToast } from '@/utils/toast';
 
@@ -209,7 +209,10 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
   const identifier = phone ?? email ?? '';
   const isEmail = !phone && !!email;
 
-  const { mutate: setPassword, isPending } = useSetPassword();
+  const { mutate: setPassword, isPending: isSettingPassword } = useSetPassword();
+  const { mutate: login, isPending: isLoggingIn } = useLogin();
+
+  const isPending = isSettingPassword || isLoggingIn;
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -247,10 +250,25 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
     };
 
     setPassword(dto, {
-      onSuccess: async (data) => {
-        console.log(data, 'console data set password');
+      onSuccess: async () => {
         await SecureStore.deleteItemAsync('signupSessionId');
-        navigation.replace('ProfileSetupScreen');
+
+        // Auto-login immediately after password is set
+        login(
+          { identifier, password: data.password },
+          {
+            onSuccess: () => {
+              navigation.replace('ProfileSetupScreen');
+            },
+            onError: () => {
+              showToast({
+                text1: 'Account created!',
+                text2: 'Please sign in to continue.',
+              });
+              navigation.replace('SignInScreen');
+            },
+          },
+        );
       },
       onError: (err: any) => {
         showToast({
@@ -383,7 +401,13 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
               )}
 
               <PrimaryButton
-                title={isPending ? 'Creating account…' : 'Create account'}
+                title={
+                  isSettingPassword
+                    ? 'Creating account…'
+                    : isLoggingIn
+                    ? 'Signing in…'
+                    : 'Create account'
+                }
                 onPress={handleSubmit(onValid)}
                 style={{ alignSelf: 'stretch' }}
                 disabled={isPending}

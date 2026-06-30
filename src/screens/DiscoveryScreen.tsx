@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
   // Info block at bottom
   infoWrap: {
     position: 'absolute',
-    bottom: sh(140), // sits above action buttons
+    bottom: sh(110), // sits above action buttons
     left: sw(20),
     right: sw(20),
     zIndex: 10,

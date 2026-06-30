@@ -12,6 +12,8 @@ import { queryClient }     from '@/utils/queryClient'
 import { showToast }       from '@/utils/toast'
 import { registerFcmToken, unregisterFcmToken } from '@/services/fcm'
 import { disconnectSocket } from '@/services/socket'
+import { useAuthStore }    from '@/store/authStore'
+import { useLocationStore } from '@/store/locationStore'
 
 // ── Sign-up ───────────────────────────────────────────────────────────────────
 
@@ -38,6 +40,15 @@ export const useLogin = () =>
         tokenStore.setRefresh(data.refreshToken),
         tokenStore.setUser(data.user),
       ])
+      // Restore location into store so AppNavigator picks the right initial route
+      if (data.user?.location?.lat && data.user?.location?.lng) {
+        useLocationStore.getState().setCoords({
+          lat: data.user.location.lat,
+          lng: data.user.location.lng,
+        })
+      }
+      // Update Zustand auth state — RootNavigator will switch to AppNavigator
+      useAuthStore.getState().signIn(data.accessToken, data.user)
       queryClient.invalidateQueries()
       await registerFcmToken()
     },
@@ -54,6 +65,13 @@ export const useGoogleAuth = () =>
         tokenStore.setRefresh(data.refreshToken),
         tokenStore.setUser(data.user),
       ])
+      if (data.user?.location?.lat && data.user?.location?.lng) {
+        useLocationStore.getState().setCoords({
+          lat: data.user.location.lat,
+          lng: data.user.location.lng,
+        })
+      }
+      useAuthStore.getState().signIn(data.accessToken, data.user)
       queryClient.invalidateQueries()
       await registerFcmToken()
     },
@@ -70,6 +88,10 @@ export const useLogout = () =>
         disconnectSocket()
         await tokenStore.clearAll()
         queryClient.clear()
+        // Clear location so next login re-evaluates it
+        useLocationStore.getState().clearLocation()
+        // Update Zustand — RootNavigator switches back to AuthNavigator
+        useAuthStore.getState().signOut()
       } catch (error) {
         console.error('Logout cleanup failed:', error)
         showToast({ text1: error ? `${error}` : 'Logout Failed' })

@@ -26,17 +26,14 @@ const SearchScreen = ({ navigation }: any) => {
   const { data, isPending, isError, refetch, isFetching } = useDiscoverProfiles(
     coords ? { lat: coords.lat, lng: coords.lng, limit: 10 } : null,
   );
-  // console.log(data?.profiles?.length, 'profiles length discoveryscreen');
-  
-  useEffect(() => { 
-    if (!coords && !isLoading) {
-      navigation.replace('EnableLocationScreen');
-      return;
-    }
+
+  useEffect(() => {
+    // Only navigate once profiles have loaded — no auth/location checks needed
+    // (AppNavigator already guaranteed coords exist before rendering this screen)
     if (coords && !isPending && data !== undefined) {
       navigation.replace('MainTabs');
     }
-  }, [coords, isLoading, isPending, data, navigation]);
+  }, [coords, isPending, data, navigation]);
 
   return (
     <ScrollView 

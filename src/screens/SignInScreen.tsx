@@ -54,18 +54,10 @@ function SignInFormBody({
     login(
       { identifier, password: dto.password },
       {
-        onSuccess: async (data: any) => {
+        onSuccess: () => {
+          // Auth state is updated in useLogin's onSuccess handler.
+          // RootNavigator will automatically switch to AppNavigator.
           showToast({ text1: 'Logged in successfully' });
-
-          if (data.next === 'complete_profile') {
-            navigation.replace('ProfileSetupScreen');
-          } else {
-            if (data?.user?.location?.lat && data?.user?.location?.lng) {
-              navigation.replace('SearchScreen');
-            } else {
-              navigation.replace('EnableLocationScreen');
-            }
-          }
         },
 
         onError: (err: any) => {

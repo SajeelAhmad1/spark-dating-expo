@@ -1,6 +1,7 @@
+// src/types/navigation.ts
 import type { NavigatorScreenParams } from '@react-navigation/native';
 
-// ── Tab screens ───────────────────────────────────────────────────────────────
+// ── Tab screens ────────────────────────────────────────────────────────────────
 
 export type TabParamList = {
   DiscoveryTab: undefined;
@@ -8,27 +9,34 @@ export type TabParamList = {
   ProfileTab: undefined;
 };
 
-// ── Root stack ────────────────────────────────────────────────────────────────
+// ── Auth navigator (unauthenticated users) ────────────────────────────────────
 
-export type RootStackParamList = {
-  // Tab group
-  MainTabs: NavigatorScreenParams<TabParamList> | undefined;
-
-  // Onboarding
+export type AuthStackParamList = {
+  // Onboarding slides
   Onboarding1: undefined;
   Onboarding2: undefined;
   Onboarding3: undefined;
+
+  // Pre-auth entry point (the animated LogoScreen with photo grid)
   LogoScreen: undefined;
 
   // Auth
   SignUpScreen: undefined;
-  SignInScreen: undefined;
+  SignInScreen: { defaultTab?: 'phone' | 'email' } | undefined;
   ForgotPasswordScreen: undefined;
-  ForgotPasswordVerifyOtpScreen: { identifier: string; isEmail: boolean; sessionId: string };
-  ResetPasswordScreen: { resetToken: string; identifier: string; isEmail: boolean };
+  ForgotPasswordVerifyOtpScreen: {
+    identifier: string;
+    isEmail: boolean;
+    sessionId: string;
+  };
+  ResetPasswordScreen: {
+    resetToken: string;
+    identifier: string;
+    isEmail: boolean;
+  };
   PasswordUpdatedScreen: undefined;
 
-  // Signup flow
+  // Signup / profile-completion flow (reached after OTP verification)
   EmailInputScreen: undefined;
   NumberInputScreen: undefined;
   NumberVerifyScreen: undefined;
@@ -40,17 +48,38 @@ export type RootStackParamList = {
   InviteScreen: undefined;
   WaitingScreen: undefined;
   LaunchScreen: undefined;
+};
 
-  // Location
+// ── App navigator (authenticated users) ──────────────────────────────────────
+
+export type AppStackParamList = {
+  // Profile completion (shown if profile is incomplete after login)
+  ProfileSetupScreen: undefined;
+  PhysicalAttributesScreen: undefined;
+  InterestsScreen: undefined;
+  UploadPhotosScreen: undefined;
+  InviteScreen: undefined;
+  WaitingScreen: undefined;
+  LaunchScreen: undefined;
+
+  // Location gate
   EnableLocationScreen: undefined;
   NotAvailableScreen: undefined;
 
-  // App screens
+  // Search / discovery loading screen
   SearchScreen: undefined;
-  DiscoveryScreen: undefined;
-  MatchScreen: { match: { id: string; name: string; image: string; age?: number }; autoOpenCamera?: boolean };
+
+  // Main tab navigator
+  MainTabs: NavigatorScreenParams<TabParamList> | undefined;
+
+  // Match flow
+  MatchScreen: {
+    match: { id: string; name: string; image: string; age?: number };
+    autoOpenCamera?: boolean;
+  };
+
+  // Chat
   RequestsScreen: undefined;
-  InboxScreen: { cameraSelectMode?: boolean } | undefined;
   ChatScreen: {
     conversationId?: string;
     chatUserId?: string;
@@ -61,16 +90,32 @@ export type RootStackParamList = {
     initialText?: string;
     initialPhotoUri?: string;
   };
-  SnapViewScreen: { snapUri: string; snapType: 'photo' | 'video'; chatUserName?: string; chatUserImageUri?: string };
-  ProfileScreen: undefined;
+  SnapViewScreen: {
+    snapUri: string;
+    snapType: 'photo' | 'video';
+    chatUserName?: string;
+    chatUserImageUri?: string;
+  };
+
+  // Profile / settings
   EditProfileScreen: undefined;
   SettingsScreen: undefined;
   BlockedUsersScreen: undefined;
   UserProfileScreen: { user: any };
 };
 
+// ── Root stack (just the two navigators) ─────────────────────────────────────
+
+export type RootStackParamList = {
+  Auth: NavigatorScreenParams<AuthStackParamList>;
+  App: NavigatorScreenParams<AppStackParamList>;
+};
+
+// ── Legacy flat list (kept for backward compat — screens that still use
+//    the old `navigation` prop typed as any will continue to work) ──────────
+
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
+    interface RootParamList extends AuthStackParamList, AppStackParamList {}
   }
 }
