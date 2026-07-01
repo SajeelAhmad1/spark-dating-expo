@@ -785,6 +785,7 @@ const EditProfileScreen = ({ navigation }: any) => {
               style={{
                 borderWidth: 1,
                 borderColor: '#7D858E',
+                backgroundColor: "#FFFFFF",
                 borderRadius: sr(8),
                 minHeight: sh(90),
                 marginBottom: sh(12),
