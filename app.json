@@ -30,12 +30,11 @@
       "intentFilters": [
         {
           "action": "VIEW",
-          "autoVerify": true,
+          "autoVerify": false,
           "category": ["BROWSABLE", "DEFAULT"],
           "data": [
             {
-              "scheme": "com.googleusercontent.apps.455021014657-2lbr4pl5jgqkrgsqsjg9eiivn6d6ccfv",
-              "path": "/oauth2redirect"
+              "scheme": "com.googleusercontent.apps.455021014657-2lbr4pl5jgqkrgsqsjg9eiivn6d6ccfv"
             }
           ]
         }
@@ -94,7 +93,7 @@
       "expo-font"
     ],
     "extra": {
-      "apiBaseUrl": "http://192.168.1.100:5000",
+      "apiBaseUrl": "http://192.168.1.107:5000",
       "eas": {
         "projectId": "e4d904d7-e598-48cc-844b-e7281373ae61"
       }

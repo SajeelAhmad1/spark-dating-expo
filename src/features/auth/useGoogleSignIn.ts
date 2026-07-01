@@ -14,6 +14,11 @@ const GOOGLE_CLIENT_IDS = {
   iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID, 
   androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID, 
 };
+console.log('clientIds', {
+  android: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+  ios: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+  web: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+});
 
 /** Google-accepted redirect URI for native OAuth (reverse client ID scheme). */
 function googleNativeRedirectUri(clientId: string) {
@@ -45,6 +50,8 @@ export function useGoogleSignIn() {
     redirectUri,
     scopes: ['openid', 'profile', 'email'],
   });
+
+  console.log('redirectUri', redirectUri);
 
   const signIn = useCallback(
     async (

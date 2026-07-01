@@ -20,7 +20,6 @@ import {
   Plus,
   X,
   ChevronDown,
-  Check,
   PencilLine,
 } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
@@ -36,7 +35,7 @@ import {
 import { FieldError } from '@/components/common/FieldError';
 import { showToast } from '@/utils/toast';
 import { useEditProfile, useMe } from '@/features/profile/hooks';
-import { useInterestsCatalog } from '@/features/interests/hooks';
+import { useInterestStore } from '@/store/interestStore';
 import { uploadToCloudinary, deleteFromCloudinary } from '@/utils/cloudinary';
 import type { EditProfileDto } from '@/features/profile/schema';
 
@@ -98,48 +97,33 @@ function InterestPickerModal({
   currentNames,
   onConfirm,
   onClose,
-  isSaving,
 }: {
   visible: boolean;
-  currentNames: string[]; // interest names currently selected
+  currentNames: string[];
   onConfirm: (names: string[]) => void;
   onClose: () => void;
   isSaving: boolean;
 }) {
-  const { data: rawData } = useInterestsCatalog();
+  const { interests } = useInterestStore();
   const [selected, setSelected] = useState<string[]>(currentNames);
 
   React.useEffect(() => {
     if (visible) setSelected(currentNames);
   }, [visible]);
 
-  // Flatten catalog to {id, name, category}[]
-  const catalog: { id: string; name: string; category: string }[] =
-    useMemo(() => {
-      if (!rawData) return [];
-      const arr = Array.isArray(rawData)
-        ? rawData
-        : ((rawData as any)?.interests ??
-          (rawData as any)?.data?.interests ??
-          (rawData as any)?.data ??
-          []);
-      return arr;
-    }, [rawData]);
-
-  // Group by category
-  const grouped = useMemo(() => {
-    const map = new Map<string, { id: string; name: string }[]>();
-    for (const item of catalog) {
+  const categories = useMemo(() => {
+    const map = new Map<string, { name: string; icon?: string | null }[]>();
+    for (const item of interests) {
       if (!map.has(item.category)) map.set(item.category, []);
-      map.get(item.category)!.push({ id: item.id, name: item.name });
+      map.get(item.category)!.push({ name: item.name, icon: item.icon });
     }
-    return Array.from(map.entries()).map(([cat, items]) => ({ cat, items }));
-  }, [catalog]);
+    return Array.from(map.entries()).map(([category, items]) => ({ category, items }));
+  }, [interests]);
 
   const toggle = (name: string) => {
     setSelected((prev) => {
       if (prev.includes(name)) return prev.filter((n) => n !== name);
-      if (prev.length >= MAX_INTERESTS) return prev; // already at max — ignore
+      if (prev.length >= MAX_INTERESTS) return prev;
       return [...prev, name];
     });
   };
@@ -151,21 +135,14 @@ function InterestPickerModal({
       animationType='slide'
       onRequestClose={onClose}
     >
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: 'rgba(0,0,0,0.4)',
-          justifyContent: 'flex-end',
-        }}
-      >
+      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}>
         <View
           onStartShouldSetResponder={() => true}
           style={{
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#F7F3ED',
             borderTopLeftRadius: sr(24),
             borderTopRightRadius: sr(24),
-            maxHeight: '85%',
-            paddingBottom: sh(60),
+            maxHeight: '90%',
           }}
         >
           {/* Header */}
@@ -175,201 +152,105 @@ function InterestPickerModal({
               alignItems: 'center',
               justifyContent: 'space-between',
               paddingHorizontal: sw(20),
-              paddingTop: sh(16),
-              paddingBottom: sh(8),
+              paddingTop: sh(20),
+              paddingBottom: sh(4),
             }}
           >
-            <Text
-              style={{
-                fontFamily: 'Poppins-SemiBold',
-                fontSize: sf(18),
-                color: '#000000',
-              }}
-            >
-              Interests
-            </Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: sw(12),
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily: 'Poppins-Regular',
-                  fontSize: sf(13),
-                  color:
-                    selected.length >= MAX_INTERESTS ? '#FF3366' : '#7D858E',
-                }}
-              >
-                {selected.length}/{MAX_INTERESTS}
+            <View style={{ gap: sh(4) }}>
+              <Text style={{ fontSize: sf(28), fontWeight: '600', color: '#000000' }}>
+                Your Interests
               </Text>
-              <TouchableOpacity onPress={onClose}>
-                <X
-                  size={sf(22)}
-                  color='#7D858E'
-                />
-              </TouchableOpacity>
+              <Text style={{ fontSize: sf(15), fontWeight: '400', color: '#7D858E' }}>
+                Choose at least 3 interests (max {MAX_INTERESTS})
+              </Text>
             </View>
+            <TouchableOpacity onPress={onClose} style={{ alignSelf: 'flex-start', marginTop: sh(4) }}>
+              <X size={sf(22)} color='#7D858E' />
+            </TouchableOpacity>
           </View>
 
-          {/* Max notice */}
-          {selected.length >= MAX_INTERESTS && (
-            <View
-              style={{
-                marginHorizontal: sw(20),
-                marginBottom: sh(8),
-                backgroundColor: '#FFF3CD',
-                borderRadius: sr(8),
-                paddingHorizontal: sw(12),
-                paddingVertical: sh(8),
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily: 'Poppins-Regular',
-                  fontSize: sf(13),
-                  color: '#856404',
-                }}
-              >
-                Maximum {MAX_INTERESTS} interests selected. Remove one to add
-                another.
-              </Text>
-            </View>
-          )}
-
-          {/* List */}
+          {/* Chips */}
           <ScrollView
-            contentContainerStyle={{
-              paddingHorizontal: sw(20),
-              paddingBottom: sh(16),
-            }}
+            contentContainerStyle={{ paddingHorizontal: sw(20), paddingTop: sh(24), paddingBottom: sh(16), gap: sh(24) }}
             showsVerticalScrollIndicator={false}
           >
-            {grouped.map(({ cat, items }) => (
-              <View key={cat}>
+            {categories.map(({ category, items }) => (
+              <View key={category}>
                 <Text
                   style={{
-                    fontFamily: 'Poppins-SemiBold',
-                    fontSize: sf(13),
-                    color: '#7D858E',
-                    marginTop: sh(16),
-                    marginBottom: sh(8),
-                    textTransform: 'uppercase',
-                    letterSpacing: 0.5,
+                    fontSize: sf(15),
+                    fontWeight: '600',
+                    color: '#0B0B0B',
+                    marginBottom: sh(12),
                   }}
                 >
-                  {cat}
+                  {category}
                 </Text>
-                {items.map((item) => {
-                  const isSelected = selected.includes(item.name);
-                  const isDisabled =
-                    !isSelected && selected.length >= MAX_INTERESTS;
-                  return (
-                    <TouchableOpacity
-                      key={item.id}
-                      onPress={() => toggle(item.name)}
-                      disabled={isDisabled}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        paddingVertical: sh(13),
-                        borderBottomWidth: 1,
-                        borderBottomColor: '#F0F0F0',
-                        opacity: isDisabled ? 0.4 : 1,
-                      }}
-                    >
-                      <Text
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+                  {items.map((item) => {
+                    const isSelected = selected.includes(item.name);
+                    return (
+                      <TouchableOpacity
+                        key={item.name}
+                        onPress={() => toggle(item.name)}
                         style={{
-                          fontFamily: 'Poppins-Regular',
-                          fontSize: sf(15),
-                          color: isSelected ? '#CEB98F' : '#1C1C1E',
-                        }}
-                      >
-                        {item.name}
-                      </Text>
-                      <View
-                        style={{
-                          width: sf(22),
-                          height: sf(22),
-                          borderRadius: sr(4),
-                          borderWidth: 1.5,
-                          borderColor: isSelected ? '#CEB98F' : '#B6B9C9',
-                          backgroundColor: isSelected
-                            ? '#CEB98F'
-                            : 'transparent',
+                          paddingHorizontal: sw(14),
+                          borderRadius: 999,
+                          borderWidth: isSelected ? 1 : 0.9,
+                          borderColor: isSelected ? '#CEB98F' : '#7D858E',
+                          backgroundColor: isSelected ? '#EAD6A9' : 'transparent',
+                          height: 40,
                           alignItems: 'center',
                           justifyContent: 'center',
+                          flexDirection: 'row',
+                          gap: sw(6),
                         }}
                       >
-                        {isSelected && (
-                          <Check
-                            size={sf(13)}
-                            color='#FFFFFF'
-                            strokeWidth={2.5}
-                          />
+                        {!!item.icon && (
+                          <Text style={{ fontSize: sf(14), lineHeight: sf(18) }}>
+                            {item.icon}
+                          </Text>
                         )}
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
+                        <Text
+                          style={{
+                            fontSize: sf(14),
+                            fontWeight: '400',
+                            color: isSelected ? '#0B0B0B' : '#404040',
+                            lineHeight: 40,
+                          }}
+                        >
+                          {item.name}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </View>
             ))}
           </ScrollView>
 
-          {/* Save button */}
-          <View style={{ paddingHorizontal: sw(20), paddingTop: sh(12) }}>
-            <TouchableOpacity
-              onPress={() => onConfirm(selected)}
-              disabled={isSaving || selected.length < 3}
-              style={{
-                backgroundColor: selected.length < 3 ? '#CCCCCC' : '#CEB98F',
-                borderRadius: sr(32),
-                height: sh(52),
-                alignItems: 'center',
-                justifyContent: 'center',
-                opacity: isSaving ? 0.7 : 1,
-              }}
-            >
-              {isSaving ? (
-                <Text
-                  style={{
-                    color: '#FFFFFF',
-                    fontFamily: 'Poppins-SemiBold',
-                    fontSize: sf(16),
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                >
-                  Saving...
-                </Text>
-              ) : (
-                <Text
-                  style={{
-                    color: '#FFFFFF',
-                    fontFamily: 'Poppins-SemiBold',
-                    fontSize: sf(16),
-                  }}
-                >
-                  Add ({selected.length} selected)
-                </Text>
-              )}
-            </TouchableOpacity>
+          {/* Footer */}
+          <View style={{ paddingHorizontal: sw(24), paddingBottom: sh(65), paddingTop: sh(8), gap: sh(6) }}>
             {selected.length < 3 && (
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontFamily: 'Poppins-Regular',
-                  fontSize: sf(12),
-                  color: '#7D858E',
-                  marginTop: sh(6),
-                }}
-              >
+              <Text style={{ textAlign: 'center', fontSize: sf(12), color: '#7D858E' }}>
                 Select at least 3 interests
               </Text>
             )}
+            <TouchableOpacity
+              onPress={() => onConfirm(selected)}
+              disabled={selected.length < 3}
+              style={{
+                backgroundColor: selected.length < 3 ? '#CCCCCC' : '#CEB98F',
+                borderRadius: sr(32),
+                height: sh(56),
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Text style={{ color: '#0B0B0B', fontWeight: '500', fontSize: sf(20) }}>
+                Done ({selected.length} selected)
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -561,6 +442,7 @@ const EditProfileScreen = ({ navigation }: any) => {
     borderColor: '#7D858E',
     borderRadius: sr(8),
     paddingHorizontal: sw(12),
+    backgroundColor: "#FFFFFF",
     height: sh(48),
     flex: 1,
   };
@@ -577,6 +459,7 @@ const EditProfileScreen = ({ navigation }: any) => {
           borderColor: errors[field]?.message ? '#DC2626' : '#7D858E',
           borderRadius: sr(8),
           paddingHorizontal: sw(12),
+          backgroundColor: "#FFFFFF",
           height: sh(48),
         }}
       >
@@ -585,6 +468,7 @@ const EditProfileScreen = ({ navigation }: any) => {
             fontFamily: 'Poppins-Regular',
             fontSize: sf(16),
             color: profile[field] ? '#1C1C1E' : '#7D858E',
+            lineHeight: 20
           }}
         >
           {(profile as any)[field] || `Select ${field}`}
@@ -845,6 +729,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                     borderColor: '#7D858E',
                     borderRadius: sr(8),
                     paddingHorizontal: sw(8),
+                    backgroundColor: "#FFFFFF",
                     height: sh(48),
                   }}
                 >
@@ -854,6 +739,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                       fontSize: sf(16),
                       color: '#1C1C1E',
                       flex: 1,
+                      lineHeight: 20,
                     }}
                   >
                     {formatDate(birthDate)}
@@ -925,8 +811,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                       fontFamily: 'Poppins-Medium',
                       fontSize: sf(14),
                     }}
-                  >
-                    {/* Edit */}
+                  > 
                     <PencilLine
                       size={16}
                       color={'#0B0B0B'}
@@ -957,11 +842,12 @@ const EditProfileScreen = ({ navigation }: any) => {
                         fontFamily: 'Poppins-Regular',
                         fontSize: sf(14),
                         color: '#404040',
+                        lineHeight: sf(22),
                       }}
                     >
                       {name}
                     </Text>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                       onPress={() =>
                         setSelectedInterestNames((prev) =>
                           prev.filter((n) => n !== name),
@@ -972,7 +858,7 @@ const EditProfileScreen = ({ navigation }: any) => {
                           width: 16,
                           height: 16,
                           borderRadius: sr(99),
-                          backgroundColor: '#FF3366',
+                          backgroundColor: '#EAD6A9',
                           padding: 5,
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -981,17 +867,17 @@ const EditProfileScreen = ({ navigation }: any) => {
                     >
                       <X
                         size={sf(11)}
-                        color='#FFFFFF'
+                        color='#000000'
                         strokeWidth={2.5}
                       />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                   </View>
                 ))}
                 {selectedInterestNames.length < MAX_INTERESTS && (
                   <TouchableOpacity
                     onPress={() => setShowInterests(true)}
                     style={{
-                      backgroundColor: '#CEB98F',
+                      backgroundColor: '#EAD6A9',
                       borderRadius: sr(99),
                       paddingHorizontal: sw(12),
                       height: sh(36),
@@ -1004,9 +890,10 @@ const EditProfileScreen = ({ navigation }: any) => {
                         fontFamily: 'Poppins-Medium',
                         fontSize: sf(14),
                         color: '#0B0B0B',
+                        lineHeight: sf(22),
                       }}
                     >
-                      + Add
+                       Add
                     </Text>
                   </TouchableOpacity>
                 )}

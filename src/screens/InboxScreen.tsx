@@ -242,7 +242,7 @@ function ActiveRow({
     <TouchableOpacity
       activeOpacity={0.75}
       onPress={onPress}
-      style={[styles.row, isUnread && styles.rowUnread]}
+      style={[styles.row]}
     >
       {/* Avatar */}
       <View style={{ position: 'relative', marginRight: sw(12) }}>
@@ -274,8 +274,7 @@ function ActiveRow({
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            gap: sw(6),
-            marginBottom: sh(2),
+            gap: sw(6), 
           }}
         >
           <Text
@@ -305,15 +304,16 @@ function ActiveRow({
             style={{
               fontSize: sf(11),
               color: '#FF3B30',
-              fontWeight: '500',
-              marginTop: sh(1),
+              fontWeight: '500', 
             }}
           >
             ⏱ {timeWarning}
           </Text>
         ) : (
           <Text
-            style={{ fontSize: sf(11), color: '#B6B9C9', marginTop: sh(1) }}
+            style={{ fontSize: sf(11), color: '#B6B9C9', 
+               
+            }}
           >
             ⏱ {formatTime(item.lastMessageAt)}
           </Text>
@@ -876,7 +876,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: sw(6),
-    marginTop: sh(8),
+    marginTop: sh(0),
     marginBottom: sh(10),
     paddingLeft: sw(2),
   },
@@ -888,9 +888,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: sh(10),
-    paddingHorizontal: sw(4),
+    paddingHorizontal: sw(12),
     borderRadius: sr(14),
-    marginBottom: sh(6),
+    marginBottom: sh(8),
+    backgroundColor: '#FFFFFF', 
   },
   rowUnread: {
     backgroundColor: 'rgba(251,178,2,0.06)',
