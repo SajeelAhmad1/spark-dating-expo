@@ -9,7 +9,7 @@ import RememberMeToggle from '@/components/auth/RememberMeToggle';
 import SignInBottomActions from '@/components/auth/SignInBottomActions';
 import { useZodForm } from '@/utils/form';
 import { sf, sw, sh } from '@/utils/sizeMatters';
-import { useLogin } from '@/features/auth/hooks';
+import { useLogin, useGoogleAuth } from '@/features/auth/hooks';
 import { showToast } from '@/utils/toast';
 import {
   AuthSigninTab,
@@ -17,6 +17,13 @@ import {
   loginPhoneSchema,
 } from '@/features/auth/schema';
 import { FieldErrors } from 'react-hook-form';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+  offlineAccess: false,
+});
 
 // ─── Form body ────────────────────────────────────────────────────────────────
 
@@ -28,6 +35,7 @@ function SignInFormBody({
   navigation: any;
 }) {
   const { mutate: login, isPending: isLoginPending } = useLogin();
+  const { mutate: googleAuth, isPending: isGooglePending } = useGoogleAuth();
   const [showPassword, setShowPassword] = useState(false);
 
   const schema = tab === 'phone' ? loginPhoneSchema : loginEmailSchema;
@@ -70,6 +78,35 @@ function SignInFormBody({
         },
       },
     );
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      const response = await GoogleSignin.signIn();
+
+      if (response.type === 'cancelled') return;
+
+      const idToken = response.data?.idToken;
+      if (!idToken) {
+        showToast({ text1: 'Google Sign-In failed', text2: 'No ID token received.' });
+        return;
+      }
+
+      googleAuth(idToken, {
+        onSuccess: () => showToast({ text1: 'Signed in with Google' }),
+        onError: (err: any) =>
+          showToast({ text1: 'Google Sign-In failed', text2: err?.message ?? 'Server error.' }),
+      });
+    } catch (error: any) {
+      if (error.code === statusCodes.IN_PROGRESS) {
+        // already in progress, ignore
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        showToast({ text1: 'Play Services not available' });
+      } else {
+        showToast({ text1: 'Google Sign-In error', text2: error.message });
+      }
+    }
   };
 
   // Narrow error type per tab so TS is happy
@@ -140,7 +177,9 @@ function SignInFormBody({
       <SignInBottomActions
         onLogin={handleSubmit(onValid)}
         onSignUp={() => navigation.navigate('SignUpScreen')}
+        onGoogleSignIn={handleGoogleSignIn}
         disable={isLoginPending}
+        googleLoading={isGooglePending}
       />
     </>
   );

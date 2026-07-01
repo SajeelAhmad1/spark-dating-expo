@@ -10,14 +10,6 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.sparkdating.app",
       "infoPlist": {
-        "CFBundleURLTypes": [
-          {
-            "CFBundleURLSchemes": [
-              "sparkdating",
-              "com.googleusercontent.apps.455021014657-d98d6inald7mgiqn9q4lvshkt3a2q1rm"
-            ]
-          }
-        ],
         "NSCameraUsageDescription": "We need camera access to take photos.",
         "NSLocationWhenInUseUsageDescription": "We need your location.",
         "NSMicrophoneUsageDescription": "We need microphone access.",
@@ -27,18 +19,6 @@
     "android": {
       "package": "com.sparkdating.app",
       "googleServicesFile": "./google-services.json",
-      "intentFilters": [
-        {
-          "action": "VIEW",
-          "autoVerify": false,
-          "category": ["BROWSABLE", "DEFAULT"],
-          "data": [
-            {
-              "scheme": "com.googleusercontent.apps.455021014657-2lbr4pl5jgqkrgsqsjg9eiivn6d6ccfv"
-            }
-          ]
-        }
-      ],
       "androidStatusBar": {
         "backgroundColor": "#FFFFFF",
         "barStyle": "dark-content",
@@ -90,7 +70,13 @@
           "defaultChannel": "chat"
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.455021014657-d98d6inald7mgiqn9q4lvshkt3a2q1rm"
+        }
+      ]
     ],
     "extra": {
       "apiBaseUrl": "http://192.168.1.107:5000",
