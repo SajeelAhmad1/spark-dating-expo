@@ -30,13 +30,13 @@ const MIN = 3;
 
 function groupByCategory(
   interests: Interest[],
-): { category: string; items: { name: string; icon?: string | null }[] }[] {
-  const map = new Map<string, { name: string; icon?: string | null }[]>();
+): { category: string; items: { id: string; name: string; icon?: string | null }[] }[] {
+  const map = new Map<string, { id: string; name: string; icon?: string | null }[]>();
 
   for (const interest of interests) {
     const cat = interest.category;
     if (!map.has(cat)) map.set(cat, []);
-    map.get(cat)!.push({ name: interest.name, icon: interest.icon });
+    map.get(cat)!.push({ id: interest.id, name: interest.name, icon: interest.icon });
   }
 
   return Array.from(map.entries()).map(([category, items]) => ({
@@ -77,13 +77,13 @@ const InterestsScreen = ({ navigation }: any) => {
   );
   const [interestsError, setInterestsError] = useState<string | undefined>();
 
-  const toggle = (item: string) => {
+  const toggle = (id: string) => {
     setInterestsError(undefined);
     setSelected((prev) =>
-      prev.includes(item)
-        ? prev.filter((s) => s !== item)
+      prev.includes(id)
+        ? prev.filter((s) => s !== id)
         : prev.length < MAX
-          ? [...prev, item]
+          ? [...prev, id]
           : prev,
     );
   };
@@ -193,11 +193,11 @@ const InterestsScreen = ({ navigation }: any) => {
                   style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}
                 >
                   {items.map((item) => {
-                    const isSelected = selected.includes(item.name);
+                    const isSelected = selected.includes(item.id);
                     return (
                       <TouchableOpacity
-                        key={item.name}
-                        onPress={() => toggle(item.name)}
+                        key={item.id}
+                        onPress={() => toggle(item.id)}
                         style={{
                           paddingHorizontal: sw(14),
                           borderRadius: 999,

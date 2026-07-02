@@ -137,7 +137,9 @@ export const useSignupStore = create<SignupStore>()(
           .map((s) => ({ url: s.cloudinaryUrl, publicId: s.publicId }));
 
         // Format DOB as YYYY-MM-DD string
-        const dob = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const monthNum = String(MONTHS.indexOf(month) + 1).padStart(2, '0');
+        const dob = `${year}-${monthNum}-${day.padStart(2, '0')}`;
 
         return {
           ...rest,
