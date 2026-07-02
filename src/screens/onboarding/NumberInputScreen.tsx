@@ -101,10 +101,8 @@ const NumberEnterScreen = ({ navigation }: any) => {
     });
   };
 
-  const modalMaxHeight =
-    pickerKeyboardHeight > 0
-      ? winH - pickerKeyboardHeight - sh(24)
-      : winH * 0.88;
+  const MODAL_TOP_OFFSET = winH * 0.12;
+  const modalHeight = winH - MODAL_TOP_OFFSET;
 
   // ─── Render ───────────────────────────────────────────────────────────────
 
@@ -245,9 +243,19 @@ const NumberEnterScreen = ({ navigation }: any) => {
         }}
         style={{
           modal: {
-            maxHeight: modalMaxHeight,
+            height: modalHeight,
+            maxHeight: modalHeight,
+            marginTop: MODAL_TOP_OFFSET,
             paddingTop: sh(16),
-            paddingBottom: pickerKeyboardHeight > 0 ? 0 : sh(16),
+            paddingBottom: 0,
+            justifyContent: 'flex-start',
+          },
+          countryButtonStyles: {
+            height: sh(52),
+          },
+          listDisplayArea: {
+            flex: 1,
+            paddingBottom: pickerKeyboardHeight > 0 ? pickerKeyboardHeight : 0,
           },
           textInput: {
             height: sh(48),
