@@ -138,7 +138,7 @@ export default function Onboarding2({ navigation }: any) {
             width: sw(72),
             height: sw(72),
             borderRadius: sw(36),
-            backgroundColor: '#EAD6A9',
+            backgroundColor: 'rgba(234, 214, 169, 0.3)',
             alignItems: 'center',
             justifyContent: 'center',
             shadowColor: 'rgba(234, 214, 169, 0.3)',

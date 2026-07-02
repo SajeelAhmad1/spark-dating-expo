@@ -2,7 +2,7 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/common/Text';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import { sf, sh, sw } from '@/utils/sizeMatters';
+import { sf, sh } from '@/utils/sizeMatters';
 import GoogleIcon from '../../assets/images/google.svg';
 
 export default function SignInBottomActions({
@@ -42,20 +42,22 @@ export default function SignInBottomActions({
           <View style={styles.dividerLine} />
         </View>
 
-        <TouchableOpacity
+        <PrimaryButton
+          title={googleLoading ? 'Signing in…' : 'Continue with Google'}
           onPress={onGoogleSignIn}
           disabled={googleLoading || disable}
-          style={styles.googleBtn}
-        >
-          {googleLoading ? (
-            <ActivityIndicator color='#0B0B0B' size='small' />
-          ) : (
-            <GoogleIcon width={sw(20)} height={sw(20)} />
-          )}
-          <Text style={{ fontSize: sf(16), fontWeight: '500', color: '#0B0B0B' }}>
-            Continue with Google
-          </Text>
-        </TouchableOpacity>
+          iconBackground='#EDEDED'
+          variant='outline'
+          icon={<GoogleIcon width={sf(28)} height={sf(28)} />}
+          iconPosition='start'
+          style={{
+            alignSelf: 'stretch',
+            opacity: googleLoading || disable ? 0.6 : 1,
+            borderWidth: 1,
+            borderColor: '#555555',
+          }}
+          textStyle={{ fontSize: sf(16), fontWeight: '500', color: '#0B0B0B' }}
+        />
 
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text

@@ -125,14 +125,14 @@ export default function Onboarding3({ navigation }: any) {
             width: 72,
             height: 72,
             borderRadius: 36,
-            backgroundColor: '#EAD6A9',
+            backgroundColor: 'rgba(234, 214, 169, 0.3)',
             alignItems: 'center',
             justifyContent: 'center',
             shadowColor: '#4A80F0',
             shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.3,
             shadowRadius: sf(16),
-            elevation: 8,
+            // elevation: 8,
             opacity: cameraOpacity,
             transform: [{ scale: cameraScaleEntrance }, { scale: cameraScalePulse }],
           }}
@@ -165,7 +165,7 @@ export default function Onboarding3({ navigation }: any) {
         title="Keep your streak alive every 24 hours"
         subtitle="Keep your connection alive with daily snaps. The longer your streak, the stronger your bond."
         activeDot={2}
-        buttonLabel="Next"
+        buttonLabel="Get Started"
         onPress={async () => {
           await SecureStore.setItemAsync(ONBOARDING_SEEN_KEY, 'true');
           navigation.replace('LogoScreen');
