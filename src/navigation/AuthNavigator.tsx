@@ -27,10 +27,10 @@ import PasswordUpdatedScreen          from '@/screens/auth/PasswordUpdatedScreen
 
 const Stack = createStackNavigator<AuthStackParamList>();
 
-export default function AuthNavigator() {
+export default function AuthNavigator({ initialRoute = 'Onboarding1' }: { initialRoute?: keyof AuthStackParamList }) {
   return (
     <Stack.Navigator
-      initialRouteName="Onboarding1"
+      initialRouteName={initialRoute}
       screenOptions={{ headerShown: false }}
     >
       {/* ── Onboarding slides ─────────────────────────────── */}
