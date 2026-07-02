@@ -35,7 +35,7 @@ import { showToast } from '@/utils/toast';
 import ChatMenu, { type ChatMenuItem } from '@/screens/ChatMenu';
 import { getCityFromCoords } from '@/utils/location';
 import { useGetUserById } from '@/features/users/hooks';
-import { mapInterestLabels, mapPublicUserToProfile } from '@/utils/mapUserProfile';
+import { mapInterestLabels, mapPublicUserToProfile, type InterestChip } from '@/utils/mapUserProfile';
 
 type UserProfile = {
   id: string;
@@ -48,7 +48,7 @@ type UserProfile = {
   gender: string;
   location: { lat: number; lng: number };
   attributes: string[];
-  interests: string[];
+  interests: InterestChip[];
 };
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -68,7 +68,7 @@ const UserProfileScreen = ({ navigation, route }: any) => {
       const raw = route.params.user as UserProfile & { interests?: unknown };
       return {
         ...raw,
-        interests: mapInterestLabels(raw.interests),
+        interests: mapInterestLabels(raw.interests) as InterestChip[],
       };
     }
     return null;
@@ -318,7 +318,8 @@ const UserProfileScreen = ({ navigation, route }: any) => {
               {user.interests.map((interest, i) => (
                 <Chip
                   key={i}
-                  label={interest}
+                  label={interest.name}
+                  icon={interest.icon}
                   filled
                   style={{ backgroundColor: '#EAD6A9' }}
                   textStyle={{ lineHeight: sh(36) }}
@@ -467,11 +468,13 @@ const ImageCard = ({
 
 const Chip = ({
   label,
+  icon = null,
   filled = false,
   style,
   textStyle,
 }: {
   label: string;
+  icon?: string | null;
   filled?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -484,18 +487,19 @@ const Chip = ({
         borderRadius: sr(32),
         height: 36,
         justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
         gap: sw(4),
       },
       style,
     ]}
   >
+    {!!icon && (
+      <Text style={{ fontSize: sf(13), lineHeight: sf(18) }}>{icon}</Text>
+    )}
     <Text
       style={[
-        {
-          color: filled ? '#000' : '#333',
-          justifyContent: 'center',
-          alignItems: 'center',
-        },
+        { color: filled ? '#000' : '#333' },
         textStyle,
       ]}
     >

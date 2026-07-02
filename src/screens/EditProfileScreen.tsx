@@ -263,6 +263,7 @@ function InterestPickerModal({
 const EditProfileScreen = ({ navigation }: any) => {
   const { data: user, isLoading: isMeLoading } = useMe();
   const { mutate: editProfile, isPending: isSaving } = useEditProfile();
+  const { interests } = useInterestStore();
 
   // ── Photos ────────────────────────────────────────────────────────────────
   const existingPhotos: PhotoItem[] = (user?.profile?.photos ?? []).map(
@@ -824,7 +825,9 @@ const EditProfileScreen = ({ navigation }: any) => {
               <View
                 style={{ flexDirection: 'row', flexWrap: 'wrap', gap: sw(8) }}
               >
-                {selectedInterestNames.map((name, i) => (
+                {selectedInterestNames.map((name, i) => {
+                    const icon = interests.find((it) => it.name === name)?.icon ?? null;
+                    return (
                   <View
                     key={i}
                     style={{
@@ -838,6 +841,11 @@ const EditProfileScreen = ({ navigation }: any) => {
                       borderRadius: sr(99),
                     }}
                   >
+                    {!!icon && (
+                      <Text style={{ fontSize: sf(13), lineHeight: sf(18) }}>
+                        {icon}
+                      </Text>
+                    )}
                     <Text
                       style={{
                         fontFamily: 'Poppins-Regular',
@@ -848,32 +856,9 @@ const EditProfileScreen = ({ navigation }: any) => {
                     >
                       {name}
                     </Text>
-                    {/* <TouchableOpacity
-                      onPress={() =>
-                        setSelectedInterestNames((prev) =>
-                          prev.filter((n) => n !== name),
-                        )
-                      }
-                      hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-                      style={{ 
-                          width: 16,
-                          height: 16,
-                          borderRadius: sr(99),
-                          backgroundColor: '#EAD6A9',
-                          padding: 5,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          zIndex: 10,
-                        }}
-                    >
-                      <X
-                        size={sf(11)}
-                        color='#000000'
-                        strokeWidth={2.5}
-                      />
-                    </TouchableOpacity> */}
                   </View>
-                ))}
+                    );
+                  })}
                 {selectedInterestNames.length < MAX_INTERESTS && (
                   <TouchableOpacity
                     onPress={() => setShowInterests(true)}

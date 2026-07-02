@@ -1,13 +1,15 @@
 import type { PublicUser } from '@/features/users/schema'
 
-export function mapInterestLabels(interests: unknown): string[] {
+export type InterestChip = { name: string; icon: string | null }
+
+export function mapInterestLabels(interests: unknown): InterestChip[] {
   if (!Array.isArray(interests)) return []
 
   return interests
     .map((entry) => {
-      if (typeof entry === 'string') return entry.trim()
+      if (typeof entry === 'string') return { name: entry.trim(), icon: null }
 
-      if (!entry || typeof entry !== 'object') return ''
+      if (!entry || typeof entry !== 'object') return null
 
       const item = entry as {
         name?: string
@@ -17,12 +19,11 @@ export function mapInterestLabels(interests: unknown): string[] {
 
       const interest = item.interest ?? item
       const name = interest.name?.trim()
-      if (!name) return ''
+      if (!name) return null
 
-      const icon = interest.icon ? `${interest.icon} ` : ''
-      return `${icon}${name}`
+      return { name, icon: interest.icon ?? null }
     })
-    .filter(Boolean)
+    .filter(Boolean) as InterestChip[]
 }
 
 function photoToUrl(photo: unknown): string | null {
@@ -62,6 +63,6 @@ export function mapPublicUserToProfile(user: PublicUser) {
         ? { lat: loc.lat, lng: loc.lng }
         : { lat: 0, lng: 0 },
     attributes: profile?.ethnicity ? [profile.ethnicity] : [],
-    interests: mapInterestLabels(user.interests),
+    interests: mapInterestLabels(user.interests) as InterestChip[],
   }
 }

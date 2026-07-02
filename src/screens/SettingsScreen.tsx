@@ -647,10 +647,7 @@ const SettingsScreen = ({ navigation }: any) => {
 
   const handleDeleteAccount = () => {
     deleteAccount(undefined, {
-      onSuccess: () => {
-        setDeleteSheetVisible(false);
-        navigation.replace('SignInScreen');
-      },
+      onSuccess: () => setDeleteSheetVisible(false),
       onError: (err: any) =>
         showToast({ text1: 'Failed to delete account', text2: err?.message }),
     });
@@ -697,7 +694,6 @@ const SettingsScreen = ({ navigation }: any) => {
   // ── Helpers ────────────────────────────────────────────────────────────────
   const handleLogout = () => {
     logout(undefined, {
-      onSuccess: () => navigation.replace('SignInScreen'),
       onError: (err: any) =>
         showToast({ text1: 'Logout failed', text2: err?.message }),
     });

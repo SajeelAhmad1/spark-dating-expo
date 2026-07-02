@@ -60,6 +60,8 @@ export const useDeleteAccount = () => {
     onSuccess: async () => {
       await tokenStore.clearAll();
       queryClient.clear();
+      const { useAuthStore } = await import('@/store/authStore');
+      useAuthStore.getState().signOut();
     },
   });
 };

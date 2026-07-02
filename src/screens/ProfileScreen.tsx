@@ -354,7 +354,7 @@ const ProfileScreen = ({ navigation }: any) => {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   style={{
-                    minHeight: 106,
+                    minHeight: 90,
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: sh(14),
@@ -515,7 +515,7 @@ const ProfileScreen = ({ navigation }: any) => {
                 style={[
                   styles.card,
                   {
-                    minHeight: 152,
+                    // minHeight: 152,
                     justifyContent: 'center',
                   },
                 ]}
@@ -546,8 +546,16 @@ const ProfileScreen = ({ navigation }: any) => {
                         paddingHorizontal: sw(14),
                         height: 36,
                         justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                        gap: sw(4),
                       }}
                     >
+                      {!!entry.interest?.icon && (
+                        <Text style={{ fontSize: sf(13), lineHeight: sf(18) }}>
+                          {entry.interest.icon}
+                        </Text>
+                      )}
                       <Text
                         style={{
                           fontSize: sf(16),
@@ -568,7 +576,7 @@ const ProfileScreen = ({ navigation }: any) => {
               style={[
                 styles.card,
                 {
-                  minHeight: 163,
+                  // minHeight: 163,
                   justifyContent: 'center',
                   marginBottom: sh(8),
                 },
