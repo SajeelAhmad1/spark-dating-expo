@@ -7,17 +7,22 @@ import {
 } from '@react-navigation/native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
+import * as SplashScreen from 'expo-splash-screen';
 import Constants from 'expo-constants';
 import { useFonts } from 'expo-font';
 import Toast from 'react-native-toast-message';
 import { StatusBar } from 'expo-status-bar';
 
 import { QueryProvider } from '@/providers/QueryProvider';
-import { AuthGate }      from '@/components/bootstrap/AuthGate';
+import { AuthGate } from '@/components/bootstrap/AuthGate';
 import { ChatRealtimeProvider } from '@/components/chat/ChatRealtimeProvider';
-import RootNavigator     from '@/navigation/RootNavigator';
-import { toastConfig }   from '@/utils/toastConfig';
-import { parseChatNotification, getInitialNotification, type ChatNotificationData } from '@/services/fcm';
+import RootNavigator from '@/navigation/RootNavigator';
+import { toastConfig } from '@/utils/toastConfig';
+import {
+  parseChatNotification,
+  getInitialNotification,
+  type ChatNotificationData,
+} from '@/services/fcm';
 import type { AppStackParamList } from '@/types/navigation';
 
 const isExpoGo = Constants.executionEnvironment === 'storeClient';
@@ -33,26 +38,23 @@ function navigateToChat(data: ChatNotificationData) {
     chatUserName: data.senderName,
     chatUserImageUri: data.senderPhotoUrl,
   };
-
   if (!navigationRef.isReady()) {
     pendingChatNav = data;
     return;
   }
-
   navigationRef.navigate('ChatScreen', params);
   pendingChatNav = null;
 }
 
 function flushPendingChatNav() {
-  if (pendingChatNav) {
-    navigateToChat(pendingChatNav);
-  }
+  if (pendingChatNav) navigateToChat(pendingChatNav);
 }
 
 export default function App() {
-  const [bootstrapped, setBootstrapped] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
+  const [appReady, setAppReady]   = useState(false);
 
-  const [loaded, fontError] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     'Poppins-Thin':       require('./src/assets/fonts/Poppins-Thin.ttf'),
     'Poppins-ExtraLight': require('./src/assets/fonts/Poppins-ExtraLight.ttf'),
     'Poppins-Light':      require('./src/assets/fonts/Poppins-Light.ttf'),
@@ -65,47 +67,52 @@ export default function App() {
     'ZenDots-Regular':    require('./src/assets/fonts/ZenDots-Regular.ttf'),
   });
 
-  const handleNotificationTap = useCallback((data: ChatNotificationData) => {
-    if (!bootstrapped) {
-      pendingChatNav = data;
-      return;
-    }
-    const tryNav = (attempt = 0) => {
-      if (navigationRef.isReady()) {
-        navigateToChat(data);
-      } else if (attempt < 10) {
-        setTimeout(() => tryNav(attempt + 1), 300);
-      } else {
+  const fontsReady = fontsLoaded || !!fontError;
+
+  // Hide native splash once fonts + auth are both ready
+  useEffect(() => {
+    if (!fontsReady || !authReady) return;
+    SplashScreen.hideAsync().finally(() => setAppReady(true));
+  }, [fontsReady, authReady]);
+
+  // ── Notification handling ──────────────────────────────────────────────────
+  const handleNotificationTap = useCallback(
+    (data: ChatNotificationData) => {
+      if (!appReady) {
         pendingChatNav = data;
+        return;
       }
-    };
-    tryNav();
-  }, [bootstrapped]);
+      const tryNav = (attempt = 0) => {
+        if (navigationRef.isReady()) {
+          navigateToChat(data);
+        } else if (attempt < 10) {
+          setTimeout(() => tryNav(attempt + 1), 300);
+        } else {
+          pendingChatNav = data;
+        }
+      };
+      tryNav();
+    },
+    [appReady],
+  );
 
   useEffect(() => {
     if (isExpoGo) return;
-
     const foregroundSub = Notifications.addNotificationResponseReceivedListener(
       (response) => {
         const data = parseChatNotification(response.notification);
         if (data?.conversationId) handleNotificationTap(data);
       },
     );
-
     getInitialNotification().then((data) => {
       if (data?.conversationId) handleNotificationTap(data);
     });
-
-    return () => {
-      foregroundSub.remove();
-    };
+    return () => { foregroundSub.remove(); };
   }, [handleNotificationTap]);
 
   useEffect(() => {
-    if (bootstrapped) flushPendingChatNav();
-  }, [bootstrapped]);
-
-  if (!loaded && !fontError) return null;
+    if (appReady) flushPendingChatNav();
+  }, [appReady]);
 
   return (
     <GestureHandlerRootView style={styles.root}>
@@ -115,11 +122,13 @@ export default function App() {
           edges={['bottom', 'left', 'right']}
         >
           <QueryProvider>
-            <StatusBar style="dark" translucent={false} />
+            <StatusBar style='dark' translucent={false} />
 
-            <AuthGate onReady={() => setBootstrapped(true)} />
+            {/* Auth bootstrap — always mounted so it runs immediately */}
+            <AuthGate onReady={() => setAuthReady(true)} />
 
-            {bootstrapped && (
+            {/* App content — only rendered once both fonts + auth are ready */}
+            {appReady && (
               <NavigationContainer ref={navigationRef} onReady={flushPendingChatNav}>
                 <ChatRealtimeProvider />
                 <RootNavigator />

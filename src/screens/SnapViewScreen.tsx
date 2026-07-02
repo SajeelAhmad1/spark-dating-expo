@@ -24,6 +24,7 @@ import {
   useCreateDirectConversation,
   useSendMessage,
   useConversationSocket,
+  useMarkSnapViewed,
 } from "@/features/chat/hooks";
 
 const PHOTO_SNAP_SECONDS = 5;
@@ -144,6 +145,7 @@ export default function SnapViewScreen({ navigation, route }: any) {
   const chatUserName: string = route?.params?.chatUserName ?? "User";
   const chatUserId: string | undefined = route?.params?.chatUserId;
   const passedConversationId: string | undefined = route?.params?.conversationId;
+  const messageId: string | undefined = route?.params?.messageId;
 
   const [conversationId, setConversationId] = useState<string | null>(
     passedConversationId ?? null,
@@ -156,7 +158,16 @@ export default function SnapViewScreen({ navigation, route }: any) {
 
   const { mutateAsync: createConversation } = useCreateDirectConversation();
   const { mutate: sendMsg, isPending: isSending } = useSendMessage(conversationId ?? "");
+  const { mutate: markSnapViewed } = useMarkSnapViewed(conversationId ?? "");
   useConversationSocket(conversationId);
+
+  // Mark snap viewed when receiver opens it
+  const hasMarkedViewedRef = React.useRef(false);
+  useEffect(() => {
+    if (!messageId || !conversationId || hasMarkedViewedRef.current) return;
+    hasMarkedViewedRef.current = true;
+    markSnapViewed(messageId);
+  }, [messageId, conversationId]);
 
   // Ensure we have a conversation before sending
   const ensureConversation = useCallback(async (): Promise<string | null> => {

@@ -23,7 +23,6 @@ import {
 import { uploadToCloudinary } from '@/utils/cloudinary'
 import type { ChatMessage, ConversationItem, ListConversationsResponse } from './schema'
 import { useAuthStore, selectIsAuthenticated } from '@/store/authStore'
-
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function updateConversationsCache(
@@ -484,6 +483,35 @@ export const useSendMessage = (conversationId: string) => {
         }
       })
       showToast({ text1: 'Failed to send message' })
+    },
+  })
+}
+
+// ── Mark snap viewed ─────────────────────────────────────────────────────────
+
+export const useMarkSnapViewed = (conversationId: string) => {
+  const qc = useQueryClient()
+  const myId = useAuthStore((s) => s.user?.id)
+  return useMutation({
+    mutationFn: async (messageId: string) => {
+      await chatApi.markSnapViewed(conversationId, messageId)
+    },
+    onSuccess: (_data, messageId) => {
+      // Update the message in cache: add current user to streakViewedBy and redact media
+      qc.setQueryData<any>(queryKeys.chat.messages(conversationId), (old: any) => {
+        if (!old) return old
+        return {
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            items: page.items.map((m: ChatMessage) =>
+              m.id === messageId
+                ? { ...m, streakViewedBy: [...(m.streakViewedBy ?? []), ...(myId ? [myId] : [])], media: null }
+                : m
+            ),
+          })),
+        }
+      })
     },
   })
 }

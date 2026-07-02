@@ -5,10 +5,12 @@
     "slug": "spark-dating-expo",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/images/PrimaryImage.png",
     "platforms": ["ios", "android", "web"],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.sparkdating.app",
+      "icon": "./assets/images/PrimaryImage.png",
       "infoPlist": {
         "NSCameraUsageDescription": "We need camera access to take photos.",
         "NSLocationWhenInUseUsageDescription": "We need your location.",
@@ -19,6 +21,11 @@
     "android": {
       "package": "com.sparkdating.app",
       "googleServicesFile": "./google-services.json",
+      "icon": "./assets/images/PrimaryImage.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/PrimaryImage.png",
+        "backgroundColor": "#F7F3ED"
+      },
       "androidStatusBar": {
         "backgroundColor": "#FFFFFF",
         "barStyle": "dark-content",
@@ -40,7 +47,15 @@
       "expo-dev-client",
       "expo-camera",
       "expo-image-picker",
-      "expo-splash-screen",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#F7F3ED",
+          "image": "./assets/images/splash-logo.png",
+          "imageWidth": 200,
+          "resizeMode": "contain"
+        }
+      ],
       [
         "expo-build-properties",
         {

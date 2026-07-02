@@ -75,6 +75,12 @@ export const DiscoverProfilesResponseSchema = z.object({
   appliedFilter: AppliedFilterSchema.optional(),
   profiles: z.array(DiscoveryProfileSchema),
   nextCursor: z.string().nullable().optional(),
+  quota: z.object({
+    daily: z.number(),
+    used: z.number(),
+    remaining: z.number(),
+    resetsAt: z.string(),
+  }).optional(),
 });
 
 export type DiscoveryProfile = z.infer<typeof DiscoveryProfileSchema>;

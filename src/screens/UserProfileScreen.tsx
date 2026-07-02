@@ -494,7 +494,7 @@ const Chip = ({
       style,
     ]}
   >
-    {!!icon && (
+    {!!icon && typeof icon === 'string' && (
       <Text style={{ fontSize: sf(13), lineHeight: sf(18) }}>{icon}</Text>
     )}
     <Text

@@ -21,7 +21,8 @@ export function mapInterestLabels(interests: unknown): InterestChip[] {
       const name = interest.name?.trim()
       if (!name) return null
 
-      return { name, icon: interest.icon ?? null }
+      const rawIcon = interest.icon ?? null
+      return { name, icon: typeof rawIcon === 'string' ? rawIcon : null }
     })
     .filter(Boolean) as InterestChip[]
 }

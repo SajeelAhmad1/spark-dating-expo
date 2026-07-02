@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from '@/api/client'
+import { apiGet, apiPost, apiPatch } from '@/api/client'
 import { ENDPOINTS } from '@/api/endpoints'
 import {
   CreateDirectConversationResponse,
@@ -44,6 +44,11 @@ export const chatApi = {
     if (cursor) params.cursor = cursor
     const raw = await apiGet(ENDPOINTS.CHAT.MESSAGES(conversationId), params)
     return ListMessagesResponseSchema.parse(raw)
+  },
+
+  // REST: mark snap viewed (one-time view enforcement)
+  markSnapViewed: async (conversationId: string, messageId: string): Promise<void> => {
+    await apiPatch(ENDPOINTS.CHAT.MARK_SNAP_VIEWED(conversationId, messageId), {})
   },
 
   // NOTE: sendMessage and markConversationRead removed.

@@ -40,6 +40,7 @@ export const EditProfileDtoSchema = z.object({
   ethnicity: z.string().optional(),
   interests: z.array(z.string()).min(3).max(5).optional(),
   photos: z.array(PhotoSchema).optional(),
+  showAge: z.boolean().optional(),
 });
 
 export type EditProfileDto = z.infer<typeof EditProfileDtoSchema>;
@@ -56,8 +57,8 @@ export const ProfileDataSchema = z.object({
   bio: z.string().nullable(),
   height: z.number().nullable(),
   ethnicity: z.string().nullable(),
-  // photos stored as objects in DB; accept both for backward compat
   photos: z.array(z.union([PhotoSchema, z.string()])),
+  showAge: z.boolean().optional().default(true),
 });
 
 export const InterestItemSchema = z.object({
@@ -77,6 +78,7 @@ export const UserSchema = z.object({
   location: z.any().nullable(),
   matchesCount: z.number().optional().nullable(),
   streakCount: z.number().optional().nullable(),
+  fcmNotificationsEnabled: z.boolean().optional().default(true),
 });
 
 export type User = z.infer<typeof UserSchema>;

@@ -45,6 +45,7 @@ export const ENDPOINTS = {
     CONVERSATIONS: '/api/chat/conversations',
     MESSAGES:      (conversationId: string) => `/api/chat/conversations/${conversationId}/messages`,
     MARK_READ:     (conversationId: string) => `/api/chat/conversations/${conversationId}/read`,
+    MARK_SNAP_VIEWED: (conversationId: string, messageId: string) => `/api/chat/conversations/${conversationId}/messages/${messageId}/viewed`,
   },
   NOTIFICATIONS: {
     REGISTER_FCM: '/api/me/fcm-token',

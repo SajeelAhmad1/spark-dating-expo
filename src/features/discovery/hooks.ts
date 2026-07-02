@@ -66,6 +66,7 @@ export const useDiscoverProfiles = (payload: DiscoverProfilesRequest | null) =>
         appliedFilter: latestPage?.appliedFilter ?? data.pages[0]?.appliedFilter ?? null,
         area: latestPage?.area ?? data.pages[0]?.area,
         nextCursor: latestPage?.nextCursor ?? null,
+        quota: latestPage?.quota ?? data.pages[0]?.quota ?? null,
       };
     },
   });

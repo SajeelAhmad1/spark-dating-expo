@@ -1,13 +1,12 @@
 // src/components/bootstrap/AuthGate.tsx
 import { useEffect } from 'react';
-import * as SplashScreen from 'expo-splash-screen';
 import { tokenStore } from '@/api/client';
 import { useAuthStore } from '@/store/authStore';
 import { useLocationStore } from '@/store/locationStore';
 
-// Keep the splash screen visible until we're done bootstrapping.
-// This is called once at module load time so the splash never flickers.
-SplashScreen.preventAutoHideAsync();
+// NOTE: SplashScreen.preventAutoHideAsync() is called in index.ts (module load).
+// NOTE: SplashScreen.hideAsync() is called in App.tsx after BOTH fonts AND auth
+//       are ready, so there is never a white flash between the two phases.
 
 export function AuthGate({ onReady }: { onReady: () => void }) {
   useEffect(() => {
@@ -23,7 +22,6 @@ export function AuthGate({ onReady }: { onReady: () => void }) {
         if (cancelled) return;
 
         if (token && user) {
-          // Restore location into Zustand so screens never redirect unnecessarily
           if (user.location?.lat && user.location?.lng) {
             useLocationStore.getState().setCoords({
               lat: user.location.lat,
@@ -35,25 +33,19 @@ export function AuthGate({ onReady }: { onReady: () => void }) {
           useAuthStore.getState().setUnauthenticated();
         }
       } catch {
-        // If SecureStore fails for any reason, treat as logged-out
         if (!cancelled) {
           useAuthStore.getState().setUnauthenticated();
         }
       } finally {
         if (!cancelled) {
-          // Hide splash only after auth + location state is fully restored
-          await SplashScreen.hideAsync();
           onReady();
         }
       }
     };
 
     bootstrap();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
-  // Renders nothing — it's a pure side-effect component
   return null;
 }

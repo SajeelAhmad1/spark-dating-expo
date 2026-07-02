@@ -137,7 +137,7 @@ export default function DiscoveryMatchCard({
                       numberOfLines={1}
                       ellipsizeMode='tail'
                     >
-                      {interest}
+                      {interest.icon ? `${interest.icon} ${interest.name}` : interest.name}
                     </Text>
                   ))
                 ) : (

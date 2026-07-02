@@ -41,6 +41,7 @@ import {
   useRecordReferralShare,
   useReferralStats,
 } from '@/features/referrals/hooks';
+import { notificationsApi } from '@/features/notifications/api';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -659,6 +660,42 @@ const SettingsScreen = ({ navigation }: any) => {
   const [showAge, setShowAge] = useState(true);
   const [autoBoost, setAutoBoost] = useState(false);
 
+  // Sync toggles from server data
+  useEffect(() => {
+    if (me?.fcmNotificationsEnabled !== undefined) {
+      setPushNotifications(me.fcmNotificationsEnabled);
+    }
+  }, [me?.fcmNotificationsEnabled]);
+
+  useEffect(() => {
+    if (me?.profile?.showAge !== undefined) {
+      setShowAge(me.profile.showAge ?? true);
+    }
+  }, [me?.profile?.showAge]);
+
+  const handlePushNotificationsToggle = async (v: boolean) => {
+    setPushNotifications(v);
+    try {
+      await notificationsApi.updatePreferences({ fcmEnabled: v });
+    } catch {
+      setPushNotifications(!v);
+      showToast({ text1: 'Failed to update notification preference' });
+    }
+  };
+
+  const handleShowAgeToggle = (v: boolean) => {
+    setShowAge(v);
+    editProfile(
+      { showAge: v },
+      {
+        onError: () => {
+          setShowAge(!v);
+          showToast({ text1: 'Failed to update age visibility' });
+        },
+      },
+    );
+  };
+
   // ── Discovery dialog state ─────────────────────────────────────────────────
   const [gender, setGender] = useState('Female');
   const [showMe, setShowMe] = useState('Women');
@@ -1021,7 +1058,7 @@ const SettingsScreen = ({ navigation }: any) => {
             label='Push Notifications'
             description='Get notified about matches and messages'
             value={pushNotifications}
-            onValueChange={setPushNotifications}
+            onValueChange={handlePushNotificationsToggle}
           />
           <ToggleRow
             label='Show Distance'
@@ -1033,7 +1070,7 @@ const SettingsScreen = ({ navigation }: any) => {
             label='Show Age'
             description='Display your age on your profile'
             value={showAge}
-            onValueChange={setShowAge}
+            onValueChange={handleShowAgeToggle}
           />
           <ToggleRow
             label='Auto Boost'

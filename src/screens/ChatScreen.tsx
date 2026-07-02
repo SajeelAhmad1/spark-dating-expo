@@ -25,6 +25,7 @@ import {
   Loader,
   Check,
   CheckCheck,
+  Eye,
 } from 'lucide-react-native';
 import Logo from '@/assets/images/logo.svg';
 import CameraIcon from '@/assets/images/cameraIcon.svg';
@@ -74,6 +75,7 @@ function MsgBubble({
   friendAvatarUri,
   myAvatarUri,
   onSnapPress,
+  myId,
 }: {
   message: ChatMessage;
   isMe: boolean;
@@ -82,6 +84,7 @@ function MsgBubble({
   friendAvatarUri?: string;
   myAvatarUri?: string;
   onSnapPress?: (msg: ChatMessage) => void;
+  myId?: string;
 }) {
   const isOptimistic = message.id.startsWith('optimistic-')
   // Tick states:
@@ -211,21 +214,23 @@ function MsgBubble({
 
   // ── Streak bubble ─────────────────────────────────────────────────────────────
   if (message.type === 'streak') {
+    const alreadyViewed = Array.isArray(message.streakViewedBy) && myId
+      ? message.streakViewedBy.includes(myId)
+      : false;
+    const mediaRedacted = !message.media?.url;
+
     if (!isMe) {
-      // ── RECEIVED streak: Logo icon in dark rounded square + "View moment" ──
+      // ── RECEIVED streak ──
+      const isViewed = alreadyViewed || mediaRedacted;
       return (
         <View style={wrapStyle}>
-          <ChatAvatar
-            size={sf(32)}
-            variant='friend'
-            imageUri={friendAvatarUri}
-          />
+          <ChatAvatar size={sf(32)} variant='friend' imageUri={friendAvatarUri} />
           <View style={{ alignItems: 'flex-start' }}>
             <TouchableOpacity
-              onPress={() => onSnapPress?.(message)}
-              activeOpacity={0.8}
+              onPress={() => !isViewed && onSnapPress?.(message)}
+              activeOpacity={isViewed ? 1 : 0.8}
               style={{
-                backgroundColor: '#EAD6A9',
+                backgroundColor: isViewed ? '#E8E8E8' : '#EAD6A9',
                 borderRadius: sr(16),
                 borderBottomLeftRadius: sr(4),
                 paddingHorizontal: sw(14),
@@ -236,42 +241,30 @@ function MsgBubble({
                 opacity: isOptimistic ? 0.6 : 1,
               }}
             >
-              {/* Dark rounded square with Logo */}
               <View
                 style={{
                   width: sw(38),
                   height: sw(38),
                   borderRadius: sr(10),
-                  backgroundColor: '#0B0B0B',
+                  backgroundColor: isViewed ? '#B0B0B0' : '#0B0B0B',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <Logo
-                  width={sf(22)}
-                  height={sf(22)}
-                />
+                {isViewed
+                  ? <Eye size={sf(20)} color='#FFFFFF' />
+                  : <Logo width={sf(22)} height={sf(22)} />}
               </View>
-
               <View>
-                <Text
-                  style={{
-                    fontSize: sf(15),
-                    fontWeight: '600',
-                    color: '#0B0B0B',
-                    fontFamily: 'Poppins-Medium',
-                  }}
-                >
-                  View moment
+                <Text style={{ fontSize: sf(15), fontWeight: '600', color: isViewed ? '#888888' : '#0B0B0B', fontFamily: 'Poppins-Medium' }}>
+                  {isViewed ? 'Viewed' : 'View moment'}
                 </Text>
-                {message.streakExpiresAt && (
+                {!isViewed && message.streakExpiresAt && (
                   <Text style={{ fontSize: sf(11), color: '#8D7A5A' }}>
                     {formatMsgTime(message.createdAt)}
                     {'  '}
                     {(() => {
-                      const remaining =
-                        new Date(message.streakExpiresAt).getTime() -
-                        Date.now();
+                      const remaining = new Date(message.streakExpiresAt).getTime() - Date.now();
                       const secs = Math.max(0, Math.floor(remaining / 1000));
                       if (secs < 60) return `${secs}s`;
                       if (secs < 3600) return `${Math.floor(secs / 60)}m`;
@@ -281,36 +274,23 @@ function MsgBubble({
                 )}
               </View>
             </TouchableOpacity>
-            {/* Time row below bubble */}
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: sw(4),
-                marginTop: sh(3),
-              }}
-            >
-              <Text style={{ fontSize: sf(10), color: '#B6B9C9' }}>
-                {formatMsgTime(message.createdAt)}
-              </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: sw(4), marginTop: sh(3) }}>
+              <Text style={{ fontSize: sf(10), color: '#B6B9C9' }}>{formatMsgTime(message.createdAt)}</Text>
             </View>
           </View>
         </View>
       );
     }
 
-    // ── SENT streak: spinning dots + "Moment" on dark bg ──────────────────────
+    // ── SENT streak: show "Viewed" if receiver has opened it ──────────────────
+    const receiverViewed = Array.isArray(message.streakViewedBy) && message.streakViewedBy.length > 0
+      && (!myId || message.streakViewedBy.some((id) => id !== myId));
+
     return (
       <View style={wrapStyle}>
-        <ChatAvatar
-          size={sf(32)}
-          variant='me'
-          imageUri={myAvatarUri}
-        />
+        <ChatAvatar size={sf(32)} variant='me' imageUri={myAvatarUri} />
         <View style={{ alignItems: 'flex-end' }}>
-          <TouchableOpacity
-            onPress={() => onSnapPress?.(message)}
-            activeOpacity={0.8}
+          <View
             style={{
               backgroundColor: '#0B0B0B',
               borderRadius: sr(16),
@@ -323,23 +303,13 @@ function MsgBubble({
               opacity: isOptimistic ? 0.6 : 1,
             }}
           >
-            {/* Spinning dots icon */}
-            <Loader
-              size={14}
-              color='#FFFFFF'
-            />
-
-            <Text
-              style={{
-                fontSize: sf(16),
-                fontWeight: '500',
-                color: '#FFFFFF',
-                fontFamily: 'Poppins-Medium',
-              }}
-            >
-              Moment
+            {receiverViewed
+              ? <Eye size={14} color='#CEB98F' />
+              : <Loader size={14} color='#FFFFFF' />}
+            <Text style={{ fontSize: sf(16), fontWeight: '500', color: receiverViewed ? '#CEB98F' : '#FFFFFF', fontFamily: 'Poppins-Medium' }}>
+              {receiverViewed ? 'Viewed' : 'Moment'}
             </Text>
-          </TouchableOpacity>
+          </View>
           {timeRow}
         </View>
       </View>
@@ -874,6 +844,7 @@ export default function ChatScreen({ navigation, route }: any) {
                     isSeen={isMessageSeen(index)}
                     friendAvatarUri={chatUserImageUri}
                     myAvatarUri={myAvatar}
+                    myId={myId}
                     onSnapPress={(msg) => {
                       if (msg.media?.url) {
                         navigation.navigate('SnapViewScreen', {
@@ -885,6 +856,7 @@ export default function ChatScreen({ navigation, route }: any) {
                           chatUserImageUri,
                           chatUserId,
                           conversationId,
+                          messageId: msg.id,
                         });
                       }
                     }}
