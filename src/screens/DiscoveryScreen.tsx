@@ -308,7 +308,7 @@ const DiscoveryScreen = ({ navigation }: any) => {
           />
 
           <View style={styles.infoWrap} pointerEvents='none'>
-            <Text style={styles.nameText}>{activeMatch?.name}, {activeMatch?.age}</Text>
+            <Text style={styles.nameText}>{activeMatch?.name}{activeMatch?.age != null ? `, ${activeMatch.age}` : ''}</Text>
             {!!activeMatch?.bio && (
               <Text style={styles.bioText} numberOfLines={2}>{activeMatch.bio}</Text>
             )}

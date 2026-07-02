@@ -45,7 +45,7 @@ export const DiscoveryProfileSchema = z.object({
   id: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-  age: z.number(),
+  age: z.number().nullable(),
   gender: z.string(),
   bio: z.string().nullable().optional(),
   photos: z.array(z.string()),

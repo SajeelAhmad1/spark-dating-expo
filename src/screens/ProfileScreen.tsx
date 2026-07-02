@@ -81,7 +81,7 @@ const ProfileScreen = ({ navigation }: any) => {
 
   const displayName =
     [profile?.firstName, profile?.lastName].filter(Boolean).join(' ') || 'You';
-  const age = calcAge(profile?.dob);
+  const age = profile?.showAge !== false ? calcAge(profile?.dob) : '';
   const nameLabel = age ? `${displayName} (${age})` : displayName;
 
   return (

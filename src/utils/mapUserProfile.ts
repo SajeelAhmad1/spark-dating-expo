@@ -47,11 +47,13 @@ export function mapPublicUserToProfile(user: PublicUser) {
     : 0
   const loc = user.location as { lat?: number; lng?: number } | null | undefined
 
+  const showAge = profile?.showAge !== false
+
   return {
     id: user.id,
     name:
       `${profile?.firstName ?? ''} ${profile?.lastName ?? ''}`.trim() || 'User',
-    age,
+    age: showAge ? age : null,
     images: photos,
     bio: profile?.bio ?? '',
     bio2: profile?.bio ?? '',

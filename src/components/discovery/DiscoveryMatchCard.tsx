@@ -94,17 +94,19 @@ export default function DiscoveryMatchCard({
                 numberOfLines={1}
                 ellipsizeMode='tail'
               >
-                {item.name},
+                {item.name}{item.age != null ? ',' : ''}
               </Text>
-              <Text
-                style={{
-                  fontFamily: 'Poppins-SemiBold',
-                  fontSize: sf(16),
-                  color: '#fff',
-                }}
-              >
-                {item.age}
-              </Text>
+              {item.age != null && (
+                <Text
+                  style={{
+                    fontFamily: 'Poppins-SemiBold',
+                    fontSize: sf(16),
+                    color: '#fff',
+                  }}
+                >
+                  {item.age}
+                </Text>
+              )}
             </View>
             <View
               style={{

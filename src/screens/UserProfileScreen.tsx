@@ -40,7 +40,7 @@ import { mapInterestLabels, mapPublicUserToProfile, type InterestChip } from '@/
 type UserProfile = {
   id: string;
   name: string;
-  age: number;
+  age: number | null;
   images: string[];
   bio: string;
   bio2: string;
