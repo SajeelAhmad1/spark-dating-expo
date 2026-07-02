@@ -94,7 +94,7 @@
       ]
     ],
     "extra": {
-      "apiBaseUrl": "http://192.168.1.107:5000",
+      "apiBaseUrl": "https://sparkdating-backend-production.up.railway.app",
       "eas": {
         "projectId": "e4d904d7-e598-48cc-844b-e7281373ae61"
       }
