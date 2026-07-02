@@ -39,7 +39,6 @@ const UploadPhotosScreen = ({ navigation }: any) => {
 
   const photos = useSignupStore(selectPhotos);
   const isAnyUploading = useSignupStore(selectIsAnyPhotoUploading);
-  const getPayload = useSignupStore(selectGetPayload);
   const { setPhoto, patchPhoto } = useSignupStore();
 
   const [photosError, setPhotosError] = React.useState<string | undefined>();

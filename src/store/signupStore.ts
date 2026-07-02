@@ -137,9 +137,13 @@ export const useSignupStore = create<SignupStore>()(
           .map((s) => ({ url: String(s.cloudinaryUrl), publicId: String(s.publicId) }));
 
         // Format DOB as YYYY-MM-DD string
-        const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        const monthNum = String(MONTHS.indexOf(month) + 1).padStart(2, '0');
-        const dob = `${year}-${monthNum}-${day.padStart(2, '0')}`;
+        const MONTH_MAP: Record<string, string> = {
+          Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',
+          Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12',
+        };
+        const mm = MONTH_MAP[month] ?? '01';
+        const dd = day.padStart(2, '0');
+        const dob = `${year}-${mm}-${dd}`;
 
         // Ensure interests are plain strings (name), not objects
         const interestNames = interests.map((i: any) =>
