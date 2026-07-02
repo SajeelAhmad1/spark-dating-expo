@@ -87,7 +87,7 @@ export function createProfileSetupSchema(opts: {
     year: z.string().refine(v => years.includes(v), { message: ERR.profile.yearInvalid }),
     height: z.string().optional(),
     ethnicity: z.string().optional(),
-    bio: z.string().max(500, ERR.profile.bioMax),
+    bio: z.string().max(500, ERR.profile.bioMax).optional(),
   });
 }
 

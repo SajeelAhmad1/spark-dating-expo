@@ -18,7 +18,7 @@ import {
   selectInterests,
   selectPatch,
 } from '@/store/signupStore';
-// import { useInterestsCatalog } from '@/features/interests/hooks';
+import { useInterestsCatalog } from '@/features/interests/hooks';
 import type { Interest } from '@/features/interests/schema';
 import { useInterestStore } from '@/store/interestStore';
 
@@ -50,27 +50,22 @@ function groupByCategory(
 const InterestsScreen = ({ navigation }: any) => {
   const storedInterests = useSignupStore(selectInterests);
   const patch = useSignupStore(selectPatch);
-  const { interests } = useInterestStore();
+  const { interests: storeInterests, setInterests } = useInterestStore();
 
-  // const { data: rawData, isPending, isError, refetch } = useInterestsCatalog();
-  // console.log(rawData, "interest data")
+  const { data: rawData } = useInterestsCatalog();
 
-  // Safely extract the array regardless of how the interceptor unwraps the envelope.
-  // Backend shape: { status: 'success', data: { interests: [...] } }
-  // After interceptor unwraps .data once:  { interests: [...] }
-  // This handles both cases so it won't break if the interceptor is updated.
-  // const catalogItems: Interest[] = useMemo(() => {
-  //   if (!rawData) return [];
-  //   if (Array.isArray(rawData)) return rawData; // already unwrapped to array
-  //   const asObj = rawData as any;
-  //   if (Array.isArray(asObj.interests)) return asObj.interests; // { interests: [...] }
-  //   if (asObj.data && Array.isArray(asObj.data.interests))
-  //     return asObj.data.interests; // { data: { interests: [...] } }
-  //   if (asObj.data && Array.isArray(asObj.data)) return asObj.data; // { data: [...] }
-  //   return [];
-  // }, [rawData]);
+  const catalogItems: Interest[] = useMemo(() => {
+    if (rawData && Array.isArray((rawData as any).interests) && (rawData as any).interests.length > 0)
+      return (rawData as any).interests;
+    if (Array.isArray(rawData) && (rawData as any).length > 0) return rawData as any;
+    return storeInterests;
+  }, [rawData, storeInterests]);
 
-  const categories = useMemo(() => groupByCategory(interests), [interests]);
+  useEffect(() => {
+    if (catalogItems.length > 0 && storeInterests.length === 0) setInterests(catalogItems);
+  }, [catalogItems, storeInterests.length, setInterests]);
+
+  const categories = useMemo(() => groupByCategory(catalogItems), [catalogItems]);
 
   const [selected, setSelected] = useState<string[]>(
     storedInterests.length > 0 ? storedInterests : [],

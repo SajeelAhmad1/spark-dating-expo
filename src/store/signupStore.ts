@@ -152,6 +152,8 @@ export const useSignupStore = create<SignupStore>()(
 
         return {
           ...rest,
+          bio: rest.bio || undefined,
+          ethnicity: rest.ethnicity || undefined,
           dob,
           height: height ? Number(height) : undefined,
           photos,
