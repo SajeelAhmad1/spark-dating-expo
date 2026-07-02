@@ -158,6 +158,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
       return;
     }
     const payload = getPayload();
+    console.log('[CompleteProfile] payload:', JSON.stringify(payload, null, 2));
     setPhotosError(undefined);
     completeProfile(payload, {
       onSuccess: () => {

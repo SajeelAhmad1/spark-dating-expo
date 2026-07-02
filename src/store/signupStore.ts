@@ -121,7 +121,7 @@ export const useSignupStore = create<SignupStore>()(
       reset: () => set({ form: initialForm }, false, 'signup/reset'), 
 
       getPayload: (): CompleteProfileDto => {
-        const { photos: photoSlots, day, month, year, height, gender, ...rest } =
+        const { photos: photoSlots, day, month, year, height, gender, interests, ...rest } =
           get().form;
 
         // Only include successfully uploaded photos — send as {url, publicId} objects
@@ -134,12 +134,17 @@ export const useSignupStore = create<SignupStore>()(
               !s.isUploading &&
               !s.uploadError,
           )
-          .map((s) => ({ url: s.cloudinaryUrl, publicId: s.publicId }));
+          .map((s) => ({ url: String(s.cloudinaryUrl), publicId: String(s.publicId) }));
 
         // Format DOB as YYYY-MM-DD string
         const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         const monthNum = String(MONTHS.indexOf(month) + 1).padStart(2, '0');
         const dob = `${year}-${monthNum}-${day.padStart(2, '0')}`;
+
+        // Ensure interests are plain strings (name), not objects
+        const interestNames = interests.map((i: any) =>
+          typeof i === 'string' ? i : i.name,
+        );
 
         return {
           ...rest,
@@ -147,6 +152,7 @@ export const useSignupStore = create<SignupStore>()(
           height: height ? Number(height) : undefined,
           photos,
           gender: gender.toLowerCase() as 'male' | 'female' | 'other',
+          interests: interestNames,
         };
       },
     }),
