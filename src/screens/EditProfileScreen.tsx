@@ -9,8 +9,6 @@ import {
   Modal,
   ActivityIndicator,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import RefreshControl from '@/components/common/RefreshControl';
@@ -38,6 +36,7 @@ import { FieldError } from '@/components/common/FieldError';
 import { showToast } from '@/utils/toast';
 import { useEditProfile, useMe } from '@/features/profile/hooks';
 import { useInterestStore } from '@/store/interestStore';
+import { useInterestsCatalog } from '@/features/interests/hooks';
 import { uploadToCloudinary, deleteFromCloudinary } from '@/utils/cloudinary';
 import type { EditProfileDto } from '@/features/profile/schema';
 
@@ -265,7 +264,14 @@ function InterestPickerModal({
 const EditProfileScreen = ({ navigation }: any) => {
   const { data: user, isLoading: isMeLoading } = useMe();
   const { mutate: editProfile, isPending: isSaving } = useEditProfile();
-  const { interests } = useInterestStore();
+  const { interests, setInterests } = useInterestStore();
+
+  const { data: catalogData } = useInterestsCatalog();
+  React.useEffect(() => {
+    if (catalogData && catalogData.length > 0 && interests.length === 0) {
+      setInterests(catalogData);
+    }
+  }, [catalogData, interests.length, setInterests]);
 
   // ── Photos ────────────────────────────────────────────────────────────────
   const existingPhotos: PhotoItem[] = (user?.profile?.photos ?? []).map(
@@ -501,10 +507,7 @@ const EditProfileScreen = ({ navigation }: any) => {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: '#F7F3ED' }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <View style={{ flex: 1, backgroundColor: '#F7F3ED' }}>
       <View
         style={{
           flex: 1,
@@ -1059,7 +1062,7 @@ const EditProfileScreen = ({ navigation }: any) => {
         onClose={() => setShowInterests(false)}
         isSaving={false}
       />
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
