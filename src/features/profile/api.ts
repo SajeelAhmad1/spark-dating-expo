@@ -1,5 +1,5 @@
 // src/features/profile/api.ts
-import { apiGet, apiPost, apiPatch } from '@/api/client';
+import { apiGet, apiPost, apiPatch, apiDel } from '@/api/client';
 import { ENDPOINTS } from '@/api/endpoints';
 import type { CompleteProfileDto, EditProfileDto, User } from './schema';
 
@@ -34,4 +34,7 @@ export const profileApi = {
    */
   getMe: (): Promise<{ user: User }> =>
     apiGet(ENDPOINTS.USER.ME),
+
+  deleteAccount: (): Promise<void> =>
+    apiDel(ENDPOINTS.USER.DELETE_ACCOUNT),
 };

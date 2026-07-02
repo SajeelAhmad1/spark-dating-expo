@@ -54,7 +54,7 @@ export const ErrorMessages = Object.freeze({
   }),
 
   upload: Object.freeze({
-    minPhotos: 'Add at least one photo to continue.',
+    minPhotos: 'Add at least 2 photos to continue.',
   }),
 
   messaging: Object.freeze({

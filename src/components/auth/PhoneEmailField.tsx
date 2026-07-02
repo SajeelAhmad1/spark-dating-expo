@@ -32,7 +32,7 @@ export default function PhoneEmailField({
         keyboardType={activeTab === 'phone' ? 'phone-pad' : 'email-address'}
         autoCapitalize={activeTab === 'email' ? 'none' : undefined}
         autoCorrect={activeTab === 'email' ? false : undefined}
-        style={[styles.input, { fontSize: sf(12), paddingVertical: sh(8) }]}
+        style={[styles.input, { fontSize: sf(14), paddingVertical: sh(8) }]}
         value={value}
         onChangeText={onChangeText}
         onBlur={onBlur}

@@ -2,17 +2,15 @@
   "expo": {
     "name": "SparkDating",
     "scheme": "sparkdating",
-    "slug": "sparkdating",
+    "slug": "spark-dating-expo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "icon": "./assets/images/PrimaryImage.png",
+    "platforms": ["ios", "android", "web"],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.sparkdating.app", 
+      "bundleIdentifier": "com.sparkdating.app",
+      "icon": "./assets/images/PrimaryImage.png",
       "infoPlist": {
         "NSCameraUsageDescription": "We need camera access to take photos.",
         "NSLocationWhenInUseUsageDescription": "We need your location.",
@@ -21,7 +19,18 @@
       }
     },
     "android": {
-      "package": "com.sparkdating.app", 
+      "package": "com.sparkdating.app",
+      "googleServicesFile": "./google-services.json",
+      "icon": "./assets/images/PrimaryImage.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/PrimaryImage.png",
+        "backgroundColor": "#F7F3ED"
+      },
+      "androidStatusBar": {
+        "backgroundColor": "#FFFFFF",
+        "barStyle": "dark-content",
+        "translucent": false
+      },
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.INTERNET",
@@ -35,8 +44,18 @@
       ]
     },
     "plugins": [
+      "expo-dev-client",
       "expo-camera",
       "expo-image-picker",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#F7F3ED",
+          "image": "./assets/images/splash.png",
+          "imageWidth": 200,
+          "resizeMode": "contain"
+        }
+      ],
       [
         "expo-build-properties",
         {
@@ -56,13 +75,30 @@
       ],
       "expo-video",
       "expo-secure-store",
-      "expo-web-browser"
+      "expo-web-browser",
+      "@react-native-community/datetimepicker",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/PrimaryImage.png",
+          "color": "#CEB98F",
+          "defaultChannel": "chat"
+        }
+      ],
+      "expo-font",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.455021014657-d98d6inald7mgiqn9q4lvshkt3a2q1rm"
+        }
+      ]
     ],
     "extra": {
-      "apiBaseUrl": "http://192.168.1.113:5000",
+      "apiBaseUrl": "https://sparkdating-backend-production.up.railway.app",
       "eas": {
-        "projectId": "5964fbfc-515b-4d82-b4f8-1a3ad7bb0eb1"
+        "projectId": "e4d904d7-e598-48cc-844b-e7281373ae61"
       }
-    }
+    },
+    "owner": "wajid_19"
   }
 }

@@ -1,137 +1,360 @@
-// screens/MatchScreen.tsx
-import React, { useEffect, useState } from 'react';
-import { View, TouchableOpacity, useWindowDimensions, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import {
+  View,
+  TouchableOpacity,
+  useWindowDimensions,
+  StyleSheet,
+  ActivityIndicator,
+  Animated,
+} from 'react-native';
 import { Text } from '@/components/common/Text';
-import { X } from 'lucide-react-native';
+import { X, Send, Zap } from 'lucide-react-native';
+import CameraIcon from '@/assets/images/cameraIcon.svg';
 import CameraScreen from './CameraScreen';
-import MatchTitle from '@/components/match/MatchTitle';
 import PhotoStack from '@/components/match/PhotoStack';
-import MessageInputBar from '@/components/match/MessageInputBar';
 import { calculateMatchPhotoLayout } from '@/utils/match';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
-import { MATCHES } from '@/constants/matches';
+import { TextInput } from 'react-native';
 import { useZodForm } from '@/utils/form';
 import { matchCaptionFormSchema } from '@/schemas/messaging';
+import { FieldError } from '@/components/common/FieldError';
+import { LinearGradient } from 'expo-linear-gradient';
+import {
+  useCreateDirectConversation,
+  useSendMessage,
+} from '@/features/chat/hooks';
+import { showToast } from '@/utils/toast';
+import { useMe } from '@/features/profile/hooks';
+
+// ── Spark animation ───────────────────────────────────────────────────────────
+
+const SparkAnimation = () => {
+  const scale = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const ringScale = useRef(new Animated.Value(0.4)).current;
+  const ringOpacity = useRef(new Animated.Value(0.8)).current;
+
+  useEffect(() => {
+    // Main zap: pop in then pulse
+    Animated.sequence([
+      Animated.parallel([
+        Animated.spring(scale, {
+          toValue: 1,
+          useNativeDriver: true,
+          tension: 80,
+          friction: 5,
+        }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          useNativeDriver: true,
+          duration: 200,
+        }),
+      ]),
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(scale, {
+            toValue: 1.15,
+            useNativeDriver: true,
+            duration: 400,
+          }),
+          Animated.timing(scale, {
+            toValue: 1.0,
+            useNativeDriver: true,
+            duration: 400,
+          }),
+        ]),
+      ),
+    ]).start();
+
+    // Ripple ring: expand + fade, loop
+    Animated.loop(
+      Animated.parallel([
+        Animated.timing(ringScale, {
+          toValue: 2.2,
+          useNativeDriver: true,
+          duration: 1000,
+        }),
+        Animated.timing(ringOpacity, {
+          toValue: 0,
+          useNativeDriver: true,
+          duration: 1000,
+        }),
+      ]),
+    ).start();
+  }, []);
+
+  const size = sw(104);
+
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: sh(8),
+      }}
+    >
+      {/* Ripple ring */}
+      <Animated.View
+        style={{
+          position: 'absolute',
+          width: size,
+          height: size,
+          borderRadius: 9999,
+          borderWidth: 2,
+          borderColor: '#CEB98F',
+          transform: [{ scale: ringScale }],
+          opacity: ringOpacity,
+        }}
+      />
+      {/* Zap circle */}
+      <Animated.View style={{ transform: [{ scale }], opacity }}>
+        <LinearGradient
+          colors={['#CEB98F', '#CEB98F']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{
+            width: size,
+            height: size,
+            borderRadius: 9999,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Zap
+            width={sf(48)}
+            height={sf(48)}
+            color='#0B0B0B'
+            fill='#0B0B0B'
+          />
+        </LinearGradient>
+      </Animated.View>
+    </View>
+  );
+};
+
+// ── Props ─────────────────────────────────────────────────────────────────────
+interface MatchItem {
+  id: string;
+  name: string;
+  image: string;
+  age?: number;
+}
+
+// ── Screen ────────────────────────────────────────────────────────────────────
 
 const MatchScreen = ({ navigation, route }: any) => {
-  const match = route?.params?.match ?? MATCHES[0];
+  const match: MatchItem = route?.params?.match ?? {
+    id: '',
+    name: 'Match',
+    image: '',
+    age: 0,
+  };
   const autoOpenCamera: boolean = !!route?.params?.autoOpenCamera;
 
+  const { data: me } = useMe();
+  const myPhotoRaw = me?.profile?.photos?.[0];
+  const myPhoto = typeof myPhotoRaw === 'string' ? myPhotoRaw : myPhotoRaw?.url;
+
   const [isCamOpen, setIsCamOpen] = useState(false);
-  const { watch, setValue, getValues, trigger, formState } = useZodForm(
+  const [isSending, setIsSending] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+
+  const { width } = useWindowDimensions();
+  const { PHOTO_WIDTH, PHOTO_HEIGHT, CONTAINER_HEIGHT } =
+    calculateMatchPhotoLayout(width);
+
+  const { watch, setValue, getValues, trigger, reset, formState } = useZodForm(
     matchCaptionFormSchema,
     { defaultValues: { inputMessage: '' } },
   );
   const inputMessage = watch('inputMessage');
   const captionError = formState.errors.inputMessage?.message;
-  const [isSending, setIsSending] = useState(false);
-  const { width } = useWindowDimensions();
 
-  const { PHOTO_WIDTH, PHOTO_HEIGHT, CONTAINER_HEIGHT } =
-    calculateMatchPhotoLayout(width);
+  const { mutateAsync: createConversation, isPending: isCreatingConv } =
+    useCreateDirectConversation();
+  const { mutate: sendMsg } = useSendMessage(conversationId ?? '');
+
+  // ── Bootstrap conversation ────────────────────────────────────────────────
+  useEffect(() => {
+    if (match.id) {
+      createConversation(match.id)
+        .then((res) => setConversationId(res.conversation.id))
+        .catch(() => {
+          /* already exists — still navigable */
+        });
+    }
+  }, [match.id]);
 
   useEffect(() => {
     if (autoOpenCamera) setIsCamOpen(true);
   }, [autoOpenCamera]);
 
-  const closeCameraAndPreview = () => {
-    setIsCamOpen(false);
-    navigation.replace('DiscoveryScreen');
+  const navigateToChat = (extraParams?: Record<string, unknown>) => {
+    navigation.navigate('ChatScreen', {
+      conversationId,
+      chatUserId: match.id,
+      chatUserName: match.name,
+      chatUserImageUri: match.image,
+      initialLocked: false,
+      ...extraParams,
+    });
   };
 
-  // ── Send media (photo or video URI) ───────────────────────────────────────
-  // Called AFTER the user confirms send inside CameraScreen's internal preview.
-  // Do NOT open any additional preview here.
+  // ── Send text + navigate ──────────────────────────────────────────────────
+  const handleSendText = () => {
+    const trimmed = inputMessage.trim();
+    if (!conversationId || !trimmed) return;
 
-  const sendMedia = async (mediaUri: string) => {
-    const captionOk = matchCaptionFormSchema.safeParse({
-      inputMessage: getValues().inputMessage,
-    });
-    if (!captionOk.success) {
-      trigger('inputMessage');
+    setIsSending(true);
+    sendMsg(
+      { type: 'text', text: trimmed },
+      {
+        onSuccess: () => {
+          reset({ inputMessage: '' });
+          setIsSending(false);
+          navigateToChat();
+        },
+        onError: (err: any) => {
+          setIsSending(false);
+          showToast({ text1: 'Failed to send', text2: err?.message });
+        },
+      },
+    );
+  };
+
+  // ── Send media (from camera) ──────────────────────────────────────────────
+  const sendMedia = (uri: string, mime: string) => {
+    if (!conversationId) {
+      // Conversation not ready yet — pass as initial photo to ChatScreen
+      setIsCamOpen(false);
+      navigateToChat({ initialPhotoUri: uri });
       return;
     }
-    try {
-      setIsSending(true);
 
-      // Upload to server (uncomment and configure as needed)
-      /*
-      const formData = new FormData();
-      formData.append('photo', {
-        uri: mediaUri,
-        type: 'image/jpeg',
-        name: `media_${Date.now()}.jpg`,
-      });
-      formData.append('message', inputMessage);
-      const response = await fetch('YOUR_API_ENDPOINT/messages', {
-        method: 'POST',
-        body: formData,
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      if (!response.ok) throw new Error('Upload failed');
-      */
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      setValue('inputMessage', '');
-
-      navigation.navigate('ChatScreen', {
-        chatUserName: match.name,
-        chatUserImageUri: match.image,
-        initialPhotoUri: mediaUri,
-        initialLocked: false,
-      });
-    } catch (error) {
-      console.error('Error sending media:', error);
-    } finally {
-      setIsSending(false);
-    }
+    setIsSending(true);
+    sendMsg(
+      {
+        type: 'streak',
+        media: { url: uri, mime },
+        streak: { ttlSeconds: 24 * 60 * 60 },
+      },
+      {
+        onSuccess: () => {
+          setIsSending(false);
+          setIsCamOpen(false);
+          navigateToChat();
+        },
+        onError: (err: any) => {
+          setIsSending(false);
+          showToast({ text1: 'Failed to send', text2: err?.message });
+        },
+      },
+    );
   };
 
-  const handlePhotoCapture = (photoUri: string) => {
-    sendMedia(photoUri);
-  };
+  const handlePhotoCapture = (uri: string) => sendMedia(uri, 'image/jpeg');
+  const handleVideoCapture = (uri: string) => sendMedia(uri, 'video/mp4');
 
-  const handleVideoCapture = (videoUri: string) => {
-    sendMedia(videoUri);
+  const closeCameraAndPreview = () => {
+    setIsCamOpen(false);
+    navigation.replace('MainTabs');
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FBB202', paddingBottom: sh(20) }}>
+    <View
+      style={{ flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) }}
+    >
       <View
         style={{
           flex: 1,
           alignItems: 'center',
           paddingHorizontal: sw(24),
-          paddingTop: sh(40),
+          paddingTop: sh(80),
           paddingBottom: sh(24),
         }}
       >
-        <MatchTitle />
+        {/* ── Spark animation ─────────────────────────────────────────── */}
+        <SparkAnimation />
 
+        {/* ── Photo stack — real avatars ──────────────────────────────── */}
         <PhotoStack
           screenWidth={width}
           photoWidth={PHOTO_WIDTH}
           photoHeight={PHOTO_HEIGHT}
           containerHeight={CONTAINER_HEIGHT}
+          myPhotoUri={myPhoto}
+          matchPhotoUri={match.image}
         />
 
-        {/* ── Subtitle ── */}
-        <Text
-          style={[styles.matchSubtitle, { fontSize: sf(16) }]}
-          weight="medium"
-        >
+        <Text style={[styles.subtitle, { fontSize: sf(16) }]}>
           {`You and ${match.name} liked each other.`}
         </Text>
 
-        <MessageInputBar
-          value={inputMessage}
-          onChangeText={v => setValue('inputMessage', v, { shouldValidate: true })}
-          onOpenCamera={() => setIsCamOpen(true)}
-          errorMessage={captionError}
-        />
+        {/* ── Input bar ─────────────────────────────────────────────── */}
+        <View style={styles.inputRow}>
+          <TextInput
+            placeholder='Say something nice…'
+            placeholderTextColor='#0B0B0B'
+            value={inputMessage}
+            onChangeText={(v) =>
+              setValue('inputMessage', v, { shouldValidate: true })
+            }
+            style={styles.input}
+          />
 
-        {/* Camera Screen (handles preview internally) */}
+          {/* Send text button */}
+          <TouchableOpacity
+            onPress={handleSendText}
+            disabled={!inputMessage.trim() || isSending || !conversationId}
+            style={[
+              styles.iconBtn,
+              { opacity: inputMessage.trim() && conversationId ? 1 : 0.4 },
+            ]}
+          >
+            {isSending ? (
+              <ActivityIndicator
+                size='small'
+                color='#0B0B0B'
+              />
+            ) : (
+              <Send
+                size={sf(24)}
+                color='#0B0B0B'
+                strokeWidth={2}
+              />
+            )}
+          </TouchableOpacity>
+
+          {/* Camera button */}
+          <TouchableOpacity
+            onPress={() => setIsCamOpen(true)}
+            style={styles.iconBtn}
+          >
+            <CameraIcon
+              width={sw(42)}
+              height={sh(42)}
+              color="#0B0B0B"
+            />
+          </TouchableOpacity>
+        </View>
+
+        <FieldError message={captionError} />
+
+        {isCreatingConv && (
+          <Text
+            style={{
+              color: '#0B0B0B',
+              fontSize: sf(12),
+              marginTop: sh(4),
+            }}
+          >
+            Setting up chat…
+          </Text>
+        )}
+
+        {/* ── Camera ────────────────────────────────────────────────── */}
         <CameraScreen
           visible={isCamOpen}
           onClose={() => setIsCamOpen(false)}
@@ -139,28 +362,60 @@ const MatchScreen = ({ navigation, route }: any) => {
           onVideoCapture={handleVideoCapture}
         />
 
-        {/* ── Close button ── */}
-        <TouchableOpacity
+        {/* ── Close ────────────────────────────────────────────────── */}
+        {/* <TouchableOpacity
           onPress={closeCameraAndPreview}
           style={{
-            width: sf(40),
-            height: sf(40),
-            borderRadius: sr(20),
-            backgroundColor: '#1E78F5',
+            paddingHorizontal: 8,
+            paddingVertical: 3,
+            // borderRadius: sr(20),
+            // backgroundColor: '#CEB98F',
             alignItems: 'center',
             justifyContent: 'center',
+            marginTop: sh(8),
           }}
-        >
-          <X size={sf(18)} color="#FFFFFF" strokeWidth={2.5} />
-        </TouchableOpacity>
-
+        > 
+          <Text>Share later</Text>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  matchSubtitle: { color: '#000000', marginBottom: sh(16), textAlign: 'center', fontWeight: '500' },
-});
-
 export default MatchScreen;
+
+const styles = StyleSheet.create({
+  subtitle: {
+    color: '#000000',
+    marginBottom: sh(16),
+    textAlign: 'center',
+    fontWeight: '500',
+    fontFamily: 'Poppins-Medium',
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#000000',
+    borderRadius: 999,
+    paddingHorizontal: sw(16),
+    width: '100%',
+    height: sh(56),
+    marginBottom: sh(8),
+    // backgroundColor: 'rgba(0,0,0,0.12)',
+    gap: sw(10),
+  },
+  input: {
+    flex: 1,
+    fontFamily: 'Poppins-Regular',
+    fontSize: sf(15),
+    color: '#0B0B0B',
+    padding: 0,
+  },
+  iconBtn: {
+    width: sf(32),
+    height: sf(32),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

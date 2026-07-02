@@ -1,9 +1,9 @@
 <svg width="42" height="41" viewBox="0 0 42 41" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_39_379)">
 <path d="M31 21C31 26.5229 26.5229 31 21 31C18.0133 31 11 31 11 31C11 31 11 23.5361 11 21C11 15.4771 15.4771 11 21 11C26.5229 11 31 15.4771 31 21Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M16 18H25" stroke="#FBB202" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M16 22H25" stroke="#FBB202" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M16 26H21" stroke="#FBB202" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M16 18H25" stroke="#EAD6A9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M16 22H25" stroke="#EAD6A9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M16 26H21" stroke="#EAD6A9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </g>
 <defs>
 <filter id="filter0_d_39_379" x="-1" y="-1" width="44" height="44" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">

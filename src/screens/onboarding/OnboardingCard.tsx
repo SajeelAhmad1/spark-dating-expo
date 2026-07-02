@@ -1,10 +1,10 @@
-import React from "react";
-import { View } from "react-native";
-import { Shadow } from "react-native-shadow-2";
-import PrimaryButton from "@/components/common/PrimaryButton";
-import { Colors } from "@/theme";
-import { sf, sw, sh, sr } from "@/utils/sizeMatters";
-import { Text } from "@/components/common/Text";
+import React from 'react';
+import { View } from 'react-native';
+import { Shadow } from 'react-native-shadow-2';
+import PrimaryButton from '@/components/common/PrimaryButton';
+import { Colors } from '@/theme';
+import { sf, sw, sh, sr } from '@/utils/sizeMatters';
+import { Text } from '@/components/common/Text';
 
 interface Props {
   title: string;
@@ -25,30 +25,31 @@ const OnboardingCard: React.FC<Props> = ({
     <Shadow
       distance={sh(10)}
       offset={[0, 0]}
-      endColor="rgba(0,0,0,0)"
+      endColor='rgba(0,0,0,0)'
       sides={{ top: true, bottom: false, start: false, end: false }}
-      style={{ width: "100%" }}
+      style={{ width: '100%' }}
     >
       <View
         style={{
-          width: "100%",
-          backgroundColor: "#ffffff",
+          width: '100%',
+          backgroundColor: '#ffffff',
           borderTopLeftRadius: sr(32),
           borderTopRightRadius: sr(32),
           paddingTop: sh(40),
+          paddingBottom: sh(20),
           minHeight: sh(362),
         }}
       >
-        <View style={{ width: "100%" }}>
+        <View style={{ width: '100%' }}>
           {/* Title */}
           <Text
-            weight="semibold"
+            weight='semibold'
             style={{
-              textAlign: "center",
-              color: "#000000",
+              textAlign: 'center',
+              color: '#000000',
               paddingHorizontal: sw(24),
               marginBottom: sh(8),
-              fontSize: sf(24),  
+              fontSize: sf(24),
             }}
           >
             {title}
@@ -56,12 +57,12 @@ const OnboardingCard: React.FC<Props> = ({
 
           {/* Subtitle */}
           <Text
-            weight="regular"
+            weight='regular'
             style={{
-              color: "#7D858E",
-              textAlign: "center",
+              color: '#7D858E',
+              textAlign: 'center',
               paddingHorizontal: sw(40),
-              fontSize: sf(16), 
+              fontSize: sf(16),
               height: sf(80),
             }}
           >
@@ -72,16 +73,16 @@ const OnboardingCard: React.FC<Props> = ({
         <View
           style={{
             flex: 1,
-            justifyContent: "flex-end",
-            width: "100%",
+            justifyContent: 'flex-end',
+            width: '100%',
           }}
         >
           {/* Dots */}
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
               marginBottom: sh(20),
               gap: sw(6),
             }}
@@ -93,7 +94,7 @@ const OnboardingCard: React.FC<Props> = ({
                   height: sh(8),
                   width: i === activeDot ? sw(24) : sw(8),
                   borderRadius: sr(4),
-                  backgroundColor: i === activeDot ? "#1E78F5" : "#B6B9C9",
+                  backgroundColor: i === activeDot ? '#C9BB9B' : '#B6B9C9',
                 }}
               />
             ))}
@@ -104,9 +105,8 @@ const OnboardingCard: React.FC<Props> = ({
             <PrimaryButton
               title={buttonLabel}
               onPress={onPress}
-              colors={[Colors.gradientStart, Colors.gradientEnd]}
               textStyle={{
-                fontSize: sf(18), 
+                fontSize: sf(18),
               }}
             />
           </View>

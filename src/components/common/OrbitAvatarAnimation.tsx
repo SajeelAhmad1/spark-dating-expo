@@ -35,9 +35,9 @@ const OrbitAvatarAnimation = ({ CenterProfile, AVATARS, PINS, LocationIcon, styl
       ORBIT_D: orbitD,
       ORBIT_R: orbitR,
       RINGS: [
-        { d: orbitD * 0.35, color: 'rgba(30, 120, 245, 0.2)' },
-        { d: orbitD * 0.45, color: 'rgba(30, 120, 245, 0.15)' },
-        { d: orbitD * 0.55, color: 'rgba(30, 120, 245, 0.1)' },
+        { d: orbitD * 0.35, color: 'rgba(234, 214, 169, 0.4)' },
+        { d: orbitD * 0.45, color: 'rgba(234, 214, 169, 0.3)' },
+        { d: orbitD * 0.55, color: 'rgba(234, 214, 169, 0.2)' },
       ],
       CENTER_SIZE: sf(62),
     };
@@ -194,7 +194,7 @@ const OrbitAvatarAnimation = ({ CenterProfile, AVATARS, PINS, LocationIcon, styl
                   left: pos.left,
                   overflow: 'hidden',
                   borderWidth: sf(1),
-                  borderColor: '#FBB202',
+                  borderColor: '#C9BB9B',
                   elevation: 6,
                   shadowColor: '#000',
                   shadowOffset: { width: 0, height: sh(2) },

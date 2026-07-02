@@ -85,6 +85,8 @@ export function createProfileSetupSchema(opts: {
     day: z.string().refine(v => days.includes(v), { message: ERR.profile.dayInvalid }),
     month: z.string().refine(v => months.includes(v), { message: ERR.profile.monthInvalid }),
     year: z.string().refine(v => years.includes(v), { message: ERR.profile.yearInvalid }),
+    height: z.string().optional(),
+    ethnicity: z.string().optional(),
     bio: z.string().max(500, ERR.profile.bioMax),
   });
 }
@@ -106,5 +108,5 @@ export const uploadPhotosFilledSchema = z.object({
   filledCount: z
     .number()
     .int()
-    .min(1, ERR.upload.minPhotos),
+    .min(2, ERR.upload.minPhotos),
 });

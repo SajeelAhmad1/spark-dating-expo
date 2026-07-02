@@ -3,8 +3,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   TouchableOpacity,
-  StyleSheet,
-  StatusBar,
+  StyleSheet, 
   Modal,
   ActivityIndicator,
 } from 'react-native';
@@ -49,7 +48,7 @@ export default function CameraScreen({
   const startTimer = () => {
     setRecordingSeconds(0);
     timerRef.current = setInterval(() => {
-      setRecordingSeconds(prev => prev + 1);
+      setRecordingSeconds((prev) => prev + 1);
     }, 1000);
   };
 
@@ -69,7 +68,9 @@ export default function CameraScreen({
   }, []);
 
   const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const m = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, '0');
     const s = (seconds % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
   };
@@ -86,8 +87,8 @@ export default function CameraScreen({
   const isRecordingRef = useRef(false);
   const longPressTriggeredRef = useRef(false);
 
-  const toggleFlip = () => setFacing(f => (f === 'back' ? 'front' : 'back'));
-  const toggleFlash = () => setFlashEnabled(f => !f);
+  const toggleFlip = () => setFacing((f) => (f === 'back' ? 'front' : 'back'));
+  const toggleFlash = () => setFlashEnabled((f) => !f);
 
   const openPreview = (uri: string, type: 'photo' | 'video') => {
     setPreviewUri(uri);
@@ -145,7 +146,7 @@ export default function CameraScreen({
 
     try {
       setCameraMode('video');
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       if (!longPressTriggeredRef.current) return;
 
@@ -202,8 +203,11 @@ export default function CameraScreen({
 
   return (
     <>
-      <Modal visible={visible} animationType="slide" statusBarTranslucent>
-        <StatusBar barStyle="light-content" backgroundColor="#000" hidden />
+      <Modal
+        visible={visible}
+        animationType='slide'
+        statusBarTranslucent
+      > 
         <View style={styles.fullScreenContainer}>
           {hasPermission ? (
             <>
@@ -219,7 +223,10 @@ export default function CameraScreen({
 
               {isTakingPhoto && (
                 <View style={styles.capturingOverlay}>
-                  <ActivityIndicator size="large" color="#FFFFFF" />
+                  <ActivityIndicator
+                    size='large'
+                    color='#0B0B0B'
+                  />
                 </View>
               )}
 
@@ -228,19 +235,37 @@ export default function CameraScreen({
                 <View style={styles.recordingBadge}>
                   <View style={styles.recordingDot} />
                   <Text style={styles.recordingText}>REC</Text>
-                  <Text style={styles.timerText}>{formatTime(recordingSeconds)}</Text>
+                  <Text style={styles.timerText}>
+                    {formatTime(recordingSeconds)}
+                  </Text>
                 </View>
               )}
 
               <View style={styles.topControls}>
-                <TouchableOpacity style={styles.controlButton} onPress={onClose}>
-                  <X size={24} color="#FFFFFF" />
+                <TouchableOpacity
+                  style={styles.controlButton}
+                  onPress={onClose}
+                >
+                  <X
+                    size={24}
+                    color='#FFFFFF'
+                  />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.controlButton} onPress={toggleFlash}>
-                  {flashEnabled
-                    ? <FlashlightIcon size={24} color="#FFFFFF" />
-                    : <FlashlightOffIcon size={24} color="#FFFFFF" />
-                  }
+                <TouchableOpacity
+                  style={styles.controlButton}
+                  onPress={toggleFlash}
+                >
+                  {flashEnabled ? (
+                    <FlashlightIcon
+                      size={24}
+                      color='#FFFFFF'
+                    />
+                  ) : (
+                    <FlashlightOffIcon
+                      size={24}
+                      color='#FFFFFF'
+                    />
+                  )}
                 </TouchableOpacity>
               </View>
 
@@ -250,10 +275,17 @@ export default function CameraScreen({
                   onPress={openGallery}
                   disabled={isPickingImage || isRecordingVideo}
                 >
-                  {isPickingImage
-                    ? <ActivityIndicator size="small" color="#FFFFFF" />
-                    : <GalleryVerticalIcon size={24} color="#FFFFFF" />
-                  }
+                  {isPickingImage ? (
+                    <ActivityIndicator
+                      size='small'
+                      color='#0B0B0B'
+                    />
+                  ) : (
+                    <GalleryVerticalIcon
+                      size={24}
+                      color='#FFFFFF'
+                    />
+                  )}
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -262,7 +294,8 @@ export default function CameraScreen({
                     isRecordingVideo && styles.shutterButtonRecording,
                   ]}
                   onPress={() => {
-                    if (longPressTriggeredRef.current || isRecordingRef.current) return;
+                    if (longPressTriggeredRef.current || isRecordingRef.current)
+                      return;
                     takePhoto();
                   }}
                   onLongPress={() => {
@@ -290,7 +323,10 @@ export default function CameraScreen({
                   onPress={toggleFlip}
                   disabled={isTakingPhoto || isRecordingVideo}
                 >
-                  <FlipHorizontal size={24} color="#FFFFFF" />
+                  <FlipHorizontal
+                    size={24}
+                    color='#FFFFFF'
+                  />
                 </TouchableOpacity>
               </View>
             </>
@@ -302,7 +338,10 @@ export default function CameraScreen({
                   : 'Camera permission required'}
               </Text>
               {permission !== null && !hasPermission && (
-                <TouchableOpacity onPress={requestPermission} style={styles.grantButton}>
+                <TouchableOpacity
+                  onPress={requestPermission}
+                  style={styles.grantButton}
+                >
                   <Text style={styles.grantButtonText}>Grant Permission</Text>
                 </TouchableOpacity>
               )}
@@ -341,7 +380,7 @@ const styles = StyleSheet.create({
   },
   bottomControls: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 20,
     left: 0,
     right: 0,
     flexDirection: 'row',
@@ -437,7 +476,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: sw(24),
     paddingVertical: sh(12),
     borderRadius: 999,
-    backgroundColor: '#1E78F5',
+    backgroundColor: '#CEB98F',
   },
   grantButtonText: {
     color: '#FFFFFF',

@@ -33,7 +33,7 @@ export default function PasswordField({
           value={password}
           onChangeText={onChangeText}
           onBlur={onBlur}
-          style={[styles.input, { fontSize: sf(12), paddingVertical: sh(8) }]}
+          style={[styles.input, { fontSize: sf(14), paddingVertical: sh(8) }]}
         />
         <TouchableOpacity
           onPress={onToggleShowPassword}

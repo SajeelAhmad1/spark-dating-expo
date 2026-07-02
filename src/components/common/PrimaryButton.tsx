@@ -13,12 +13,12 @@ import {Text} from '@/components/common/Text'
 
 // ─── Types ────────────────────────────────────────────────
 type ButtonVariant = 'gradient' | 'solid' | 'outline';
-type IconPosition = 'start' | 'middle' | 'end';
+type IconPosition = 'start' | 'middle' | 'right' | 'end';
 
 interface PrimaryButtonProps {
   title: string;
   onPress: () => void;
-  colors: string[];
+  colors?: string[];
   iconBackground?: string;
   variant?: ButtonVariant;
   icon?: React.ReactNode;
@@ -36,7 +36,7 @@ interface PrimaryButtonProps {
 const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   title,
   onPress,
-  colors,
+  colors = ['#EAD6A9', '#EAD6A9'],
   iconBackground,
   variant = 'gradient',
   icon,
@@ -77,15 +77,16 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   // ── Inner content layout ──
   const renderContent = () => {
     if (loading) {
-      return <ActivityIndicator color="#fff" />;
+      return <ActivityIndicator color="#0B0B0B" />;
     }
 
     // Middle: icon + text side by side, both centered
-    if (icon && iconPosition === 'middle') {
+    if (icon && iconPosition === 'middle' || iconPosition === 'right') {
       return (
         <View style={[styles.row, paddingHorizontal !== undefined && { paddingHorizontal }]} >
-          <View style={styles.iconMiddle}>{renderIcon()}</View>
+          {iconPosition === 'middle' && <View style={styles.iconMiddle}>{renderIcon()}</View>}
           <Text style={[styles.text, textStyle]}>{title}</Text>
+          {iconPosition === 'right' && <View style={styles.iconRight}>{renderIcon()}</View>}
         </View>
       );
     }
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   text: {
-    color: '#FFFFFF',
+    color: '#0B0B0B',
     fontFamily: 'Poppins-Medium',
     fontWeight: '500',
     fontSize: sf(16),
@@ -181,6 +182,9 @@ const styles = StyleSheet.create({
   },
   iconMiddle: {
     marginRight: sw(8),
+  },
+  iconRight: {
+    marginLeft: sw(8),
   },
   disabled: { opacity: 0.5 },
 });

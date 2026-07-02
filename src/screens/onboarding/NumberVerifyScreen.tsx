@@ -148,7 +148,7 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
       ? { email: identifier, code, signupSessionId }
       : { phone: identifier, code, signupSessionId };
 
-       console.log( identifier, code, signupSessionId)
+    console.log(identifier, code, signupSessionId);
     verifyOtp(dto as any, {
       onSuccess: () => {
         showToast({ text1: 'Verified successfully' });
@@ -180,7 +180,7 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
             weight='regular'
           >
             Enter the 4-digit code sent to{'\n'}
-            <Text style={{ color: '#1E78F5', fontWeight: '600' }}>
+            <Text style={{ color: '#CEB98F', fontWeight: '600' }}>
               {identifier}
             </Text>
           </Text>
@@ -213,14 +213,11 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
         <View style={styles.btnWrap}>
           <PrimaryButton
             title={isVerifying ? 'Verifying...' : 'Verify'}
-            onPress={handleSubmit(onValid)}
-            colors={['#1E78F5', '#FBB202']}
-            variant='gradient'
+            onPress={handleSubmit(onValid)} 
             style={{ alignSelf: 'stretch' }}
             textStyle={{
               fontWeight: '500',
-              fontSize: sf(20),
-              color: '#ffffff',
+              fontSize: sf(20), 
             }}
             disabled={isVerifying}
           />
@@ -240,7 +237,7 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
             ]}
             weight='medium'
           >
-            {secondsLeft > 0 ? `Resend code in ${secondsLeft}s` : 'Resend Code'}
+            {secondsLeft > 0 ? `Resend code in ${secondsLeft}s` : 'Resend code'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -251,7 +248,7 @@ const NumberVerifyScreen = ({ navigation, route }: any) => {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: '#F7F3ED' },
   page: {
     flex: 1,
     paddingHorizontal: sw(20),
@@ -279,7 +276,7 @@ const styles = StyleSheet.create({
   otpCellError: { borderColor: '#DC2626' },
   btnWrap: { marginTop: sh(32) },
   resendWrap: { marginTop: sh(16), alignItems: 'center' },
-  resend: { color: '#1E78F5' },
+  resend: { color: '#CEB98F' },
   resendDisabled: { color: '#7D858E' },
 });
 

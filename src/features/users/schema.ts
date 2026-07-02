@@ -1,0 +1,56 @@
+import { z } from 'zod';
+
+export const PublicUserSchema = z.object({
+  id: z.string(),
+  profile: z
+    .object({
+      firstName: z.string().nullable().optional(),
+      lastName: z.string().nullable().optional(),
+      gender: z.string().nullable().optional(),
+      dob: z.string().nullable().optional(),
+      bio: z.string().nullable().optional(),
+      height: z.number().nullable().optional(),
+      ethnicity: z.string().nullable().optional(),
+      showAge: z.boolean().optional().default(true),
+      photos: z.array(
+        z.union([
+          z.string(),
+          z.object({ url: z.string(), publicId: z.string().optional() }),
+        ]),
+      ),
+    })
+    .nullable()
+    .optional(),
+  interests: z
+    .array(
+      z.union([
+        z.string(),
+        z.object({
+          interest: z
+            .object({
+              id: z.string().optional(),
+              name: z.string(),
+              icon: z.string().nullable().optional(),
+            })
+            .passthrough(),
+        }).passthrough(),
+        z
+          .object({
+            name: z.string(),
+            icon: z.string().nullable().optional(),
+          })
+          .passthrough(),
+      ]),
+    )
+    .nullish(),
+  location: z.any().nullable().optional(),
+  matchesCount: z.number().nullable().optional(),
+  streakCount: z.number().nullable().optional(),
+});
+
+export const GetUserByIdResponseSchema = z.object({
+  user: PublicUserSchema,
+});
+
+export type PublicUser = z.infer<typeof PublicUserSchema>;
+export type GetUserByIdResponse = z.infer<typeof GetUserByIdResponseSchema>;

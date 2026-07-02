@@ -7,10 +7,11 @@ import {
   Dimensions,
   Keyboard,
   Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { FieldError } from '@/components/common/FieldError';
-import { ChevronDown } from 'lucide-react-native';
+import { ChevronDown, ChevronLeft } from 'lucide-react-native';
 import { CountryPicker } from 'react-native-country-codes-picker';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sh, sw, sr } from '@/utils/sizeMatters';
@@ -24,7 +25,8 @@ import * as SecureStore from 'expo-secure-store';
 const { height: winH } = Dimensions.get('window');
 
 const NumberEnterScreen = ({ navigation }: any) => {
-  const { mutate: signupStart, isPending: isSendingCode } = useSignupStartWithPhone();
+  const { mutate: signupStart, isPending: isSendingCode } =
+    useSignupStartWithPhone();
 
   const [show, setShow] = useState(false);
   const [pickerKeyboardHeight, setPickerKeyboardHeight] = useState(0);
@@ -81,8 +83,11 @@ const NumberEnterScreen = ({ navigation }: any) => {
     const payload = { phone: `${country.dial_code}${data.phoneNumber}` };
 
     signupStart(payload, {
-      onSuccess: async (data: SignupStartResponse) => { 
-        await SecureStore.setItemAsync('signupSessionId', data?.signupSessionId);
+      onSuccess: async (data: SignupStartResponse) => {
+        await SecureStore.setItemAsync(
+          'signupSessionId',
+          data?.signupSessionId,
+        );
 
         showToast({ text1: 'Verification code sent' });
         navigation.navigate('NumberVerifyScreen', { phone: payload.phone });
@@ -96,99 +101,158 @@ const NumberEnterScreen = ({ navigation }: any) => {
     });
   };
 
-  const modalMaxHeight =
-    pickerKeyboardHeight > 0
-      ? winH - pickerKeyboardHeight - sh(24)
-      : winH * 0.88;
+  const MODAL_TOP_OFFSET = winH * 0.12;
+  const modalHeight = winH - MODAL_TOP_OFFSET;
 
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
     <View style={styles.safeArea}>
-      <View style={styles.page}>
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+      
+        <View style={styles.page}>
+             {/* Back */}
+         <TouchableOpacity
+              style={{
+                width: sw(36),
+                height: sw(36),
+                justifyContent: 'center',
+              }}
+              onPress={() => navigation.goBack()}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <ChevronLeft
+                size={sf(24)}
+                color='#000000'
+              />
+            </TouchableOpacity>
         <View style={styles.headerBlock}>
-          <Text style={[styles.title, { fontSize: sf(28) }]} weight="semibold">
-            My mobile number
+          <Text
+            style={[styles.title, { fontSize: sf(28) }]}
+            weight='semibold'
+          >
+            Your Mobile Number
           </Text>
-          <Text style={[styles.subtitle, { fontSize: sf(15) }]} weight="regular">
-            Your streak is waiting 🔥
+          <Text
+            style={[styles.subtitle, { fontSize: sf(15) }]}
+            weight='regular'
+          >
+            Your moment is waiting 🔥
           </Text>
         </View>
 
-        <View style={[styles.phoneRow, phoneError ? styles.phoneRowError : null]}>
-          <TouchableOpacity style={styles.countryBtn} onPress={handleOpenPicker}>
+        <View
+          style={[styles.phoneRow, phoneError ? styles.phoneRowError : null]}
+        >
+          <TouchableOpacity
+            style={styles.countryBtn}
+            onPress={handleOpenPicker}
+          >
             <Text style={{ fontSize: sf(20) }}>{country.flag}</Text>
-            <Text style={[styles.dialCode, { fontSize: sf(16) }]}>{country.dial_code}</Text>
-            <ChevronDown size={sf(16)} color="#000000" />
+            <Text style={[styles.dialCode, { fontSize: sf(16) }]}>
+              {country.dial_code}
+            </Text>
+            <ChevronDown
+              size={sf(16)}
+              color='#000000'
+            />
           </TouchableOpacity>
 
           <View style={styles.divider} />
 
           <TextInput
-            placeholder="300 1234567"
-            placeholderTextColor="#7D858E"
-            keyboardType="phone-pad"
+            placeholder='300 1234567'
+            placeholderTextColor='#7D858E'
+            keyboardType='phone-pad'
             value={phoneNumber}
             style={[styles.phoneInput, { fontSize: sf(16) }]}
-            onChangeText={(v) => setValue('phoneNumber', v, { shouldValidate: true })}
+            onChangeText={(v) =>
+              setValue('phoneNumber', v, { shouldValidate: true })
+            }
             onBlur={() => trigger('phoneNumber')}
           />
         </View>
         <FieldError message={phoneError} />
 
-        <Text style={[styles.helper, { fontSize: sf(15) }]} weight="regular">
-          We'll text you a code to verify you're really you. Message and data rates may apply.{' '}
-          <Text style={styles.helperMuted} weight="regular">
+        <Text
+          style={[styles.helper, { fontSize: sf(15) }]}
+          weight='regular'
+        >
+          We’ll send you a code to confirm it’s you. We will never share your
+          number
+          {/* <Text
+            style={styles.helperMuted}
+            weight='regular'
+          >
             What happens if your number changes?
-          </Text>
+          </Text> */}
         </Text>
 
         <View style={styles.btnWrap}>
           <PrimaryButton
-            title={isSendingCode ? 'Sending...' : 'Send verification Code'}
-            onPress={handleSubmit(onValid)}
-            colors={['#1E78F5', '#FBB202']}
-            variant="gradient"
+            title={isSendingCode ? 'Sending...' : 'Send verification code'}
+            onPress={handleSubmit(onValid)}  
             style={{ alignSelf: 'stretch' }}
-            textStyle={{ color: '#ffffff', fontSize: sf(20), fontWeight: '500' }}
+            textStyle={{ 
+              fontSize: sf(20),
+              fontWeight: '500',
+            }}
             disabled={isSendingCode}
           />
         </View>
 
         <View style={styles.footerRow}>
-          <Text style={[styles.footerText, { fontSize: sf(16) }]} weight="regular">
+          <Text
+            style={[styles.footerText, { fontSize: sf(16) }]}
+            weight='regular'
+          >
             Already have an account?{' '}
             <Text
               onPress={() => navigation.navigate('SignInScreen')}
               style={styles.loginLink}
-              weight="medium"
+              weight='medium'
             >
               Login
             </Text>
           </Text>
         </View>
-      </View>
+        </View>
+      </KeyboardAvoidingView>
 
       <CountryPicker
-        lang="en"
+        lang='en'
         show={show}
         enableModalAvoiding={false}
-        androidWindowSoftInputMode="adjustNothing"
+        androidWindowSoftInputMode='adjustNothing'
         onBackdropPress={handleClosePicker}
         onRequestClose={handleClosePicker}
-        inputPlaceholder="Search country"
-        inputPlaceholderTextColor="#7D858E"
-        searchMessage="No countries match your search"
+        inputPlaceholder='Search country'
+        inputPlaceholderTextColor='#7D858E'
+        searchMessage='No countries match your search'
         pickerButtonOnPress={(item) => {
-          setCountry({ flag: item.flag, dial_code: item.dial_code, code: item.code });
+          setCountry({
+            flag: item.flag,
+            dial_code: item.dial_code,
+            code: item.code,
+          });
           setValue('countryCode', item.code, { shouldValidate: true });
           handleClosePicker();
         }}
         style={{
           modal: {
-            maxHeight: modalMaxHeight,
+            height: modalHeight,
+            maxHeight: modalHeight,
+            marginTop: MODAL_TOP_OFFSET,
             paddingTop: sh(16),
-            paddingBottom: pickerKeyboardHeight > 0 ? 0 : sh(16),
+            paddingBottom: 0,
+            justifyContent: 'flex-start',
+          },
+          itemsList: {
+            flex: 1,
+            paddingBottom: pickerKeyboardHeight > 0 ? pickerKeyboardHeight : sh(16),
           },
           textInput: {
             height: sh(48),
@@ -214,7 +278,7 @@ const NumberEnterScreen = ({ navigation }: any) => {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
+  safeArea: { flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) },
   page: {
     flex: 1,
     paddingHorizontal: sw(20),
@@ -222,7 +286,7 @@ const styles = StyleSheet.create({
     marginTop: sh(80),
     paddingBottom: sh(24),
   },
-  headerBlock: { marginTop: sh(64), rowGap: sh(8) },
+  headerBlock: { marginTop: sh(20), rowGap: sh(8) },
   title: { color: '#000000' },
   subtitle: { color: '#7D858E' },
   phoneRow: {
@@ -243,10 +307,10 @@ const styles = StyleSheet.create({
   phoneInput: { flex: 1, color: '#000000', fontWeight: '500' },
   helper: { color: '#7D858E', marginTop: sh(16) },
   helperMuted: { color: '#7D858E' },
-  btnWrap: { marginTop: sh(24) },
+  btnWrap: { marginTop: sh(32) },
   footerRow: { marginTop: sh(16), alignItems: 'center' },
   footerText: { color: '#7D858E' },
-  loginLink: { color: '#1E78F5', textDecorationLine: 'underline' },
+  loginLink: { color: '#CEB98F', textDecorationLine: 'underline' },
 });
 
 export default NumberEnterScreen;

@@ -22,7 +22,7 @@ import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sw, sh, sr } from '@/utils/sizeMatters';
 import { useZodForm } from '@/utils/form';
 import { z } from 'zod';
-import { useSetPassword } from '@/features/auth/hooks';
+import { useSetPassword, useLogin } from '@/features/auth/hooks';
 import * as SecureStore from 'expo-secure-store';
 import { showToast } from '@/utils/toast';
 
@@ -94,10 +94,6 @@ function PasswordField({
       <View
         style={[styles.inputRow, errorMessage ? styles.inputRowError : null]}
       >
-        <Lock
-          size={sf(18)}
-          color='#9CA3AF'
-        />
         <TextInput
           value={value}
           onChangeText={onChangeText}
@@ -213,7 +209,10 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
   const identifier = phone ?? email ?? '';
   const isEmail = !phone && !!email;
 
-  const { mutate: setPassword, isPending } = useSetPassword();
+  const { mutate: setPassword, isPending: isSettingPassword } = useSetPassword();
+  const { mutate: login, isPending: isLoggingIn } = useLogin();
+
+  const isPending = isSettingPassword || isLoggingIn;
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -251,10 +250,25 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
     };
 
     setPassword(dto, {
-      onSuccess: async (data) => {
-        console.log(data, "console data set password");
-        // await SecureStore.deleteItemAsync('signupSessionId'); 
-        navigation.navigate('ProfileSetupScreen');
+      onSuccess: async () => {
+        await SecureStore.deleteItemAsync('signupSessionId');
+
+        // Auto-login immediately after password is set
+        login(
+          { identifier, password: data.password },
+          {
+            onSuccess: () => {
+              navigation.replace('ProfileSetupScreen');
+            },
+            onError: () => {
+              showToast({
+                text1: 'Account created!',
+                text2: 'Please sign in to continue.',
+              });
+              navigation.replace('SignInScreen');
+            },
+          },
+        );
       },
       onError: (err: any) => {
         showToast({
@@ -270,7 +284,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.safeArea}>
         <ScrollView
@@ -304,7 +318,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
                 weight='regular'
               >
                 Now create a password for{'\n'}
-                <Text style={{ color: '#1E78F5', fontWeight: '600' }}>
+                <Text style={{ color: '#CEB98F', fontWeight: '600' }}>
                   {identifier}
                 </Text>
               </Text>
@@ -324,7 +338,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
                   setValue('password', v, { shouldValidate: true })
                 }
                 onBlur={() => trigger('password')}
-                placeholder='Min. 8 characters'
+                placeholder='********'
                 errorMessage={errors.password?.message}
                 show={showPassword}
                 onToggle={() => setShowPassword((p) => !p)}
@@ -339,7 +353,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
                   setValue('confirmPassword', v, { shouldValidate: true })
                 }
                 onBlur={() => trigger('confirmPassword')}
-                placeholder='Re-enter your password'
+                placeholder='********'
                 errorMessage={errors.confirmPassword?.message}
                 show={showConfirm}
                 onToggle={() => setShowConfirm((p) => !p)}
@@ -387,17 +401,21 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
               )}
 
               <PrimaryButton
-                title={isPending ? 'Creating account…' : 'Create Account'}
+                title={
+                  isSettingPassword
+                    ? 'Creating account…'
+                    : isLoggingIn
+                    ? 'Signing in…'
+                    : 'Create account'
+                }
                 onPress={handleSubmit(onValid)}
-                colors={['#1E78F5', '#FBB202']}
-                variant='gradient'
                 style={{ alignSelf: 'stretch' }}
                 disabled={isPending}
                 icon={
                   isPending ? (
                     <ActivityIndicator
                       size='small'
-                      color='#ffffff'
+                      color='#0B0B0B'
                     />
                   ) : undefined
                 }
@@ -405,13 +423,12 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
                 textStyle={{
                   fontSize: sf(18),
                   fontWeight: '600',
-                  color: '#ffffff',
                 }}
               />
             </View>
 
             {/* ── Terms ── */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.termsWrap}
               onPress={() => {}}
             >
@@ -427,7 +444,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
                   Terms & Conditions
                 </Text>
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </ScrollView>
       </View>
@@ -438,7 +455,7 @@ const VerificationSuccessScreen = ({ navigation, route }: any) => {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: '#F7F3ED' },
   page: {
     paddingHorizontal: sw(20),
     paddingTop: sh(80),
@@ -478,17 +495,24 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    borderWidth: 1.5,
-    borderColor: '#E5E7EB',
-    borderRadius: sr(12),
-    paddingHorizontal: sw(14),
-    height: sh(56),
     gap: sw(10),
-    marginBottom: sh(0),
+    // backgroundColor: '#FFFFFF',
+    // borderWidth:     1,
+    borderBottomWidth: 1,
+    borderColor: '#B6B9C9',
+    // borderRadius:    sr(12),
+    // paddingHorizontal: sw(14),
+    height: sh(48),
+    // marginBottom:    sh(4),
   },
   inputRowError: { borderColor: '#EF4444' },
-  textInput: { flex: 1, fontSize: sf(15), color: '#111827', padding: 0 },
+  textInput: {
+    flex: 1,
+    fontFamily: 'Poppins-Regular',
+    fontSize: sf(16),
+    color: '#000000',
+    padding: 0,
+  },
   fieldError: {
     fontSize: sf(12),
     color: '#EF4444',
@@ -498,7 +522,13 @@ const styles = StyleSheet.create({
   },
   termsWrap: { marginTop: sh(20) },
   terms: { color: '#9CA3AF', textAlign: 'center' },
-  termsLink: { textDecorationLine: 'underline', color: '#6B7280' },
+  termsLink: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: sf(16),
+    color: '#CEB98F',
+    fontWeight: '500',
+    textDecorationLine: 'underline',
+  },
 });
 
 export default VerificationSuccessScreen;

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 
-import OnboardingCard from './OnboardingCard'; 
+import OnboardingCard from './OnboardingCard';
 
 import Profile1 from '@/assets/images/avatar1.svg';
 import Profile2 from '@/assets/images/avatar2.svg';
@@ -13,37 +13,9 @@ import LocationIcon from '@/assets/images/locationIcon.svg';
 
 import { sf } from '@/utils/sizeMatters';
 import OrbitAvatarAnimation from '@/components/common/OrbitAvatarAnimation';
-import { Text } from '@/components/common/Text';
-import { useLogout } from '@/features/auth/hooks';
-import { showToast } from '@/utils/toast';
 
 const OnboardingScreen1 = ({ navigation }: any) => {
   const { width } = useWindowDimensions();
-  const { mutate: logout, isPending } = useLogout();
-
-  const handleLogout = () => {
-  logout(undefined, {
-    onSuccess: (data) => {
-      console.log(data, "logout data")
-      showToast({ text1: '✅ Logged out successfully' });
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'SignInScreen' }],
-      });
-    },
-    onError: (error: any) => {
-      showToast({ 
-        text1: '❌ Logout failed', 
-        text2: error?.message || 'Please try again' 
-      });
-      // Still navigate to login
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'SignInScreen' }],
-      });
-    },
-  });
-};
 
   // ── Orbit data (UNCHANGED LOGIC) ─────────────────────────────
   const { ORBIT_D, ORBIT_R, AVATARS, PINS } = useMemo(() => {
@@ -71,8 +43,7 @@ const OnboardingScreen1 = ({ navigation }: any) => {
   }, [width]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff', paddingBottom: 20 }}>
-
+    <View style={{ flex: 1, backgroundColor: '#F7F3ED'  }}>
       {/* ── Orbit Animation (REUSABLE COMPONENT) ── */}
       <OrbitAvatarAnimation
         CenterProfile={CenterProfile}
@@ -83,20 +54,12 @@ const OnboardingScreen1 = ({ navigation }: any) => {
 
       {/* ── Bottom Card ── */}
       <OnboardingCard
-        title="Find Your Match"
-        subtitle="Swipe through profiles and connect with people who interest you in real-time."
+        title='Find Your Match'
+        subtitle='Swipe through profiles and connect with people who interest you in real-time.'
         activeDot={0}
-        buttonLabel="Next"
+        buttonLabel='Next'
         onPress={() => navigation.navigate('Onboarding2')}
       />
-       <TouchableOpacity
-        onPress={handleLogout}
-        style={{ marginTop: 20, padding: 15, backgroundColor: '#FF3B30', borderRadius: 10 }}
-      >
-        <Text style={{ color: 'white', textAlign: 'center', fontWeight: '600' }}>
-          {isPending ? 'Logging out...' : 'Sign Out'}
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 };

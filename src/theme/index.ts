@@ -1,7 +1,7 @@
 export const Colors = {
   primary: '#4A90E2',
-  gradientStart: '#1E78F5',
-  gradientEnd: '#FBB202',
+  gradientStart: '#CEB98F',
+  gradientEnd: '#EAD6A9',
   white: '#FFFFFF',
   lightBlue: '#EAF4FF',
   textPrimary: '#1A1A2E',
@@ -11,9 +11,18 @@ export const Colors = {
 };
 
 export const Spacing = {
-  xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48,
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  xxl: 48,
 };
 
 export const FontSize = {
-  sm: 13, md: 16, lg: 20, xl: 26, xxl: 32,
+  sm: 13,
+  md: 16,
+  lg: 20,
+  xl: 26,
+  xxl: 32,
 };

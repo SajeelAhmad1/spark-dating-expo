@@ -52,7 +52,7 @@ export default function SignInTabs({
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row' },
-  tabLabelActive: { color: '#FBB202' },
+  tabLabelActive: { color: '#CEB98F' },
   tabLabelInactive: { color: '#7D858E' },
-  underline: { backgroundColor: '#FBB202' },
+  underline: { backgroundColor: '#CEB98F' },
 });

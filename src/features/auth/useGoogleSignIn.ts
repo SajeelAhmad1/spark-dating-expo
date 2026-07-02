@@ -1,88 +1,51 @@
 // src/features/auth/useGoogleSignIn.ts
 import { useCallback } from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { useGoogleAuth } from './hooks';
+import type { GoogleAuthResponse } from './schema';
 
-// Required on Android — closes the browser tab after redirect
-WebBrowser.maybeCompleteAuthSession();
+GoogleSignin.configure({
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+  offlineAccess: false,
+});
 
-// ── Client IDs (sourced from your config files) ───────────────────────────────
-//
-//  webClientId     → web credentials JSON     → web.client_id
-//  iosClientId     → GoogleService-Info.plist → CLIENT_ID
-//  androidClientId → google-services.json     → installed.client_id
-//
-const GOOGLE_CLIENT_IDS = {
-  webClientId:
-    '144133634463-h1ls3krjhf5dadg5rjvrcmbubqr6psr7.apps.googleusercontent.com',
-  iosClientId:
-    '144133634463-j5snf2goel77aiei2eppt7bkf15qq8rr.apps.googleusercontent.com',
-  androidClientId:
-    '144133634463-5u6ej3rg93g6vpauohunhshph5honfuc.apps.googleusercontent.com',
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
+type OnSuccess = (data: Pick<GoogleAuthResponse, 'next' | 'profile'>) => void;
+type OnError = (message: string) => void;
 
 export function useGoogleSignIn() {
   const { mutate: googleVerify, isPending } = useGoogleAuth();
 
-  const [request, , promptAsync] = Google.useAuthRequest({
-    webClientId: GOOGLE_CLIENT_IDS.webClientId,
-    iosClientId: GOOGLE_CLIENT_IDS.iosClientId,
-    androidClientId: GOOGLE_CLIENT_IDS.androidClientId,
-    responseType: 'id_token',
-    scopes: ['openid', 'profile', 'email'],
-  });
-
   const signIn = useCallback(
-    async (
-      onSuccess: (data: {
-        next: 'complete_profile' | 'home';
-        profile: {
-          email: string | null;
-          displayName: string | null;
-          givenName: string | null;
-          familyName: string | null;
-          picture: string | null;
-        };
-      }) => void,
-      onError: (message: string) => void,
-    ) => {
+    async (onSuccess: OnSuccess, onError: OnError) => {
       try {
-        const result = await promptAsync();
+        await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+        const response = await GoogleSignin.signIn();
 
-        if (result.type === 'cancel' || result.type === 'dismiss') {
-          return; // user closed browser — not an error
-        }
+        if (response.type === 'cancelled') return;
 
-        if (result.type !== 'success') {
-          onError('Google sign-in failed. Please try again.');
-          return;
-        }
-
-        const idToken = result.params?.id_token;
+        const idToken = response.data?.idToken;
         if (!idToken) {
           onError('Google did not return a token. Please try again.');
           return;
         }
 
         googleVerify(idToken, {
-          onSuccess: (data) =>
-            onSuccess({ next: data.next, profile: data.profile }),
+          onSuccess: (data) => onSuccess({ next: data.next, profile: data.profile }),
           onError: (err: any) =>
             onError(err?.message ?? 'Authentication failed. Please try again.'),
         });
       } catch (err: any) {
-        onError(err?.message ?? 'Something went wrong. Please try again.');
+        if (err.code === statusCodes.IN_PROGRESS) return;
+        if (err.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+          onError('Google Play Services not available.');
+        } else {
+          onError(err?.message ?? 'Something went wrong. Please try again.');
+        }
       }
     },
-    [promptAsync, googleVerify],
+    [googleVerify],
   );
 
-  return {
-    signIn,
-    isPending,
-    isReady: !!request,
-  };
+  return { signIn, isPending, isReady: true };
 }

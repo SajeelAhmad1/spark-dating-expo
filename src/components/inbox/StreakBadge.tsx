@@ -22,21 +22,20 @@ export default function StreakBadge({
         borderRadius: sr(22),
         backgroundColor: 'rgba(251,178,2,0.4)',
         borderWidth: 0.6,
-        borderColor: '#DC9B00',
+        borderColor: '#CEB98F',
         gap: 2,
         // paddingTop: 2,
         // paddingBottom: 2,
         paddingLeft: 8,
         paddingRight: 8,
-        height: (20)
+        height: 20,
       }}
     >
-      <Text style={{ fontSize: sf(14), }}>🔥</Text>
+      <Text style={{ fontSize: sf(14) }}>🔥</Text>
 
-      <Text style={{ fontSize: sf(13), color: '#DC9B00', fontWeight: '600' }}>
+      <Text style={{ fontSize: sf(13), color: '#CEB98F', fontWeight: '600' }}>
         {count ? count : '⏳'}
       </Text>
     </View>
   );
 }
-

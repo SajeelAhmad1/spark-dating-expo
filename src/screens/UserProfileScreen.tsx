@@ -1,4 +1,5 @@
-import React, { useMemo, useRef, useState } from 'react';
+// screens/UserProfileScreen.tsx
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   ScrollView,
@@ -9,8 +10,10 @@ import {
   ImageStyle,
   StyleProp,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
+import RefreshControl from '@/components/common/RefreshControl';
 import {
   MoreVertical,
   MapPin,
@@ -21,45 +24,31 @@ import {
   Flag,
   UserRoundX,
   Zap,
+  MessageCircle,
+  Heart,
 } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import DiscoveryMatchCard from '@/components/discovery/DiscoveryMatchCard';
 import DiscoveryActions from '@/components/discovery/DiscoveryActions';
 import { ViewStyle } from 'react-native';
 import { showToast } from '@/utils/toast';
-// 1️⃣ Import ChatMenu
 import ChatMenu, { type ChatMenuItem } from '@/screens/ChatMenu';
+import { getCityFromCoords } from '@/utils/location';
+import { useGetUserById } from '@/features/users/hooks';
+import { mapInterestLabels, mapPublicUserToProfile, type InterestChip } from '@/utils/mapUserProfile';
 
 type UserProfile = {
   id: string;
   name: string;
-  age: number;
+  age: number | null;
   images: string[];
   bio: string;
   bio2: string;
   height: string;
   gender: string;
-  location: string;
+  location: { lat: number; lng: number };
   attributes: string[];
-  interests: string[];
-};
-
-const MOCK_USER: UserProfile = {
-  id: '1',
-  name: 'Emma',
-  age: 25,
-  bio: 'Coffee lover ☕ | Travel enthusiast ✈️',
-  images: [
-    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800',
-    'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800',
-    'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800',
-  ],
-  bio2: "Adventure lover & coffee enthusiast. Always looking for the next trip. Let's explore together! ✈️",
-  height: `5' 10"`,
-  gender: 'Women',
-  location: 'Live in New York City',
-  attributes: ['Native American', 'Toned'],
-  interests: ['✈️ Travel', '🎵 Music', '☕ Coffee', '📷 Photography'],
+  interests: InterestChip[];
 };
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -70,11 +59,20 @@ const BTN_OVERLAP = sf(32);
 
 const UserProfileScreen = ({ navigation, route }: any) => {
   const scrollRef = useRef<ScrollView>(null);
-  const user: UserProfile = useMemo(() => {
-    return route?.params?.user ?? MOCK_USER;
-  }, [route?.params?.user]);
-
-  // 2️⃣ Menu state
+  const userId: string | undefined =
+    route?.params?.userId ?? route?.params?.user?.id ?? route?.params?.peer?.id;
+  const { data: fetchedUser, isLoading } = useGetUserById(userId);
+  const user: UserProfile | null = useMemo(() => {
+    if (fetchedUser) return mapPublicUserToProfile(fetchedUser);
+    if (route?.params?.user?.name) {
+      const raw = route.params.user as UserProfile & { interests?: unknown };
+      return {
+        ...raw,
+        interests: mapInterestLabels(raw.interests) as InterestChip[],
+      };
+    }
+    return null;
+  }, [fetchedUser, route?.params?.user]);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuAnchorPos, setMenuAnchorPos] = useState<{
     x: number;
@@ -83,9 +81,32 @@ const UserProfileScreen = ({ navigation, route }: any) => {
     height: number;
   } | null>(null);
   const menuAnchorRef = useRef<View>(null);
+  const [cityName, setCityName] = useState<string>('');
 
-    const onLikePress = () => {
-    navigation.navigate("MatchScreen");
+  useEffect(() => {
+    if (user?.location?.lat && user?.location?.lng) {
+      getCityFromCoords(user.location.lat, user.location.lng).then(setCityName);
+    }
+  }, [user?.location?.lat, user?.location?.lng]);
+
+  if (isLoading && !user) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F3ED' }}>
+        <ActivityIndicator color="#0B0B0B" />
+      </View>
+    );
+  }
+
+  if (!user) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F3ED' }}>
+        <Text>User not found</Text>
+      </View>
+    );
+  }
+
+  const onLikePress = () => {
+    navigation.navigate('MatchScreen');
   };
 
   const openMenu = () => {
@@ -95,52 +116,34 @@ const UserProfileScreen = ({ navigation, route }: any) => {
     });
   };
 
-  // 3️⃣ Menu items
   const menuItems: ChatMenuItem[] = [
     {
-      key: 'block',
-      label: 'Block',
+      key: 'chat',
+      label: 'Chat',
       icon: (
-        <AlertTriangle
+        <MessageCircle
           size={sf(18)}
-          color='#FBB202'
+          color='#EAD6A9'
           strokeWidth={1.8}
         />
       ),
-      color: '#FBB202',
+      color: '#EAD6A9',
       onPress: () => {
-        showToast({ text1: 'User Blocked', icon: UserRoundX });
+        // showToast({ text1: 'User Chat', icon: MessageCircle });
         navigation?.goBack();
       },
-    },
-    {
-      key: 'report',
-      label: 'Report',
-      icon: (
-        <Flag
-          size={sf(18)}
-          color='#E53935'
-          strokeWidth={1.8}
-        />
-      ),
-      color: '#E53935',
-      onPress: () => {
-        showToast({ text1: 'User Reported', icon: AlertTriangle });
-        navigation?.goBack();
-      },
-    },
+    }, 
   ];
 
   return (
     <View
       style={{
         flex: 1,
-        backgroundColor: '#F8F8F8',
+        backgroundColor: '#F7F3ED',
         paddingTop: sh(40),
         paddingBottom: sh(20),
       }}
     >
-      {/* 4️⃣ Pass ref + openMenu into Header */}
       <Header
         navigation={navigation}
         menuAnchorRef={menuAnchorRef}
@@ -151,6 +154,15 @@ const UserProfileScreen = ({ navigation, route }: any) => {
         ref={scrollRef}
         showsVerticalScrollIndicator={false}
         style={{ flex: 1 }}
+        // refreshControl={
+        //   <RefreshControl
+        //     refreshing={false}
+        //     onRefresh={() => {
+        //       // Add any refresh logic here if needed
+        //       // For static profile data, this is just for UI consistency
+        //     }}
+        //   />
+        // }
       >
         {/* ── Hero Card ── */}
         <View
@@ -161,7 +173,7 @@ const UserProfileScreen = ({ navigation, route }: any) => {
             marginTop: sh(12),
           }}
         >
-          <View
+          {/* <View
             style={{
               position: 'absolute',
               top: sh(20),
@@ -192,27 +204,54 @@ const UserProfileScreen = ({ navigation, route }: any) => {
                 🔥 101
               </Text>
             </View>
-          </View>
+          </View> */}
           <DiscoveryMatchCard
-            item={{ ...user, image: user.images[0], images: user.images, bio: user.bio }}
+            item={{
+              ...user,
+              image: user.images[0],
+              images: user.images,
+              bio: user.bio,
+              interests: user.interests,
+            }}
             cardWidth={CARD_WIDTH}
             cardHeight={CARD_HEIGHT}
             btnOverlap={BTN_OVERLAP}
             photoTotal={user.images.length}
             photoIndex={0}
             showProgressDots={false}
-            rightChatOnPress={() => navigation?.navigate('ChatScreen', { user })}
+            rightChatOnPress={() =>
+              navigation?.navigate('ChatScreen', { user })
+            }
           />
+          <View style={{ marginTop: sh(-28) }}>
           <DiscoveryActions
-            onLikePress={onLikePress}
-              onStarPress={() =>
-                        showToast({ text1: 'Starred', text2: `${user.name} added to starred users`, icon: Zap })
-                      }
-            onCrossPress={() => {}}
-          />
+            // onLikePress={onLikePress}
+            onLikePress={() => {
+              showToast({
+                text1: 'Liked',
+                text2: `You've already liked this profile`,
+                icon: Heart,
+              })
+            }}
+            onStarPress={() =>
+              showToast({
+                text1: 'Starred',
+                text2: `${user.name} added to starred users`,
+                icon: Zap,
+              })
+            }
+              onCrossPress={() => {
+                showToast({
+                  text1: 'Disliked',
+                  text2: `${user.name} is removed from your matches`,
+                  icon: UserRoundX,
+                })
+              }}
+            />
+          </View>
         </View>
 
-        <Card style={{gap: 10}}>
+        <Card style={{ gap: 10, marginTop: sh(0) }}>
           <InfoRow
             icon={<Ruler size={sf(16)} />}
             text={user.height}
@@ -223,7 +262,7 @@ const UserProfileScreen = ({ navigation, route }: any) => {
           />
           <InfoRow
             icon={<MapPin size={sf(16)} />}
-            text={user.location}
+            text={cityName || '—'}
           />
         </Card>
 
@@ -234,9 +273,9 @@ const UserProfileScreen = ({ navigation, route }: any) => {
           />
         ))}
 
-        <Section title='Bio'>
+       {user.bio2 && <Section title='Bio'>
           <Text style={styles.description}>{user.bio2}</Text>
-        </Section>
+        </Section>}
 
         {user.images.slice(2, 3).map((img, i) => (
           <ImageCard
@@ -273,16 +312,17 @@ const UserProfileScreen = ({ navigation, route }: any) => {
         {!!user.interests?.length && (
           <Section
             title='Interests'
-            style={{ minHeight: 152 }}
+            style={{ minHeight: 152, paddingVertical: sh(12) }}
           >
             <Wrap style={{ marginTop: sh(2) }}>
               {user.interests.map((interest, i) => (
                 <Chip
                   key={i}
-                  label={interest}
+                  label={interest.name}
+                  icon={interest.icon}
                   filled
-                  style={{ backgroundColor: '#FBB202' }}
-                  textStyle={{  lineHeight: sh(36) }}
+                  style={{ backgroundColor: '#EAD6A9' }}
+                  textStyle={{ lineHeight: sh(36) }}
                 />
               ))}
             </Wrap>
@@ -296,7 +336,6 @@ const UserProfileScreen = ({ navigation, route }: any) => {
         />
       </ScrollView>
 
-      {/* 5️⃣ Render ChatMenu at root level */}
       <ChatMenu
         visible={menuVisible}
         onClose={() => setMenuVisible(false)}
@@ -313,7 +352,6 @@ export default UserProfileScreen;
 // 🔹 Sub Components
 // ─────────────────────────────────────────────
 
-// 6️⃣ Header now accepts menuAnchorRef + onMenuPress
 const Header = ({
   navigation,
   menuAnchorRef,
@@ -368,7 +406,8 @@ const Card = ({
         backgroundColor: '#fff',
         borderRadius: sr(12),
         paddingHorizontal: sw(16),
-        minHeight: 136,
+        // minHeight: 136,
+        paddingVertical: sh(12),
         justifyContent: 'center',
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 0 },
@@ -399,9 +438,7 @@ const Section = ({
 );
 
 const InfoRow = ({ icon, text }: any) => (
-  <View
-    style={{ flexDirection: 'row', alignItems: 'center',  }}
-  >
+  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
     {icon}
     <Text style={styles.infoText}>{text}</Text>
   </View>
@@ -431,11 +468,13 @@ const ImageCard = ({
 
 const Chip = ({
   label,
+  icon = null,
   filled = false,
   style,
   textStyle,
 }: {
   label: string;
+  icon?: string | null;
   filled?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -443,17 +482,27 @@ const Chip = ({
   <View
     style={[
       {
-        backgroundColor: filled ? '#FBB202' : '#F1F1F1',
+        backgroundColor: filled ? '#EAD6A9' : '#F1F1F1',
         paddingHorizontal: sw(12),
         borderRadius: sr(32),
-        height: 36, 
+        height: 36,
         justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
         gap: sw(4),
       },
       style,
     ]}
   >
-    <Text style={[{ color: filled ? '#000' : '#333', justifyContent: 'center', alignItems: 'center',  }, textStyle]}>
+    {!!icon && typeof icon === 'string' && (
+      <Text style={{ fontSize: sf(13), lineHeight: sf(18) }}>{icon}</Text>
+    )}
+    <Text
+      style={[
+        { color: filled ? '#000' : '#333' },
+        textStyle,
+      ]}
+    >
       {label}
     </Text>
   </View>
@@ -473,17 +522,17 @@ const Wrap = ({
 
 const Footer = ({ onBackToTop }: { onBackToTop: () => void }) => (
   <View style={{ alignItems: 'center', marginVertical: sh(30) }}>
-    <TouchableOpacity
+    {/* <TouchableOpacity
       onPress={() => showToast({ text1: 'User Blocked', icon: UserRoundX })}
     >
       <Text style={styles.footerText}>Block</Text>
-    </TouchableOpacity>
+    </TouchableOpacity> */}
     <View
       style={{
         height: 1,
         backgroundColor: '#7D858E',
         width: '100%',
-        marginVertical: sh(8),
+        marginVertical: sh(12),
       }}
     />
     <TouchableOpacity onPress={onBackToTop}>

@@ -42,7 +42,6 @@ export const useEditProfile = () => {
     mutationFn: (payload: EditProfileDto) =>
       profileApi.editProfile(payload),
     onSuccess: async (data) => {
-      // Keep SecureStore user in sync after profile edit
       if (data.user) {
         await tokenStore.setUser(data.user);
         queryClient.setQueryData(queryKeys.user.me(), { user: data.user });
@@ -51,6 +50,18 @@ export const useEditProfile = () => {
     },
     onError: (err) => {
       console.error('[useEditProfile] failed:', err);
+    },
+  });
+};
+
+export const useDeleteAccount = () => {
+  return useMutation({
+    mutationFn: () => profileApi.deleteAccount(),
+    onSuccess: async () => {
+      await tokenStore.clearAll();
+      queryClient.clear();
+      const { useAuthStore } = await import('@/store/authStore');
+      useAuthStore.getState().signOut();
     },
   });
 };

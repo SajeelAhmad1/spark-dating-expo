@@ -26,17 +26,8 @@ export function createEditProfileSchema() {
     gender: z.string().refine(v => (Object.values(GENDER) as string[]).includes(v), {
       message: ERR.profile.genderInvalid,
     }),
-    height: z
-      .string()
-      .refine(v => Object.values(HEIGHTS).includes(v), { message: ERR.profile.heightInvalid }),
-    bodyType: z
-      .string()
-      .refine(v => Object.values(BODY_TYPES).includes(v), { message: ERR.profile.bodyTypeInvalid }),
-    ethnicity: z
-      .string()
-      .refine(v => Object.values(ETHNICITIES).includes(v), {
-        message: ERR.profile.ethnicityInvalid,
-      }),
+    height: z.string().optional(),
+    ethnicity: z.string().optional(),
     birthday: z.coerce.date().superRefine((d, ctx) => {
       if (Number.isNaN(d.getTime())) {
         ctx.addIssue({ code: 'custom', message: ERR.profile.birthdayInvalid });

@@ -9,16 +9,16 @@ export default function MatchTitle() {
   return (
     <View style={styles.row}>
       <Text
-        style={[styles.titleDark, { fontSize: sf(44), }]}
-        weight="bold"
+        style={[styles.titleDark, { fontSize: sf(44) }]}
+        weight='bold'
       >
         {"It's a"}
       </Text>
 
       <View style={styles.circle}>
         <Text
-          style={[styles.titleLight, { fontSize: sf(44), }]}
-          weight="bold"
+          style={[styles.titleLight, { fontSize: sf(44) }]}
+          weight='bold'
         >
           {'match!'}
         </Text>
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     width: MATCH_CIRCLE_SIZE,
     height: MATCH_CIRCLE_SIZE,
     borderRadius: MATCH_CIRCLE_SIZE / 2,
-    backgroundColor: '#1E78F5',
+    backgroundColor: '#CEB98F',
     alignItems: 'center',
     justifyContent: 'center',
   },

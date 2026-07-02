@@ -1,5 +1,5 @@
 // screens/ChatMenu.tsx
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -8,10 +8,10 @@ import {
   Animated,
   StyleSheet,
   Dimensions,
-} from "react-native";
-import { Text } from "@/components/common/Text";
-import { UserCircle, AlertTriangle } from "lucide-react-native";
-import { sf, sw, sh } from "@/utils/sizeMatters";
+} from 'react-native';
+import { Text } from '@/components/common/Text';
+import { UserCircle, AlertTriangle } from 'lucide-react-native';
+import { sf, sw, sh } from '@/utils/sizeMatters';
 
 export type ChatMenuItem = {
   key: string;
@@ -24,23 +24,43 @@ export type ChatMenuItem = {
 type ChatMenuProps = {
   visible: boolean;
   onClose: () => void;
-  anchorPosition: { x: number; y: number; width: number; height: number } | null;
+  anchorPosition: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null;
   items?: ChatMenuItem[];
 };
 
-const DEFAULT_ITEMS = (onViewProfile: () => void, onBlock: () => void): ChatMenuItem[] => [
+const DEFAULT_ITEMS = (
+  onViewProfile: () => void,
+  onBlock: () => void,
+): ChatMenuItem[] => [
   {
-    key: "view_profile",
-    label: "View Profile",
-    icon: <UserCircle size={sf(18)} color="#1C1C1E" strokeWidth={1.8} />,
-    color: "#1C1C1E",
+    key: 'view_profile',
+    label: 'View Profile',
+    icon: (
+      <UserCircle
+        size={sf(18)}
+        color='#1C1C1E'
+        strokeWidth={1.8}
+      />
+    ),
+    color: '#1C1C1E',
     onPress: onViewProfile,
   },
   {
-    key: "block",
-    label: "Block",
-    icon: <AlertTriangle size={sf(18)} color="#FBB202" strokeWidth={1.8} />,
-    color: "#FBB202",
+    key: 'block',
+    label: 'Block',
+    icon: (
+      <AlertTriangle
+        size={sf(18)}
+        color='#EAD6A9'
+        strokeWidth={1.8}
+      />
+    ),
+    color: '#EAD6A9',
     onPress: onBlock,
   },
 ];
@@ -57,10 +77,16 @@ export default function ChatMenu({
   // Track which item is currently pressed
   const [pressedKey, setPressedKey] = useState<string | null>(null);
 
-  const menuItems: ChatMenuItem[] = items ?? DEFAULT_ITEMS(
-    () => { onClose(); },
-    () => { onClose(); }
-  );
+  const menuItems: ChatMenuItem[] =
+    items ??
+    DEFAULT_ITEMS(
+      () => {
+        onClose();
+      },
+      () => {
+        onClose();
+      },
+    );
 
   useEffect(() => {
     if (visible) {
@@ -99,13 +125,13 @@ export default function ChatMenu({
 
   const MENU_WIDTH = sw(180);
   const menuTop = anchorPosition.y + anchorPosition.height + sh(50);
-  const screenWidth = Dimensions.get("window").width;
+  const screenWidth = Dimensions.get('window').width;
 
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="none"
+      animationType='none'
       statusBarTranslucent
       onRequestClose={onClose}
     >
@@ -148,10 +174,13 @@ export default function ChatMenu({
                     >
                       {item.icon && (
                         <View style={styles.iconWrapper}>
-                          {/* Swap icon color to #1E78F5 when pressed */}
+                          {/* Swap icon color to #CEB98F when pressed */}
                           {isPressed
                             ? React.isValidElement(item.icon)
-                              ? React.cloneElement(item.icon as React.ReactElement<any>, { color: "#1E78F5" })
+                              ? React.cloneElement(
+                                  item.icon as React.ReactElement<any>,
+                                  { color: '#CEB98F' },
+                                )
                               : item.icon
                             : item.icon}
                         </View>
@@ -159,12 +188,16 @@ export default function ChatMenu({
                       <Text
                         style={[
                           styles.menuLabel,
-                          { color: isPressed ? "#1E78F5" : (item.color ?? "#1C1C1E") },
+                          {
+                            color: isPressed
+                              ? '#CEB98F'
+                              : (item.color ?? '#1C1C1E'),
+                          },
                         ]}
                       >
                         {item.label}
                       </Text>
-                    </TouchableOpacity> 
+                    </TouchableOpacity>
                   </React.Fragment>
                 );
               })}
@@ -178,29 +211,29 @@ export default function ChatMenu({
 
 const styles = StyleSheet.create({
   menuContainer: {
-    position: "absolute",
-    backgroundColor: "#FFFFFF",
+    position: 'absolute',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     paddingVertical: sh(8),
-    shadowColor: "#000000",
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
     shadowRadius: 20,
     elevation: 10,
-    transformOrigin: "top right",
-    overflow: "hidden",
+    transformOrigin: 'top right',
+    overflow: 'hidden',
   },
   menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: sw(16),
     paddingVertical: sh(12),
     gap: sw(10),
     minHeight: sh(44),
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   menuItemPressed: {
-    backgroundColor: "rgba(30, 120, 245, 0.15)",
+    backgroundColor: 'rgba(30, 120, 245, 0.15)',
   },
   menuItemFirst: {
     borderTopLeftRadius: 14,
@@ -212,16 +245,16 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     width: sf(20),
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  menuLabel: { 
-    fontWeight: "400",
+  menuLabel: {
+    fontWeight: '400',
     fontSize: sf(16),
   },
   divider: {
     height: 0.5,
-    backgroundColor: "#E5E7EB",
+    backgroundColor: '#E5E7EB',
     marginHorizontal: sw(16),
   },
 });

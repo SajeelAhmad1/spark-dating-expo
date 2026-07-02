@@ -11,7 +11,11 @@ import { useGoogleSignIn } from '@/features/auth/useGoogleSignIn';
 import { showToast } from '@/utils/toast';
 
 export default function SignUpScreen({ navigation }: any) {
-  const { signIn: googleSignIn, isPending: isGooglePending, isReady } = useGoogleSignIn();
+  const {
+    signIn: googleSignIn,
+    isPending: isGooglePending,
+    isReady,
+  } = useGoogleSignIn();
 
   const handleGoogleSignIn = () => {
     googleSignIn(
@@ -22,8 +26,8 @@ export default function SignUpScreen({ navigation }: any) {
         if (data.next === 'complete_profile') {
           navigation.navigate('ProfileSetupScreen', {
             prefill: {
-              firstName: data.profile.givenName  ?? '',
-              lastName:  data.profile.familyName ?? '',
+              firstName: data.profile.givenName ?? '',
+              lastName: data.profile.familyName ?? '',
             },
           });
         } else {
@@ -37,14 +41,9 @@ export default function SignUpScreen({ navigation }: any) {
   };
 
   return (
-    <View style={{ flex: 1, paddingBottom: sh(20) }}>
-      <LinearGradient
-        colors={['#1E78F5', '#FBB202']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-      />
-
+    <View
+      style={{ flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) }}
+    >
       <View style={{ flex: 1 }}>
         <View
           style={{
@@ -60,7 +59,7 @@ export default function SignUpScreen({ navigation }: any) {
               fontSize: sf(32),
               marginBottom: sh(32),
               fontWeight: '600',
-              color: '#ffffff',
+              color: '#0B0B0B',
               textAlign: 'center',
             }}
           >
@@ -77,18 +76,21 @@ export default function SignUpScreen({ navigation }: any) {
                 shadowOpacity: 0,
               }}
             >
-              <Logo width={sf(88)} height={sf(88)} />
+              <Logo
+                width={sf(88)}
+                height={sf(88)}
+              />
             </View>
 
             <Text
               style={{
                 fontSize: sf(24),
                 fontWeight: '600',
-                color: '#ffffff',
+                color: '#0B0B0B',
                 textAlign: 'center',
               }}
             >
-              Match. Snap. Keep the{'\n'}Spark Alive.
+              Keep the Spark alive.
             </Text>
           </View>
 
@@ -98,63 +100,97 @@ export default function SignUpScreen({ navigation }: any) {
                 fontSize: sf(16),
                 marginBottom: sh(16),
                 fontWeight: '500',
-                color: '#ffffff',
+                color: '#7D858E',
                 textAlign: 'center',
               }}
             >
-              By tapping "Sign In" you agree to our{' '}
-              <Text style={{ color: '#1E78F5' }}>Terms</Text>. Learn how we
+              By continuing "Sign In" you agree to our{' '}
+              <Text style={{ color: '#CEB98F' }}>Terms</Text>. Learn how we
               process your data in our{' '}
-              <Text style={{ color: '#1E78F5' }}>Privacy Policy</Text> and{' '}
-              <Text style={{ color: '#1E78F5' }}>Cookies Policy</Text>
+              <Text style={{ color: '#CEB98F' }}>Privacy Policy</Text> and{' '}
+              <Text style={{ color: '#CEB98F' }}>Cookies Policy</Text>
             </Text>
 
             <PrimaryButton
-              title="Continue with Email"
+              title='Continue with email'
               onPress={() => navigation.navigate('EmailInputScreen')}
-              colors={['#ffffff']}
-              iconBackground="#EDEDED"
-              variant="outline"
-              icon={<Mail width={sf(28)} height={sf(28)} color="#1E78F5" />}
-              iconPosition="start"
-              style={{ backgroundColor: 'white' }}
-              textStyle={{ fontSize: sf(16), fontWeight: '500', color: '#1E78F5' }}
+              iconBackground='#0B0B0B'
+              variant='solid'
+              icon={
+                <Mail
+                  width={sf(28)}
+                  height={sf(28)}
+                  color='#CEB98F'
+                />
+              }
+              iconPosition='start'
+              // style={{ backgroundColor: 'white' }}
+              textStyle={{
+                fontSize: sf(16),
+                fontWeight: '500', 
+              }}
             />
 
             <PrimaryButton
-              title="Continue with mobile"
+              title='Continue with mobile'
               onPress={() => navigation.navigate('NumberInputScreen')}
-              colors={['#1E78F5', '#1E78F5']}
-              iconBackground="#ffffff"
-              variant="solid"
-              icon={<Phone width={sf(28)} height={sf(28)} color="#1E78F5" />}
-              iconPosition="start"
-              textStyle={{ fontSize: sf(16), fontWeight: '500' }}
+              colors={['#EAD6A9']}
+              iconBackground='#0B0B0B'
+              variant='solid' 
+              icon={
+                <Phone
+                  width={24}
+                  height={24}
+                  color='#CEB98F'
+                />
+              }
+              iconPosition='start'
+              textStyle={{
+                fontSize: sf(16),
+                fontWeight: '500',
+                color: '#0B0B0B',
+              }}
             />
 
             {/* ── Google sign-in ───────────────────────────────────────────── */}
             <PrimaryButton
-              title={isGooglePending ? 'Signing in…' : 'Continue with Google'}
+              title={isGooglePending ? 'Signing in…' : 'Continue with google'}
               onPress={handleGoogleSignIn}
               disabled={isGooglePending || !isReady}
-              colors={['#ffffff']}
-              iconBackground="#EDEDED"
-              variant="outline"
-              icon={<GoogleIcon width={sf(28)} height={sf(28)} />}
-              iconPosition="start"
+              iconBackground='#EDEDED'
+              variant='outline'
+              icon={
+                <GoogleIcon
+                  width={sf(28)}
+                  height={sf(28)}
+                />
+              }
+              iconPosition='start'
               style={{
-                backgroundColor: 'white',
+                // backgroundColor: 'white',
                 opacity: isGooglePending || !isReady ? 0.6 : 1,
+                borderWidth: 1,
+                borderColor: '#555555',
               }}
-              textStyle={{ fontSize: sf(16), fontWeight: '500', color: '#1E78F5' }}
+              textStyle={{
+                fontSize: sf(16),
+                fontWeight: '500',
+                color: '#0B0B0B',
+              }}
             />
 
             <View style={{ marginTop: sh(8), alignItems: 'center' }}>
-              <Text style={{ fontSize: sf(16), color: '#ffffff', fontWeight: '400' }}>
+              <Text
+                style={{
+                  fontSize: sf(16),
+                  color: '#0B0B0B',
+                  fontWeight: '400',
+                }}
+              >
                 Already have an account?{' '}
                 <Text
                   style={{
-                    color: '#1E78F5',
+                    color: '#CEB98F',
                     fontWeight: '500',
                     textDecorationLine: 'underline',
                   }}

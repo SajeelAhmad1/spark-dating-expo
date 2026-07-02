@@ -39,7 +39,7 @@ export default function EmailInputScreen({ navigation }: any) {
       { email: dto.email },
       {
         onSuccess: async (data: SignupStartResponse) => {
-          console.log(data, "signup email data")
+          console.log(data, 'signup email data');
           await SecureStore.setItemAsync(
             'signupSessionId',
             data.signupSessionId,
@@ -63,19 +63,8 @@ export default function EmailInputScreen({ navigation }: any) {
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
     >
-      <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
-        <LinearGradient
-          colors={['#EBF3FE', '#ffffff']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: sh(220),
-          }}
-        />
+      <View style={{ flex: 1, backgroundColor: '#F7F3ED' }}>
+       
 
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, paddingBottom: sh(40) }}
@@ -125,27 +114,9 @@ export default function EmailInputScreen({ navigation }: any) {
 
             {/* Email field */}
             <View style={{ marginBottom: sh(16) }}>
-              <Text style={[styles.label]}>Email Address</Text>
-              <View
-                style={[
-                  styles.inputStyle,
-                  {
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    backgroundColor: '#F9FAFB',
-                    borderWidth: 1.5,
-                    borderColor: errors.email ? '#EF4444' : '#E5E7EB',
-                    borderRadius: sf(12),
-                    paddingHorizontal: sw(14),
-                    height: sh(56),
-                    gap: sw(10),
-                  },
-                ]}
-              >
-                <Mail
-                  size={sf(18)}
-                  color='#9CA3AF'
-                />
+              <Text  style={[styles.label, { fontSize: sf(18),  }]}
+                      weight="semibold">Email Address</Text>
+              <View style={styles.fieldRow} > 
                 <TextInput
                   value={email}
                   onChangeText={(v) =>
@@ -157,9 +128,7 @@ export default function EmailInputScreen({ navigation }: any) {
                   keyboardType='email-address'
                   autoCapitalize='none'
                   autoCorrect={false}
-                  style={[
-                    { flex: 1, fontSize: sf(15), color: '#111827', padding: 0 },
-                  ]}
+                 style={[styles.input, { fontSize: sf(14), paddingVertical: sh(8) }]}
                 />
               </View>
               {errors.email && (
@@ -178,14 +147,11 @@ export default function EmailInputScreen({ navigation }: any) {
 
             {/* CTA */}
             <PrimaryButton
-              title={isSendingCode ? 'Sending...' : 'Continue with Email'}
-              onPress={handleSubmit(onValid)}
-              colors={['#1E78F5', '#FBB202']}
-              variant='gradient'
+              title={isSendingCode ? 'Sending...' : 'Continue with email'}
+              onPress={handleSubmit(onValid)}  
               textStyle={{
                 fontSize: sf(16),
-                fontWeight: '600',
-                color: '#ffffff',
+                fontWeight: '600', 
               }}
               disabled={isSendingCode}
             />
@@ -194,7 +160,7 @@ export default function EmailInputScreen({ navigation }: any) {
               <Text style={{ fontSize: sf(14), color: '#6B7280' }}>
                 Already have an account?{' '}
                 <Text
-                  style={{ color: '#1E78F5', fontWeight: '600' }}
+                  style={{ color: '#CEB98F', fontWeight: '600' }}
                   onPress={() => navigation.navigate('SignInScreen')}
                 >
                   Sign In
@@ -210,19 +176,15 @@ export default function EmailInputScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
-  inputStyle: {
-    borderWidth: 1,
-    borderColor: '#B6B9C9',
-    borderRadius: sr(15),
-    height: sh(56),
-    paddingHorizontal: sw(10),
-    fontSize: sf(15),
-    color: '#000000',
+   label: { color: "#000000" },
+  fieldRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#B6B9C9",
   },
-  label: {
-    color: '#000000',
-    fontSize: sf(15),
-    fontWeight: '600',
-    marginBottom: sh(6),
+  input: {
+    flex: 1,
+    color: "#7D858E",
   },
 });

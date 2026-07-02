@@ -23,71 +23,12 @@ import {
 } from '@/store/signupStore';
 import { useCompleteProfile } from '@/features/profile/hooks';
 import { showToast } from '@/utils/toast';
+import { uploadToCloudinary, deleteFromCloudinary } from '@/utils/cloudinary';
 
-// ─── Cloudinary config ────────────────────────────────────────────────────────
-const CLOUDINARY_CLOUD_NAME = 'du9dfydj4';
-const CLOUDINARY_UPLOAD_PRESET = 'spark_expo_dating'; // unsigned preset
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-const getMimeType = (ext: string): string => {
-  switch (ext.toLowerCase()) {
-    case 'png':
-      return 'image/png';
-    case 'webp':
-      return 'image/webp';
-    case 'gif':
-      return 'image/gif';
-    case 'heic':
-      return 'image/heic';
-    case 'heif':
-      return 'image/heif';
-    default:
-      return 'image/jpeg';
-  }
-};
-
-/**
- * Upload image to Cloudinary with debug logs
- */
-const uploadToCloudinary = async (localUri: string): Promise<string> => {
-  const filename = localUri.split('/').pop() ?? 'photo.jpg';
-  const ext = filename.split('.').pop() ?? 'jpg';
-  const mimeType = getMimeType(ext);
-
-  const body = new FormData();
-  body.append('file', { uri: localUri, name: filename, type: mimeType } as any);
-  body.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-
-  console.log('[Cloudinary] Uploading:', filename, 'as', mimeType);
-
-  try {
-    const res = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-      { method: 'POST', body },
-    );
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      console.error('[Cloudinary Error]', JSON.stringify(err));
-      throw new Error(
-        (err as any)?.error?.message ?? `Upload failed (HTTP ${res.status})`,
-      );
-    }
-
-    const data = await res.json();
-    console.log('[Cloudinary] Upload success:', data.secure_url);
-    return data.secure_url as string;
-  } catch (error: any) {
-    console.error('[Cloudinary Exception]', error);
-    throw new Error(error?.message ?? 'Upload failed unexpectedly');
-  }
-};
-
-// ─── Screen ───────────────────────────────────────────────────────────────────
 const UploadPhotosScreen = ({ navigation }: any) => {
   const { mutate: completeProfile, isPending: isCompleting } =
     useCompleteProfile();
-    const resetStore = useSignupStore((state) => state.reset);
+  const resetStore = useSignupStore((state) => state.reset);
   const { width } = useWindowDimensions();
   const { hPad, gap, slotWidth, slotHeight } = useMemo(() => {
     const hp = sw(24);
@@ -103,21 +44,23 @@ const UploadPhotosScreen = ({ navigation }: any) => {
 
   const [photosError, setPhotosError] = React.useState<string | undefined>();
 
-  // ── Pick & Upload ────────────────────────────────────────────────────────────
+  // ── Pick & Upload ─────────────────────────────────────────────────────────
   const handlePickedUri = async (index: number, uri: string) => {
-    console.log('Uploading to Cloudinary start:', uri);
     setPhoto(index, {
       uri,
       cloudinaryUrl: '',
+      publicId: '',
       isUploading: true,
       uploadError: null,
     });
     setPhotosError(undefined);
-
     try {
-      console.log('Uploading to Cloudinary before:', uri);
-      const cloudinaryUrl = await uploadToCloudinary(uri);
-      patchPhoto(index, { cloudinaryUrl, isUploading: false });
+      const { secure_url, public_id } = await uploadToCloudinary(uri);
+      patchPhoto(index, {
+        cloudinaryUrl: secure_url,
+        publicId: public_id,
+        isUploading: false,
+      });
     } catch (err: any) {
       patchPhoto(index, {
         isUploading: false,
@@ -140,9 +83,8 @@ const UploadPhotosScreen = ({ navigation }: any) => {
       quality: 0.8,
       allowsMultipleSelection: false,
     });
-    if (!result.canceled && result.assets?.[0]?.uri) {
+    if (!result.canceled && result.assets?.[0]?.uri)
       await handlePickedUri(index, result.assets[0].uri);
-    }
   };
 
   const takePhoto = async (index: number) => {
@@ -155,9 +97,8 @@ const UploadPhotosScreen = ({ navigation }: any) => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.8,
     });
-    if (!result.canceled && result.assets?.[0]?.uri) {
+    if (!result.canceled && result.assets?.[0]?.uri)
       await handlePickedUri(index, result.assets[0].uri);
-    }
   };
 
   const openPhotoSource = (index: number) => {
@@ -173,8 +114,12 @@ const UploadPhotosScreen = ({ navigation }: any) => {
     if (!slot) return;
     patchPhoto(index, { isUploading: true, uploadError: null });
     try {
-      const cloudinaryUrl = await uploadToCloudinary(slot.uri);
-      patchPhoto(index, { cloudinaryUrl, isUploading: false });
+      const { secure_url, public_id } = await uploadToCloudinary(slot.uri);
+      patchPhoto(index, {
+        cloudinaryUrl: secure_url,
+        publicId: public_id,
+        isUploading: false,
+      });
     } catch (err: any) {
       patchPhoto(index, {
         isUploading: false,
@@ -183,18 +128,22 @@ const UploadPhotosScreen = ({ navigation }: any) => {
     }
   };
 
-  const removePhoto = (index: number) => {
+  const removePhoto = async (index: number) => {
+    const slot = photos[index];
+    // Delete from Cloudinary if already uploaded
+    if (slot?.publicId) {
+      deleteFromCloudinary(slot.publicId).catch(() => {});
+    }
     setPhoto(index, null);
     setPhotosError(undefined);
   };
 
-  // ── Complete Profile ──────────────────────────────────────────────────────────
+  // ── Complete Profile ──────────────────────────────────────────────────────
   const handleCompleteProfile = () => {
     if (isAnyUploading) {
       setPhotosError('Please wait for all photos to finish uploading.');
       return;
     }
-
     const hasUploadErrors = photos.some(
       (p) => p !== null && p.uploadError && !p.cloudinaryUrl,
     );
@@ -202,32 +151,26 @@ const UploadPhotosScreen = ({ navigation }: any) => {
       setPhotosError('Some photos failed to upload. Tap to retry.');
       return;
     }
-
     const filledCount = photos.filter((p) => p?.cloudinaryUrl).length;
     const parsed = uploadPhotosFilledSchema.safeParse({ filledCount });
     if (!parsed.success) {
       setPhotosError(parsed.error.issues[0]?.message);
       return;
     }
-// navigation.navigate('InviteScreen');
     const payload = getPayload();
     setPhotosError(undefined);
-    console.log(payload, 'console payload profile');
-    // ✅ Call API
     completeProfile(payload, {
-      onSuccess: (data) => {
-        console.log(data, 'console data profile');
+      onSuccess: () => {
         showToast({ text1: 'Profile completed successfully' });
         resetStore();
-        navigation.navigate('InviteScreen'); // next onboarding step
+        navigation.navigate('InviteScreen');
       },
-      onError: (err: any) => {
-        showToast({ text1: 'Failed to complete profile', text2: err.message });
-      },
+      onError: (err: any) =>
+        showToast({ text1: 'Failed to complete profile', text2: err.message }),
     });
   };
 
-  // ── Slot renderer ─────────────────────────────────────────────────────────────
+  // ── Slot renderer ─────────────────────────────────────────────────────────
   const renderSlot = (index: number) => {
     const slot = photos[index];
     const filled = slot !== null;
@@ -262,7 +205,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
                   justifyContent: 'center',
                 }}
               >
-                <ActivityIndicator color='#fff' />
+                <ActivityIndicator color='#0B0B0B' />
               </View>
             )}
             {slot!.uploadError && !slot!.isUploading && (
@@ -329,7 +272,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
                 width: sw(24),
                 height: sw(24),
                 borderRadius: sr(12),
-                backgroundColor: '#1E78F5',
+                backgroundColor: '#CEB98F',
                 alignItems: 'center',
                 justifyContent: 'center',
                 zIndex: 10,
@@ -337,7 +280,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
             >
               <X
                 size={sf(12)}
-                color='#fff'
+                color='#0B0B0B'
                 strokeWidth={3}
               />
             </TouchableOpacity>
@@ -361,22 +304,22 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           >
             <View
               style={{
-                width: sw(17.5),
-                height: sw(17.5),
+                width: sw(20),
+                height: sw(20),
                 borderRadius: sr(16),
-                backgroundColor: '#FBB202',
+                backgroundColor: '#EAD6A9',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
               <Plus
                 size={sf(8.33)}
-                color='#fff'
+                color='#0B0B0B'
                 strokeWidth={2.5}
               />
             </View>
             <Text
-              style={{ fontSize: sf(14), color: '#FBB202', fontWeight: '500' }}
+              style={{ fontSize: sf(14), color: '#EAD6A9', fontWeight: '500' }}
             >
               Add
             </Text>
@@ -387,7 +330,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+    <View style={{ flex: 1, backgroundColor: '#F7F3ED' }}>
       <View
         style={{
           flex: 1,
@@ -411,7 +354,7 @@ const UploadPhotosScreen = ({ navigation }: any) => {
           <Text
             style={{ fontSize: sf(15), fontWeight: '400', color: '#7D858E' }}
           >
-            Add photos to start connecting (required before messaging).
+            Add photos to start connecting (required before messaging)
           </Text>
         </View>
         <View style={{ marginTop: sh(28) }}>
@@ -429,16 +372,19 @@ const UploadPhotosScreen = ({ navigation }: any) => {
       <View
         style={{
           paddingHorizontal: hPad,
-          paddingBottom: sh(20),
-          backgroundColor: '#fff',
+          paddingBottom: sh(20), 
         }}
       >
         <PrimaryButton
           title='Complete Profile!'
           onPress={handleCompleteProfile}
           disabled={isAnyUploading || isCompleting}
-          colors={['#1E78F5', '#FBB202']}
-          variant='gradient'
+          icon={
+            isAnyUploading || isCompleting ? (
+              <ActivityIndicator color='#0B0B0B' />
+            ) : null
+          }
+          iconPosition='middle'
           style={{
             alignSelf: 'stretch',
             opacity: isAnyUploading || isCompleting ? 0.6 : 1,

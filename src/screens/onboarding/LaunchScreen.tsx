@@ -14,7 +14,7 @@ import Message from '@/assets/images/message.svg';
 const FEATURES = [
   {
     id: 'matches',
-    label: 'Like Matches',
+    label: 'Find matches',
     icon: (
       <Like
         width={sf(24)}
@@ -24,7 +24,7 @@ const FEATURES = [
   },
   {
     id: 'snaps',
-    label: 'Send Snaps',
+    label: 'Send moments',
     icon: (
       <Camera
         width={sf(24)}
@@ -34,7 +34,7 @@ const FEATURES = [
   },
   {
     id: 'streaks',
-    label: 'Build Streaks',
+    label: 'Build streaks',
     icon: (
       <Fire
         width={sf(24)}
@@ -44,11 +44,13 @@ const FEATURES = [
   },
   {
     id: 'connect',
-    label: 'Stay Connected',
+    label: 'Stay connected',
     icon: (
-      <Message
+      <Zap
         width={sf(24)}
         height={sf(24)}
+        color='#EAD6A9'
+        fill='#EAD6A9'
       />
     ),
   },
@@ -60,14 +62,19 @@ const LaunchScreen = ({ navigation }: any) => {
     <View style={styles.safeArea}>
       <View style={styles.page}>
         <View style={styles.main}>
-          <View style={styles.iconCircle}>
+          <LinearGradient
+            colors={['#0B0B0B', '#0B0B0B']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.iconCircle}
+          >
             <Zap
               width={sf(35)}
               height={sf(56)}
-              color='#ffffff'
-              fill='#ffffff'
+              color='#EAD6A9'
+              fill='#EAD6A9'
             />
-          </View>
+          </LinearGradient>
 
           <Text
             style={[styles.title, { fontSize: sf(24) }]}
@@ -83,15 +90,19 @@ const LaunchScreen = ({ navigation }: any) => {
             ]}
           >
             SparkLink is officially live with{' '}
-            <Text style={{ fontFamily: 'Poppins-Medium', color: '#1E78F5' }}>
+            <Text style={{ fontFamily: 'Poppins-Medium', color: '#CEB98F' }}>
               1000+ users
             </Text>
-            🎉
           </Text>
 
           <LinearGradient
-            colors={['#1E78F51A', '#FBB2021A']}
-            style={{ borderRadius: sf(16), width: '100%', padding: sf(16), minHeight: sh(398) }}
+            colors={['rgba(220, 207, 182, 0.17)', 'rgba(220, 207, 182, 0.17)']}
+            style={{
+              borderRadius: sf(16),
+              width: '100%',
+              padding: sf(16),
+              minHeight: sh(398),
+            }}
           >
             <Text
               style={[
@@ -175,11 +186,13 @@ const LaunchScreen = ({ navigation }: any) => {
         </View>
 
         <PrimaryButton
-          title="Let's Find your Spark!"
+          title="Let's find your spark!"
           onPress={() => navigation.navigate('EnableLocationScreen')}
-          colors={['#1E78F5', '#FBB202']}
-          variant='gradient'
-          textStyle={{ fontSize: sf(18), fontWeight: '500', lineHeight: sh(56) }}
+          textStyle={{
+            fontSize: sf(18),
+            fontWeight: '500',
+            lineHeight: sh(56),
+          }}
         />
       </View>
     </View>
@@ -187,7 +200,7 @@ const LaunchScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
+  safeArea: { flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) },
   page: { flex: 1, paddingHorizontal: sw(20) },
   main: {
     flex: 1,
@@ -199,7 +212,6 @@ const styles = StyleSheet.create({
     width: sw(104),
     height: sw(104),
     borderRadius: 9999,
-    backgroundColor: '#1E78F5',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: sh(16),
@@ -207,7 +219,7 @@ const styles = StyleSheet.create({
   title: { color: '#000000', textAlign: 'center' },
   subtitle: { color: '#7D858E', textAlign: 'center' },
   cardLine: { color: '#000000', textAlign: 'center' },
-  cardHighlight: { color: '#1E78F5', textAlign: 'center' },
+  cardHighlight: { color: '#CEB98F', textAlign: 'center' },
   cardMuted: { color: '#555555', textAlign: 'center' },
   featureGrid: { rowGap: sh(12), marginTop: sh(4) },
   featureRow: { flexDirection: 'row', columnGap: sw(8) },

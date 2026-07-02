@@ -1,14 +1,13 @@
-import React from "react";
-import { TouchableOpacity, View } from "react-native";
-import { Text } from "@/components/common/Text";
-import { LinearGradient } from "expo-linear-gradient";
-import { ProgressDots } from "@/components/ProgressDots";
-import ChatIcon from "@/assets/images/chatIcon.svg";
-import type { MATCHES } from "@/constants/matches";
-import { sf, sr, sw, sh } from "@/utils/sizeMatters";
-import { Image } from "react-native";
-
-type MatchItem = (typeof MATCHES)[number];
+// src/components/discovery/DiscoveryMatchCard.tsx
+import React from 'react';
+import { TouchableOpacity, View } from 'react-native';
+import { Text } from '@/components/common/Text';
+import { LinearGradient } from 'expo-linear-gradient';
+import { ProgressDots } from '@/components/ProgressDots';
+import ChatIcon from '@/assets/images/chatIcon.svg';
+import { sf, sr, sw, sh } from '@/utils/sizeMatters';
+import { Image } from 'react-native';
+import { mapInterestLabels } from '@/utils/mapUserProfile';
 
 export default function DiscoveryMatchCard({
   item,
@@ -20,7 +19,7 @@ export default function DiscoveryMatchCard({
   showProgressDots = true,
   rightChatOnPress,
 }: {
-  item: MatchItem;
+  item: any;
   cardWidth: number;
   cardHeight: number;
   btnOverlap: number;
@@ -30,6 +29,7 @@ export default function DiscoveryMatchCard({
   rightChatOnPress?: () => void;
 }) {
   const imageUri = item.images?.[photoIndex] ?? item.image;
+  const interestLabels = mapInterestLabels(item.interests);
 
   return (
     <View
@@ -43,19 +43,19 @@ export default function DiscoveryMatchCard({
         style={{
           flex: 1,
           borderRadius: sr(24),
-          overflow: "hidden",
+          overflow: 'hidden',
         }}
       >
         <Image
           source={{ uri: imageUri }}
-          style={{ width: "100%", height: "100%" }}
-          resizeMode="cover"
+          style={{ width: '100%', height: '100%' }}
+          resizeMode='cover'
         />
 
         <LinearGradient
-          colors={["transparent", "rgba(0,0,0,0.88)"]}
+          colors={['transparent', 'rgba(0,0,0,0.88)']}
           style={{
-            position: "absolute",
+            position: 'absolute',
             bottom: 0,
             left: 0,
             right: 0,
@@ -66,55 +66,112 @@ export default function DiscoveryMatchCard({
         >
           <View
             style={{
-              backgroundColor: "rgba(251,178,2,0.1)",
+              backgroundColor: 'rgba(251,178,2,0.1)',
               borderWidth: 1,
-              borderColor: "rgba(251,178,2,0.5)",
+              borderColor: 'rgba(251,178,2,0.5)',
               borderRadius: sr(12),
               paddingHorizontal: sw(12),
-              height: 60,
-              justifyContent: "center",
+              minHeight: sh(60),
+              paddingVertical: sh(8),
+              justifyContent: 'center',
             }}
           >
-            <Text
-              style={{
-                fontFamily: "Poppins-SemiBold",
-                fontSize: sf(16),
-                color: "#fff",
-              }}
-            >
-              {item.name}, {item.age}
-            </Text>
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                zIndex: 30,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: sw(8),
               }}
             >
               <Text
                 style={{
-                  fontFamily: "Poppins-Regular",
-                  fontSize: sf(13),
-                  color: "rgba(255,255,255,0.85)",
-                  flex: 1,
+                  fontFamily: 'Poppins-SemiBold',
+                  fontSize: sf(16),
+                  color: '#fff',
+                  maxWidth: sw(300),
+                  flexShrink: 1,
                 }}
                 numberOfLines={1}
+                ellipsizeMode='tail'
               >
-                {item.bio}
+                {item.name}{item.age != null ? ',' : ''}
               </Text>
+              {item.age != null && (
+                <Text
+                  style={{
+                    fontFamily: 'Poppins-SemiBold',
+                    fontSize: sf(16),
+                    color: '#fff',
+                  }}
+                >
+                  {item.age}
+                </Text>
+              )}
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginTop: sh(4),
+              }}
+            >
+              <View
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: sw(8),
+                  marginRight: sw(8),
+                }}
+              >
+                {interestLabels.length > 0 ? (
+                  interestLabels.slice(0, 2).map((interest, index) => (
+                    <Text
+                      key={index}
+                      style={{
+                        fontFamily: 'Poppins-Regular',
+                        fontSize: sf(13),
+                        color: 'rgba(255,255,255,0.85)',
+                        flexShrink: 1,
+                      }}
+                      numberOfLines={1}
+                      ellipsizeMode='tail'
+                    >
+                      {interest.icon ? `${interest.icon} ${interest.name}` : interest.name}
+                    </Text>
+                  ))
+                ) : (
+                  <Text
+                    style={{
+                      fontFamily: 'Poppins-Regular',
+                      fontSize: sf(13),
+                      color: 'rgba(255,255,255,0.85)',
+                      flex: 1,
+                      flexShrink: 1,
+                    }}
+                    numberOfLines={1}
+                    ellipsizeMode='tail'
+                  >
+                    No Interests
+                  </Text>
+                )}
+              </View>
               <TouchableOpacity
-                onPress={(e) => { e.stopPropagation(); rightChatOnPress?.(); }}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  rightChatOnPress?.();
+                }}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                style={{ flexShrink: 0 }}
               >
                 <View
                   style={{
-                    width: 24,
-                    height: 24,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginTop: sh(-8),
-                    zIndex: 50,
+                    width: sw(24),
+                    height: sh(24),
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                 >
                   <ChatIcon />
@@ -128,14 +185,17 @@ export default function DiscoveryMatchCard({
       {showProgressDots && (
         <View
           style={{
-            position: "absolute",
+            position: 'absolute',
             top: sh(10),
             left: sw(12),
             right: sw(12),
             zIndex: 10,
           }}
         >
-          <ProgressDots total={photoTotal} current={photoIndex} />
+          <ProgressDots
+            total={photoTotal}
+            current={photoIndex}
+          />
         </View>
       )}
     </View>

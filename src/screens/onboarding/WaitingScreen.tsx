@@ -1,45 +1,69 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { Share2, Bell, Users2 } from 'lucide-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sw, sh, sr } from '@/utils/sizeMatters';
-
-// ─── Constants ────────────────────────────────────────────
-const CURRENT = 454;
-const TARGET = 1000;
-const REMAINING = TARGET - CURRENT;
-const PROGRESS = (CURRENT / TARGET) * 100;
+import { useLaunchProgress } from '@/features/referrals/hooks';
 
 // ─── Screen ───────────────────────────────────────────────
-const WaitingScreen = ({ navigation }: any) => (
+const WaitingScreen = ({ navigation }: any) => {
+  const { data: progress, isLoading } = useLaunchProgress();
+
+  const target = progress?.target ?? 1000;
+  const current = progress?.current ?? 0;
+  const remaining = progress?.remaining ?? Math.max(target - current, 0);
+  const progressPercent = progress?.progressPercent ?? 0;
+
+  if (isLoading) {
+    return (
+      <View style={[styles.safeArea, styles.loading]}>
+        <ActivityIndicator color='#0B0B0B' />
+      </View>
+    );
+  }
+
+  return (
   <View style={styles.safeArea}>
     <View style={styles.page}>
-
       {/* ── Main Content ── */}
       <View style={styles.main}>
-
         {/* Icon */}
-        <View style={styles.iconCircle}>
-          <Users2 width={sf(56)} height={sf(56)} color="#ffffff" />
-        </View>
+        <LinearGradient
+          colors={['#EAD6A9', '#EAD6A9']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.iconCircle}
+        >
+          <Users2
+            width={sf(56)}
+            height={sf(56)}
+            color='#0B0B0B'
+          />
+        </LinearGradient>
 
         {/* Title */}
         <Text
           style={[styles.title, { fontSize: sf(24) }]}
-          weight="semibold"
+          weight='semibold'
         >
-          We're Almost There! 🚀
+          We're Almost There!
         </Text>
 
         {/* Subtitle */}
         <Text
-          style={[styles.subtitle, { fontFamily: 'Poppins-Regular', fontSize: sf(16) }]}
+          style={[
+            styles.subtitle,
+            { fontFamily: 'Poppins-Regular', fontSize: sf(16) },
+          ]}
         >
           Spark goes live when{' '}
-          <Text style={{ fontFamily: 'Poppins-Medium', color: '#1E78F5' }} weight="medium">
-            {TARGET.toLocaleString()} people
+          <Text
+            style={{ fontFamily: 'Poppins-Medium', color: '#CEB98F' }}
+            weight='medium'
+          >
+            {target.toLocaleString()} people
           </Text>{' '}
           join. Invite friends to speed it up!
         </Text>
@@ -47,58 +71,92 @@ const WaitingScreen = ({ navigation }: any) => (
         {/* Progress */}
         <View style={styles.progressBlock}>
           <View style={styles.progressRow}>
-            <Text style={[styles.progressLabel, { fontFamily: 'Poppins-Medium', fontSize: sf(16) }]}>
+            <Text
+              style={[
+                styles.progressLabel,
+                { fontFamily: 'Poppins-Medium', fontSize: sf(16) },
+              ]}
+            >
               Launch Progress
             </Text>
-            <Text style={[styles.progressValue, { fontFamily: 'Poppins-Medium', fontSize: sf(16) }]}>
-              {CURRENT}/{TARGET}
+            <Text
+              style={[
+                styles.progressValue,
+                { fontFamily: 'Poppins-Medium', fontSize: sf(16) },
+              ]}
+            >
+              {current}/{target}
             </Text>
           </View>
 
           <View style={styles.track}>
-            <View style={[styles.trackFill, { width: `${PROGRESS}%` }]} />
+            <View style={[styles.trackFill, { width: `${progressPercent}%` }]} />
           </View>
 
           <Text
-            style={[styles.progressHint, { fontFamily: 'Poppins-Medium', fontSize: sf(14) }]}
+            style={[
+              styles.progressHint,
+              { fontFamily: 'Poppins-Medium', fontSize: sf(14) },
+            ]}
           >
-            {REMAINING} more to go!
+            {remaining} more to go!
           </Text>
         </View>
 
         {/* Notification Card */}
         <View style={styles.notifyCard}>
           <View style={styles.notifyIconWrap}>
-            <Bell size={sf(24)} color="#DC9B00" />
+            <Bell
+              size={sf(24)}
+              color='#0B0B0B'
+            />
           </View>
           <View style={styles.notifyTextCol}>
-            <Text style={[styles.notifyTitle, { fontFamily: 'Poppins-SemiBold', fontSize: sf(16) }]}>
+            <Text
+              style={[
+                styles.notifyTitle,
+                { fontFamily: 'Poppins-SemiBold', fontSize: sf(16) },
+              ]}
+            >
               You'll be notified
             </Text>
-            <Text style={[styles.notifyBody, { fontFamily: 'Poppins-Regular', fontSize: sf(13) }]}>
-              We will send you a notification when we reach {TARGET} users
+            <Text
+              style={[
+                styles.notifyBody,
+                { fontFamily: 'Poppins-Regular', fontSize: sf(13) },
+              ]}
+            >
+              We will send you a notification when we reach {target} users
             </Text>
           </View>
         </View>
-
       </View>
 
       {/* ── Bottom: Action ── */}
       <PrimaryButton
-        title="Invite Friends to Speed Up"
-        onPress={() => navigation.navigate("LaunchScreen")}
-        colors={['#1E78F5', '#DC9B00']}
-        variant="gradient"
-        iconPosition="start"
-        textStyle={{fontSize: sf(18), fontWeight: '500', color: '#ffffff', lineHeight: sh(56)}}
+        title='Invite friends to speed up'
+        onPress={() => navigation.navigate('LaunchScreen')}
+        icon={
+          <Share2
+            size={sf(20)}
+            color='#0B0B0B'
+          />
+        }
+        iconPosition='middle'
+        textStyle={{
+          fontSize: sf(18),
+          fontWeight: '500',
+          lineHeight: sh(56),
+        }}
       />
-
     </View>
   </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
+  safeArea: { flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) },
+  loading: { alignItems: 'center', justifyContent: 'center' },
   page: { flex: 1, paddingHorizontal: sw(20) },
   main: {
     flex: 1,
@@ -110,7 +168,6 @@ const styles = StyleSheet.create({
     width: sw(104),
     height: sw(104),
     borderRadius: 9999,
-    backgroundColor: '#1E78F5',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: sh(16),
@@ -130,7 +187,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   progressLabel: { color: '#000000' },
-  progressValue: { color: '#1E78F5' },
+  progressValue: { color: '#CEB98F' },
   track: {
     width: '100%',
     height: sh(8),
@@ -138,8 +195,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#E8EAED',
     overflow: 'hidden',
   },
-  trackFill: { height: '100%', borderRadius: 9999, backgroundColor: '#1E78F5' },
-  progressHint: { color: '#DC9B00', textAlign: 'center' },
+  trackFill: { height: '100%', borderRadius: 9999, backgroundColor: '#CEB98F' },
+  progressHint: { color: '#CEB98F', textAlign: 'center' },
   notifyCard: {
     width: '100%',
     flexDirection: 'row',
@@ -156,9 +213,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-    backgroundColor: '#FBB20233',
+    backgroundColor: '#EAD6A933',
     borderWidth: 0.4,
-    borderColor: '#DC9B00',
+    borderColor: '#CEB98F',
   },
   notifyTextCol: { flex: 1, flexShrink: 1, marginLeft: sw(8) },
   notifyTitle: { color: '#000000' },

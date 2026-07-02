@@ -1,50 +1,61 @@
-import { StyleSheet } from 'react-native'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { NavigationContainer } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import { useState, useEffect, useCallback } from 'react';
+import { StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  NavigationContainer,
+  createNavigationContainerRef,
+} from '@react-navigation/native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import * as Notifications from 'expo-notifications';
+import * as SplashScreen from 'expo-splash-screen';
+import Constants from 'expo-constants';
+import { useFonts } from 'expo-font';
+import Toast from 'react-native-toast-message';
+import { StatusBar } from 'expo-status-bar';
 
-import OnboardingScreen1        from '@/screens/onboarding/OnboardingScreen1'
-import OnboardingScreen2        from '@/screens/onboarding/OnboardingScreen2'
-import OnboardingScreen3        from '@/screens/onboarding/OnboardingScreen3'
-import LogoScreen               from '@/screens/onboarding/LogoScreen'
-import SignUpScreen             from '@/screens/onboarding/SignUpScreen'
-import InviteScreen             from '@/screens/onboarding/InviteScreen'
-import WaitingScreen            from '@/screens/onboarding/WaitingScreen'
-import LaunchScreen             from '@/screens/onboarding/LaunchScreen'
-import SignInScreen             from '@/screens/SignInScreen'
-import ProfileScreen            from '@/screens/ProfileScreen'
-import EmailInputScreen         from '@/screens/onboarding/EmailInputScreen'
-import NumberInputScreen        from '@/screens/onboarding/NumberInputScreen'
-import NumberVerifyScreen       from '@/screens/onboarding/NumberVerifyScreen'
-import VerificationSuccessScreen from '@/screens/onboarding/VerificationSuccessScreen'
-import ProfileSetupScreen       from '@/screens/onboarding/ProfileSetupScreen'
-import PhysicalAttributesScreen from '@/screens/onboarding/PhysicalAttributesScreen'
-import InterestsScreen          from '@/screens/onboarding/InterestsScreen'
-import UploadPhotosScreen       from '@/screens/onboarding/UploadPhotosScreen'
-import EnableLocationScreen     from '@/screens/EnableLocationScreen'
-import NotAvailableScreen       from '@/screens/NotAvailableScreen'   // ← new
-import SearchScreen             from '@/screens/SearchScreen'
-import DiscoveryScreen          from '@/screens/DiscoveryScreen'
-import MatchScreen              from '@/screens/MatchScreen'
-import RequestsScreen           from '@/screens/RequestsScreen'
-import InboxScreen              from '@/screens/InboxScreen'
-import ChatScreen               from '@/screens/ChatScreen'
-import EditProfileScreen        from './src/screens/EditProfileScreen'
-import SettingsScreen           from '@/screens/SettingsScreen'
-import BlockedUsersScreen       from '@/screens/BlockedUsersScreen'
-import UserProfileScreen        from '@/screens/UserProfileScreen'
-import SnapViewScreen           from '@/screens/SnapViewScreen'
+import { QueryProvider } from '@/providers/QueryProvider';
+import { AuthGate } from '@/components/bootstrap/AuthGate';
+import { ChatRealtimeProvider } from '@/components/chat/ChatRealtimeProvider';
+import RootNavigator from '@/navigation/RootNavigator';
+import { toastConfig } from '@/utils/toastConfig';
+import {
+  parseChatNotification,
+  getInitialNotification,
+  setupNotificationHandler,
+  type ChatNotificationData,
+} from '@/services/fcm';
+import type { AppStackParamList } from '@/types/navigation';
 
-import { useFonts }       from 'expo-font'
-import Toast              from 'react-native-toast-message'
-import { toastConfig }    from '@/utils/toastConfig'
-import { QueryProvider }  from '@/providers/QueryProvider'
+const isExpoGo = Constants.executionEnvironment === 'storeClient';
 
-const Stack = createStackNavigator()
+export const navigationRef = createNavigationContainerRef<AppStackParamList>();
+
+let pendingChatNav: ChatNotificationData | null = null;
+
+function navigateToChat(data: ChatNotificationData) {
+  const params = {
+    conversationId: data.conversationId,
+    chatUserId: data.senderId,
+    chatUserName: data.senderName,
+    chatUserImageUri: data.senderPhotoUrl,
+  };
+  if (!navigationRef.isReady()) {
+    pendingChatNav = data;
+    return;
+  }
+  navigationRef.navigate('ChatScreen', params);
+  pendingChatNav = null;
+}
+
+function flushPendingChatNav() {
+  if (pendingChatNav) navigateToChat(pendingChatNav);
+}
 
 export default function App() {
-  const [loaded, error] = useFonts({
+  const [authReady, setAuthReady] = useState(false);
+  const [appReady, setAppReady]   = useState(false);
+
+  const [fontsLoaded, fontError] = useFonts({
     'Poppins-Thin':       require('./src/assets/fonts/Poppins-Thin.ttf'),
     'Poppins-ExtraLight': require('./src/assets/fonts/Poppins-ExtraLight.ttf'),
     'Poppins-Light':      require('./src/assets/fonts/Poppins-Light.ttf'),
@@ -55,75 +66,90 @@ export default function App() {
     'Poppins-ExtraBold':  require('./src/assets/fonts/Poppins-ExtraBold.ttf'),
     'Poppins-Black':      require('./src/assets/fonts/Poppins-Black.ttf'),
     'ZenDots-Regular':    require('./src/assets/fonts/ZenDots-Regular.ttf'),
-  })
+  });
 
-  if (!loaded && !error) return null
+  const fontsReady = fontsLoaded || !!fontError;
+
+  // Hide native splash once fonts + auth are both ready
+  useEffect(() => {
+    if (!fontsReady || !authReady) return;
+    SplashScreen.hideAsync().finally(() => setAppReady(true));
+  }, [fontsReady, authReady]);
+
+  // ── Notification handler ──────────────────────────────────────────
+  // Must be registered on every app start, not just after login.
+  useEffect(() => {
+    if (!isExpoGo) setupNotificationHandler();
+  }, []);
+
+  // ── Notification handling ──────────────────────────────────────────────────
+  const handleNotificationTap = useCallback(
+    (data: ChatNotificationData) => {
+      if (!appReady) {
+        pendingChatNav = data;
+        return;
+      }
+      const tryNav = (attempt = 0) => {
+        if (navigationRef.isReady()) {
+          navigateToChat(data);
+        } else if (attempt < 10) {
+          setTimeout(() => tryNav(attempt + 1), 300);
+        } else {
+          pendingChatNav = data;
+        }
+      };
+      tryNav();
+    },
+    [appReady],
+  );
+
+  useEffect(() => {
+    if (isExpoGo) return;
+    const foregroundSub = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        const data = parseChatNotification(response.notification);
+        if (data?.conversationId) handleNotificationTap(data);
+      },
+    );
+    getInitialNotification().then((data) => {
+      if (data?.conversationId) handleNotificationTap(data);
+    });
+    return () => { foregroundSub.remove(); };
+  }, [handleNotificationTap]);
+
+  useEffect(() => {
+    if (appReady) flushPendingChatNav();
+  }, [appReady]);
 
   return (
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
-        <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
+        <SafeAreaView
+          style={{ flex: 1, backgroundColor: '#F7F3ED' }}
+          edges={['bottom', 'left', 'right']}
+        >
           <QueryProvider>
-            <NavigationContainer>
-              <Stack.Navigator
-                initialRouteName="Onboarding1"
-                screenOptions={{ headerShown: false }}
-              >
-                {/* ── Onboarding ──────────────────────────────────────── */}
-                <Stack.Screen name="Onboarding1"  component={OnboardingScreen1} />
-                <Stack.Screen name="Onboarding2"  component={OnboardingScreen2} />
-                <Stack.Screen name="Onboarding3"  component={OnboardingScreen3} />
-                <Stack.Screen name="LogoScreen"   component={LogoScreen} />
+            <StatusBar style='dark' translucent={false} />
 
-                {/* ── Auth ────────────────────────────────────────────── */}
-                <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
-                <Stack.Screen name="SignInScreen" component={SignInScreen} />
+            {/* Auth bootstrap — always mounted so it runs immediately */}
+            <AuthGate onReady={() => setAuthReady(true)} />
 
-                {/* ── Signup flow ──────────────────────────────────────── */}
-                <Stack.Screen name="EmailInputScreen"          component={EmailInputScreen} />
-                <Stack.Screen name="NumberInputScreen"         component={NumberInputScreen} />
-                <Stack.Screen name="NumberVerifyScreen"        component={NumberVerifyScreen} />
-                <Stack.Screen name="VerificationSuccessScreen" component={VerificationSuccessScreen} />
-                <Stack.Screen name="ProfileSetupScreen"        component={ProfileSetupScreen} />
-                <Stack.Screen name="PhysicalAttributesScreen"  component={PhysicalAttributesScreen} />
-                <Stack.Screen name="InterestsScreen"           component={InterestsScreen} />
-                <Stack.Screen name="UploadPhotosScreen"        component={UploadPhotosScreen} />
-                <Stack.Screen name="InviteScreen"              component={InviteScreen} />
-                <Stack.Screen name="WaitingScreen"             component={WaitingScreen} />
-                <Stack.Screen name="LaunchScreen"              component={LaunchScreen} />
-
-                {/* ── Location ─────────────────────────────────────────── */}
-                <Stack.Screen name="EnableLocationScreen" component={EnableLocationScreen} />
-                <Stack.Screen name="NotAvailableScreen"   component={NotAvailableScreen} />
-
-                {/* ── Discovery ────────────────────────────────────────── */}
-                <Stack.Screen name="SearchScreen"    component={SearchScreen} />
-                <Stack.Screen name="DiscoveryScreen" component={DiscoveryScreen} />
-                <Stack.Screen name="MatchScreen"     component={MatchScreen} />
-
-                {/* ── Social ───────────────────────────────────────────── */}
-                <Stack.Screen name="RequestsScreen" component={RequestsScreen} />
-                <Stack.Screen name="InboxScreen"    component={InboxScreen} />
-                <Stack.Screen name="ChatScreen"     component={ChatScreen} />
-                <Stack.Screen name="SnapViewScreen" component={SnapViewScreen} />
-
-                {/* ── Profile ──────────────────────────────────────────── */}
-                <Stack.Screen name="ProfileScreen"      component={ProfileScreen} />
-                <Stack.Screen name="EditProfileScreen"  component={EditProfileScreen} />
-                <Stack.Screen name="SettingsScreen"     component={SettingsScreen} />
-                <Stack.Screen name="BlockedUsersScreen" component={BlockedUsersScreen} />
-                <Stack.Screen name="UserProfileScreen"  component={UserProfileScreen} />
-              </Stack.Navigator>
-            </NavigationContainer>
+            {/* App content — only rendered once both fonts + auth are ready */}
+            {appReady && (
+              <NavigationContainer ref={navigationRef} onReady={flushPendingChatNav}>
+                <ChatRealtimeProvider />
+                <RootNavigator />
+              </NavigationContainer>
+            )}
           </QueryProvider>
 
           <Toast config={toastConfig} />
         </SafeAreaView>
       </SafeAreaProvider>
     </GestureHandlerRootView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-})
+});

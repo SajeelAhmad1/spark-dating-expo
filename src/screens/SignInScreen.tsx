@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Text } from '@/components/common/Text';
 import { ChevronLeft } from 'lucide-react-native';
 import SignInTabs from '@/components/auth/SignInTabs';
@@ -10,6 +10,7 @@ import SignInBottomActions from '@/components/auth/SignInBottomActions';
 import { useZodForm } from '@/utils/form';
 import { sf, sw, sh } from '@/utils/sizeMatters';
 import { useLogin } from '@/features/auth/hooks';
+import { useGoogleSignIn } from '@/features/auth/useGoogleSignIn';
 import { showToast } from '@/utils/toast';
 import {
   AuthSigninTab,
@@ -17,7 +18,6 @@ import {
   loginPhoneSchema,
 } from '@/features/auth/schema';
 import { FieldErrors } from 'react-hook-form';
-import { tokenStore } from '@/api/client';
 
 // ─── Form body ────────────────────────────────────────────────────────────────
 
@@ -29,6 +29,7 @@ function SignInFormBody({
   navigation: any;
 }) {
   const { mutate: login, isPending: isLoginPending } = useLogin();
+  const { signIn: googleSignIn, isPending: isGooglePending } = useGoogleSignIn();
   const [showPassword, setShowPassword] = useState(false);
 
   const schema = tab === 'phone' ? loginPhoneSchema : loginEmailSchema;
@@ -37,17 +38,17 @@ function SignInFormBody({
     useZodForm(schema, {
       defaultValues: {
         phoneNumber: '',
-        email:       '',
-        password:    '',
-        rememberMe:  false,
+        email: '',
+        password: '',
+        rememberMe: false,
       },
     });
 
-  const { errors }  = formState;
+  const { errors } = formState;
   const phoneNumber = watch('phoneNumber');
-  const email       = watch('email');
-  const password    = watch('password');
-  const rememberMe  = watch('rememberMe');
+  const email = watch('email');
+  const password = watch('password');
+  const rememberMe = watch('rememberMe');
 
   const onValid = (dto: any) => {
     const identifier = tab === 'phone' ? dto.phoneNumber : dto.email;
@@ -55,28 +56,28 @@ function SignInFormBody({
     login(
       { identifier, password: dto.password },
       {
-        onSuccess: async (data: any) => {
+        onSuccess: () => {
+          // Auth state is updated in useLogin's onSuccess handler.
+          // RootNavigator will automatically switch to AppNavigator.
           showToast({ text1: 'Logged in successfully' });
-
-          // Route based on what the backend says is next
-          if (data.next === 'complete_profile') {
-            navigation.replace('ProfileSetupScreen');
-          } else {
-            // 'home' or anything else → go to location screen
-            const user = await tokenStore.getUser();
-            if(user) {
-              navigation.replace('DiscoveryScreen');
-            }
-            navigation.replace('EnableLocationScreen');
-          }
         },
+
         onError: (err: any) => {
           showToast({
             text1: 'Login failed',
-            text2: err?.message ?? 'Please check your credentials and try again.',
+            text2:
+              err?.message ?? 'Please check your credentials and try again.',
           });
+          console.log(err, 'login error');
         },
       },
+    );
+  };
+
+  const handleGoogleSignIn = () => {
+    googleSignIn(
+      () => showToast({ text1: 'Signed in with Google' }),
+      (errorMessage) => showToast({ text1: 'Google Sign-In failed', text2: errorMessage }),
     );
   };
 
@@ -85,14 +86,14 @@ function SignInFormBody({
   if (tab === 'phone') {
     const e = errors as FieldErrors<{
       phoneNumber: string;
-      password:    string;
-      rememberMe:  boolean;
+      password: string;
+      rememberMe: boolean;
     }>;
     fieldError = e.phoneNumber?.message;
   } else {
     const e = errors as FieldErrors<{
-      email:      string;
-      password:   string;
+      email: string;
+      password: string;
       rememberMe: boolean;
     }>;
     fieldError = e.email?.message;
@@ -114,7 +115,9 @@ function SignInFormBody({
         />
         <PasswordField
           password={password}
-          onChangeText={(v) => setValue('password', v, { shouldValidate: true })}
+          onChangeText={(v) =>
+            setValue('password', v, { shouldValidate: true })
+          }
           onBlur={() => trigger('password')}
           showPassword={showPassword}
           onToggleShowPassword={() => setShowPassword((p) => !p)}
@@ -124,18 +127,20 @@ function SignInFormBody({
 
       <View
         style={{
-          flexDirection:  'row',
-          alignItems:     'center',
+          flexDirection: 'row',
+          alignItems: 'center',
           justifyContent: 'space-between',
-          marginTop:      sh(20),
+          marginTop: sh(20),
         }}
       >
         <RememberMeToggle
           rememberMe={rememberMe}
           onToggle={() => setValue('rememberMe', !getValues().rememberMe)}
         />
-        <TouchableOpacity onPress={() => {}}>
-          <Text style={{ color: '#1E78F5', fontWeight: '500', fontSize: sf(14) }}>
+        <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordScreen')}>
+          <Text
+            style={{ color: '#CEB98F', fontWeight: '500', fontSize: sf(14) }}
+          >
             Forgot password!
           </Text>
         </TouchableOpacity>
@@ -144,7 +149,9 @@ function SignInFormBody({
       <SignInBottomActions
         onLogin={handleSubmit(onValid)}
         onSignUp={() => navigation.navigate('SignUpScreen')}
+        onGoogleSignIn={handleGoogleSignIn}
         disable={isLoginPending}
+        googleLoading={isGooglePending}
       />
     </>
   );
@@ -163,17 +170,24 @@ export default function SignInScreen({
   const [activeTab, setActiveTab] = useState<AuthSigninTab>(initialTab);
 
   return (
-    <View
-      style={{ flex: 1, backgroundColor: '#ffffff', paddingBottom: sh(20) }}
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: '#F7F3ED' }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View
-        style={{ flex: 1, paddingHorizontal: sw(20), paddingTop: sh(72) }}
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: sh(20) }}
+        keyboardShouldPersistTaps='handled'
+        showsVerticalScrollIndicator={false}
       >
+        <View style={{ flex: 1, paddingHorizontal: sw(20), paddingTop: sh(72) }}>
         <TouchableOpacity
           style={{ width: sw(32), height: sw(32) }}
           onPress={() => navigation.goBack()}
         >
-          <ChevronLeft size={sf(24)} color="#000000" />
+          <ChevronLeft
+            size={sf(24)}
+            color='#000000'
+          />
         </TouchableOpacity>
 
         <View style={{ marginTop: sh(48), gap: sh(8) }}>
@@ -183,18 +197,22 @@ export default function SignInScreen({
             Welcome Back!
           </Text>
           <Text style={{ color: '#7D858E', fontSize: sf(15) }}>
-            Please enter your number & password to sign in
+            Please enter your {activeTab === 'phone' ? 'number' : 'email'} & password to signin
           </Text>
         </View>
 
-        <SignInTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        <SignInTabs
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
         <SignInFormBody
           key={activeTab}
           tab={activeTab}
           navigation={navigation}
         />
-      </View>
-    </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

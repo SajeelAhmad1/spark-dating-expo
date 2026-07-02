@@ -1,42 +1,40 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Share, Platform } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Share,
+  Platform,
+  ActivityIndicator,
+} from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { showToast } from '@/utils/toast';
 import { Text } from '@/components/common/Text';
 import { Share2, Copy } from 'lucide-react-native';
 import Gift from '@/assets/images/gift.svg';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { sf, sw, sh, sr } from '@/utils/sizeMatters';
-
-// ─── Constants ────────────────────────────────────────────
-const REFERRAL_LINK = 'https://spark.app/invite/SPARK-QT53V4';
-
-const STATS = [
-  {
-    id: 'invites',
-    label: 'Invites Sent',
-    value: 0,
-    color: '#DC9B00',
-    bg: '#FBB2021A',
-    border: '#FBB202',
-  },
-  {
-    id: 'signups',
-    label: 'Signed Up',
-    value: 0,
-    color: '#1E78F5',
-    bg: '#1E78F51A',
-    border: '#1E78F5',
-  },
-];
+import {
+  useRecordReferralShare,
+  useReferralStats,
+} from '@/features/referrals/hooks';
 
 // ─── Sub Components ───────────────────────────────────────
 
 const GiftIcon = () => (
-  <View style={styles.giftCircle}>
-    <Gift width={sf(56)} height={sf(56)} color="#ffffff" />
-  </View>
+  <LinearGradient
+    colors={['#EAD6A9', '#EAD6A9']}
+    start={{ x: 0, y: 0 }}
+    end={{ x: 1, y: 1 }}
+    style={styles.giftCircle}
+  >
+    <Gift
+      width={sf(56)}
+      height={sf(56)}
+      color='#0B0B0B'
+    />
+  </LinearGradient>
 );
 
 const Title = () => (
@@ -44,13 +42,13 @@ const Title = () => (
     style={{
       fontFamily: 'Poppins-SemiBold',
       fontWeight: '600',
-      fontSize: sf(24), 
+      fontSize: sf(24),
       color: '#000000',
       textAlign: 'center',
       marginBottom: sh(8),
     }}
   >
-    Get Premium Free! 🎉
+    Get Premium Free!
   </Text>
 );
 
@@ -59,32 +57,38 @@ const Subtitle = () => (
     style={{
       fontFamily: 'Poppins-Regular',
       fontWeight: '400',
-      fontSize: sf(16), 
+      fontSize: sf(16),
       color: '#7D858E',
       textAlign: 'center',
       marginBottom: sh(8),
     }}
   >
     Invite{' '}
-    <Text style={{ color: '#1E78F5', fontWeight: '500' }}>2 friends</Text>
-    {' '}to Spark and unlock{' '}
-    <Text style={{ color: '#DC9B00', fontWeight: '500'  }}>Premium access</Text>
-    {' '}for free — no strings attached!
+    <Text style={{ color: '#CEB98F', fontWeight: '500' }}>2 friends</Text> to
+    Spark and unlock{' '}
+    <Text style={{ color: '#CEB98F', fontWeight: '500' }}>Premium access</Text>{' '}
+    for free — no strings attached!
   </Text>
 );
 
-const ReferralLinkBox = ({ onCopy }: { onCopy: () => void }) => (
+const ReferralLinkBox = ({
+  referralLink,
+  onCopy,
+}: {
+  referralLink: string;
+  onCopy: () => void;
+}) => (
   <View style={styles.linkBoxOuter}>
     <Text
       style={{
         fontFamily: 'Poppins-Regular',
         fontWeight: '400',
-        fontSize: sf(16), 
+        fontSize: sf(16),
         color: '#7D858E',
         marginBottom: sh(10),
       }}
     >
-      Your Referral Link
+      Your referral link
     </Text>
 
     <View style={styles.linkRow}>
@@ -93,16 +97,22 @@ const ReferralLinkBox = ({ onCopy }: { onCopy: () => void }) => (
         style={{
           fontFamily: 'Poppins-Medium',
           fontWeight: '500',
-          fontSize: sf(14), 
+          fontSize: sf(14),
           color: '#000000',
           flex: 1,
         }}
       >
-        {REFERRAL_LINK}
+        {referralLink}
       </Text>
 
-      <TouchableOpacity onPress={onCopy} style={styles.copyBtn}>
-        <Copy size={sf(16)} color="#1E78F5" />
+      <TouchableOpacity
+        onPress={onCopy}
+        style={styles.copyBtn}
+      >
+        <Copy
+          size={sf(16)}
+          color='#CEB98F'
+        />
       </TouchableOpacity>
     </View>
   </View>
@@ -114,15 +124,19 @@ const StatCard = ({
   color,
   bg,
   border,
-}: (typeof STATS)[0]) => (
-  <View
-    style={[styles.statCard, { backgroundColor: bg, borderColor: border }]}
-  >
+}: {
+  label: string;
+  value: number;
+  color: string;
+  bg: string;
+  border: string;
+}) => (
+  <View style={[styles.statCard, { backgroundColor: bg, borderColor: border }]}>
     <Text
       style={{
         fontFamily: 'Poppins-SemiBold',
         fontWeight: '600',
-        fontSize: sf(20), 
+        fontSize: sf(20),
         color,
         textAlign: 'center',
         marginBottom: sh(4),
@@ -134,7 +148,7 @@ const StatCard = ({
       style={{
         fontFamily: 'Poppins-Regular',
         fontWeight: '400',
-        fontSize: sf(13), 
+        fontSize: sf(13),
         color: '#555555',
         textAlign: 'center',
       }}
@@ -146,8 +160,32 @@ const StatCard = ({
 
 // ─── Main Screen ──────────────────────────────────────────
 const InviteScreen = ({ navigation }: any) => {
+  const { data: stats, isLoading } = useReferralStats();
+  const recordShare = useRecordReferralShare();
+
+  const referralLink = stats?.referralLink ?? '';
+  const statsCards = [
+    {
+      id: 'invites',
+      label: stats?.invitesSent && stats?.invitesSent > 1 ? 'Invites sent' : 'Invite sent',
+      value: stats?.invitesSent ?? 0,
+      color: '#CEB98F',
+      bg: '#EAD6A91A',
+      border: '#EAD6A9',
+    },
+    {
+      id: 'signups',
+      label: 'Signed up',
+      value: stats?.signupsCount ?? 0,
+      color: '#CEB98F',
+      bg: '#CEB98F1A',
+      border: '#CEB98F',
+    },
+  ];
+
   const handleCopy = async () => {
-    await Clipboard.setStringAsync(REFERRAL_LINK);
+    if (!referralLink) return;
+    await Clipboard.setStringAsync(referralLink);
     showToast({ text1: 'Link copied' });
   };
 
@@ -156,11 +194,13 @@ const InviteScreen = ({ navigation }: any) => {
   };
 
   const handleShare = async () => {
+    if (!referralLink) return;
     try {
+      await recordShare.mutateAsync();
       const content =
         Platform.OS === 'ios'
-          ? { message: REFERRAL_LINK, url: REFERRAL_LINK }
-          : { message: REFERRAL_LINK };
+          ? { message: referralLink, url: referralLink }
+          : { message: referralLink };
       await Share.share(content);
       navigation.navigate('WaitingScreen');
     } catch {
@@ -168,31 +208,47 @@ const InviteScreen = ({ navigation }: any) => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <View style={[styles.safeArea, styles.loading]}>
+        <ActivityIndicator color='#0B0B0B' />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.safeArea}>
       <View style={styles.page}>
-
         <View style={styles.main}>
           <GiftIcon />
           <Title />
           <Subtitle />
-          <ReferralLinkBox onCopy={handleCopy} />
+          <ReferralLinkBox
+            referralLink={referralLink}
+            onCopy={handleCopy}
+          />
           <View style={styles.statsRow}>
-            {STATS.map(stat => (
-              <StatCard key={stat.id} {...stat} />
+            {statsCards.map((stat) => (
+              <StatCard
+                key={stat.id}
+                {...stat}
+              />
             ))}
           </View>
         </View>
 
         <View style={styles.bottomActions}>
           <PrimaryButton
-            title="Share Invite Link"
+            title='Share invite link'
             onPress={handleShare}
-            colors={['#1E78F5', '#DC9B00']}
-            variant="gradient"
-            icon={<Share2 size={sf(20)} color="#ffffff" />}
-            iconPosition="middle"
-            textStyle={{ fontSize: sf(18), color: '#ffffff' }}
+            icon={
+              <Share2
+                size={sf(20)}
+                color='#0B0B0B'
+              />
+            }
+            iconPosition='middle'
+            textStyle={{ fontSize: sf(18), fontWeight: '500', lineHeight: sf(22) }}
           />
 
           <TouchableOpacity onPress={handleSkip}>
@@ -200,23 +256,23 @@ const InviteScreen = ({ navigation }: any) => {
               style={{
                 fontFamily: 'Poppins-Medium',
                 fontWeight: '500',
-                fontSize: sf(16), 
+                fontSize: sf(16),
                 color: '#7D858E',
                 textAlign: 'center',
               }}
             >
-              Skip for Now
+              Skip for now
             </Text>
           </TouchableOpacity>
         </View>
-
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF', paddingBottom: sh(20) },
+  safeArea: { flex: 1, backgroundColor: '#F7F3ED', paddingBottom: sh(20) },
+  loading: { alignItems: 'center', justifyContent: 'center' },
   page: { flex: 1, paddingHorizontal: sw(20) },
   main: {
     flex: 1,
@@ -228,7 +284,6 @@ const styles = StyleSheet.create({
     width: sw(104),
     height: sw(104),
     borderRadius: 9999,
-    backgroundColor: '#1E78F5',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: sh(32),
