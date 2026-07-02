@@ -250,12 +250,9 @@ const NumberEnterScreen = ({ navigation }: any) => {
             paddingBottom: 0,
             justifyContent: 'flex-start',
           },
-          countryButtonStyles: {
-            height: sh(52),
-          },
-          listDisplayArea: {
+          itemsList: {
             flex: 1,
-            paddingBottom: pickerKeyboardHeight > 0 ? pickerKeyboardHeight : 0,
+            paddingBottom: pickerKeyboardHeight > 0 ? pickerKeyboardHeight : sh(16),
           },
           textInput: {
             height: sh(48),
