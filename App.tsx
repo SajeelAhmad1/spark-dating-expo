@@ -21,6 +21,7 @@ import { toastConfig } from '@/utils/toastConfig';
 import {
   parseChatNotification,
   getInitialNotification,
+  setupNotificationHandler,
   type ChatNotificationData,
 } from '@/services/fcm';
 import type { AppStackParamList } from '@/types/navigation';
@@ -74,6 +75,12 @@ export default function App() {
     if (!fontsReady || !authReady) return;
     SplashScreen.hideAsync().finally(() => setAppReady(true));
   }, [fontsReady, authReady]);
+
+  // ── Notification handler ──────────────────────────────────────────
+  // Must be registered on every app start, not just after login.
+  useEffect(() => {
+    if (!isExpoGo) setupNotificationHandler();
+  }, []);
 
   // ── Notification handling ──────────────────────────────────────────────────
   const handleNotificationTap = useCallback(

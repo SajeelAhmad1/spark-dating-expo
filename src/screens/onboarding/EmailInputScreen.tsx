@@ -128,7 +128,7 @@ export default function EmailInputScreen({ navigation }: any) {
                   keyboardType='email-address'
                   autoCapitalize='none'
                   autoCorrect={false}
-                 style={[styles.input, { fontSize: sf(12), paddingVertical: sh(8) }]}
+                 style={[styles.input, { fontSize: sf(14), paddingVertical: sh(8) }]}
                 />
               </View>
               {errors.email && (

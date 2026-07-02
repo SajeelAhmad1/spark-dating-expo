@@ -55,6 +55,7 @@ import type { ChatMessage } from '@/features/chat/schema';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { onSocketReconnect } from '@/services/socket';
+import { useActiveChatStore } from '@/store/activeChatStore';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -448,6 +449,12 @@ export default function ChatScreen({ navigation, route }: any) {
 
   // ── Socket ────────────────────────────────────────────────────────────────
   useConversationSocket(conversationId);
+
+  const setActiveConversationId = useActiveChatStore((s) => s.setActiveConversationId);
+  useEffect(() => {
+    if (conversationId) setActiveConversationId(conversationId);
+    return () => setActiveConversationId(null);
+  }, [conversationId]);
   const messages: ChatMessage[] = data?.messages ?? [];
 
   const scrollToBottom = useCallback((animated = false) => {

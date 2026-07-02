@@ -19,6 +19,7 @@ import { Platform } from 'react-native';
 import { tokenStore } from '@/api/client';
 import { notificationsApi } from '@/features/notifications/api';
 import { getSocket } from '@/services/socket';
+import { getActiveConversationId } from '@/store/activeChatStore';
 
 // ── Expo Go guard ─────────────────────────────────────────────────────────────
 // Remote push notifications are not supported in Expo Go since SDK 53.
@@ -28,7 +29,7 @@ const isExpoGo = Constants.executionEnvironment === 'storeClient';
 // ── Foreground notification behaviour ────────────────────────────────────────
 // Must NOT be called at module level in Expo Go — it throws on import.
 // Called once from registerFcmToken() which already guards with isExpoGo.
-function setupNotificationHandler() {
+export function setupNotificationHandler() {
   Notifications.setNotificationHandler({
     handleNotification: async (notification) => {
       const data = notification.request.content.data as
@@ -36,7 +37,12 @@ function setupNotificationHandler() {
         | undefined;
       const isChatMessage = data?.type === 'new_message';
       const socketConnected = getSocket()?.connected ?? false;
-      if (isChatMessage && socketConnected) {
+      const isViewingThisChat =
+        isChatMessage &&
+        socketConnected &&
+        !!data?.conversationId &&
+        data.conversationId === getActiveConversationId();
+      if (isViewingThisChat) {
         return {
           shouldShowAlert: false,
           shouldPlaySound: false,
