@@ -21,6 +21,8 @@ import {
   X,
   ChevronDown,
   PencilLine,
+  ChevronRight,
+  Check,
 } from 'lucide-react-native';
 import { sf, sr, sw, sh } from '@/utils/sizeMatters';
 import ETHNICITIES from '@/constants/ethnicities';
@@ -814,14 +816,14 @@ const EditProfileScreen = ({ navigation }: any) => {
                       fontSize: sf(14),
                     }}
                   > 
-                    <PencilLine
-                      size={16}
-                      color={'#0B0B0B'}
+                    <ChevronRight
+                      size={20}
+                      color={'#7D858E'}
                     />
                   </Text>
                 </TouchableOpacity>
               </View>
-              <View style={{ height: 1, backgroundColor: '#7D858E' }} />
+              <View style={{ height: 1, backgroundColor: '#7D858E', marginBottom: 4 }} />
               <View
                 style={{ flexDirection: 'row', flexWrap: 'wrap', gap: sw(8) }}
               >
