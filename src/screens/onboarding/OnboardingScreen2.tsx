@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Image, View, useWindowDimensions } from 'react-native';
 import { Text } from '@/components/common/Text'; 
 import OnboardingCard from './OnboardingCard';
-import CameraIcon from '@/assets/images/cameraIcon.svg';
+import CameraIcon from '@/assets/images/cameraonboarding.svg';
 import { sf, sw, sh } from '@/utils/sizeMatters';
 
 export default function Onboarding2({ navigation }: any) {
@@ -125,7 +125,7 @@ export default function Onboarding2({ navigation }: any) {
             left: width * 0.35,
           }}
         >
-          🔥
+          {/* 🔥 */}
         </Text>
 
         {/* Camera icon */}
@@ -163,7 +163,7 @@ export default function Onboarding2({ navigation }: any) {
             left: width * 0.58,
           }}
         >
-          🔥
+          {/* 🔥 */}
         </Text>
 
         <Animated.View
@@ -184,7 +184,7 @@ export default function Onboarding2({ navigation }: any) {
 
       {/* ── Bottom card ── */}
       <OnboardingCard
-        title="Build Streaks 🔥"
+        title="Build Streaks"
         subtitle="Break the ice with a photo. It's the spark that starts every conversation."
         activeDot={1}
         buttonLabel="Next"

@@ -173,8 +173,8 @@ export default function ForgotPasswordScreen({ navigation }: any) {
                       emailForm.setValue('email', v, { shouldValidate: true })
                     }
                     onBlur={() => emailForm.trigger('email')}
-                    placeholder="Enter your email address"
-                    placeholderTextColor="#B6B9C9"
+                    placeholder="Enter your email"
+                    placeholderTextColor="#7D858E"
                     keyboardType="email-address"
                     autoCapitalize="none"
                     style={styles.textInput}
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   textInput: {
     flex:       1,
     fontFamily: 'Poppins-Regular',
-    fontSize:   sf(12),
+    fontSize:   14,
     color:      '#000000',
     padding:    0,
   },

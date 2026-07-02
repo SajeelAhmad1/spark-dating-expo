@@ -225,7 +225,7 @@ export default function SignInScreen({
             Welcome Back!
           </Text>
           <Text style={{ color: '#7D858E', fontSize: sf(15) }}>
-            Please enter your number & password to sign in
+            Please enter your {activeTab === 'phone' ? 'number' : 'email'} & password to signin
           </Text>
         </View>
 
