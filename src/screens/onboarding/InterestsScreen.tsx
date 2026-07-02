@@ -77,13 +77,13 @@ const InterestsScreen = ({ navigation }: any) => {
   );
   const [interestsError, setInterestsError] = useState<string | undefined>();
 
-  const toggle = (id: string) => {
+  const toggle = (name: string) => {
     setInterestsError(undefined);
     setSelected((prev) =>
-      prev.includes(id)
-        ? prev.filter((s) => s !== id)
+      prev.includes(name)
+        ? prev.filter((s) => s !== name)
         : prev.length < MAX
-          ? [...prev, id]
+          ? [...prev, name]
           : prev,
     );
   };
@@ -193,11 +193,11 @@ const InterestsScreen = ({ navigation }: any) => {
                   style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}
                 >
                   {items.map((item) => {
-                    const isSelected = selected.includes(item.id);
+                    const isSelected = selected.includes(item.name);
                     return (
                       <TouchableOpacity
                         key={item.id}
-                        onPress={() => toggle(item.id)}
+                        onPress={() => toggle(item.name)}
                         style={{
                           paddingHorizontal: sw(14),
                           borderRadius: 999,

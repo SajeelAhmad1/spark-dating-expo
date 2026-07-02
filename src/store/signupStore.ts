@@ -144,7 +144,7 @@ export const useSignupStore = create<SignupStore>()(
         return {
           ...rest,
           dob,
-          height: Number(height),
+          height: height ? Number(height) : undefined,
           photos,
           gender: gender.toLowerCase() as 'male' | 'female' | 'other',
         };
