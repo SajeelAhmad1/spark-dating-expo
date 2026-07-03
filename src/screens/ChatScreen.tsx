@@ -727,7 +727,7 @@ export default function ChatScreen({ navigation, route }: any) {
               }}
             >
               <TouchableOpacity
-                onPress={() => navigation?.goBack()}
+                onPress={() => navigation?.navigate('InboxScreen')}
                 style={{ marginRight: sw(12) }}
               >
                 <ChevronLeft
