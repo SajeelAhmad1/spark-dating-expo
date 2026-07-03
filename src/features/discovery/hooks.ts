@@ -110,7 +110,7 @@ export const useSwipe = () => {
   });
 };
 
-// ── Preferences ───────────────────────────────────────────────────────────────
+// ──- Preferences ───────────────────────────────────────────────────────────────
 
 export const useDiscoveryPreferences = () =>
   useQuery({
