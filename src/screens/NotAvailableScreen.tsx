@@ -34,7 +34,7 @@ const NotAvailableScreen = ({ nearestArea, onNotifyPress }: any) => {
       {/* ── Info card ────────────────────────────────────────────────────── */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>
-          Spark is currently only available in
+          Spark is currently not available in
         </Text>
         <Text style={styles.areaName}>{areaLabel}</Text>
         <Text style={styles.cardBody}>

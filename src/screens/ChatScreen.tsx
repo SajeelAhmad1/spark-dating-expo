@@ -454,7 +454,7 @@ export default function ChatScreen({ navigation, route }: any) {
   useEffect(() => {
     if (conversationId) setActiveConversationId(conversationId);
     return () => setActiveConversationId(null);
-  }, [conversationId]);
+  }, [conversationId, setActiveConversationId]);
   const messages: ChatMessage[] = data?.messages ?? [];
 
   const scrollToBottom = useCallback((animated = false) => {
@@ -613,7 +613,7 @@ export default function ChatScreen({ navigation, route }: any) {
       {
         onSuccess: () => {
           showToast({ text1: 'User Blocked', icon: UserRoundX });
-          navigation.goBack();
+          navigation.navigate("InboxScreen");
         },
       },
     );

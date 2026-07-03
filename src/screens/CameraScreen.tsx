@@ -82,6 +82,7 @@ export default function CameraScreen({
 
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
+  const [isCameraReady, setIsCameraReady] = useState(false);
 
   const hasPermission = permission?.granted ?? false;
   const isRecordingRef = useRef(false);
@@ -114,6 +115,11 @@ export default function CameraScreen({
 
   const handlePreviewDownload = () => {
     console.log('Download:', previewUri);
+  };
+
+  const handleCameraReady = () => {
+    console.log('Camera is ready');
+    setIsCameraReady(true);
   };
 
   // ── Photo ──────────────────────────────────────────────────────────────────
@@ -196,29 +202,33 @@ export default function CameraScreen({
   };
 
   React.useEffect(() => {
-    if (visible && !hasPermission) {
-      requestPermission();
+    if (visible) {
+      setIsCameraReady(false);
+      if (!hasPermission && permission !== null) {
+        requestPermission();
+      }
     }
-  }, [visible, hasPermission]);
+  }, [visible, hasPermission, permission]);
 
   return (
     <>
       <Modal
         visible={visible}
         animationType='slide'
-        statusBarTranslucent
+        statusBarTranslucent={false}
+        presentationStyle='fullScreen'
       > 
         <View style={styles.fullScreenContainer}>
           {hasPermission ? (
             <>
               <CameraView
                 ref={cameraRef}
-                style={StyleSheet.absoluteFill}
-                facing={facing}
-                flash={flashEnabled ? 'on' : 'off'}
-                active={visible && !previewVisible}
+                style={StyleSheet.absoluteFillObject}
                 mode={cameraMode}
                 mute={true}
+                flash={flashEnabled ? 'on' : 'off'}
+                onCameraReady={handleCameraReady}
+                active={visible && !previewVisible}
               />
 
               {isTakingPhoto && (
@@ -335,15 +345,20 @@ export default function CameraScreen({
               <Text style={styles.permissionText}>
                 {permission === null
                   ? 'Requesting camera permission...'
-                  : 'Camera permission required'}
+                  : 'Camera permission denied'}
               </Text>
               {permission !== null && !hasPermission && (
-                <TouchableOpacity
-                  onPress={requestPermission}
-                  style={styles.grantButton}
-                >
-                  <Text style={styles.grantButtonText}>Grant Permission</Text>
-                </TouchableOpacity>
+                <>
+                  <Text style={styles.permissionSubText}>
+                    Please enable camera access in Settings to use this feature.
+                  </Text>
+                  <TouchableOpacity
+                    onPress={requestPermission}
+                    style={styles.grantButton}
+                  >
+                    <Text style={styles.grantButtonText}>Try Again</Text>
+                  </TouchableOpacity>
+                </>
               )}
             </View>
           )}
@@ -457,6 +472,13 @@ const styles = StyleSheet.create({
     fontSize: sf(12),
     fontFamily: 'Poppins-SemiBold',
     letterSpacing: 1,
+  },
+  permissionSubText: {
+    color: '#666',
+    fontFamily: 'Poppins-Regular',
+    fontSize: sf(14),
+    marginBottom: sh(20),
+    textAlign: 'center',
   },
   permissionContainer: {
     flex: 1,

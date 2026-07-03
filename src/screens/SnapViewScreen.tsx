@@ -1,4 +1,4 @@
-// screens/SnapViewScreen.tsxa
+// screens/SnapViewScreen.tsx
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,

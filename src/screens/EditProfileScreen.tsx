@@ -9,6 +9,7 @@ import {
   Modal,
   ActivityIndicator,
   Alert,
+  StyleSheet,
 } from 'react-native';
 import { Text } from '@/components/common/Text';
 import RefreshControl from '@/components/common/RefreshControl';
@@ -1067,5 +1068,3 @@ const EditProfileScreen = ({ navigation }: any) => {
 };
 
 export default EditProfileScreen;
-
-const { StyleSheet } = require('react-native');

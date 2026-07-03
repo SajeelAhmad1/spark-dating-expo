@@ -150,6 +150,31 @@ export function emitStopTyping(conversationId: string) {
   socket.emit('typing:stop', { conversationId })
 }
 
+// ── App state handler (iOS: reconnect on foreground) ────────────────────────
+
+/**
+ * Called when app comes to foreground.
+ * Ensures socket is reconnected on iOS where background suspension can break the connection.
+ */
+export async function handleAppForeground(): Promise<void> {
+  try {
+    if (socket?.connected) return
+    log('app:foreground - reconnecting')
+    // Tear down stale socket so connectSocket() builds a fresh one with the
+    // latest token (which may have been silently refreshed while backgrounded).
+    if (socket) {
+      socket.removeAllListeners()
+      socket.disconnect()
+      socket = null
+      _connectingPromise = null
+    }
+    await connectSocket()
+  } catch (err) {
+    log('app:foreground - reconnect failed', err)
+  }
+}
+
+
 // ── Send message ──────────────────────────────────────────────────────────────
 
 export type SocketMessagePayload =

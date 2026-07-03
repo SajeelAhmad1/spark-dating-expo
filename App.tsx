@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, AppState } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
   NavigationContainer,
@@ -24,6 +24,7 @@ import {
   setupNotificationHandler,
   type ChatNotificationData,
 } from '@/services/fcm';
+import { handleAppForeground } from '@/services/socket';
 import type { AppStackParamList } from '@/types/navigation';
 
 const isExpoGo = Constants.executionEnvironment === 'storeClient';
@@ -80,6 +81,16 @@ export default function App() {
   // Must be registered on every app start, not just after login.
   useEffect(() => {
     if (!isExpoGo) setupNotificationHandler();
+  }, []);
+
+  // ── App state listener: reconnect socket on foreground (iOS) ──────────────────
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        handleAppForeground().catch((err) => console.error('[App] Foreground handler error:', err));
+      }
+    });
+    return () => subscription.remove();
   }, []);
 
   // ── Notification handling ──────────────────────────────────────────────────

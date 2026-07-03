@@ -111,7 +111,6 @@ async function attemptSilentRefresh(): Promise<boolean> {
   _refreshPromise = (async () => {
     try {
       const refreshToken = await tokenStore.getRefresh();
-      console.log('🔄 Refresh Token:', refreshToken);
       if (!refreshToken) return false;
 
       const { data } = await axios.post<
@@ -122,7 +121,6 @@ async function attemptSilentRefresh(): Promise<boolean> {
       await tokenStore.setRefresh(data.data.refreshToken);
       return true;
     } catch (err: any) {
-      console.log('❌ REFRESH ERROR:', err.response?.data || err.message);
       return false;
     } finally {
       _refreshPromise = null;

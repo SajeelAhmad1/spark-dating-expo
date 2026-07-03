@@ -38,19 +38,19 @@ const EnableLocationScreen = ({ navigation }: any) => {
   const { mutateAsync: updateLocation } = useUpdateLocation();
 
   // ── Show not-available screen when area is explicitly set ──────────────────
-  if (unavailableArea !== undefined) {
-    return (
-      <NotAvailableScreen
-        nearestArea={unavailableArea}
-        onNotifyPress={() => {
-          Alert.alert(
-            "We'll notify you!",
-            "You'll be the first to know when Spark arrives in your area.",
-          );
-        }}
-      />
-    );
-  }
+  // if (unavailableArea !== undefined) {
+  //   return (
+  //     <NotAvailableScreen
+  //       nearestArea={unavailableArea}
+  //       onNotifyPress={() => {
+  //         Alert.alert(
+  //           "We'll notify you!",
+  //           "You'll be the first to know when Spark arrives in your area.",
+  //         );
+  //       }}
+  //     />
+  //   );
+  // }
 
   // ── Toggle handler ─────────────────────────────────────────────────────────
   const handleToggle = async (val: boolean) => {
@@ -74,10 +74,10 @@ const EnableLocationScreen = ({ navigation }: any) => {
       // Check availability
       const availability = await checkAvailability(coords);
 
-      if (!availability.isSupported) {
-        setUnavailableArea(availability.area ?? null);
-        return;
-      }
+      // if (!availability.isSupported) {
+      //   setUnavailableArea(availability.area ?? null);
+      //   return;
+      // }
 
       // Update backend
       await updateLocation(coords);

@@ -90,8 +90,6 @@ export async function registerFcmToken(): Promise<void> {
       return;
     }
 
-    // Set handler once here — safe because we are already past the Expo Go guard
-    setupNotificationHandler();
     await ensureAndroidChannel();
 
     const projectId = Constants.expoConfig?.extra?.eas?.projectId;
