@@ -6,7 +6,11 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/PrimaryImage.png",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.sparkdating.app",
@@ -15,7 +19,8 @@
         "NSCameraUsageDescription": "We need camera access to take photos.",
         "NSLocationWhenInUseUsageDescription": "We need your location.",
         "NSMicrophoneUsageDescription": "We need microphone access.",
-        "NSPhotoLibraryUsageDescription": "We need access to your photo library."
+        "NSPhotoLibraryUsageDescription": "We need access to your photo library.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
