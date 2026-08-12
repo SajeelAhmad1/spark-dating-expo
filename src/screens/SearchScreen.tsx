@@ -23,7 +23,7 @@ const SearchScreen = ({ navigation }: any) => {
   const avatarSize = sf(94);
   const { coords, isLoading } = useLocationStore();
 
-  const { data, isPending, isError, refetch, isFetching } = useDiscoverProfiles(
+  const { data, isPending, isError, error, refetch, isFetching } = useDiscoverProfiles(
     coords ? { lat: coords.lat, lng: coords.lng, limit: 10 } : null,
   );
 
@@ -131,8 +131,13 @@ const SearchScreen = ({ navigation }: any) => {
             </View>
             <Text style={styles.dialogTitle}>Something went wrong</Text>
             <Text style={styles.dialogBody}>
-              We couldn't find people near you.{`\n`}Please check your
-              connection and try again.
+              {(error as any)?.code === 'ERR_NETWORK' || (error as any)?.message === 'Network Error'
+                ? `No internet connection.\nPlease check your network and try again.`
+                : (error as any)?.response?.status >= 500
+                ? `Our servers are having issues.\nPlease try again in a moment.`
+                : (error as any)?.response?.status === 401
+                ? `Your session has expired.\nPlease log in again.`
+                : `Unable to load profiles.\nPlease try again.`}
             </Text>
             <TouchableOpacity
               onPress={() => refetch()}

@@ -26,8 +26,8 @@ export function useGoogleSignIn() {
 console.log(JSON.stringify(response, null, 2));
 
 console.log('Web Client:', process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID);
-console.log('Android Client:', process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID);
-console.log('iOS Client:', process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID);
+// console.log('Android Client:', process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID);
+// console.log('iOS Client:', process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID);
 
         if (response.type === 'cancelled') return;
 
