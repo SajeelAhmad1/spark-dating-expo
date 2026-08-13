@@ -95,7 +95,7 @@
       ]
     ],
     "extra": {
-      "apiBaseUrl": "https://sparkdating-backend-production-9117.up.railway.app",
+      "apiBaseUrl": "https://spark-backend-production-6165.up.railway.app",
       "eas": {
         "projectId": "e4d904d7-e598-48cc-844b-e7281373ae61"
       }
