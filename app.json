@@ -2,14 +2,20 @@
   "expo": {
     "name": "SparkDating",
     "scheme": "sparkdating",
-    "slug": "spark-dating-expo",
+    "slug": "spark",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/PrimaryImage.png",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.sparkdating.app",
+      "bundleIdentifier": "com.sparkyourmoment.com",
+      "buildNumber": "1",
+      "googleServicesFile": "./GoogleService-Info.plist",
       "icon": "./assets/images/PrimaryImage.png",
       "statusBar": {
         "barStyle": "dark-content",
@@ -21,11 +27,12 @@
         "NSLocationAlwaysAndWhenInUseUsageDescription": "We need your location to find people nearby.",
         "NSMicrophoneUsageDescription": "We need microphone access.",
         "NSPhotoLibraryUsageDescription": "We need access to your photo library.",
-        "NSPhotoLibraryAddUsageDescription": "Allow access to save photos."
+        "NSPhotoLibraryAddUsageDescription": "Allow access to save photos.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
-      "package": "com.sparkdating.app",
+      "package": "com.sparkyourmoment.com",
       "googleServicesFile": "./google-services.json",
       "icon": "./assets/images/PrimaryImage.png",
       "adaptiveIcon": {
@@ -92,14 +99,6 @@
       "expo-video",
       "expo-secure-store",
       "expo-web-browser",
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/images/PrimaryImage.png",
-          "color": "#CEB98F",
-          "defaultChannel": "chat"
-        }
-      ],
       "expo-font",
       [
         "@react-native-google-signin/google-signin",
@@ -111,9 +110,9 @@
     "extra": {
       "apiBaseUrl": "https://sparkdating-backend-production.up.railway.app",
       "eas": {
-        "projectId": "e4d904d7-e598-48cc-844b-e7281373ae61"
+        "projectId": "b402b3d8-1383-4e43-8b96-f57e6bf70f63"
       }
     },
-    "owner": "wajid_19"
+    "owner": "thalejacobs-team"
   }
 }

@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:455021014657:android:40642c20b99b332bb6e780",
         "android_client_info": {
-          "package_name": "com.sparkdating.app"
+          "package_name": "com.sparkyourmoment.com"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "455021014657-2lbr4pl5jgqkrgsqsjg9eiivn6d6ccfv.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.sparkdating.app",
+            "package_name": "com.sparkyourmoment.com",
             "certificate_hash": "0ac33a29e652a5d3b211c77e937c2c828e17b9b3"
           }
         },
