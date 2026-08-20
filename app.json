@@ -3,6 +3,7 @@
     "name": "SparkDating",
     "scheme": "sparkdating",
     "slug": "spark",
+    // "slug": "spark-dating-expo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/PrimaryImage.png",
@@ -110,9 +111,11 @@
     "extra": {
       "apiBaseUrl": "https://sparkdating-backend-production.up.railway.app",
       "eas": {
+        // "projectId": "c2c317ea-5379-4c35-bbaf-af23786d988c"
         "projectId": "b402b3d8-1383-4e43-8b96-f57e6bf70f63"
       }
     },
+    // "owner": "sajeelahmad"
     "owner": "thalejacobs-team"
   }
 }

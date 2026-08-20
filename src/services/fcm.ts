@@ -30,32 +30,33 @@ const isExpoGo = Constants.executionEnvironment === 'storeClient';
 // Must NOT be called at module level in Expo Go — it throws on import.
 // Called once from registerFcmToken() which already guards with isExpoGo.
 export function setupNotificationHandler() {
-  Notifications.setNotificationHandler({
-    handleNotification: async (notification) => {
-      const data = notification.request.content.data as
-        | Record<string, string>
-        | undefined;
-      const isChatMessage = data?.type === 'new_message';
-      const socketConnected = getSocket()?.connected ?? false;
-      const isViewingThisChat =
-        isChatMessage &&
-        socketConnected &&
-        !!data?.conversationId &&
-        data.conversationId === getActiveConversationId();
-      if (isViewingThisChat) {
-        return {
-          shouldShowAlert: false,
-          shouldPlaySound: false,
-          shouldSetBadge: false,
-        };
-      }
-      return {
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-      };
-    },
-  });
+  // Notifications.setNotificationHandler({
+  //   handleNotification: async (notification) => {
+  //     const data = notification.request.content.data as
+  //       | Record<string, string>
+  //       | undefined;
+  //     const isChatMessage = data?.type === 'new_message';
+  //     const socketConnected = getSocket()?.connected ?? false;
+  //     const isViewingThisChat =
+  //       isChatMessage &&
+  //       socketConnected &&
+  //       !!data?.conversationId &&
+  //       data.conversationId === getActiveConversationId();
+  //     if (isViewingThisChat) {
+  //       return {
+  //         shouldShowAlert: false,
+  //         shouldPlaySound: false,
+  //         shouldSetBadge: false,
+  //       };
+  //     }
+  //     return {
+  //       shouldShowAlert: true,
+  //       shouldPlaySound: true,
+  //       shouldSetBadge: true,
+  //     };
+  //   },
+  // });
+  return;
 }
 
 // ── Android notification channel ──────────────────────────────────────────────
